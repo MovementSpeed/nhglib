@@ -15,7 +15,7 @@ publishing {
 
     publications {
         core(MavenPublication) {
-            groupId 'net.nothumandev.nhglib'
+            groupId 'io.github.voidzombie.nhg-core'
             artifactId 'nhglib-core'
             version '0.0.1'
 
@@ -23,7 +23,7 @@ publishing {
         }
 
         android(MavenPublication) {
-            groupId 'net.nothumandev.nhglib.android'
+            groupId 'io.github.voidzombie.nhg-android'
             artifactId 'nhglib-android'
             version '0.0.1'
 
@@ -31,7 +31,7 @@ publishing {
         }
 
         ios(MavenPublication) {
-            groupId 'net.nothumandev.nhglib.ios'
+            groupId 'io.github.voidzombie.nhg-ios'
             artifactId 'nhglib-ios'
             version '0.0.1'
 
@@ -39,7 +39,7 @@ publishing {
         }
 
         html(MavenPublication) {
-            groupId 'net.nothumandev.nhglib.html'
+            groupId 'io.github.voidzombie.nhg-html'
             artifactId 'nhglib-html'
             version '0.0.1'
 
