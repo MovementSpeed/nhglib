@@ -6,20 +6,21 @@
 apply plugin: 'maven-publish'
 
 publishing {
-    repositories {
-        maven {
-            // change to point to your repo, e.g. http://my.org/repo
-            url "$buildDir/repo"
-        }
-    }
-
     publications {
         core(MavenPublication) {
             groupId 'io.github.voidzombie.nhg-core'
             artifactId 'nhglib-core'
             version '0.0.1'
 
-            //artifact coreJar
+            artifact 'out/artifacts/coreJar/nhglib-core.jar'
+        }
+
+        desktop(MavenPublication) {
+            groupId 'io.github.voidzombie.nhg-desktop'
+            artifactId 'nhglib-desktop'
+            version '0.0.1'
+
+            artifact 'out/artifacts/desktopJar/nhglib-desktop.jar'
         }
 
         android(MavenPublication) {
@@ -27,7 +28,7 @@ publishing {
             artifactId 'nhglib-android'
             version '0.0.1'
 
-            //artifact androidJar
+            artifact 'out/artifacts/androidJar/nhglib-android.jar'
         }
 
         ios(MavenPublication) {
@@ -35,7 +36,7 @@ publishing {
             artifactId 'nhglib-ios'
             version '0.0.1'
 
-            //artifact iosJar
+            artifact 'out/artifacts/iosJar/nhglib-ios.jar'
         }
 
         html(MavenPublication) {
@@ -43,7 +44,16 @@ publishing {
             artifactId 'nhglib-html'
             version '0.0.1'
 
-            //artifact htmlJar
+            artifact 'out/artifacts/htmlJar/nhglib-html.jar'
+        }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            // change to point to your repo, e.g. http://my.org/repo
+            url "$buildDir/repo"
         }
     }
 }
