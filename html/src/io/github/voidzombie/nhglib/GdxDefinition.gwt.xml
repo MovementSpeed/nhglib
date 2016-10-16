@@ -4,7 +4,7 @@
 	<inherits name='com.badlogic.gdx.backends.gdx_backends_gwt' />
 
 	<inherits name='Main' />
-	<entry-point class='net.nothuman.nhglib.client.HtmlLauncher' />
+	<entry-point class='io.github.voidzombie.nhglib.client.HtmlLauncher' />
 	
 	<set-configuration-property name="gdx.assetpath" value="../android/assets" />
 </module>

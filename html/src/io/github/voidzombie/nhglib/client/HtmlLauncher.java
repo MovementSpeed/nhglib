@@ -1,9 +1,9 @@
-package net.nothuman.nhglib.client;
+package io.github.voidzombie.nhglib.client;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
-import net.nothuman.nhglib.Main;
+import io.github.voidzombie.nhglib.Main;
 
 public class HtmlLauncher extends GwtApplication {
 

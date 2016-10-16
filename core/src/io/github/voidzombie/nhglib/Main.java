@@ -1,4 +1,4 @@
-package net.nothuman.nhglib;
+package io.github.voidzombie.nhglib;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;

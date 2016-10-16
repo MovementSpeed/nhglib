@@ -65,7 +65,7 @@ task run(type: Exec) {
     }
 
     def adb = path + "/platform-tools/adb"
-    commandLine "$adb", 'shell', 'am', 'start', '-n', 'net.nothuman.nhglib/net.nothuman.nhglib.AndroidLauncher'
+    commandLine "$adb", 'shell', 'am', 'start', '-n', 'net.nothuman.nhglib/AndroidLauncher'
 }
 // sets up the Android Eclipse project, using the old Ant based build.
 eclipse {
