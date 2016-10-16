@@ -6,8 +6,8 @@ gwt {
     minHeapSize = "1G"
 
     src = files(file("src/")) // Needs to be in front of "modules" below.
-    modules 'net.nothuman.nhglib.GdxDefinition'
-    devModules 'net.nothuman.nhglib.GdxDefinitionSuperdev'
+    modules 'io.github.voidzombie.nhglib.GdxDefinition'
+    devModules 'io.github.voidzombie.nhglib.GdxDefinitionSuperdev'
     project.webAppDirName = 'webapp'
 
     compiler {

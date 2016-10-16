@@ -3,7 +3,7 @@
 <module rename-to="html">
 	<inherits name='com.badlogic.gdx.backends.gdx_backends_gwt' />
 
-    <inherits name='net.nothuman.nhglib.GdxDefinition' />
+    <inherits name='io.github.voidzombie.nhglib.GdxDefinition' />
     
     <collapse-all-properties />
     
