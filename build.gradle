@@ -1,6 +1,3 @@
-group 'io.github.voidzombie'
-version '1.0-SNAPSHOT'
-
 apply plugin: 'io.codearte.nexus-staging'
 apply plugin: 'java'
 
@@ -8,29 +5,35 @@ sourceCompatibility = 1.6
 
 buildscript {
     repositories {
+        mavenLocal()
         mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        jcenter()
     }
 
     dependencies {
+        classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
+        classpath 'com.android.tools.build:gradle:2.0.0'
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
     }
 }
 
-task javadocJar(type: Jar) {
-    classifier = 'javadoc'
-    from javadoc
-}
+allprojects {
+    apply plugin: "eclipse"
+    apply plugin: "idea"
 
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
+    version = '0.0.1'
 
-artifacts {
-    archives javadocJar, sourcesJar
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+    }
 }
 
 project(":nhglib-core") {
+    apply plugin: "java"
     apply plugin: 'signing'
     apply plugin: 'maven'
 
@@ -84,6 +87,25 @@ project(":nhglib-core") {
                 }
             }
         }
+    }
+
+    task javadocJar(type: Jar) {
+        classifier = 'javadoc'
+        from javadoc
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives javadocJar, sourcesJar
+    }
+
+    dependencies {
+        compile "com.badlogicgames.gdx:gdx:1.9.4"
+        compile "com.badlogicgames.gdx:gdx-ai:1.8.0"
     }
 }
 
@@ -142,6 +164,20 @@ project(":nhglib-android") {
             }
         }
     }
+
+    task javadocJar(type: Jar) {
+        classifier = 'javadoc'
+        from javadoc
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives javadocJar, sourcesJar
+    }
 }
 
 project(":nhglib-ios") {
@@ -198,6 +234,20 @@ project(":nhglib-ios") {
                 }
             }
         }
+    }
+
+    task javadocJar(type: Jar) {
+        classifier = 'javadoc'
+        from javadoc
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives javadocJar, sourcesJar
     }
 }
 
@@ -256,6 +306,20 @@ project(":nhglib-desktop") {
             }
         }
     }
+
+    task javadocJar(type: Jar) {
+        classifier = 'javadoc'
+        from javadoc
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives javadocJar, sourcesJar
+    }
 }
 
 project(":nhglib-html") {
@@ -312,5 +376,19 @@ project(":nhglib-html") {
                 }
             }
         }
+    }
+
+    task javadocJar(type: Jar) {
+        classifier = 'javadoc'
+        from javadoc
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives javadocJar, sourcesJar
     }
 }
