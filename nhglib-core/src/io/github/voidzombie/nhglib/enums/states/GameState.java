@@ -1,83 +1,83 @@
-package io.github.voidzombie.nhglib.enums;
+package io.github.voidzombie.nhglib.enums.states;
 
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
-import io.github.voidzombie.nhglib.runtime.NHGGame;
-import io.github.voidzombie.nhglib.utils.Logger;
+import io.github.voidzombie.nhglib.runtime.BaseGame;
+import io.github.voidzombie.nhglib.utils.debug.Logger;
 
 /**
  * Created by Fausto Napoli on 19/10/2016.
  */
-public enum GameState implements State<NHGGame> {
+public enum GameState implements State<BaseGame> {
     NOT_INITIALIZED() {
         @Override
-        public void enter(NHGGame entity) {
+        public void enter(BaseGame entity) {
             super.enter(entity);
             Logger.log(this, "Engine is not initialized.");
         }
 
         @Override
-        public void update(NHGGame entity) {
+        public void update(BaseGame entity) {
             super.update(entity);
 
-            // Create all NHGGame specific objects here, then go to the INITIALIZED state
+            // Create all BaseGame specific objects here, then go to the INITIALIZED state
             entity.fsm.changeState(INITIALIZED);
         }
     },
     INITIALIZED() {
         @Override
-        public void enter(NHGGame entity) {
+        public void enter(BaseGame entity) {
             super.enter(entity);
             Logger.log(this, "Engine is initialized.");
         }
 
         @Override
-        public void update(NHGGame entity) {
+        public void update(BaseGame entity) {
             super.update(entity);
         }
     },
     RUNNING() {
         @Override
-        public void enter(NHGGame entity) {
+        public void enter(BaseGame entity) {
             super.enter(entity);
             Logger.log(this, "Engine is running.");
         }
 
         @Override
-        public void update(NHGGame entity) {
+        public void update(BaseGame entity) {
             super.update(entity);
         }
     },
     PAUSED() {
         @Override
-        public void enter(NHGGame entity) {
+        public void enter(BaseGame entity) {
             super.enter(entity);
             Logger.log(this, "Engine is paused.");
         }
 
         @Override
-        public void update(NHGGame entity) {
+        public void update(BaseGame entity) {
             super.update(entity);
         }
     };
 
     @Override
-    public void enter(NHGGame entity) {
+    public void enter(BaseGame entity) {
 
     }
 
     @Override
-    public void update(NHGGame entity) {
+    public void update(BaseGame entity) {
 
     }
 
     @Override
-    public void exit(NHGGame entity) {
+    public void exit(BaseGame entity) {
 
     }
 
     @Override
-    public boolean onMessage(NHGGame entity, Telegram telegram) {
+    public boolean onMessage(BaseGame entity, Telegram telegram) {
         return false;
     }
 }

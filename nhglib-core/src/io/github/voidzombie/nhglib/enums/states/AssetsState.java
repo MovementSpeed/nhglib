@@ -1,9 +1,17 @@
-package io.github.voidzombie.nhglib.enums;
+package io.github.voidzombie.nhglib.enums.states;
 
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.utils.Array;
+import io.github.voidzombie.nhglib.NHG;
+import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.assets.Assets;
-import io.github.voidzombie.nhglib.utils.Logger;
+import io.github.voidzombie.nhglib.utils.data.Bundle;
+import io.github.voidzombie.nhglib.utils.debug.Logger;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Fausto Napoli on 19/10/2016.
@@ -36,8 +44,28 @@ public enum AssetsState implements State<Assets> {
         public void update(Assets entity) {
             super.update(entity);
 
+            Array<Asset> assets = entity.getAssetList();
+
+            for (Asset asset : assets) {
+                Boolean isLoaded = entity.assetManager.isLoaded(asset.source);
+
+                if (isLoaded) {
+                    Bundle bundle = new Bundle();
+                    bundle.put(NHG.strings.nhgNotificationAssetLoaded, true);
+                    bundle.put("asset", asset);
+
+                    entity.onNotify(bundle);
+                    break;
+                }
+            }
+
             if (entity.assetManager.update()) {
                 entity.fsm.changeState(IDLE);
+
+                Bundle bundle = new Bundle();
+                bundle.put(NHG.strings.nhgNotificationAssetLoadingFinished, true);
+
+                entity.onNotify(bundle);
             }
         }
 
@@ -49,19 +77,13 @@ public enum AssetsState implements State<Assets> {
     };
 
     @Override
-    public void enter(Assets entity) {
-
-    }
+    public void enter(Assets entity) {}
 
     @Override
-    public void update(Assets entity) {
-
-    }
+    public void update(Assets entity) {}
 
     @Override
-    public void exit(Assets entity) {
-
-    }
+    public void exit(Assets entity) {}
 
     @Override
     public boolean onMessage(Assets entity, Telegram telegram) {
