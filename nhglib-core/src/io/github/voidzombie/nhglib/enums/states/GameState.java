@@ -2,6 +2,7 @@ package io.github.voidzombie.nhglib.enums.states;
 
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
+import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.runtime.BaseGame;
 import io.github.voidzombie.nhglib.utils.debug.Logger;
 
@@ -13,7 +14,7 @@ public enum GameState implements State<BaseGame> {
         @Override
         public void enter(BaseGame entity) {
             super.enter(entity);
-            Logger.log(this, "Engine is not initialized.");
+            NHG.logger.log(this, "Engine is not initialized.");
         }
 
         @Override
@@ -21,6 +22,7 @@ public enum GameState implements State<BaseGame> {
             super.update(entity);
 
             // Create all BaseGame specific objects here, then go to the INITIALIZED state
+            NHG.assets.addAssetLoadingListener(entity);
             entity.fsm.changeState(INITIALIZED);
         }
     },
@@ -28,31 +30,33 @@ public enum GameState implements State<BaseGame> {
         @Override
         public void enter(BaseGame entity) {
             super.enter(entity);
-            Logger.log(this, "Engine is initialized.");
+            NHG.logger.log(this, "Engine is initialized.");
         }
 
         @Override
         public void update(BaseGame entity) {
             super.update(entity);
+            entity.fsm.changeState(RUNNING);
         }
     },
     RUNNING() {
         @Override
         public void enter(BaseGame entity) {
             super.enter(entity);
-            Logger.log(this, "Engine is running.");
+            NHG.logger.log(this, "Engine is running.");
         }
 
         @Override
         public void update(BaseGame entity) {
             super.update(entity);
+            NHG.assets.update();
         }
     },
     PAUSED() {
         @Override
         public void enter(BaseGame entity) {
             super.enter(entity);
-            Logger.log(this, "Engine is paused.");
+            NHG.logger.log(this, "Engine is paused.");
         }
 
         @Override

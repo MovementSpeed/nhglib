@@ -2,6 +2,7 @@ package io.github.voidzombie.nhglib.runtime;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
+import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.assets.AssetLoadingListener;
 import io.github.voidzombie.nhglib.enums.states.GameState;

@@ -1,5 +1,7 @@
 package io.github.voidzombie.nhglib.assets;
 
+import com.badlogic.gdx.Files;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetErrorListener;
@@ -21,8 +23,6 @@ public class Assets implements Updatable, Notifiable, AssetErrorListener {
     public final DefaultStateMachine<Assets, AssetsState> fsm;
     public final AssetManager assetManager;
 
-    private String modelsPath;
-
     private Array<Asset> assetList;
     private Array<AssetLoadingListener> listeners;
 
@@ -30,8 +30,6 @@ public class Assets implements Updatable, Notifiable, AssetErrorListener {
         fsm = new DefaultStateMachine<Assets, AssetsState>(this, AssetsState.IDLE);
         assetManager = new AssetManager();
         assetManager.setErrorListener(this);
-
-        modelsPath = NHG.strings.nhgDefaultModelPath;
 
         assetList = new Array<Asset>();
         listeners = new Array<AssetLoadingListener>();
@@ -46,13 +44,13 @@ public class Assets implements Updatable, Notifiable, AssetErrorListener {
     // Notifiable
     @Override
     public void onNotify(Bundle bundle) {
-        Boolean finishedLoading = bundle.getBoolean(NHG.strings.nhgNotificationAssetLoadingFinished, false);
+        Boolean finishedLoading = bundle.getBoolean(NHG.strings.notifications.assetLoadingFinished, false);
 
         if (finishedLoading) {
             notifyLoadingCompleted();
         }
 
-        Boolean assetLoaded = bundle.getBoolean(NHG.strings.nhgNotificationAssetLoaded, false);
+        Boolean assetLoaded = bundle.getBoolean(NHG.strings.notifications.assetLoaded, false);
 
         if (assetLoaded) {
             Asset asset = (Asset) bundle.get("asset");
@@ -65,7 +63,7 @@ public class Assets implements Updatable, Notifiable, AssetErrorListener {
     // AssetErrorListener
     @Override
     public void error(AssetDescriptor asset, Throwable throwable) {
-        Logger.log(this, throwable.getMessage());
+        NHG.logger.log(this, throwable.getMessage());
     }
 
     public Array<Asset> getAssetList() {
@@ -76,7 +74,7 @@ public class Assets implements Updatable, Notifiable, AssetErrorListener {
         if (loadingListener != null) {
             listeners.add(loadingListener);
         } else {
-            Logger.log(this, NHG.strings.nhgMessageNullLoadingListener);
+            NHG.logger.log(this, NHG.strings.messages.nullLoadingListener);
         }
     }
 
@@ -89,13 +87,21 @@ public class Assets implements Updatable, Notifiable, AssetErrorListener {
     }
 
     public void queueAsset(Asset asset) {
-        FileHandle fileHandle = new FileHandle(asset.source);
+        FileHandle fileHandle = Gdx.files.internal(asset.source);
 
         if (fileHandle.exists()) {
-            assetManager.load(asset.source, Model.class);
+            assetManager.load(asset.source, asset.assetClass);
             assetList.add(asset);
         } else {
-            Logger.log(this, NHG.strings.nhgMessageCannotQueueAssetFileNotFound, asset.source);
+            NHG.logger.log(this, NHG.strings.messages.cannotQueueAssetFileNotFound, asset.source);
+        }
+    }
+
+    public void queueAssets(Array<Asset> assets) {
+        if (assets != null) {
+            for (Asset asset : assets) {
+                queueAsset(asset);
+            }
         }
     }
 

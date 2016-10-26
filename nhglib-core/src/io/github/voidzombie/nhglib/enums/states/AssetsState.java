@@ -9,10 +9,6 @@ import io.github.voidzombie.nhglib.assets.Assets;
 import io.github.voidzombie.nhglib.utils.data.Bundle;
 import io.github.voidzombie.nhglib.utils.debug.Logger;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 /**
  * Created by Fausto Napoli on 19/10/2016.
  */
@@ -21,7 +17,7 @@ public enum AssetsState implements State<Assets> {
         @Override
         public void enter(Assets entity) {
             super.enter(entity);
-            Logger.log(this, "Asset manager is idle.");
+            NHG.logger.log(this, "Asset manager is idle.");
         }
 
         @Override
@@ -37,33 +33,20 @@ public enum AssetsState implements State<Assets> {
         @Override
         public void enter(Assets entity) {
             super.enter(entity);
-            Logger.log(this, "Asset manager is loading.");
+            NHG.logger.log(this, "Asset manager is loading.");
         }
 
         @Override
         public void update(Assets entity) {
             super.update(entity);
 
-            Array<Asset> assets = entity.getAssetList();
-
-            for (Asset asset : assets) {
-                Boolean isLoaded = entity.assetManager.isLoaded(asset.source);
-
-                if (isLoaded) {
-                    Bundle bundle = new Bundle();
-                    bundle.put(NHG.strings.nhgNotificationAssetLoaded, true);
-                    bundle.put("asset", asset);
-
-                    entity.onNotify(bundle);
-                    break;
-                }
-            }
-
             if (entity.assetManager.update()) {
                 entity.fsm.changeState(IDLE);
 
                 Bundle bundle = new Bundle();
-                bundle.put(NHG.strings.nhgNotificationAssetLoadingFinished, true);
+                bundle.put(NHG.strings.notifications.assetLoadingFinished, true);
+
+                checkLoadedAsset(entity);
 
                 entity.onNotify(bundle);
             }
@@ -72,7 +55,26 @@ public enum AssetsState implements State<Assets> {
         @Override
         public void exit(Assets entity) {
             super.exit(entity);
-            Logger.log(this, "Asset manager has finished loading.");
+            NHG.logger.log(this, "Asset manager has finished loading.");
+        }
+
+        private void checkLoadedAsset(Assets entity) {
+            Array<Asset> assets = entity.getAssetList();
+
+            for (Asset asset : assets) {
+                Boolean isLoaded = entity.assetManager.isLoaded(asset.source);
+
+                if (isLoaded) {
+                    NHG.logger.log(this, NHG.strings.messages.assetLoaded, asset.source);
+
+                    Bundle bundle = new Bundle();
+                    bundle.put(NHG.strings.notifications.assetLoaded, true);
+                    bundle.put("asset", asset);
+
+                    entity.onNotify(bundle);
+                    break;
+                }
+            }
         }
     };
 

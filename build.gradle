@@ -24,6 +24,10 @@ allprojects {
 
     version = '0.0.1'
 
+    ext {
+        gdxVersion = '1.9.4'
+    }
+
     repositories {
         mavenLocal()
         mavenCentral()
@@ -104,7 +108,7 @@ project(":nhglib-core") {
     }
 
     dependencies {
-        compile "com.badlogicgames.gdx:gdx:1.9.4"
+        compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-ai:1.8.0"
     }
 }
@@ -390,5 +394,15 @@ project(":nhglib-html") {
 
     artifacts {
         archives javadocJar, sourcesJar
+    }
+}
+
+project(":nhglib-tests") {
+    apply plugin: "java"
+
+    dependencies {
+        compile project(':nhglib-core')
+        compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
     }
 }
