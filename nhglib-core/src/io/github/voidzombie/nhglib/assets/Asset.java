@@ -31,7 +31,7 @@ public class Asset {
         return alias != null && this.alias.contentEquals(alias);
     }
 
-    public boolean isOfClass(Class assetClass) {
+    public boolean isType(Class assetClass) {
         return assetClass != null && this.assetClass == assetClass;
     }
 }

@@ -43,7 +43,7 @@ public class Assets implements Updatable, Notifiable, AssetErrorListener {
 
     // Notifiable
     @Override
-    public void onNotify(Bundle bundle) {
+    public void onNotification(Bundle bundle) {
         Boolean finishedLoading = bundle.getBoolean(NHG.strings.notifications.assetLoadingFinished, false);
 
         if (finishedLoading) {
@@ -80,10 +80,6 @@ public class Assets implements Updatable, Notifiable, AssetErrorListener {
 
     public <T> T get(Asset asset) {
         return assetManager.get(asset.source);
-    }
-
-    public <T> T get(Asset asset, Class<T> type) {
-        return assetManager.get(asset.source, type);
     }
 
     public void queueAsset(Asset asset) {

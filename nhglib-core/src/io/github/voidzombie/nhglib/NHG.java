@@ -13,6 +13,8 @@ public class NHG {
     public final static Assets assets;
     public final static Logger logger;
 
+    public static Boolean debugLogs = false;
+
     static {
         strings = new Strings();
         assets = new Assets();

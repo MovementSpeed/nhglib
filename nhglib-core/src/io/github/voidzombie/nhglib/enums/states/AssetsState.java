@@ -7,7 +7,6 @@ import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.assets.Assets;
 import io.github.voidzombie.nhglib.utils.data.Bundle;
-import io.github.voidzombie.nhglib.utils.debug.Logger;
 
 /**
  * Created by Fausto Napoli on 19/10/2016.
@@ -48,7 +47,7 @@ public enum AssetsState implements State<Assets> {
 
                 checkLoadedAsset(entity);
 
-                entity.onNotify(bundle);
+                entity.onNotification(bundle);
             }
         }
 
@@ -71,7 +70,7 @@ public enum AssetsState implements State<Assets> {
                     bundle.put(NHG.strings.notifications.assetLoaded, true);
                     bundle.put("asset", asset);
 
-                    entity.onNotify(bundle);
+                    entity.onNotification(bundle);
                     break;
                 }
             }

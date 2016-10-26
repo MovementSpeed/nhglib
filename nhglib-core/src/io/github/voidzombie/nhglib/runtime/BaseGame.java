@@ -6,13 +6,15 @@ import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.assets.AssetLoadingListener;
 import io.github.voidzombie.nhglib.enums.states.GameState;
+import io.github.voidzombie.nhglib.interfaces.Notifiable;
 import io.github.voidzombie.nhglib.interfaces.Updatable;
+import io.github.voidzombie.nhglib.utils.data.Bundle;
 
 /**
  * Created by Fausto Napoli on 19/10/2016.
  * Extend this class to manage your own game.
  */
-public class BaseGame extends Game implements Updatable, AssetLoadingListener {
+public class BaseGame extends Game implements Updatable, Notifiable, AssetLoadingListener {
     public final DefaultStateMachine<BaseGame, GameState> fsm;
 
     public BaseGame() {
@@ -35,11 +37,11 @@ public class BaseGame extends Game implements Updatable, AssetLoadingListener {
     }
 
     @Override
-    public void onLoadingCompleted() {
-
-    }
+    public void onLoadingCompleted() {}
 
     @Override
-    public void onAssetLoaded(Asset asset) {
-    }
+    public void onAssetLoaded(Asset asset) {}
+
+    @Override
+    public void onNotification(Bundle bundle) {}
 }
