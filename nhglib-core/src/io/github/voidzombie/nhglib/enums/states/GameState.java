@@ -1,10 +1,14 @@
 package io.github.voidzombie.nhglib.enums.states;
 
+import com.artemis.World;
+import com.artemis.WorldConfiguration;
+import com.artemis.WorldConfigurationBuilder;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import io.github.voidzombie.nhglib.NHG;
-import io.github.voidzombie.nhglib.runtime.BaseGame;
-import io.github.voidzombie.nhglib.utils.debug.Logger;
+import io.github.voidzombie.nhglib.runtime.ecs.systems.BroadcastSystem;
+import io.github.voidzombie.nhglib.runtime.entry.BaseGame;
 
 /**
  * Created by Fausto Napoli on 19/10/2016.
@@ -21,8 +25,21 @@ public enum GameState implements State<BaseGame> {
         public void update(BaseGame entity) {
             super.update(entity);
 
-            // Create all BaseGame specific objects here, then go to the INITIALIZED state
+            // BaseGame can listen to asset loading events.
             NHG.assets.addAssetLoadingListener(entity);
+
+            // BroadcastSystem can listen to Broadcaster events.
+            BroadcastSystem broadcastSystem = new BroadcastSystem();
+            NHG.broadcaster.addListener(broadcastSystem);
+
+            // Setup the ECS' world.
+            WorldConfiguration worldConfiguration = new WorldConfigurationBuilder()
+                    .with(broadcastSystem)
+                    .build();
+
+            World world = new World(worldConfiguration);
+            entity.setWorld(world);
+
             entity.fsm.changeState(INITIALIZED);
         }
     },
@@ -31,6 +48,7 @@ public enum GameState implements State<BaseGame> {
         public void enter(BaseGame entity) {
             super.enter(entity);
             NHG.logger.log(this, "Engine is initialized.");
+            entity.onEngineInitialized();
         }
 
         @Override
@@ -50,6 +68,10 @@ public enum GameState implements State<BaseGame> {
         public void update(BaseGame entity) {
             super.update(entity);
             NHG.assets.update();
+
+            World world = entity.getWorld();
+            world.setDelta(Gdx.graphics.getDeltaTime());
+            world.process();
         }
     },
     PAUSED() {

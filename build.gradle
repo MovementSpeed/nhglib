@@ -110,10 +110,12 @@ project(":nhglib-core") {
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-ai:1.8.0"
+        compile "net.onedaybeard.artemis:artemis-odb:2.0.0"
     }
 }
 
 project(":nhglib-android") {
+    apply plugin: "java"
     apply plugin: 'signing'
     apply plugin: 'maven'
 
@@ -181,10 +183,15 @@ project(":nhglib-android") {
 
     artifacts {
         archives javadocJar, sourcesJar
+    }
+
+    dependencies {
+        compile project(':nhglib-core')
     }
 }
 
 project(":nhglib-ios") {
+    apply plugin: "java"
     apply plugin: 'signing'
     apply plugin: 'maven'
 
@@ -252,10 +259,15 @@ project(":nhglib-ios") {
 
     artifacts {
         archives javadocJar, sourcesJar
+    }
+
+    dependencies {
+        compile project(':nhglib-core')
     }
 }
 
 project(":nhglib-desktop") {
+    apply plugin: "java"
     apply plugin: 'signing'
     apply plugin: 'maven'
 
@@ -323,10 +335,15 @@ project(":nhglib-desktop") {
 
     artifacts {
         archives javadocJar, sourcesJar
+    }
+
+    dependencies {
+        compile project(':nhglib-core')
     }
 }
 
 project(":nhglib-html") {
+    apply plugin: "java"
     apply plugin: 'signing'
     apply plugin: 'maven'
 
@@ -394,6 +411,10 @@ project(":nhglib-html") {
 
     artifacts {
         archives javadocJar, sourcesJar
+    }
+
+    dependencies {
+        compile project(':nhglib-core')
     }
 }
 

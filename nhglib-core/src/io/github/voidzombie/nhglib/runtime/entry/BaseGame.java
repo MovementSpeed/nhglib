@@ -1,8 +1,8 @@
-package io.github.voidzombie.nhglib.runtime;
+package io.github.voidzombie.nhglib.runtime.entry;
 
+import com.artemis.World;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
-import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.assets.AssetLoadingListener;
 import io.github.voidzombie.nhglib.enums.states.GameState;
@@ -16,6 +16,8 @@ import io.github.voidzombie.nhglib.utils.data.Bundle;
  */
 public class BaseGame extends Game implements Updatable, Notifiable, AssetLoadingListener {
     public final DefaultStateMachine<BaseGame, GameState> fsm;
+
+    private World world;
 
     public BaseGame() {
         fsm = new DefaultStateMachine<BaseGame, GameState>(this, GameState.NOT_INITIALIZED);
@@ -44,4 +46,18 @@ public class BaseGame extends Game implements Updatable, Notifiable, AssetLoadin
 
     @Override
     public void onNotification(Bundle bundle) {}
+
+    public void onEngineInitialized() {
+
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    public void setWorld(World world) {
+        if (world != null) {
+            this.world = world;
+        }
+    }
 }

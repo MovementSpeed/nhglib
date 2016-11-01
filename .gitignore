@@ -1,2 +1,10 @@
 
 .idea/
+.gradle/
+build/
+nhglib-android/build/
+nhglib-core/build/
+nhglib-desktop/build/
+nhglib-html/build/
+nhglib-ios/build/
+nhglib-tests/build/
