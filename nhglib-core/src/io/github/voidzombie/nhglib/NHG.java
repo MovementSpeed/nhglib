@@ -1,7 +1,7 @@
 package io.github.voidzombie.nhglib;
 
 import io.github.voidzombie.nhglib.assets.Assets;
-import io.github.voidzombie.nhglib.runtime.messaging.Broadcaster;
+import io.github.voidzombie.nhglib.runtime.messaging.Messaging;
 import io.github.voidzombie.nhglib.utils.data.Strings;
 import io.github.voidzombie.nhglib.utils.debug.Logger;
 
@@ -13,7 +13,7 @@ public class NHG {
     public final static Strings strings;
     public final static Assets assets;
     public final static Logger logger;
-    public final static Broadcaster broadcaster;
+    public final static Messaging messaging;
 
     public static Boolean debugLogs = false;
 
@@ -21,6 +21,6 @@ public class NHG {
         strings = new Strings();
         assets = new Assets();
         logger = new Logger();
-        broadcaster = new Broadcaster();
+        messaging = new Messaging();
     }
 }

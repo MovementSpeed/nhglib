@@ -6,24 +6,24 @@ import io.github.voidzombie.nhglib.utils.data.Bundle;
 /**
  * Created by Fausto Napoli on 01/11/2016.
  */
-public class Broadcaster {
-    private Array<BroadcastListener> listeners;
+public class Messaging {
+    private Array<EventListener> listeners;
 
-    public Broadcaster() {
-        listeners = new Array<BroadcastListener>();
+    public Messaging() {
+        listeners = new Array<EventListener>();
     }
 
     public void broadcastEvent(String name, Bundle data) {
         Event event = new Event(name, data);
 
-        for (BroadcastListener listener : listeners) {
+        for (EventListener listener : listeners) {
             listener.onEvent(event);
         }
     }
 
-    public void addListener(BroadcastListener broadcastListener) {
-        if (broadcastListener != null) {
-            listeners.add(broadcastListener);
+    public void addListener(EventListener eventListener) {
+        if (eventListener != null) {
+            listeners.add(eventListener);
         }
     }
 }

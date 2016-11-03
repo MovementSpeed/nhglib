@@ -1,42 +1,65 @@
 package io.github.voidzombie.nhglib.runtime.entry;
 
+import com.artemis.BaseSystem;
+import com.artemis.Component;
 import com.artemis.World;
-import com.badlogic.gdx.Game;
+import com.artemis.WorldConfigurationBuilder;
+import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
+import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.assets.Asset;
-import io.github.voidzombie.nhglib.assets.AssetLoadingListener;
-import io.github.voidzombie.nhglib.enums.states.GameState;
-import io.github.voidzombie.nhglib.interfaces.Notifiable;
-import io.github.voidzombie.nhglib.interfaces.Updatable;
-import io.github.voidzombie.nhglib.utils.data.Bundle;
+import io.github.voidzombie.nhglib.interfaces.AssetLoadingListener;
+import io.github.voidzombie.nhglib.enums.states.EngineState;
+import io.github.voidzombie.nhglib.interfaces.EngineConfigurationListener;
+import io.github.voidzombie.nhglib.interfaces.EngineStateListener;
 
 /**
- * Created by Fausto Napoli on 19/10/2016.
- * Extend this class to manage your own game.
+ * Created by Fausto Napoli on 02/11/2016.
  */
-public class BaseGame extends Game implements Updatable, Notifiable, AssetLoadingListener {
-    public final DefaultStateMachine<BaseGame, GameState> fsm;
+public abstract class BaseGame implements
+        ApplicationListener,
+        AssetLoadingListener,
+        EngineStateListener,
+        EngineConfigurationListener {
+    public final DefaultStateMachine<BaseGame, EngineState> fsm;
+    private World entityWorld;
 
-    private World world;
-
+    @SuppressWarnings("unchecked")
     public BaseGame() {
-        fsm = new DefaultStateMachine<BaseGame, GameState>(this, GameState.NOT_INITIALIZED);
+        fsm = new DefaultStateMachine<BaseGame, EngineState>(this, EngineState.START);
     }
 
     @Override
-    public void create() {
-    }
+    public final void create() {}
 
     @Override
-    public void update() {
+    public final void resize(int width, int height) {}
+
+    @Override
+    public final void render() {
         fsm.update();
     }
 
     @Override
-    public void render() {
-        update();
-        super.render();
-    }
+    public final void pause() {}
+
+    @Override
+    public final void resume() {}
+
+    @Override
+    public final void dispose() {}
+
+    @Override
+    public void onEngineStart() {}
+
+    @Override
+    public void onEngineInitialized() {}
+
+    @Override
+    public void onEngineRunning() {}
+
+    @Override
+    public void onEnginePaused() {}
 
     @Override
     public void onLoadingCompleted() {}
@@ -45,19 +68,21 @@ public class BaseGame extends Game implements Updatable, Notifiable, AssetLoadin
     public void onAssetLoaded(Asset asset) {}
 
     @Override
-    public void onNotification(Bundle bundle) {}
+    public void onConfigureEntitySystems(WorldConfigurationBuilder configurationBuilder) {}
 
-    public void onEngineInitialized() {
-
+    protected final int createEntity() {
+        return entityWorld.create();
     }
 
-    public World getWorld() {
-        return world;
+    protected final <T extends Component> T createComponent(int entity, Class<T> type) {
+        return entityWorld.getMapper(type).create(entity);
     }
 
-    public void setWorld(World world) {
-        if (world != null) {
-            this.world = world;
-        }
+    public final World getEntityWorld() {
+        return entityWorld;
+    }
+
+    public final void setEntityWorld(World entityWorld) {
+        this.entityWorld = entityWorld;
     }
 }

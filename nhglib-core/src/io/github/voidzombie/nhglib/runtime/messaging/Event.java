@@ -10,6 +10,10 @@ public class Event {
     public Integer id;
     public Bundle data;
 
+    public Event(String name) {
+        this(name, null);
+    }
+
     public Event(String name, Bundle data) {
         id = StringUtils.idFromString(name);
 
@@ -19,5 +23,21 @@ public class Event {
         } else {
             this.data = data;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Event event = (Event) o;
+        return id.equals(event.id);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + (data != null ? data.hashCode() : 0);
+        return result;
     }
 }
