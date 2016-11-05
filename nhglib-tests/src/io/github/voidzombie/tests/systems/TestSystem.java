@@ -7,42 +7,47 @@ import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.runtime.ecs.components.ObserverComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.ThreadedIteratingSystem;
 import io.github.voidzombie.nhglib.runtime.messaging.Event;
+import io.github.voidzombie.tests.Main;
 
 /**
  * Created by Fausto Napoli on 01/11/2016.
  */
-public class TestSystem extends ThreadedIteratingSystem {
+public class TestSystem extends IteratingSystem {
     private ComponentMapper<ObserverComponent> observerMapper;
 
     private Event fireEvent;
-    private Event flyEvent;
 
     @SuppressWarnings("unchecked")
     public TestSystem() {
         super(Aspect.all(ObserverComponent.class));
 
         fireEvent = new Event("fire");
-        flyEvent = new Event("fly");
+    }
+
+    @Override
+    protected void begin() {
+        super.begin();
+        Main.timeStart = System.currentTimeMillis();
     }
 
     @Override
     protected void process(int entityId) {
         ObserverComponent observerComponent = observerMapper.get(entityId);
-
         Boolean fireTriggered = observerComponent.triggered(fireEvent);
-        Boolean flyTriggered = observerComponent.triggered(flyEvent);
 
         if (fireTriggered) {
-            NHG.logger.log(this, "fire!");
-        }
-
-        if (flyTriggered) {
-            NHG.logger.log(this, "fly!");
+            //NHG.logger.log(this, "fire!");
         }
     }
 
     @Override
     protected void end() {
         super.end();
+
+        Main.timeEnd = System.currentTimeMillis();
+        Main.average += (Main.timeEnd - Main.timeStart);
+        Main.average /= 2;
+
+        NHG.logger.log(this, "time %d average %d", Main.timeEnd - Main.timeStart, Main.average);
     }
 }

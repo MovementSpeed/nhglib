@@ -17,6 +17,9 @@ import io.github.voidzombie.tests.systems.TestSystem;
  * Created by Fausto Napoli on 26/10/2016.
  */
 public class Main extends BaseGame {
+    public static long timeStart;
+    public static long timeEnd;
+    public static long average;
     private DefaultPerspectiveCamera camera;
 
     @Override
@@ -27,12 +30,11 @@ public class Main extends BaseGame {
         NHG.debugLogs = true;
         NHG.assets.queueAsset(new Asset("weapon", "models/weapon.g3db", Model.class));
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1000000; i++) {
             int entity = createEntity();
 
             ObserverComponent observerComponent = createComponent(entity, ObserverComponent.class);
             observerComponent.subscribe(new Event("fire"));
-            observerComponent.subscribe(new Event("fly"));
         }
     }
 
@@ -47,7 +49,7 @@ public class Main extends BaseGame {
         camera.update();
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            NHG.logger.log(this, "start %d", System.currentTimeMillis());
+            timeStart = System.currentTimeMillis();
             NHG.messaging.broadcastEvent("fire", null);
         }
 

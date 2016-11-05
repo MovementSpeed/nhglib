@@ -3,104 +3,70 @@ package io.github.voidzombie.nhglib.runtime.ecs.systems;
 import com.artemis.Aspect;
 import com.artemis.BaseEntitySystem;
 import com.artemis.utils.IntBag;
-import com.google.common.collect.Lists;
+import com.badlogic.gdx.math.MathUtils;
 import io.github.voidzombie.nhglib.NHG;
+import io.github.voidzombie.nhglib.runtime.threading.Threading;
+import io.github.voidzombie.nhglib.runtime.threading.Work;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 /**
  * Created by Fausto Napoli on 02/11/2016.
  */
 public abstract class ThreadedIteratingSystem extends BaseEntitySystem {
-    private final int cores = Runtime.getRuntime().availableProcessors();
+    private int previousSplit;
+    private int split;
+    private int[][] splitEntities;
 
-    private List<Integer> entities = new ArrayList<Integer>();
-    private List<List<Integer>> splitEntities;
-    private List<MyThread> threads = new ArrayList<MyThread>();
 
     public ThreadedIteratingSystem(Aspect.Builder aspect) {
         super(aspect);
-
-        for (int i = 0; i < cores; i++) {
-            MyThread t = new MyThread(i);
-            t.start();
-
-            threads.add(t);
-        }
     }
 
     @Override
     protected final void processSystem() {
-        entities.clear();
         IntBag actives = subscription.getEntities();
 
-        for (int i = 0; i < actives.size(); i++) {
-            int en = actives.get(i);
-            entities.add(en);
+        previousSplit = split;
+        split = MathUtils.ceil((float) actives.size() / (float) Threading.cores);
+
+        if (previousSplit != split) {
+            splitEntities = new int[Threading.cores][split];
+
+            for (int i = 0; i < Threading.cores; i++) {
+                int from = i * (split + 1);
+                int to = ((i + 1) * split);
+
+                splitEntities[i] = Arrays.copyOfRange(actives.getData(), from, to);
+            }
         }
 
-        resetThreads();
-        splitEntities = Lists.partition(entities, entities.size() / cores);
-
-        for (int i = 0; i < splitEntities.size(); i++) {
-            List<Integer> integers = new ArrayList<Integer>(splitEntities.get(i));
-
-            MyThread t = threads.get(i);
-            t.setTarget(new MyRunnable(integers));
+        for (int i = 0; i < Threading.cores; i++) {
+            NHG.threading.execute(new ProcessWork(splitEntities[i]));
         }
+
+        NHG.threading.await(Threading.cores);
     }
 
     protected abstract void process(int entityId);
 
-    private void resetThreads() {
-        for (MyThread t : threads) {
-            t.setTarget(null);
-        }
-    }
+    private class ProcessWork extends Work {
+        private int[] entitiesPart;
 
-    private class MyThread extends Thread {
-        private int seqId;
-        private MyRunnable target;
-
-        public MyThread(int seqId) {
-            this.seqId = seqId;
+        ProcessWork(int[] entitiesPart) {
+            this.entitiesPart = entitiesPart;
         }
 
         @Override
         public void run() {
-            while (true) {
-                try {
-                    Thread.sleep(16);
-
-                    if (target != null) {
-                        NHG.logger.log(this, "Thread id: %d, timestamp: %d", seqId, System.currentTimeMillis());
-                        target.run();
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            if (entitiesPart != null) {
+                for (int e : entitiesPart) {
+                    process(e);
                 }
-            }
-        }
 
-        void setTarget(MyRunnable target) {
-            this.target = target;
-        }
-    }
-
-    private class MyRunnable implements Runnable {
-        private List<Integer> integers;
-
-        MyRunnable(List<Integer> integers) {
-            this.integers = integers;
-        }
-
-        @Override
-        public void run() {
-            if (integers != null) {
-                for (Integer i : integers) {
-                    process(i);
-                }
+                NHG.threading.countDown();
+            } else {
+                NHG.threading.countDown();
             }
         }
     }
