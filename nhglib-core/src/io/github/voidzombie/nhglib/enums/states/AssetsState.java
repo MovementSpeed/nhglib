@@ -78,13 +78,16 @@ public enum AssetsState implements State<Assets> {
     };
 
     @Override
-    public void enter(Assets entity) {}
+    public void enter(Assets entity) {
+    }
 
     @Override
-    public void update(Assets entity) {}
+    public void update(Assets entity) {
+    }
 
     @Override
-    public void exit(Assets entity) {}
+    public void exit(Assets entity) {
+    }
 
     @Override
     public boolean onMessage(Assets entity, Telegram telegram) {

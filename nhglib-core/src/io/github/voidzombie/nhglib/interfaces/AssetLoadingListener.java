@@ -7,5 +7,6 @@ import io.github.voidzombie.nhglib.assets.Asset;
  */
 public interface AssetLoadingListener {
     void onLoadingCompleted();
+
     void onAssetLoaded(Asset asset);
 }

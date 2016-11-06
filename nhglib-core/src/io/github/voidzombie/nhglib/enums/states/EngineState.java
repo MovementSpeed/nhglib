@@ -83,13 +83,16 @@ public enum EngineState implements State<BaseGame> {
     };
 
     @Override
-    public void enter(BaseGame entity) {}
+    public void enter(BaseGame entity) {
+    }
 
     @Override
-    public void update(BaseGame entity) {}
+    public void update(BaseGame entity) {
+    }
 
     @Override
-    public void exit(BaseGame entity) {}
+    public void exit(BaseGame entity) {
+    }
 
     @Override
     public boolean onMessage(BaseGame entity, Telegram telegram) {

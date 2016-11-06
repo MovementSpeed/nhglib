@@ -15,10 +15,14 @@ import java.util.Arrays;
 public abstract class ThreadedIteratingSystem extends NhgBaseSystem {
     private int split;
     private int rows;
+    private int latchId;
     private int[][] splitEntities;
 
     public ThreadedIteratingSystem(Aspect.Builder aspect) {
         super(aspect);
+        latchId = 2165;
+
+        NHG.threading.createLatch(latchId, Threading.cores);
     }
 
     @Override
@@ -37,7 +41,7 @@ public abstract class ThreadedIteratingSystem extends NhgBaseSystem {
         }
 
         if (previousRows != rows) {
-            NHG.threading.setLatchCount(rows);
+            NHG.threading.setLatchCount(latchId, rows);
         }
 
         if (previousSplit != split) {
@@ -45,18 +49,21 @@ public abstract class ThreadedIteratingSystem extends NhgBaseSystem {
 
             int from;
             int to;
+            int[] data = actives.getData();
 
             for (int i = 0; i < rows; i++) {
                 if (split == 1) {
-                    splitEntities[i][0] = actives.getData()[i];
+                    splitEntities[i][0] = data[i];
                 } else {
                     from = i * split;
                     to = from + split;
 
-                    splitEntities[i] = Arrays.copyOfRange(actives.getData(), from, to);
+                    splitEntities[i] = Arrays.copyOfRange(data, from, to);
                 }
 
-                NHG.logger.log(this, "%d", 1);
+                if (i > 0) {
+                    postProcessList(splitEntities[i]);
+                }
             }
         }
 
@@ -64,10 +71,20 @@ public abstract class ThreadedIteratingSystem extends NhgBaseSystem {
             NHG.threading.execute(new ProcessWork(splitEntities[i]));
         }
 
-        NHG.threading.await();
+        NHG.threading.awaitLatch(latchId);
     }
 
     protected abstract void process(int entityId);
+
+    private void postProcessList(int[] list) {
+        for (int i = 0; i < list.length; i++) {
+            int entity = list[i];
+
+            if (entity == 0) {
+                list[i] = -1;
+            }
+        }
+    }
 
     private class ProcessWork extends Work {
         private int[] entitiesPart;
@@ -86,7 +103,7 @@ public abstract class ThreadedIteratingSystem extends NhgBaseSystem {
                 }
             }
 
-            NHG.threading.countDown();
+            NHG.threading.countDownLatch(latchId);
         }
     }
 }

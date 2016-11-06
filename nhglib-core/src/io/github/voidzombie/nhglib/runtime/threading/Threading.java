@@ -1,6 +1,9 @@
 package io.github.voidzombie.nhglib.runtime.threading;
 
-import java.util.concurrent.*;
+import com.badlogic.gdx.utils.ArrayMap;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by Fausto Napoli on 05/11/2016.
@@ -9,32 +12,42 @@ public class Threading {
     public final static int cores = Runtime.getRuntime().availableProcessors();
 
     private ExecutorService executor;
-    private ResettableCountDownLatch latch;
+    private ArrayMap<Integer, ResettableCountDownLatch> latches;
 
     public Threading() {
         executor = Executors.newFixedThreadPool(cores);
-        latch = new ResettableCountDownLatch(cores);
+        latches = new ArrayMap<Integer, ResettableCountDownLatch>();
     }
 
     public void execute(Work work) {
         executor.execute(work);
     }
 
-    public void await() {
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    public void createLatch(int latchId, int count) {
+        latches.put(latchId, new ResettableCountDownLatch(count));
+    }
+
+    public void awaitLatch(int latchId) {
+        if (latches.containsKey(latchId)) {
+            ResettableCountDownLatch latch = latches.get(latchId);
+
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            latch.reset();
         }
-
-        latch.reset();
     }
 
-    public void countDown() {
-        latch.countDown();
+    public void countDownLatch(int latchId) {
+        if (latches.containsKey(latchId)) {
+            latches.get(latchId).countDown();
+        }
     }
 
-    public void setLatchCount(int count) {
-        latch = new ResettableCountDownLatch(count);
+    public void setLatchCount(int latchId, int count) {
+        createLatch(latchId, count);
     }
 }

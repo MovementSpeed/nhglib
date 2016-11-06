@@ -28,7 +28,7 @@ public class Bundle extends HashMap<String, Object> {
     public Byte getByte(String key) {
         return getByte(key, null);
     }
-    
+
     public Byte getByte(String key, Byte defaultValue) {
         Byte res = null;
         Object value = get(key);
@@ -43,11 +43,11 @@ public class Bundle extends HashMap<String, Object> {
 
         return res;
     }
-    
+
     public Short getShort(String key) {
         return getShort(key, null);
     }
-    
+
     public Short getShort(String key, Short defaultValue) {
         Short res = null;
         Object value = get(key);
@@ -66,7 +66,7 @@ public class Bundle extends HashMap<String, Object> {
     public Integer getInteger(String key) {
         return getInteger(key, null);
     }
-    
+
     public Integer getInteger(String key, Integer defaultValue) {
         Integer res = null;
         Object value = get(key);
@@ -85,7 +85,7 @@ public class Bundle extends HashMap<String, Object> {
     public Long getLong(String key) {
         return getLong(key, null);
     }
-    
+
     public Long getLong(String key, Long defaultValue) {
         Long res = null;
         Object value = get(key);
@@ -104,7 +104,7 @@ public class Bundle extends HashMap<String, Object> {
     public Float getFloat(String key) {
         return getFloat(key, null);
     }
-    
+
     public Float getFloat(String key, Float defaultValue) {
         Float res = null;
         Object value = get(key);
@@ -123,7 +123,7 @@ public class Bundle extends HashMap<String, Object> {
     public Double getDouble(String key) {
         return getDouble(key, null);
     }
-    
+
     public Double getDouble(String key, Double defaultValue) {
         Double res = null;
         Object value = get(key);
@@ -161,7 +161,7 @@ public class Bundle extends HashMap<String, Object> {
     public String getString(String key) {
         return getString(key, null);
     }
-    
+
     public String getString(String key, String defaultValue) {
         String res = null;
         Object value = get(key);

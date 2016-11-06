@@ -1,15 +1,13 @@
 package io.github.voidzombie.nhglib.runtime.entry;
 
-import com.artemis.BaseSystem;
 import com.artemis.Component;
 import com.artemis.World;
 import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
-import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.assets.Asset;
-import io.github.voidzombie.nhglib.interfaces.AssetLoadingListener;
 import io.github.voidzombie.nhglib.enums.states.EngineState;
+import io.github.voidzombie.nhglib.interfaces.AssetLoadingListener;
 import io.github.voidzombie.nhglib.interfaces.EngineConfigurationListener;
 import io.github.voidzombie.nhglib.interfaces.EngineStateListener;
 
@@ -30,10 +28,12 @@ public abstract class BaseGame implements
     }
 
     @Override
-    public final void create() {}
+    public final void create() {
+    }
 
     @Override
-    public final void resize(int width, int height) {}
+    public final void resize(int width, int height) {
+    }
 
     @Override
     public final void render() {
@@ -41,34 +41,44 @@ public abstract class BaseGame implements
     }
 
     @Override
-    public final void pause() {}
+    public final void pause() {
+    }
 
     @Override
-    public final void resume() {}
+    public final void resume() {
+    }
 
     @Override
-    public final void dispose() {}
+    public final void dispose() {
+    }
 
     @Override
-    public void onEngineStart() {}
+    public void onEngineStart() {
+    }
 
     @Override
-    public void onEngineInitialized() {}
+    public void onEngineInitialized() {
+    }
 
     @Override
-    public void onEngineRunning() {}
+    public void onEngineRunning() {
+    }
 
     @Override
-    public void onEnginePaused() {}
+    public void onEnginePaused() {
+    }
 
     @Override
-    public void onLoadingCompleted() {}
+    public void onLoadingCompleted() {
+    }
 
     @Override
-    public void onAssetLoaded(Asset asset) {}
+    public void onAssetLoaded(Asset asset) {
+    }
 
     @Override
-    public void onConfigureEntitySystems(WorldConfigurationBuilder configurationBuilder) {}
+    public void onConfigureEntitySystems(WorldConfigurationBuilder configurationBuilder) {
+    }
 
     protected final int createEntity() {
         return entityWorld.create();

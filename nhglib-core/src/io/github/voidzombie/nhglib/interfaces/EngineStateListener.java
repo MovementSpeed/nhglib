@@ -5,7 +5,10 @@ package io.github.voidzombie.nhglib.interfaces;
  */
 public interface EngineStateListener {
     void onEngineStart();
+
     void onEngineInitialized();
+
     void onEngineRunning();
+
     void onEnginePaused();
 }

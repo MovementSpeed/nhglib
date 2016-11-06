@@ -36,7 +36,7 @@ public class TestSystem extends ThreadedIteratingSystem {
         Boolean fireTriggered = observerComponent.triggered(fireEvent);
 
         if (fireTriggered) {
-            NHG.logger.log(this, "fire! %d", entityId);
+            NHG.logger.log(this, "fire! %d", System.currentTimeMillis());
         }
     }
 
@@ -48,7 +48,7 @@ public class TestSystem extends ThreadedIteratingSystem {
         Main.average += (Main.timeEnd - Main.timeStart);
         Main.average /= 2;
 
-        NHG.logger.log(this, "time %d average %d", Main.timeEnd - Main.timeStart, Main.average);
+        //NHG.logger.log(this, "time %d average %d", Main.timeEnd - Main.timeStart, Main.average);
     }
 
     @Override

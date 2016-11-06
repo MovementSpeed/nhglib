@@ -5,8 +5,8 @@ import com.artemis.ComponentMapper;
 import com.artemis.systems.IteratingSystem;
 import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.runtime.ecs.components.ObserverComponent;
-import io.github.voidzombie.nhglib.runtime.messaging.EventListener;
 import io.github.voidzombie.nhglib.runtime.messaging.Event;
+import io.github.voidzombie.nhglib.runtime.messaging.EventListener;
 
 /**
  * Created by Fausto Napoli on 01/11/2016.
