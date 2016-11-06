@@ -12,7 +12,7 @@ import io.github.voidzombie.tests.Main;
 /**
  * Created by Fausto Napoli on 01/11/2016.
  */
-public class TestSystem extends IteratingSystem {
+public class TestSystem extends ThreadedIteratingSystem {
     private ComponentMapper<ObserverComponent> observerMapper;
 
     private Event fireEvent;
@@ -36,7 +36,7 @@ public class TestSystem extends IteratingSystem {
         Boolean fireTriggered = observerComponent.triggered(fireEvent);
 
         if (fireTriggered) {
-            //NHG.logger.log(this, "fire!");
+            NHG.logger.log(this, "fire! %d", entityId);
         }
     }
 
@@ -49,5 +49,10 @@ public class TestSystem extends IteratingSystem {
         Main.average /= 2;
 
         NHG.logger.log(this, "time %d average %d", Main.timeEnd - Main.timeStart, Main.average);
+    }
+
+    @Override
+    public void onEvent(Event event) {
+
     }
 }

@@ -30,7 +30,7 @@ public class Main extends BaseGame {
         NHG.debugLogs = true;
         NHG.assets.queueAsset(new Asset("weapon", "models/weapon.g3db", Model.class));
 
-        for (int i = 0; i < 1000000; i++) {
+        for (int i = 0; i < 5; i++) {
             int entity = createEntity();
 
             ObserverComponent observerComponent = createComponent(entity, ObserverComponent.class);

@@ -7,40 +7,34 @@ import java.util.concurrent.*;
  */
 public class Threading {
     public final static int cores = Runtime.getRuntime().availableProcessors();
+
     private ExecutorService executor;
-    private CountDownLatch latch;
+    private ResettableCountDownLatch latch;
 
     public Threading() {
         executor = Executors.newFixedThreadPool(cores);
+        latch = new ResettableCountDownLatch(cores);
     }
 
     public void execute(Work work) {
         executor.execute(work);
     }
 
-    public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
-        return executor.awaitTermination(timeout, unit);
-    }
-
-    public void shutdown() {
-        executor.shutdownNow();
-    }
-
-    public void await(int tasks) {
-        latch = new CountDownLatch(tasks);
-
+    public void await() {
         try {
             latch.await();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        latch.reset();
     }
 
     public void countDown() {
-        try {
-            latch.countDown();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        latch.countDown();
+    }
+
+    public void setLatchCount(int count) {
+        latch = new ResettableCountDownLatch(count);
     }
 }
