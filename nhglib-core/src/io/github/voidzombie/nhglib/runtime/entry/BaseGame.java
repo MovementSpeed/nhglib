@@ -5,8 +5,10 @@ import com.artemis.World;
 import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
+import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.assets.Asset;
-import io.github.voidzombie.nhglib.enums.states.EngineState;
+import io.github.voidzombie.nhglib.runtime.messaging.EventListener;
+import io.github.voidzombie.nhglib.runtime.states.EngineState;
 import io.github.voidzombie.nhglib.interfaces.AssetLoadingListener;
 import io.github.voidzombie.nhglib.interfaces.EngineConfigurationListener;
 import io.github.voidzombie.nhglib.interfaces.EngineStateListener;
@@ -16,9 +18,9 @@ import io.github.voidzombie.nhglib.interfaces.EngineStateListener;
  */
 public abstract class BaseGame implements
         ApplicationListener,
-        AssetLoadingListener,
         EngineStateListener,
-        EngineConfigurationListener {
+        EngineConfigurationListener,
+        EventListener {
     public final DefaultStateMachine<BaseGame, EngineState> fsm;
     private World entityWorld;
 
@@ -66,14 +68,6 @@ public abstract class BaseGame implements
 
     @Override
     public void onEnginePaused() {
-    }
-
-    @Override
-    public void onLoadingCompleted() {
-    }
-
-    @Override
-    public void onAssetLoaded(Asset asset) {
     }
 
     @Override

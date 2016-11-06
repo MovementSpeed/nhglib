@@ -1,4 +1,4 @@
-package io.github.voidzombie.nhglib.enums.states;
+package io.github.voidzombie.nhglib.runtime.states;
 
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
@@ -43,10 +43,9 @@ public enum AssetsState implements State<Assets> {
                 entity.fsm.changeState(IDLE);
 
                 Bundle bundle = new Bundle();
-                bundle.put(NHG.strings.notifications.assetLoadingFinished, true);
+                bundle.put(NHG.strings.events.assetLoadingFinished, true);
 
                 checkLoadedAsset(entity);
-
                 entity.onNotification(bundle);
             }
         }
@@ -67,7 +66,7 @@ public enum AssetsState implements State<Assets> {
                     NHG.logger.log(this, NHG.strings.messages.assetLoaded, asset.source);
 
                     Bundle bundle = new Bundle();
-                    bundle.put(NHG.strings.notifications.assetLoaded, true);
+                    bundle.put(NHG.strings.events.assetLoaded, true);
                     bundle.put("asset", asset);
 
                     entity.onNotification(bundle);

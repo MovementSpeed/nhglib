@@ -2,10 +2,9 @@ package io.github.voidzombie.tests.systems;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
-import com.artemis.systems.IteratingSystem;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.runtime.ecs.components.ObserverComponent;
-import io.github.voidzombie.nhglib.runtime.ecs.systems.ThreadedIteratingSystem;
+import io.github.voidzombie.nhglib.runtime.ecs.systems.base.ThreadedIteratingSystem;
 import io.github.voidzombie.nhglib.runtime.messaging.Event;
 import io.github.voidzombie.tests.Main;
 
@@ -36,7 +35,7 @@ public class TestSystem extends ThreadedIteratingSystem {
         Boolean fireTriggered = observerComponent.triggered(fireEvent);
 
         if (fireTriggered) {
-            NHG.logger.log(this, "fire! %d", System.currentTimeMillis());
+            NHG.logger.log(this, "Event received by entity %d", entityId);
         }
     }
 

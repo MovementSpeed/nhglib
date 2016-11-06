@@ -25,6 +25,11 @@ public class Event {
         }
     }
 
+    public boolean is(String name) {
+        Integer id = StringUtils.idFromString(name);
+        return this.id.equals(id);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

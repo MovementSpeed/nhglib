@@ -10,7 +10,6 @@ import io.github.voidzombie.nhglib.graphics.DefaultPerspectiveCamera;
 import io.github.voidzombie.nhglib.runtime.ecs.components.ObserverComponent;
 import io.github.voidzombie.nhglib.runtime.entry.BaseGame;
 import io.github.voidzombie.nhglib.runtime.messaging.Event;
-import io.github.voidzombie.nhglib.utils.data.Strings;
 import io.github.voidzombie.tests.systems.TestSystem;
 
 /**
@@ -30,7 +29,7 @@ public class Main extends BaseGame {
         NHG.debugLogs = true;
         NHG.assets.queueAsset(new Asset("weapon", "models/weapon.g3db", Model.class));
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 123; i++) {
             int entity = createEntity();
 
             ObserverComponent observerComponent = createComponent(entity, ObserverComponent.class);
@@ -59,13 +58,13 @@ public class Main extends BaseGame {
     }
 
     @Override
-    public void onLoadingCompleted() {
-        super.onLoadingCompleted();
-    }
-
-    @Override
-    public void onAssetLoaded(Asset asset) {
-        super.onAssetLoaded(asset);
+    public void onEvent(Event event) {
+        if (event.is(NHG.strings.events.assetLoaded)) {
+            Asset asset = (Asset) event.data.get("asset");
+            NHG.logger.log(this, asset.alias);
+        } else if (event.is(NHG.strings.events.assetLoadingFinished)) {
+            NHG.logger.log(this, "Loading finished!");
+        }
     }
 
     @Override

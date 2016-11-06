@@ -1,4 +1,4 @@
-package io.github.voidzombie.nhglib.runtime.ecs.systems;
+package io.github.voidzombie.nhglib.runtime.ecs.systems.base;
 
 import com.artemis.Aspect;
 import com.artemis.utils.IntBag;
@@ -12,7 +12,7 @@ import java.util.Arrays;
 /**
  * Created by Fausto Napoli on 02/11/2016.
  */
-public abstract class ThreadedIteratingSystem extends NhgBaseSystem {
+public abstract class ThreadedIteratingSystem extends NhgBaseEntitySystem {
     private int split;
     private int rows;
     private int latchId;
