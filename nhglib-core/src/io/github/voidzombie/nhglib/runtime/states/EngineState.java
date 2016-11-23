@@ -81,6 +81,12 @@ public enum EngineState implements State<BaseGame> {
             NHG.logger.log(this, "Engine is paused.");
             baseGame.onEnginePaused();
         }
+    },
+    CLOSING() {
+        @Override
+        public void enter(BaseGame baseGame) {
+            super.enter(baseGame);
+        }
     };
 
     @Override
