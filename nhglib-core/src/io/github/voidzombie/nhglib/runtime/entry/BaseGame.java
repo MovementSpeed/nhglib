@@ -5,11 +5,8 @@ import com.artemis.World;
 import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
-import io.github.voidzombie.nhglib.NHG;
-import io.github.voidzombie.nhglib.assets.Asset;
-import io.github.voidzombie.nhglib.runtime.messaging.EventListener;
+import io.github.voidzombie.nhglib.runtime.messaging.MessageListener;
 import io.github.voidzombie.nhglib.runtime.states.EngineState;
-import io.github.voidzombie.nhglib.interfaces.AssetLoadingListener;
 import io.github.voidzombie.nhglib.interfaces.EngineConfigurationListener;
 import io.github.voidzombie.nhglib.interfaces.EngineStateListener;
 
@@ -20,7 +17,7 @@ public abstract class BaseGame implements
         ApplicationListener,
         EngineStateListener,
         EngineConfigurationListener,
-        EventListener {
+        MessageListener {
     public final DefaultStateMachine<BaseGame, EngineState> fsm;
     private World entityWorld;
 
@@ -55,19 +52,23 @@ public abstract class BaseGame implements
     }
 
     @Override
-    public void onEngineStart() {
+    public void engineStarted() {
     }
 
     @Override
-    public void onEngineInitialized() {
+    public void engineInitialized() {
     }
 
     @Override
-    public void onEngineRunning() {
+    public void engineUpdate() {
     }
 
     @Override
-    public void onEnginePaused() {
+    public void enginePaused() {
+    }
+
+    @Override
+    public void engineClosing() {
     }
 
     @Override

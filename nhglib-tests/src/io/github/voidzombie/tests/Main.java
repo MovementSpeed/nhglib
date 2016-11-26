@@ -9,7 +9,7 @@ import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.graphics.DefaultPerspectiveCamera;
 import io.github.voidzombie.nhglib.runtime.ecs.components.ObserverComponent;
 import io.github.voidzombie.nhglib.runtime.entry.BaseGame;
-import io.github.voidzombie.nhglib.runtime.messaging.Event;
+import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.tests.systems.TestSystem;
 
 /**
@@ -22,8 +22,8 @@ public class Main extends BaseGame {
     private DefaultPerspectiveCamera camera;
 
     @Override
-    public void onEngineStart() {
-        super.onEngineStart();
+    public void engineStarted() {
+        super.engineStarted();
         camera = new DefaultPerspectiveCamera();
 
         NHG.debugLogs = true;
@@ -33,36 +33,36 @@ public class Main extends BaseGame {
             int entity = createEntity();
 
             ObserverComponent observerComponent = createComponent(entity, ObserverComponent.class);
-            observerComponent.subscribe(new Event("fire"));
+            observerComponent.listen(new Message("fire"));
         }
     }
 
     @Override
-    public void onEngineInitialized() {
-        super.onEngineInitialized();
+    public void engineInitialized() {
+        super.engineInitialized();
     }
 
     @Override
-    public void onEngineRunning() {
-        super.onEngineRunning();
+    public void engineUpdate() {
+        super.engineUpdate();
         camera.update();
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             timeStart = System.currentTimeMillis();
-            NHG.messaging.broadcastEvent("fire", null);
+            NHG.messaging.sendMessage("fire", null);
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.F)) {
-            NHG.messaging.broadcastEvent("fly", null);
+            NHG.messaging.sendMessage("fly", null);
         }
     }
 
     @Override
-    public void onEvent(Event event) {
-        if (event.is(NHG.strings.events.assetLoaded)) {
-            Asset asset = (Asset) event.data.get("asset");
+    public void onMessage(Message message) {
+        if (message.is(NHG.strings.events.assetLoaded)) {
+            Asset asset = (Asset) message.data.get("asset");
             NHG.logger.log(this, asset.alias);
-        } else if (event.is(NHG.strings.events.assetLoadingFinished)) {
+        } else if (message.is(NHG.strings.events.assetLoadingFinished)) {
             NHG.logger.log(this, "Loading finished!");
         }
     }

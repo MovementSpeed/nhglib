@@ -5,16 +5,17 @@ import io.github.voidzombie.nhglib.utils.data.StringUtils;
 
 /**
  * Created by Fausto Napoli on 01/11/2016.
+ * Data structure for a message.
  */
-public class Event {
+public class Message {
     public Integer id;
     public Bundle data;
 
-    public Event(String name) {
+    public Message(String name) {
         this(name, null);
     }
 
-    public Event(String name, Bundle data) {
+    public Message(String name, Bundle data) {
         id = StringUtils.idFromString(name);
 
         if (data == null) {
@@ -35,8 +36,8 @@ public class Event {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Event event = (Event) o;
-        return id.equals(event.id);
+        Message message = (Message) o;
+        return id.equals(message.id);
     }
 
     @Override

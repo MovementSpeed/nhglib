@@ -2,45 +2,45 @@ package io.github.voidzombie.nhglib.runtime.ecs.components;
 
 import com.artemis.PooledComponent;
 import com.badlogic.gdx.utils.ArrayMap;
-import io.github.voidzombie.nhglib.runtime.messaging.Event;
+import io.github.voidzombie.nhglib.runtime.messaging.Message;
 
 /**
  * Created by Fausto Napoli on 01/11/2016.
- * The subscribedEvents ArrayMap stores an Event as a key, and a Boolean to signal whether the Event has been triggered
+ * The listenedMessages ArrayMap stores a Message as a key, and a Boolean to signal whether the Message has been triggered
  */
 public class ObserverComponent extends PooledComponent {
-    public ArrayMap<Event, Boolean> subscribedEvents = new ArrayMap<Event, Boolean>();
+    public ArrayMap<Message, Boolean> listenedMessages = new ArrayMap<Message, Boolean>();
 
     @Override
     protected void reset() {
-        subscribedEvents.clear();
+        listenedMessages.clear();
     }
 
-    public void subscribe(Event event) {
-        subscribedEvents.put(event, false);
+    public void listen(Message message) {
+        listenedMessages.put(message, false);
     }
 
-    public void unsubscribe(Event event) {
-        subscribedEvents.removeKey(event);
+    public void ignore(Message message) {
+        listenedMessages.removeKey(message);
     }
 
-    public void trigger(Event event) {
-        ArrayMap.Keys<Event> eventKeys = subscribedEvents.keys();
+    public void trigger(Message message) {
+        ArrayMap.Keys<Message> messageKeys = listenedMessages.keys();
 
-        for (Event e : eventKeys) {
-            if (e.equals(event)) {
-                subscribedEvents.put(e, true);
+        for (Message e : messageKeys) {
+            if (e.equals(message)) {
+                listenedMessages.put(e, true);
             }
         }
     }
 
-    public Boolean triggered(Event event) {
+    public Boolean triggered(Message message) {
         Boolean triggered = null;
-        int ind = subscribedEvents.indexOfKey(event);
+        int ind = listenedMessages.indexOfKey(message);
 
         if (ind != -1) {
-            triggered = subscribedEvents.getValueAt(ind);
-            subscribedEvents.setValue(ind, false);
+            triggered = listenedMessages.getValueAt(ind);
+            listenedMessages.setValue(ind, false);
         }
 
         return triggered;

@@ -5,32 +5,33 @@ import com.artemis.ComponentMapper;
 import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.runtime.ecs.components.ObserverComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.base.ThreadedIteratingSystem;
-import io.github.voidzombie.nhglib.runtime.messaging.Event;
+import io.github.voidzombie.nhglib.runtime.messaging.Message;
 
 /**
  * Created by Fausto Napoli on 01/11/2016.
+ * Transfers messages to entities, not sure about this anyway.
  */
-public class EventSystem extends ThreadedIteratingSystem {
+public class EntityMessageSystem extends ThreadedIteratingSystem {
     private ComponentMapper<ObserverComponent> observerMapper;
-    private Array<Event> events;
+    private Array<Message> messages;
 
     @SuppressWarnings("unchecked")
-    public EventSystem() {
+    public EntityMessageSystem() {
         super(Aspect.all(ObserverComponent.class));
-        events = new Array<Event>();
+        messages = new Array<Message>();
     }
 
     @Override
     protected void process(int entityId) {
         ObserverComponent observerComponent = observerMapper.get(entityId);
 
-        for (int i = 0; i < events.size; i++) {
-            Event event = events.get(i);
+        for (int i = 0; i < messages.size; i++) {
+            Message message = messages.get(i);
 
-            for (Event subEvent : observerComponent.subscribedEvents.keys()) {
-                if (event.equals(subEvent)) {
-                    subEvent.data = event.data;
-                    observerComponent.subscribedEvents.put(subEvent, true);
+            for (Message subMessage : observerComponent.listenedMessages.keys()) {
+                if (message.equals(subMessage)) {
+                    subMessage.data = message.data;
+                    observerComponent.listenedMessages.put(subMessage, true);
                 }
             }
         }
@@ -39,11 +40,11 @@ public class EventSystem extends ThreadedIteratingSystem {
     @Override
     protected void end() {
         super.end();
-        events.clear();
+        messages.clear();
     }
 
     @Override
-    public void onEvent(Event event) {
-        events.add(event);
+    public void onMessage(Message message) {
+        messages.add(message);
     }
 }

@@ -7,35 +7,45 @@ import io.github.voidzombie.nhglib.utils.data.Bundle;
  * Created by Fausto Napoli on 01/11/2016.
  */
 public class Messaging {
-    private Array<EventAdapter> eventAdapters;
+    private Array<MessageAdapter> eventAdapters;
 
     public Messaging() {
-        eventAdapters = new Array<EventAdapter>();
+        eventAdapters = new Array<MessageAdapter>();
     }
 
-    public void broadcastEvent(String name) {
-        broadcastEvent(name, null);
+    public void sendMessage(String name) {
+        sendMessage(name, null);
     }
 
-    public void broadcastEvent(String name, Bundle data) {
-        Event event = new Event(name, data);
+    public void sendMessage(String name, Bundle data) {
+        Message message = new Message(name, data);
 
-        for (EventAdapter adapter : eventAdapters) {
-            if (adapter.filter.equals(event.id) || adapter.filter.equals(0)) {
-                adapter.eventListener.onEvent(event);
+        for (MessageAdapter adapter : eventAdapters) {
+            if (adapter.filter.equals(message.id) || adapter.filter.equals(0)) {
+                adapter.messageListener.onMessage(message);
             }
         }
     }
 
-    public void subscribe(String filter, EventListener eventListener) {
-        if (filter != null && eventListener != null) {
-            eventAdapters.add(new EventAdapter(filter, eventListener));
+    public void addListener(String filter, MessageListener messageListener) {
+        if (filter != null && messageListener != null) {
+            eventAdapters.add(new MessageAdapter(filter, messageListener));
         }
     }
 
-    public void subscribe(EventListener eventListener) {
-        if (eventListener != null) {
-            eventAdapters.add(new EventAdapter(eventListener));
+    public void addListener(MessageListener messageListener, String ... filters) {
+        if (messageListener != null) {
+            for (String filter : filters) {
+                if (filter != null) {
+                    eventAdapters.add(new MessageAdapter(filter, messageListener));
+                }
+            }
+        }
+    }
+
+    public void addListener(MessageListener messageListener) {
+        if (messageListener != null) {
+            eventAdapters.add(new MessageAdapter(messageListener));
         }
     }
 }

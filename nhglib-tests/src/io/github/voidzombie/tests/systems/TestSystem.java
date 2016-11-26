@@ -5,7 +5,7 @@ import com.artemis.ComponentMapper;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.runtime.ecs.components.ObserverComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.base.ThreadedIteratingSystem;
-import io.github.voidzombie.nhglib.runtime.messaging.Event;
+import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.tests.Main;
 
 /**
@@ -14,13 +14,13 @@ import io.github.voidzombie.tests.Main;
 public class TestSystem extends ThreadedIteratingSystem {
     private ComponentMapper<ObserverComponent> observerMapper;
 
-    private Event fireEvent;
+    private Message fireMessage;
 
     @SuppressWarnings("unchecked")
     public TestSystem() {
         super(Aspect.all(ObserverComponent.class));
 
-        fireEvent = new Event("fire");
+        fireMessage = new Message("fire");
     }
 
     @Override
@@ -32,10 +32,10 @@ public class TestSystem extends ThreadedIteratingSystem {
     @Override
     protected void process(int entityId) {
         ObserverComponent observerComponent = observerMapper.get(entityId);
-        Boolean fireTriggered = observerComponent.triggered(fireEvent);
+        Boolean fireTriggered = observerComponent.triggered(fireMessage);
 
         if (fireTriggered) {
-            NHG.logger.log(this, "Event received by entity %d", entityId);
+            NHG.logger.log(this, "Message received by entity %d", entityId);
         }
     }
 
@@ -51,7 +51,7 @@ public class TestSystem extends ThreadedIteratingSystem {
     }
 
     @Override
-    public void onEvent(Event event) {
+    public void onMessage(Message message) {
 
     }
 }

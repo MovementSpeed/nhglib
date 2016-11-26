@@ -43,12 +43,12 @@ public class Assets implements Updatable, Notifiable, AssetErrorListener {
         Boolean assetLoaded = bundle.getBoolean(NHG.strings.events.assetLoaded, false);
 
         if (finishedLoading) {
-            NHG.messaging.broadcastEvent(NHG.strings.events.assetLoadingFinished);
+            NHG.messaging.sendMessage(NHG.strings.events.assetLoadingFinished);
         }
 
         if (assetLoaded) {
             Asset asset = (Asset) bundle.get("asset");
-            NHG.messaging.broadcastEvent(NHG.strings.events.assetLoaded, bundle);
+            NHG.messaging.sendMessage(NHG.strings.events.assetLoaded, bundle);
 
             assetList.removeValue(asset, true);
         }

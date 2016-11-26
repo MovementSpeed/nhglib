@@ -6,9 +6,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import io.github.voidzombie.nhglib.NHG;
-import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.EventSystem;
+import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.EntityMessageSystem;
 import io.github.voidzombie.nhglib.runtime.entry.BaseGame;
-import io.github.voidzombie.nhglib.runtime.messaging.EventAdapter;
 
 /**
  * Created by Fausto Napoli on 19/10/2016.
@@ -27,21 +26,23 @@ public enum EngineState implements State<BaseGame> {
             super.enter(baseGame);
             NHG.logger.log(this, "Engine is not initialized.");
 
-            NHG.messaging.subscribe(NHG.strings.events.assetLoaded, baseGame);
-            NHG.messaging.subscribe(NHG.strings.events.assetLoadingFinished, baseGame);
+            // Subscribe to asset loading events
+            NHG.messaging.addListener(baseGame,
+                    NHG.strings.events.assetLoaded,
+                    NHG.strings.events.assetLoadingFinished);
 
-            // EventSystem can listen to Messaging events.
-            EventSystem eventSystem = new EventSystem();
-            NHG.messaging.subscribe(eventSystem);
+            // EntityMessageSystem can addListener to Messaging events.
+            EntityMessageSystem entityEventSystem = new EntityMessageSystem();
+            NHG.messaging.addListener(entityEventSystem);
 
             // Setup the ECS' world.
             WorldConfigurationBuilder configurationBuilder = new WorldConfigurationBuilder();
-            configurationBuilder.with(eventSystem);
+            configurationBuilder.with(entityEventSystem);
 
             baseGame.onConfigureEntitySystems(configurationBuilder);
 
             baseGame.setEntityWorld(new World(configurationBuilder.build()));
-            baseGame.onEngineStart();
+            baseGame.engineStarted();
 
             baseGame.fsm.changeState(INITIALIZED);
         }
@@ -51,7 +52,7 @@ public enum EngineState implements State<BaseGame> {
         public void enter(BaseGame baseGame) {
             super.enter(baseGame);
             NHG.logger.log(this, "Engine is initialized.");
-            baseGame.onEngineInitialized();
+            baseGame.engineInitialized();
             baseGame.fsm.changeState(RUNNING);
         }
     },
@@ -71,7 +72,7 @@ public enum EngineState implements State<BaseGame> {
             world.setDelta(Gdx.graphics.getDeltaTime());
             world.process();
 
-            baseGame.onEngineRunning();
+            baseGame.engineUpdate();
         }
     },
     PAUSED() {
@@ -79,13 +80,15 @@ public enum EngineState implements State<BaseGame> {
         public void enter(BaseGame baseGame) {
             super.enter(baseGame);
             NHG.logger.log(this, "Engine is paused.");
-            baseGame.onEnginePaused();
+            baseGame.enginePaused();
         }
     },
     CLOSING() {
         @Override
         public void enter(BaseGame baseGame) {
             super.enter(baseGame);
+            NHG.logger.log(this, "Engine is closing.");
+            baseGame.engineClosing();
         }
     };
 
