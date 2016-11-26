@@ -1,22 +1,22 @@
-package io.github.voidzombie.nhglib.runtime.ecs.systems.impl;
+package io.github.voidzombie.nhglib.runtime.ecs_old.systems.impl;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.badlogic.gdx.utils.Array;
-import io.github.voidzombie.nhglib.runtime.ecs.components.ObserverComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.base.ThreadedIteratingSystem;
+import io.github.voidzombie.nhglib.runtime.ecs_old.components.ObserverComponent;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
 
 /**
  * Created by Fausto Napoli on 01/11/2016.
  * Transfers messages to entities, not sure about this anyway.
  */
-public class EntityMessageSystem extends ThreadedIteratingSystem {
+public class EntityMessageSystemOld extends ThreadedIteratingSystem {
     private ComponentMapper<ObserverComponent> observerMapper;
     private Array<Message> messages;
 
     @SuppressWarnings("unchecked")
-    public EntityMessageSystem() {
+    public EntityMessageSystemOld() {
         super(Aspect.all(ObserverComponent.class));
         messages = new Array<Message>();
     }

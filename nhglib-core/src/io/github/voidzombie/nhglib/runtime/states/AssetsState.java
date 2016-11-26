@@ -6,7 +6,6 @@ import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.assets.Assets;
-import io.github.voidzombie.nhglib.utils.data.Bundle;
 
 /**
  * Created by Fausto Napoli on 19/10/2016.
@@ -14,82 +13,73 @@ import io.github.voidzombie.nhglib.utils.data.Bundle;
 public enum AssetsState implements State<Assets> {
     IDLE() {
         @Override
-        public void enter(Assets entity) {
-            super.enter(entity);
+        public void enter(Assets assets) {
+            super.enter(assets);
             NHG.logger.log(this, "Asset manager is idle.");
         }
 
         @Override
-        public void update(Assets entity) {
-            super.update(entity);
+        public void update(Assets assets) {
+            super.update(assets);
 
-            if (!entity.assetManager.update()) {
-                entity.fsm.changeState(LOADING);
+            if (!assets.assetManager.update()) {
+                assets.fsm.changeState(LOADING);
             }
         }
     },
     LOADING() {
         @Override
-        public void enter(Assets entity) {
-            super.enter(entity);
+        public void enter(Assets assets) {
+            super.enter(assets);
             NHG.logger.log(this, "Asset manager is loading.");
         }
 
         @Override
-        public void update(Assets entity) {
-            super.update(entity);
+        public void update(Assets assets) {
+            super.update(assets);
 
-            if (entity.assetManager.update()) {
-                entity.fsm.changeState(IDLE);
-
-                Bundle bundle = new Bundle();
-                bundle.put(NHG.strings.events.assetLoadingFinished, true);
-
-                checkLoadedAsset(entity);
-                entity.onNotification(bundle);
+            if (assets.assetManager.update()) {
+                assets.fsm.changeState(IDLE);
+                
+                assets.assetLoadingFinished();
+                publishLoadedAssets(assets);
             }
         }
 
         @Override
-        public void exit(Assets entity) {
-            super.exit(entity);
+        public void exit(Assets assets) {
+            super.exit(assets);
             NHG.logger.log(this, "Asset manager has finished loading.");
         }
 
-        private void checkLoadedAsset(Assets entity) {
-            Array<Asset> assets = entity.getAssetList();
+        private void publishLoadedAssets(Assets assets) {
+            Array<Asset> assetsList = assets.getAssetList();
 
-            for (Asset asset : assets) {
-                Boolean isLoaded = entity.assetManager.isLoaded(asset.source);
+            for (Asset asset : assetsList) {
+                Boolean isLoaded = assets.assetManager.isLoaded(asset.source);
 
                 if (isLoaded) {
                     NHG.logger.log(this, NHG.strings.messages.assetLoaded, asset.source);
-
-                    Bundle bundle = new Bundle();
-                    bundle.put(NHG.strings.events.assetLoaded, true);
-                    bundle.put("asset", asset);
-
-                    entity.onNotification(bundle);
-                    break;
+                    assets.assetLoaded(asset);
                 }
             }
         }
     };
 
     @Override
-    public void enter(Assets entity) {
+    public void enter(Assets assets) {
     }
 
     @Override
-    public void update(Assets entity) {
+    public void update(Assets assets) {
     }
 
     @Override
-    public void exit(Assets entity) {
+    public void exit(Assets assets) {
     }
 
     @Override
-    public boolean onMessage(Assets entity, Telegram telegram) {
+    public boolean onMessage(Assets assets, Telegram telegram) {
         return false;
     }
 }

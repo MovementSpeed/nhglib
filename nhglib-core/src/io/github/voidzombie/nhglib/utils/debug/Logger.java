@@ -14,8 +14,10 @@ public class Logger {
     }
 
     public void log(Object caller, String message, Object... objects) {
-        String formattedMessage = String.format(message, objects);
-        log(caller, formattedMessage);
+        if (NHG.debugLogs) {
+            String formattedMessage = String.format(message, objects);
+            log(caller, formattedMessage);
+        }
     }
 
     private String getCallerString(Object caller) {

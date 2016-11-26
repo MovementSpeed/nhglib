@@ -6,106 +6,96 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import io.github.voidzombie.nhglib.NHG;
-import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.EntityMessageSystem;
-import io.github.voidzombie.nhglib.runtime.entry.BaseGame;
+import io.github.voidzombie.nhglib.runtime.entry.NHGEntry;
 
 /**
  * Created by Fausto Napoli on 19/10/2016.
+ * Manages engine life cycle and handles boilerplate code in the mean time.
  */
-public enum EngineState implements State<BaseGame> {
+public enum EngineState implements State<NHGEntry> {
     START() {
         @Override
-        public void update(BaseGame baseGame) {
-            super.update(baseGame);
-            baseGame.fsm.changeState(NOT_INITIALIZED);
+        public void update(NHGEntry nhgEntry) {
+            super.update(nhgEntry);
+            nhgEntry.getFsm().changeState(NOT_INITIALIZED);
         }
     },
     NOT_INITIALIZED() {
         @Override
-        public void enter(BaseGame baseGame) {
-            super.enter(baseGame);
+        public void enter(NHGEntry nhgEntry) {
+            super.enter(nhgEntry);
             NHG.logger.log(this, "Engine is not initialized.");
-
-            // Subscribe to asset loading events
-            NHG.messaging.addListener(baseGame,
-                    NHG.strings.events.assetLoaded,
-                    NHG.strings.events.assetLoadingFinished);
-
-            // EntityMessageSystem can addListener to Messaging events.
-            EntityMessageSystem entityEventSystem = new EntityMessageSystem();
-            NHG.messaging.addListener(entityEventSystem);
 
             // Setup the ECS' world.
             WorldConfigurationBuilder configurationBuilder = new WorldConfigurationBuilder();
-            configurationBuilder.with(entityEventSystem);
+            nhgEntry.onConfigureEntitySystems(configurationBuilder);
 
-            baseGame.onConfigureEntitySystems(configurationBuilder);
+            nhgEntry.setEntityWorld(new World(configurationBuilder.build()));
+            nhgEntry.engineStarted();
 
-            baseGame.setEntityWorld(new World(configurationBuilder.build()));
-            baseGame.engineStarted();
-
-            baseGame.fsm.changeState(INITIALIZED);
+            nhgEntry.getFsm().changeState(INITIALIZED);
         }
     },
     INITIALIZED() {
         @Override
-        public void enter(BaseGame baseGame) {
-            super.enter(baseGame);
+        public void enter(NHGEntry nhgEntry) {
+            super.enter(nhgEntry);
             NHG.logger.log(this, "Engine is initialized.");
-            baseGame.engineInitialized();
-            baseGame.fsm.changeState(RUNNING);
+            
+            nhgEntry.engineInitialized();
+            nhgEntry.getFsm().changeState(RUNNING);
         }
     },
     RUNNING() {
         @Override
-        public void enter(BaseGame baseGame) {
-            super.enter(baseGame);
+        public void enter(NHGEntry nhgEntry) {
+            super.enter(nhgEntry);
             NHG.logger.log(this, "Engine is running.");
         }
 
         @Override
-        public void update(BaseGame baseGame) {
-            super.update(baseGame);
+        public void update(NHGEntry nhgEntry) {
+            super.update(nhgEntry);
             NHG.assets.update();
 
-            World world = baseGame.getEntityWorld();
+            World world = nhgEntry.getEntityWorld();
             world.setDelta(Gdx.graphics.getDeltaTime());
             world.process();
 
-            baseGame.engineUpdate();
+            nhgEntry.engineUpdate();
         }
     },
     PAUSED() {
         @Override
-        public void enter(BaseGame baseGame) {
-            super.enter(baseGame);
+        public void enter(NHGEntry nhgEntry) {
+            super.enter(nhgEntry);
             NHG.logger.log(this, "Engine is paused.");
-            baseGame.enginePaused();
+            nhgEntry.enginePaused();
         }
     },
     CLOSING() {
         @Override
-        public void enter(BaseGame baseGame) {
-            super.enter(baseGame);
+        public void enter(NHGEntry nhgEntry) {
+            super.enter(nhgEntry);
             NHG.logger.log(this, "Engine is closing.");
-            baseGame.engineClosing();
+            nhgEntry.engineClosing();
         }
     };
 
     @Override
-    public void enter(BaseGame baseGame) {
+    public void enter(NHGEntry nhgEntry) {
     }
 
     @Override
-    public void update(BaseGame baseGame) {
+    public void update(NHGEntry nhgEntry) {
     }
 
     @Override
-    public void exit(BaseGame baseGame) {
+    public void exit(NHGEntry nhgEntry) {
     }
 
     @Override
-    public boolean onMessage(BaseGame baseGame, Telegram telegram) {
+    public boolean onMessage(NHGEntry nhgEntry, Telegram telegram) {
         return false;
     }
 }

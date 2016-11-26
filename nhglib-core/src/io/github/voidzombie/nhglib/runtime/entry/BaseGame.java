@@ -5,34 +5,28 @@ import com.artemis.World;
 import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
-import io.github.voidzombie.nhglib.runtime.messaging.MessageListener;
-import io.github.voidzombie.nhglib.runtime.states.EngineState;
+import com.badlogic.gdx.ai.fsm.StateMachine;
 import io.github.voidzombie.nhglib.interfaces.EngineConfigurationListener;
 import io.github.voidzombie.nhglib.interfaces.EngineStateListener;
+import io.github.voidzombie.nhglib.runtime.messaging.MessageListener;
+import io.github.voidzombie.nhglib.runtime.states.EngineState;
 
 /**
  * Created by Fausto Napoli on 02/11/2016.
  */
-public abstract class BaseGame implements
+abstract class BaseGame implements
         ApplicationListener,
         EngineStateListener,
         EngineConfigurationListener,
         MessageListener {
-    public final DefaultStateMachine<BaseGame, EngineState> fsm;
+    private DefaultStateMachine<NHGEntry, EngineState> fsm;
     private World entityWorld;
 
-    @SuppressWarnings("unchecked")
-    public BaseGame() {
-        fsm = new DefaultStateMachine<BaseGame, EngineState>(this, EngineState.START);
-    }
+    @Override
+    public final void create() {}
 
     @Override
-    public final void create() {
-    }
-
-    @Override
-    public final void resize(int width, int height) {
-    }
+    public final void resize(int width, int height) {}
 
     @Override
     public final void render() {
@@ -40,16 +34,13 @@ public abstract class BaseGame implements
     }
 
     @Override
-    public final void pause() {
-    }
+    public final void pause() {}
 
     @Override
-    public final void resume() {
-    }
+    public final void resume() {}
 
     @Override
-    public final void dispose() {
-    }
+    public final void dispose() {}
 
     @Override
     public void engineStarted() {
@@ -75,6 +66,10 @@ public abstract class BaseGame implements
     public void onConfigureEntitySystems(WorldConfigurationBuilder configurationBuilder) {
     }
 
+    void init(NHGEntry nhgEntry) {
+        fsm = new DefaultStateMachine<NHGEntry, EngineState>(nhgEntry, EngineState.START);
+    }
+
     protected final int createEntity() {
         return entityWorld.create();
     }
@@ -89,5 +84,9 @@ public abstract class BaseGame implements
 
     public final void setEntityWorld(World entityWorld) {
         this.entityWorld = entityWorld;
+    }
+
+    public final StateMachine<NHGEntry, EngineState> getFsm() {
+        return fsm;
     }
 }

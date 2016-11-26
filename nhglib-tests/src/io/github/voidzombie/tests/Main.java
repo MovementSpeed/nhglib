@@ -7,15 +7,16 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.graphics.DefaultPerspectiveCamera;
-import io.github.voidzombie.nhglib.runtime.ecs.components.ObserverComponent;
-import io.github.voidzombie.nhglib.runtime.entry.BaseGame;
+import io.github.voidzombie.nhglib.runtime.ecs.components.MessageComponent;
+import io.github.voidzombie.nhglib.runtime.ecs_old.components.ObserverComponent;
+import io.github.voidzombie.nhglib.runtime.entry.NHGEntry;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.tests.systems.TestSystem;
 
 /**
  * Created by Fausto Napoli on 26/10/2016.
  */
-public class Main extends BaseGame {
+public class Main extends NHGEntry {
     public static long timeStart;
     public static long timeEnd;
     public static long average;
@@ -29,11 +30,11 @@ public class Main extends BaseGame {
         NHG.debugLogs = true;
         NHG.assets.queueAsset(new Asset("weapon", "models/weapon.g3db", Model.class));
 
-        for (int i = 0; i < 123; i++) {
+        for (int i = 0; i < 2; i++) {
             int entity = createEntity();
 
-            ObserverComponent observerComponent = createComponent(entity, ObserverComponent.class);
-            observerComponent.listen(new Message("fire"));
+            MessageComponent messageComponent = createComponent(entity, MessageComponent.class);
+            messageComponent.listen("fire");
         }
     }
 

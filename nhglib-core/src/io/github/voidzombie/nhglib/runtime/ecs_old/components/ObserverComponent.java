@@ -1,4 +1,4 @@
-package io.github.voidzombie.nhglib.runtime.ecs.components;
+package io.github.voidzombie.nhglib.runtime.ecs_old.components;
 
 import com.artemis.PooledComponent;
 import com.badlogic.gdx.utils.ArrayMap;

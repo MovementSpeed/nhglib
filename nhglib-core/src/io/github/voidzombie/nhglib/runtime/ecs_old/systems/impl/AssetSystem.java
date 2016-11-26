@@ -1,4 +1,4 @@
-package io.github.voidzombie.nhglib.runtime.ecs.systems.impl;
+package io.github.voidzombie.nhglib.runtime.ecs_old.systems.impl;
 
 import com.artemis.Aspect;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.base.ThreadedIteratingSystem;
