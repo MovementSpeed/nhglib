@@ -1,7 +1,5 @@
 package io.github.voidzombie.nhglib.runtime.entry;
 
-import com.artemis.Component;
-import com.artemis.World;
 import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
@@ -20,7 +18,6 @@ abstract class BaseGame implements
         EngineConfigurationListener,
         MessageListener {
     private DefaultStateMachine<NHGEntry, EngineState> fsm;
-    private World entityWorld;
 
     @Override
     public final void create() {}
@@ -68,22 +65,6 @@ abstract class BaseGame implements
 
     void init(NHGEntry nhgEntry) {
         fsm = new DefaultStateMachine<NHGEntry, EngineState>(nhgEntry, EngineState.START);
-    }
-
-    protected final int createEntity() {
-        return entityWorld.create();
-    }
-
-    protected final <T extends Component> T createComponent(int entity, Class<T> type) {
-        return entityWorld.getMapper(type).create(entity);
-    }
-
-    public final World getEntityWorld() {
-        return entityWorld;
-    }
-
-    public final void setEntityWorld(World entityWorld) {
-        this.entityWorld = entityWorld;
     }
 
     public final StateMachine<NHGEntry, EngineState> getFsm() {

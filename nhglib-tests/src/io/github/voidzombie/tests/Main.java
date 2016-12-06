@@ -8,7 +8,6 @@ import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.graphics.DefaultPerspectiveCamera;
 import io.github.voidzombie.nhglib.runtime.ecs.components.MessageComponent;
-import io.github.voidzombie.nhglib.runtime.ecs_old.components.ObserverComponent;
 import io.github.voidzombie.nhglib.runtime.entry.NHGEntry;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.tests.systems.TestSystem;
@@ -31,9 +30,9 @@ public class Main extends NHGEntry {
         NHG.assets.queueAsset(new Asset("weapon", "models/weapon.g3db", Model.class));
 
         for (int i = 0; i < 2; i++) {
-            int entity = createEntity();
+            int entity = NHG.entitySystem.createEntity();
 
-            MessageComponent messageComponent = createComponent(entity, MessageComponent.class);
+            MessageComponent messageComponent = NHG.entitySystem.createComponent(entity, MessageComponent.class);
             messageComponent.listen("fire");
         }
     }

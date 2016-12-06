@@ -26,12 +26,6 @@ public class MessageComponent extends Component implements MessageListener {
         addMessage(message);
     }
 
-    public void addMessage(Message message) {
-        if (message != null && message.id != null) {
-            messages.add(message);
-        }
-    }
-
     public boolean hasNext() {
         return messages.size > 0;
     }
@@ -39,7 +33,7 @@ public class MessageComponent extends Component implements MessageListener {
     /**
      * @return the next message, null if there are none.
      */
-    public Message getNextMessage() {
+    public Message nextMessage() {
         Message message = null;
 
         if (messages.size > 0) {
@@ -47,5 +41,11 @@ public class MessageComponent extends Component implements MessageListener {
         }
 
         return message;
+    }
+
+    private void addMessage(Message message) {
+        if (message != null && message.id != null) {
+            messages.add(message);
+        }
     }
 }

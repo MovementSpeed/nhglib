@@ -30,7 +30,7 @@ public enum EngineState implements State<NHGEntry> {
             WorldConfigurationBuilder configurationBuilder = new WorldConfigurationBuilder();
             nhgEntry.onConfigureEntitySystems(configurationBuilder);
 
-            nhgEntry.setEntityWorld(new World(configurationBuilder.build()));
+            NHG.entitySystem.setEntityWorld(new World(configurationBuilder.build()));
             nhgEntry.engineStarted();
 
             nhgEntry.getFsm().changeState(INITIALIZED);
@@ -57,10 +57,7 @@ public enum EngineState implements State<NHGEntry> {
         public void update(NHGEntry nhgEntry) {
             super.update(nhgEntry);
             NHG.assets.update();
-
-            World world = nhgEntry.getEntityWorld();
-            world.setDelta(Gdx.graphics.getDeltaTime());
-            world.process();
+            NHG.entitySystem.update(Gdx.graphics.getDeltaTime());
 
             nhgEntry.engineUpdate();
         }
