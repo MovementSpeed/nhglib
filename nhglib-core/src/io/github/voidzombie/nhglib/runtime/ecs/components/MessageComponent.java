@@ -1,6 +1,6 @@
 package io.github.voidzombie.nhglib.runtime.ecs.components;
 
-import com.artemis.Component;
+import com.artemis.PooledComponent;
 import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
@@ -10,11 +10,17 @@ import io.github.voidzombie.nhglib.runtime.messaging.MessageListener;
  * Created by Fausto Napoli on 26/11/2016.
  * Contains messages and data received from the engine/game.
  */
-public class MessageComponent extends Component implements MessageListener {
+public class MessageComponent extends PooledComponent implements MessageListener {
     private Array<Message> messages;
 
     public MessageComponent() {
         this.messages = new Array<Message>();
+    }
+
+    @Override
+    protected void reset() {
+        NHG.messaging.removeListener(this);
+        messages.clear();
     }
 
     public void listen(String ... filters) {
