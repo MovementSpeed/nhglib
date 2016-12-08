@@ -10,20 +10,20 @@ import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.interfaces.Updatable;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
-import io.github.voidzombie.nhglib.runtime.states.AssetsState;
+import io.github.voidzombie.nhglib.runtime.fsm.base.AssetsStates;
 import io.github.voidzombie.nhglib.utils.data.Bundle;
 
 /**
  * Created by Fausto Napoli on 19/10/2016.
  */
 public class Assets implements Updatable, AssetErrorListener {
-    public final DefaultStateMachine<Assets, AssetsState> fsm;
+    public final DefaultStateMachine<Assets, AssetsStates> fsm;
     public final AssetManager assetManager;
 
     private Array<Asset> assetList;
 
     public Assets() {
-        fsm = new DefaultStateMachine<>(this, AssetsState.IDLE);
+        fsm = new DefaultStateMachine<>(this, AssetsStates.IDLE);
         assetManager = new AssetManager();
         assetManager.setErrorListener(this);
 

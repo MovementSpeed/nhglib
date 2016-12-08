@@ -7,6 +7,5 @@ public interface EngineStateListener {
     void engineStarted();
     void engineInitialized();
     void engineUpdate();
-    void enginePaused();
     void engineClosing();
 }

@@ -6,7 +6,7 @@ import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
 import io.github.voidzombie.nhglib.interfaces.EngineConfigurationListener;
 import io.github.voidzombie.nhglib.interfaces.EngineStateListener;
-import io.github.voidzombie.nhglib.runtime.states.EngineState;
+import io.github.voidzombie.nhglib.runtime.fsm.base.EngineStates;
 
 /**
  * Created by Fausto Napoli on 02/11/2016.
@@ -15,7 +15,7 @@ abstract class BaseGame implements
         ApplicationListener,
         EngineStateListener,
         EngineConfigurationListener {
-    private DefaultStateMachine<NHGEntry, EngineState> fsm;
+    private DefaultStateMachine<NHGEntry, EngineStates> fsm;
 
     @Override
     public final void create() {}
@@ -50,10 +50,6 @@ abstract class BaseGame implements
     }
 
     @Override
-    public void enginePaused() {
-    }
-
-    @Override
     public void engineClosing() {
     }
 
@@ -62,10 +58,10 @@ abstract class BaseGame implements
     }
 
     void init(NHGEntry nhgEntry) {
-        fsm = new DefaultStateMachine<NHGEntry, EngineState>(nhgEntry, EngineState.START);
+        fsm = new DefaultStateMachine<NHGEntry, EngineStates>(nhgEntry, EngineStates.START);
     }
 
-    public final StateMachine<NHGEntry, EngineState> getFsm() {
+    public final StateMachine<NHGEntry, EngineStates> getFsm() {
         return fsm;
     }
 }

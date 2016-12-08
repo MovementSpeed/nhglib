@@ -10,6 +10,7 @@ import io.github.voidzombie.nhglib.graphics.DefaultPerspectiveCamera;
 import io.github.voidzombie.nhglib.runtime.ecs.components.MessageComponent;
 import io.github.voidzombie.nhglib.runtime.entry.NHGEntry;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
+import io.github.voidzombie.nhglib.utils.debug.Debug;
 import io.github.voidzombie.tests.systems.TestSystem;
 
 /**
@@ -29,11 +30,11 @@ public class Main extends NHGEntry {
         NHG.debugLogs = true;
         NHG.assets.queueAsset(new Asset("weapon", "models/weapon.g3db", Model.class));
 
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 3947; i++) {
             int entity = NHG.entitySystem.createEntity();
 
             MessageComponent messageComponent = NHG.entitySystem.createComponent(entity, MessageComponent.class);
-            messageComponent.subscribe("fire");
+            messageComponent.subscribe("fire", "fly");
         }
 
         NHG.messaging.subscribe((message -> {
@@ -69,7 +70,6 @@ public class Main extends NHGEntry {
     @Override
     public void onConfigureEntitySystems(WorldConfigurationBuilder configurationBuilder) {
         super.onConfigureEntitySystems(configurationBuilder);
-
         configurationBuilder.with(new TestSystem());
     }
 }

@@ -26,6 +26,8 @@ public class MessageComponent extends PooledComponent {
 
     public void subscribe(String ... filters) {
         NHG.messaging.subscribe((message -> messages.add(message)));
+
+        this.filters.clear();
         this.filters.addAll(filters);
     }
 

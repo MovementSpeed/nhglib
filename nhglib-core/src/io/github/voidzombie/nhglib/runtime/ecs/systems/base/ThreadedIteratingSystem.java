@@ -3,9 +3,11 @@ package io.github.voidzombie.nhglib.runtime.ecs.systems.base;
 import com.artemis.Aspect;
 import com.artemis.utils.IntBag;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.PerformanceCounter;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.runtime.threading.Threading;
 import io.github.voidzombie.nhglib.runtime.threading.Work;
+import io.reactivex.Observable;
 
 import java.util.Arrays;
 
@@ -61,7 +63,7 @@ public abstract class ThreadedIteratingSystem extends NhgBaseEntitySystem {
                     splitEntities[i] = Arrays.copyOfRange(data, from, to);
                 }
 
-                if (i > 0) {
+                if (i == rows - 1) {
                     postProcessList(splitEntities[i]);
                 }
             }
@@ -96,9 +98,9 @@ public abstract class ThreadedIteratingSystem extends NhgBaseEntitySystem {
         @Override
         public void run() {
             if (entitiesPart != null) {
-                for (int e : entitiesPart) {
-                    if (e != -1) {
-                        process(e);
+                for (int entity : entitiesPart) {
+                    if (entity != -1) {
+                        process(entity);
                     }
                 }
             }

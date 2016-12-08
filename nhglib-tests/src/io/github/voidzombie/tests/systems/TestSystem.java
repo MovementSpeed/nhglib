@@ -2,10 +2,12 @@ package io.github.voidzombie.tests.systems;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
+import com.badlogic.gdx.utils.PerformanceCounters;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.runtime.ecs.components.MessageComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.base.ThreadedIteratingSystem;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
+import io.github.voidzombie.nhglib.utils.debug.Debug;
 import io.github.voidzombie.tests.Main;
 
 /**
@@ -22,7 +24,6 @@ public class TestSystem extends ThreadedIteratingSystem {
     @Override
     protected void begin() {
         super.begin();
-        Main.timeStart = System.currentTimeMillis();
     }
 
     @Override
@@ -30,7 +31,9 @@ public class TestSystem extends ThreadedIteratingSystem {
         MessageComponent messageComponent = messageMapper.get(entityId);
         messageComponent.getMessages().subscribe((message -> {
             if (message.is("fire")) {
-                NHG.logger.log(this, "Message received by entity %d", entityId);
+                NHG.logger.log(this, "Message \"fire\" received by entity %d", entityId);
+            } else if (message.is("fly")) {
+                NHG.logger.log(this, "Message \"fly\" received by entity %d", entityId);
             }
         }));
     }
@@ -38,9 +41,5 @@ public class TestSystem extends ThreadedIteratingSystem {
     @Override
     protected void end() {
         super.end();
-
-        Main.timeEnd = System.currentTimeMillis();
-        Main.average += (Main.timeEnd - Main.timeStart);
-        Main.average /= 2;
     }
 }
