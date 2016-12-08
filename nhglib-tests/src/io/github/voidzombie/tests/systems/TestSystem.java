@@ -28,14 +28,11 @@ public class TestSystem extends ThreadedIteratingSystem {
     @Override
     protected void process(int entityId) {
         MessageComponent messageComponent = messageMapper.get(entityId);
-
-        while (messageComponent.hasNext()) {
-            Message message = messageComponent.nextMessage();
-
+        messageComponent.getMessages().subscribe((message -> {
             if (message.is("fire")) {
                 NHG.logger.log(this, "Message received by entity %d", entityId);
             }
-        }
+        }));
     }
 
     @Override
@@ -45,11 +42,5 @@ public class TestSystem extends ThreadedIteratingSystem {
         Main.timeEnd = System.currentTimeMillis();
         Main.average += (Main.timeEnd - Main.timeStart);
         Main.average /= 2;
-
-        //NHG.logger.log(this, "time %d average %d", Main.timeEnd - Main.timeStart, Main.average);
-    }
-
-    @Override
-    public void onMessage(Message message) {
     }
 }

@@ -6,6 +6,8 @@ import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.assets.Assets;
+import io.github.voidzombie.nhglib.runtime.messaging.Message;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by Fausto Napoli on 19/10/2016.

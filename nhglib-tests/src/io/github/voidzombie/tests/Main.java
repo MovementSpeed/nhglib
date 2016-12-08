@@ -33,8 +33,17 @@ public class Main extends NHGEntry {
             int entity = NHG.entitySystem.createEntity();
 
             MessageComponent messageComponent = NHG.entitySystem.createComponent(entity, MessageComponent.class);
-            messageComponent.listen("fire");
+            messageComponent.subscribe("fire");
         }
+
+        NHG.messaging.subscribe((message -> {
+            if (message.is(NHG.strings.events.assetLoaded)) {
+                Asset asset = (Asset) message.data.get("asset");
+                NHG.logger.log(this, asset.alias);
+            } else if (message.is(NHG.strings.events.assetLoadingFinished)) {
+                NHG.logger.log(this, "Loading finished!");
+            }
+        }));
     }
 
     @Override
@@ -49,21 +58,11 @@ public class Main extends NHGEntry {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             timeStart = System.currentTimeMillis();
-            NHG.messaging.sendMessage("fire", null);
+            NHG.messaging.send(new Message("fire"));
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.F)) {
-            NHG.messaging.sendMessage("fly", null);
-        }
-    }
-
-    @Override
-    public void onMessage(Message message) {
-        if (message.is(NHG.strings.events.assetLoaded)) {
-            Asset asset = (Asset) message.data.get("asset");
-            NHG.logger.log(this, asset.alias);
-        } else if (message.is(NHG.strings.events.assetLoadingFinished)) {
-            NHG.logger.log(this, "Loading finished!");
+            NHG.messaging.send(new Message("fly"));
         }
     }
 

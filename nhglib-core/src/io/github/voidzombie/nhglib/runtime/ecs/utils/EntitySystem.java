@@ -1,4 +1,4 @@
-package io.github.voidzombie.nhglib.runtime.ecs;
+package io.github.voidzombie.nhglib.runtime.ecs.utils;
 
 import com.artemis.Component;
 import com.artemis.World;

@@ -9,6 +9,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.interfaces.Updatable;
+import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.nhglib.runtime.states.AssetsState;
 import io.github.voidzombie.nhglib.utils.data.Bundle;
 
@@ -22,11 +23,11 @@ public class Assets implements Updatable, AssetErrorListener {
     private Array<Asset> assetList;
 
     public Assets() {
-        fsm = new DefaultStateMachine<Assets, AssetsState>(this, AssetsState.IDLE);
+        fsm = new DefaultStateMachine<>(this, AssetsState.IDLE);
         assetManager = new AssetManager();
         assetManager.setErrorListener(this);
 
-        assetList = new Array<Asset>();
+        assetList = new Array<>();
     }
 
     // Updatable
@@ -42,14 +43,14 @@ public class Assets implements Updatable, AssetErrorListener {
     }
 
     public void assetLoadingFinished() {
-        NHG.messaging.sendMessage(NHG.strings.events.assetLoadingFinished);
+        NHG.messaging.send(new Message(NHG.strings.events.assetLoadingFinished));
     }
 
     public void assetLoaded(Asset asset) {
         Bundle bundle = new Bundle();
         bundle.put("asset", asset);
 
-        NHG.messaging.sendMessage(NHG.strings.events.assetLoaded, bundle);
+        NHG.messaging.send(new Message(NHG.strings.events.assetLoaded, bundle));
         assetList.removeValue(asset, true);
     }
 
@@ -61,6 +62,7 @@ public class Assets implements Updatable, AssetErrorListener {
         return assetManager.get(asset.source);
     }
 
+    @SuppressWarnings("unchecked")
     public void queueAsset(Asset asset) {
         FileHandle fileHandle = Gdx.files.internal(asset.source);
 

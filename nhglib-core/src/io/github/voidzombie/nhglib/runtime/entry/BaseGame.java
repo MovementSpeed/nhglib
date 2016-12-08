@@ -6,7 +6,6 @@ import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
 import io.github.voidzombie.nhglib.interfaces.EngineConfigurationListener;
 import io.github.voidzombie.nhglib.interfaces.EngineStateListener;
-import io.github.voidzombie.nhglib.runtime.messaging.MessageListener;
 import io.github.voidzombie.nhglib.runtime.states.EngineState;
 
 /**
@@ -15,8 +14,7 @@ import io.github.voidzombie.nhglib.runtime.states.EngineState;
 abstract class BaseGame implements
         ApplicationListener,
         EngineStateListener,
-        EngineConfigurationListener,
-        MessageListener {
+        EngineConfigurationListener {
     private DefaultStateMachine<NHGEntry, EngineState> fsm;
 
     @Override

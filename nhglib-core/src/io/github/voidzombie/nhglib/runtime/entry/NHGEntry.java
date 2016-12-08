@@ -43,7 +43,4 @@ public class NHGEntry extends BaseGame {
     public void onConfigureEntitySystems(WorldConfigurationBuilder configurationBuilder) {
         super.onConfigureEntitySystems(configurationBuilder);
     }
-
-    @Override
-    public void onMessage(Message message) {}
 }

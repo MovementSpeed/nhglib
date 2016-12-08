@@ -1,61 +1,23 @@
 package io.github.voidzombie.nhglib.runtime.messaging;
 
-import com.badlogic.gdx.utils.Array;
-import io.github.voidzombie.nhglib.utils.data.Bundle;
+import io.reactivex.functions.Consumer;
+import io.reactivex.subjects.PublishSubject;
 
 /**
- * Created by Fausto Napoli on 01/11/2016.
+ * Created by Fausto Napoli on 08/12/2016.
  */
 public class Messaging {
-    private Array<MessageAdapter> messageAdapters;
+    private final PublishSubject<Message> messageBus;
 
     public Messaging() {
-        messageAdapters = new Array<MessageAdapter>();
+        messageBus = PublishSubject.create();
     }
 
-    public void sendMessage(String name) {
-        sendMessage(name, null);
+    public void send(Message message) {
+        messageBus.onNext(message);
     }
 
-    public void sendMessage(String name, Bundle data) {
-        Message message = new Message(name, data);
-
-        for (MessageAdapter adapter : messageAdapters) {
-            if (adapter.filter.equals(message.id) || adapter.filter.equals(0)) {
-                adapter.messageListener.onMessage(message);
-            }
-        }
-    }
-
-    public void addListener(String filter, MessageListener messageListener) {
-        if (filter != null && messageListener != null) {
-            messageAdapters.add(new MessageAdapter(filter, messageListener));
-        }
-    }
-
-    public void addListener(MessageListener messageListener, String ... filters) {
-        if (messageListener != null) {
-            for (String filter : filters) {
-                if (filter != null) {
-                    messageAdapters.add(new MessageAdapter(filter, messageListener));
-                }
-            }
-        }
-    }
-
-    public void addListener(MessageListener messageListener) {
-        if (messageListener != null) {
-            messageAdapters.add(new MessageAdapter(messageListener));
-        }
-    }
-
-    public void removeListener(MessageListener messageListener) {
-        for (int i = 0; i < messageAdapters.size; i++) {
-            MessageAdapter adapter = messageAdapters.get(i);
-
-            if (adapter.messageListener == messageListener) {
-                messageAdapters.removeValue(adapter, true);
-            }
-        }
+    public void subscribe(Consumer<Message> messageConsumer) {
+        messageBus.subscribe(messageConsumer);
     }
 }

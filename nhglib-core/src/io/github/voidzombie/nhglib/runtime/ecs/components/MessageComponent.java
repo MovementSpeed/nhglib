@@ -4,54 +4,43 @@ import com.artemis.PooledComponent;
 import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
-import io.github.voidzombie.nhglib.runtime.messaging.MessageListener;
+import io.reactivex.Observable;
 
 /**
- * Created by Fausto Napoli on 26/11/2016.
- * Contains messages and data received from the engine/game.
+ * Created by Fausto Napoli on 08/12/2016.
  */
-public class MessageComponent extends PooledComponent implements MessageListener {
+public class MessageComponent extends PooledComponent {
     private Array<Message> messages;
+    private Array<String> filters;
 
     public MessageComponent() {
-        this.messages = new Array<Message>();
+        messages = new Array<>();
+        filters = new Array<>();
     }
 
     @Override
     protected void reset() {
-        NHG.messaging.removeListener(this);
         messages.clear();
+        filters.clear();
     }
 
-    public void listen(String ... filters) {
-        NHG.messaging.addListener(this, filters);
+    public void subscribe(String ... filters) {
+        NHG.messaging.subscribe((message -> messages.add(message)));
+        this.filters.addAll(filters);
     }
 
-    @Override
-    public void onMessage(Message message) {
-        addMessage(message);
-    }
+    public Observable<Message> getMessages() {
+        return Observable.fromIterable(messages).filter((message -> {
+            boolean res = false;
 
-    public boolean hasNext() {
-        return messages.size > 0;
-    }
+            for (String filter : filters) {
+                if (message.is(filter)) {
+                    res = true;
+                    break;
+                }
+            }
 
-    /**
-     * @return the next message, null if there are none.
-     */
-    public Message nextMessage() {
-        Message message = null;
-
-        if (messages.size > 0) {
-            message = messages.pop();
-        }
-
-        return message;
-    }
-
-    private void addMessage(Message message) {
-        if (message != null && message.id != null) {
-            messages.add(message);
-        }
+            return res;
+        })).doFinally(() -> messages.clear());
     }
 }
