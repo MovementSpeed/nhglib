@@ -1,4 +1,4 @@
-package io.github.voidzombie.nhglib.graphics;
+package io.github.voidzombie.nhglib.graphics.utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.PerspectiveCamera;

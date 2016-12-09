@@ -4,8 +4,8 @@ import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
-import io.github.voidzombie.nhglib.interfaces.EngineConfigurationListener;
-import io.github.voidzombie.nhglib.interfaces.EngineStateListener;
+import io.github.voidzombie.nhglib.runtime.fsm.interfaces.EngineConfigurationListener;
+import io.github.voidzombie.nhglib.runtime.fsm.interfaces.EngineStateListener;
 import io.github.voidzombie.nhglib.runtime.fsm.base.EngineStates;
 
 /**

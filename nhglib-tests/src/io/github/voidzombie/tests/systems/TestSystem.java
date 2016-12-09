@@ -2,13 +2,9 @@ package io.github.voidzombie.tests.systems;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
-import com.badlogic.gdx.utils.PerformanceCounters;
 import io.github.voidzombie.nhglib.NHG;
-import io.github.voidzombie.nhglib.runtime.ecs.components.MessageComponent;
+import io.github.voidzombie.nhglib.runtime.ecs.components.common.MessageComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.base.ThreadedIteratingSystem;
-import io.github.voidzombie.nhglib.runtime.messaging.Message;
-import io.github.voidzombie.nhglib.utils.debug.Debug;
-import io.github.voidzombie.tests.Main;
 
 /**
  * Created by Fausto Napoli on 01/11/2016.

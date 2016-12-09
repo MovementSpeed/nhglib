@@ -1,4 +1,4 @@
-package io.github.voidzombie.nhglib.interfaces;
+package io.github.voidzombie.nhglib.runtime.fsm.interfaces;
 
 /**
  * Created by Fausto Napoli on 02/11/2016.

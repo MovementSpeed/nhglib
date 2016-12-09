@@ -1,5 +1,6 @@
 package io.github.voidzombie.nhglib.runtime.ecs.utils;
 
+import com.artemis.Archetype;
 import com.artemis.Component;
 import com.artemis.World;
 
@@ -22,7 +23,15 @@ public class EntitySystem {
         return entityWorld.create();
     }
 
+    public int createEntity(Archetype archetype) {
+        return entityWorld.create(archetype);
+    }
+
     public <T extends Component> T createComponent(int entity, Class<T> type) {
         return entityWorld.getMapper(type).create(entity);
+    }
+
+    public <T extends Component> T getComponent(int entity, Class<T> type) {
+        return entityWorld.getMapper(type).get(entity);
     }
 }
