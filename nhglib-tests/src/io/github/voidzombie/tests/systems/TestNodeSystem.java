@@ -9,6 +9,8 @@ import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.base.NhgIteratingSystem;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
 
+import java.io.IOException;
+
 /**
  * Created by Fausto Napoli on 13/12/2016.
  */
@@ -38,5 +40,10 @@ public class TestNodeSystem extends NhgIteratingSystem {
                 messageComponent.consume(message);
             }
         }
+    }
+
+    @Override
+    protected void end() {
+        super.end();
     }
 }

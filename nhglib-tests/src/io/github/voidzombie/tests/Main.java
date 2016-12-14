@@ -123,10 +123,12 @@ public class Main extends NHGEntry {
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+            NHG.logger.log(this, "--------------------------");
+            
             int rootSceneEntity = sceneGraph.getRootEntity();
             NodeComponent rootNodeComponent = NHG.entitySystem.getComponent(
                     rootSceneEntity, NodeComponent.class);
-            rootNodeComponent.translate(0, 0.24f, 0, true);
+            rootNodeComponent.translate(0, 0.01f, 0, true);
 
             NHG.messaging.send(new Message("printNode"));
         }
