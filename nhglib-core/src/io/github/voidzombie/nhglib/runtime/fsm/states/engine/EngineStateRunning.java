@@ -14,11 +14,13 @@ public class EngineStateRunning implements State<NHGEntry> {
     @Override
     public void enter(NHGEntry nhgEntry) {
         NHG.logger.log(this, "Engine is running.");
-        NHG.messaging.subscribe((message -> {
-            if (message.is(NHG.strings.events.engineDestroy)) {
-                nhgEntry.getFsm().changeState(EngineStates.CLOSING);
-            }
-        }));
+
+        NHG.messaging.get(NHG.strings.events.engineDestroy)
+                .subscribe(message -> {
+                    if (message.is(NHG.strings.events.engineDestroy)) {
+                        nhgEntry.getFsm().changeState(EngineStates.CLOSING);
+                    }
+                });
     }
 
     @Override

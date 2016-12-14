@@ -17,18 +17,7 @@ public class Message {
 
     public Message(String name, Bundle data) {
         id = StringUtils.idFromString(name);
-
-        if (data == null) {
-            this.data = new Bundle();
-            this.data.put("eventId", id);
-        } else {
-            this.data = data;
-        }
-    }
-
-    public boolean is(String name) {
-        Integer id = StringUtils.idFromString(name);
-        return this.id.equals(id);
+        this.data = data;
     }
 
     @Override
@@ -45,5 +34,10 @@ public class Message {
         int result = id.hashCode();
         result = 31 * result + (data != null ? data.hashCode() : 0);
         return result;
+    }
+
+    public boolean is(String name) {
+        Integer id = StringUtils.idFromString(name);
+        return this.id.equals(id);
     }
 }

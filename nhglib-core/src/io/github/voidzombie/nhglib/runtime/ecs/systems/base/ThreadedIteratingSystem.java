@@ -63,7 +63,7 @@ public abstract class ThreadedIteratingSystem extends NhgBaseEntitySystem {
                     splitEntities[i] = Arrays.copyOfRange(data, from, to);
                 }
 
-                if (i == rows - 1) {
+                if (i > 0) {
                     postProcessList(splitEntities[i]);
                 }
             }

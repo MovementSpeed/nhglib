@@ -4,7 +4,6 @@ import com.artemis.PooledComponent;
 import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
-import io.reactivex.Observable;
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
@@ -25,24 +24,33 @@ public class MessageComponent extends PooledComponent {
     }
 
     public void subscribe(String ... filters) {
-        NHG.messaging.subscribe((message -> messages.add(message)));
+        NHG.messaging.get(filters)
+                .subscribe(message -> messages.add(message));
 
         this.filters.clear();
         this.filters.addAll(filters);
     }
 
-    public Observable<Message> getMessages() {
-        return Observable.fromIterable(messages).filter((message -> {
-            boolean res = false;
+    public void consume(Message message) {
+        messages.removeValue(message, false);
+    }
 
-            for (String filter : filters) {
-                if (message.is(filter)) {
-                    res = true;
-                    break;
-                }
+    public Array<Message> getMessages() {
+        return messages;
+    }
+
+    private Boolean filter(Message message) {
+        Boolean res = false;
+
+        for (int i = 0; i < filters.size; i++) {
+            String filter = filters.get(i);
+
+            if (message.is(filter)) {
+                res = true;
+                break;
             }
+        }
 
-            return res;
-        })).doFinally(() -> messages.clear());
+        return res;
     }
 }

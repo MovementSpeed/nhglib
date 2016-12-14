@@ -1,23 +1,34 @@
 package io.github.voidzombie.nhglib.runtime.messaging;
 
-import io.reactivex.functions.Consumer;
+import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
  */
 public class Messaging {
-    private final PublishSubject<Message> messageBus;
+    private final PublishSubject<Message> messagePublisher;
 
     public Messaging() {
-        messageBus = PublishSubject.create();
+        messagePublisher = PublishSubject.create();
     }
 
     public void send(Message message) {
-        messageBus.onNext(message);
+        messagePublisher.onNext(message);
     }
 
-    public void subscribe(Consumer<Message> messageConsumer) {
-        messageBus.subscribe(messageConsumer);
+    public Observable<Message> get(String ... filters) {
+        return messagePublisher.filter(message -> {
+            boolean res = false;
+
+            for (String filter : filters) {
+                if (message.is(filter)) {
+                    res = true;
+                    break;
+                }
+            }
+
+            return res;
+        });
     }
 }
