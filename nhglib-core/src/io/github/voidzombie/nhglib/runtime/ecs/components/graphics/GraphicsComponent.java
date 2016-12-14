@@ -7,7 +7,7 @@ import io.github.voidzombie.nhglib.graphics.interfaces.Representation;
  * Created by Fausto Napoli on 08/12/2016.
  */
 public class GraphicsComponent extends PooledComponent {
-    private Representation representation;
+    public Representation representation;
 
     @Override
     protected void reset() {

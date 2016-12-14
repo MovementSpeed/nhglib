@@ -5,6 +5,7 @@ import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import io.github.voidzombie.nhglib.NHG;
+import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.GraphicsSystem;
 import io.github.voidzombie.nhglib.runtime.entry.NHGEntry;
 import io.github.voidzombie.nhglib.runtime.fsm.base.EngineStates;
 
@@ -18,6 +19,8 @@ public class EngineStateNotInitialized implements State<NHGEntry> {
 
         // Setup the ECS' world.
         WorldConfigurationBuilder configurationBuilder = new WorldConfigurationBuilder();
+        configurationBuilder.with(new GraphicsSystem());
+
         nhgEntry.onConfigureEntitySystems(configurationBuilder);
 
         NHG.entitySystem.setEntityWorld(new World(configurationBuilder.build()));

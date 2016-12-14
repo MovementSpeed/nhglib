@@ -2,6 +2,7 @@ package io.github.voidzombie.nhglib.runtime.ecs.components.scenes;
 
 import com.artemis.PooledComponent;
 import com.badlogic.gdx.graphics.g3d.model.Node;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import io.github.voidzombie.nhglib.utils.graphics.TransformUtils;
@@ -38,8 +39,16 @@ public class NodeComponent extends PooledComponent {
         node.scale.set(TransformUtils.ONE_VECTOR_3);
     }
 
+    public void setTranslation(Vector3 translation) {
+        setTranslation(translation, false);
+    }
+
     public void setTranslation(Vector3 translation, boolean apply) {
         setTranslation(translation.x, translation.y, translation.z, apply);
+    }
+
+    public void setTranslation(float x, float y, float z) {
+        setTranslation(x, y, z, false);
     }
 
     public void setTranslation(float x, float y, float z, boolean apply) {
@@ -50,21 +59,16 @@ public class NodeComponent extends PooledComponent {
         }
     }
 
-    public void translate(Vector3 axis, float value, boolean apply) {
-        if (axis.x > 1) axis.x = 1;
-        else if (axis.x < 0) axis.x = 0;
-        
-        if (axis.y > 1) axis.y = 1;
-        else if (axis.y < 0) axis.y = 0;
-
-        if (axis.z > 1) axis.z = 1;
-        else if (axis.z < 0) axis.z = 0;
-
-        translate(value * axis.x, value * axis.y, value * axis.z, apply);
+    public void translate(Vector3 translation) {
+        translate(translation, false);
     }
 
     public void translate(Vector3 translation, boolean apply) {
         translate(translation.x, translation.y, translation.z, apply);
+    }
+
+    public void translate(float x, float y, float z) {
+        translate(x, y, z, false);
     }
 
     /**
@@ -83,8 +87,16 @@ public class NodeComponent extends PooledComponent {
         }
     }
 
+    public void setRotation(Vector3 rotation) {
+        setRotation(rotation, false);
+    }
+
     public void setRotation(Vector3 rotation, boolean apply) {
         setRotation(rotation.x, rotation.y, rotation.z, apply);
+    }
+
+    public void setRotation(float x, float y, float z) {
+        setRotation(x, y, z, false);
     }
 
     public void setRotation(float x, float y, float z, boolean apply) {
@@ -93,6 +105,10 @@ public class NodeComponent extends PooledComponent {
         if (apply) {
             applyTransforms();
         }
+    }
+
+    public void rotate(Quaternion quaternion) {
+        rotate(quaternion, false);
     }
 
     /**
@@ -109,8 +125,16 @@ public class NodeComponent extends PooledComponent {
         }
     }
 
+    public void rotate(Vector3 rotation) {
+        rotate(rotation, false);
+    }
+
     public void rotate(Vector3 rotation, boolean apply) {
         rotate(rotation.x, rotation.y, rotation.z, apply);
+    }
+
+    public void rotate(float x, float y, float z) {
+        rotate(x, y, z, false);
     }
 
     /**
@@ -133,8 +157,16 @@ public class NodeComponent extends PooledComponent {
         }
     }
 
+    public void setScale(Vector3 scale) {
+        setScale(scale, false);
+    }
+
     public void setScale(Vector3 scale, boolean apply) {
         setScale(scale.x, scale.y, scale.z, apply);
+    }
+
+    public void setScale(float x, float y, float z) {
+        setScale(x, y, z, false);
     }
 
     public void setScale(float x, float y, float z, boolean apply) {
@@ -145,8 +177,16 @@ public class NodeComponent extends PooledComponent {
         }
     }
 
+    public void scale(Vector3 scale) {
+        scale(scale, false);
+    }
+
     public void scale(Vector3 scale, boolean apply) {
         scale(scale.x, scale.y, scale.y, apply);
+    }
+
+    public void scale(float x, float y, float z) {
+        scale(x, y, z, false);
     }
 
     /**
@@ -203,6 +243,10 @@ public class NodeComponent extends PooledComponent {
 
     public Float getZScale() {
         return getScale().z;
+    }
+
+    public Matrix4 getTransform() {
+        return node.globalTransform;
     }
 
     public Vector3 getTranslation() {
