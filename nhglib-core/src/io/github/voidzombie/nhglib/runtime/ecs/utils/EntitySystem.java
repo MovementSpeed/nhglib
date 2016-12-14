@@ -20,6 +20,10 @@ public class EntitySystem {
         this.entityWorld = entityWorld;
     }
 
+    public void removeComponent(int entity, Class<? extends Component> type) {
+        entityWorld.edit(entity).remove(type);
+    }
+
     public int createEntity() {
         return entityWorld.create();
     }

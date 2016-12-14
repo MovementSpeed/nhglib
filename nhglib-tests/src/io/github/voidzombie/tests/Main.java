@@ -30,15 +30,12 @@ import io.github.voidzombie.tests.systems.TestSystem;
  * Created by Fausto Napoli on 26/10/2016.
  */
 public class Main extends NHGEntry {
+    private int firstSceneEntity;
     private SceneGraph sceneGraph;
-    private ModelBatch modelBatch;
-    private DefaultPerspectiveCamera camera;
 
     @Override
     public void engineStarted() {
         super.engineStarted();
-        camera = new DefaultPerspectiveCamera();
-        modelBatch = new ModelBatch();
 
         ModelBuilder modelBuilder = new ModelBuilder();
         Model box = modelBuilder.createBox(1f, 0.1f, 1f,
@@ -81,7 +78,7 @@ public class Main extends NHGEntry {
         rootGraphicsComponent.representation = new ModelRepresentation(box);
 
         // First scene entity
-        int firstSceneEntity = sceneGraph.addSceneEntity();
+        firstSceneEntity = sceneGraph.addSceneEntity();
 
         MessageComponent firstMessageComponent = NHG.entitySystem.createComponent(
                 firstSceneEntity, MessageComponent.class);
@@ -116,6 +113,11 @@ public class Main extends NHGEntry {
                     if (message.is(NHG.strings.events.assetLoaded)) {
                         Asset asset = (Asset) message.data.get("asset");
                         NHG.logger.log(this, asset.alias);
+
+                        GraphicsComponent graphicsComponent = NHG.entitySystem.getComponent(
+                                firstSceneEntity, GraphicsComponent.class);
+
+                        graphicsComponent.representation = new ModelRepresentation(NHG.assets.get(asset));
                     } else if (message.is(NHG.strings.events.assetLoadingFinished)) {
                         NHG.logger.log(this, "Loading finished!");
                     }
@@ -147,49 +149,39 @@ public class Main extends NHGEntry {
 
         boolean input = false;
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.W)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
             rootNodeComponent.translate(0, 0, 0.01f);
             input = true;
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.S)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
             rootNodeComponent.translate(0, 0, -0.01f);
             input = true;
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.A)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             rootNodeComponent.translate(-0.01f, 0, 0);
             input = true;
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.D)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
             rootNodeComponent.translate(0.01f, 0, 0);
             input = true;
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
-            rootNodeComponent.rotate(0, -10, 0);
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            rootNodeComponent.rotate(0, -1f, 0);
             input = true;
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-            rootNodeComponent.rotate(0, 10, 0);
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            rootNodeComponent.rotate(0, 1f, 0);
             input = true;
         }
 
         if (input) {
             rootNodeComponent.applyTransforms();
-            NHG.messaging.send(new Message("printNode"));
         }
-
-        //camera.update();
-
-        //Gdx.gl.glClearColor(1, 1, 1, 1);
-        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-
-        //modelBatch.begin(camera);
-        //modelBatch.render(plane);
-        //modelBatch.end();
     }
 
     @Override
