@@ -1,9 +1,6 @@
 package io.github.voidzombie.nhglib.runtime.ecs.utils;
 
-import com.artemis.Archetype;
-import com.artemis.ArchetypeBuilder;
-import com.artemis.Component;
-import com.artemis.World;
+import com.artemis.*;
 
 /**
  * Created by Fausto Napoli on 07/12/2016.
@@ -44,5 +41,9 @@ public class EntitySystem {
 
     public <T extends Component> T getComponent(int entity, Class<T> type) {
         return entityWorld.getMapper(type).get(entity);
+    }
+
+    public <T extends Component> ComponentMapper<T> getMapper(Class<T> type) {
+        return entityWorld.getMapper(type);
     }
 }

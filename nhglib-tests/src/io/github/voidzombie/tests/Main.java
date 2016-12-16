@@ -4,24 +4,22 @@ import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.math.MathUtils;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.graphics.representations.ModelRepresentation;
-import io.github.voidzombie.nhglib.graphics.utils.DefaultPerspectiveCamera;
+import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 import io.github.voidzombie.nhglib.runtime.ecs.components.common.MessageComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.GraphicsComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.entry.NHGEntry;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
-import io.github.voidzombie.nhglib.scenes.SceneGraph;
+import io.github.voidzombie.nhglib.graphics.scenes.SceneGraph;
 import io.github.voidzombie.nhglib.utils.data.Bundle;
 import io.github.voidzombie.tests.systems.TestNodeSystem;
 import io.github.voidzombie.tests.systems.TestSystem;
@@ -30,12 +28,12 @@ import io.github.voidzombie.tests.systems.TestSystem;
  * Created by Fausto Napoli on 26/10/2016.
  */
 public class Main extends NHGEntry {
-    private int firstSceneEntity;
-    private SceneGraph sceneGraph;
+    private Scene scene;
 
     @Override
     public void engineStarted() {
         super.engineStarted();
+        scene = new Scene();
 
         ModelBuilder modelBuilder = new ModelBuilder();
         Model box = modelBuilder.createBox(1f, 0.1f, 1f,
@@ -43,15 +41,8 @@ public class Main extends NHGEntry {
                 VertexAttributes.Usage.ColorUnpacked |
                         VertexAttributes.Usage.Normal |
                         VertexAttributes.Usage.Position);
-
-        Model sphere = modelBuilder.createSphere(0.1f, 0.1f, 0.1f, 16, 16,
-                new Material(ColorAttribute.createDiffuse(Color.CHARTREUSE)),
-                VertexAttributes.Usage.ColorUnpacked |
-                        VertexAttributes.Usage.Normal |
-                        VertexAttributes.Usage.Position);
         
         NHG.debugLogs = true;
-        NHG.assets.queueAsset(new Asset("weapon", "models/weapon.g3db", Model.class));
 
         for (int i = 0; i < 5; i++) {
             int entity = NHG.entitySystem.createEntity();
@@ -61,10 +52,8 @@ public class Main extends NHGEntry {
             messageComponent.subscribe("fire", "fly");
         }
 
-        sceneGraph = new SceneGraph();
-
         // Root scene entity
-        int rootSceneEntity = sceneGraph.getRootEntity();
+        int rootSceneEntity = scene.sceneGraph.getRootEntity();
 
         MessageComponent rootMessageComponent = NHG.entitySystem.createComponent(
                 rootSceneEntity, MessageComponent.class);
@@ -75,10 +64,10 @@ public class Main extends NHGEntry {
 
         GraphicsComponent rootGraphicsComponent = NHG.entitySystem.createComponent(
                 rootSceneEntity, GraphicsComponent.class);
-        rootGraphicsComponent.representation = new ModelRepresentation(box);
+        rootGraphicsComponent.setRepresentation(new ModelRepresentation(box));
 
         // First scene entity
-        firstSceneEntity = sceneGraph.addSceneEntity();
+        int firstSceneEntity = scene.sceneGraph.addSceneEntity();
 
         MessageComponent firstMessageComponent = NHG.entitySystem.createComponent(
                 firstSceneEntity, MessageComponent.class);
@@ -90,10 +79,11 @@ public class Main extends NHGEntry {
 
         GraphicsComponent firstGraphicsComponent = NHG.entitySystem.createComponent(
                 firstSceneEntity, GraphicsComponent.class);
-        firstGraphicsComponent.representation = new ModelRepresentation(sphere);
+        firstGraphicsComponent.asset =
+                new Asset("firstAsset", "models/weapon.g3db", Model.class);
 
         // Second scene entity
-        int secondSceneEntity = sceneGraph.addSceneEntity(firstSceneEntity);
+        int secondSceneEntity = scene.sceneGraph.addSceneEntity(firstSceneEntity);
 
         MessageComponent secondMessageComponent = NHG.entitySystem.createComponent(
                 secondSceneEntity, MessageComponent.class);
@@ -105,19 +95,21 @@ public class Main extends NHGEntry {
 
         GraphicsComponent secondGraphicsComponent = NHG.entitySystem.createComponent(
                 secondSceneEntity, GraphicsComponent.class);
-        secondGraphicsComponent.representation = new ModelRepresentation(sphere);
+        secondGraphicsComponent.asset =
+                new Asset("secondAsset", "models/weapon.g3db", Model.class);
+
+        for (int i = 0; i < 10; i++) {
+            newEntity(MathUtils.random(-2f, 2f), MathUtils.random(0f, 0.5f), MathUtils.random(-2, 2f));
+        }
+
+        NHG.sceneManager.loadScene(scene);
 
         // Subscribe to asset events
         NHG.messaging.get(NHG.strings.events.assetLoaded, NHG.strings.events.assetLoadingFinished)
                 .subscribe(message -> {
                     if (message.is(NHG.strings.events.assetLoaded)) {
-                        Asset asset = (Asset) message.data.get("asset");
-                        NHG.logger.log(this, asset.alias);
-
-                        GraphicsComponent graphicsComponent = NHG.entitySystem.getComponent(
-                                firstSceneEntity, GraphicsComponent.class);
-
-                        graphicsComponent.representation = new ModelRepresentation(NHG.assets.get(asset));
+                        Asset asset = (Asset) message.data.get(NHG.strings.defaults.assetKey);
+                        NHG.logger.log(this, "Loaded asset with alias: %s", asset.alias);
                     } else if (message.is(NHG.strings.events.assetLoadingFinished)) {
                         NHG.logger.log(this, "Loading finished!");
                     }
@@ -143,7 +135,7 @@ public class Main extends NHGEntry {
             NHG.messaging.send(new Message("fly"));
         }
 
-        int rootSceneEntity = sceneGraph.getRootEntity();
+        int rootSceneEntity = scene.sceneGraph.getRootEntity();
         NodeComponent rootNodeComponent = NHG.entitySystem.getComponent(
                 rootSceneEntity, NodeComponent.class);
 
@@ -179,6 +171,11 @@ public class Main extends NHGEntry {
             input = true;
         }
 
+        if (Gdx.input.isKeyJustPressed(Input.Keys.N)) {
+            newEntity(MathUtils.random(-0.3f, 0.3f), MathUtils.random(0f, 0.5f), MathUtils.random(-0.3f, 0.3f));
+            NHG.sceneManager.refresh();
+        }
+
         if (input) {
             rootNodeComponent.applyTransforms();
         }
@@ -189,5 +186,18 @@ public class Main extends NHGEntry {
         super.onConfigureEntitySystems(configurationBuilder);
         configurationBuilder.with(new TestSystem());
         configurationBuilder.with(new TestNodeSystem());
+    }
+
+    private void newEntity(float x, float y, float z) {
+        int entity = scene.sceneGraph.addSceneEntity(scene.sceneGraph.getRootEntity());
+
+        NodeComponent nodeComponent = NHG.entitySystem.getComponent(
+                entity, NodeComponent.class);
+        nodeComponent.setTranslation(x, y, z, true);
+
+        GraphicsComponent graphicsComponent = NHG.entitySystem.createComponent(
+                entity, GraphicsComponent.class);
+        graphicsComponent.asset =
+                new Asset("" + entity, "models/weapon.g3db", Model.class);
     }
 }

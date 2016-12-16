@@ -2,16 +2,15 @@ package io.github.voidzombie.nhglib.runtime.ecs.systems.impl;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import io.github.voidzombie.nhglib.graphics.representations.ModelRepresentation;
 import io.github.voidzombie.nhglib.graphics.utils.DefaultPerspectiveCamera;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.GraphicsComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.base.NhgIteratingSystem;
-import io.github.voidzombie.nhglib.runtime.ecs.systems.base.ThreadedIteratingSystem;
+import io.github.voidzombie.nhglib.utils.graphics.GLUtils;
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
@@ -35,9 +34,7 @@ public class GraphicsSystem extends NhgIteratingSystem {
         super.begin();
         perspectiveCamera.update();
 
-        Gdx.gl.glClearColor(1, 1, 1, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-
+        GLUtils.clearScreen(Color.WHITE);
         modelBatch.begin(perspectiveCamera);
     }
 
@@ -46,11 +43,13 @@ public class GraphicsSystem extends NhgIteratingSystem {
         NodeComponent nodeComponent = nodeMapper.get(entityId);
         GraphicsComponent graphicsComponent = graphicsMapper.get(entityId);
 
-        graphicsComponent.getRepresentation().setTransform(nodeComponent.getTransform());
+        if (graphicsComponent.getRepresentation() != null) {
+            RenderableProvider provider = getRenderableProvider(graphicsComponent);
 
-        if (graphicsComponent.representation instanceof ModelRepresentation) {
-            ModelRepresentation modelRepresentation = graphicsComponent.getRepresentation();
-            modelBatch.render(modelRepresentation.get());
+            if (provider != null) {
+                graphicsComponent.getRepresentation().setTransform(nodeComponent.getTransform());
+                modelBatch.render(provider);
+            }
         }
     }
 
@@ -58,5 +57,16 @@ public class GraphicsSystem extends NhgIteratingSystem {
     protected void end() {
         super.end();
         modelBatch.end();
+    }
+
+    private RenderableProvider getRenderableProvider(GraphicsComponent graphicsComponent) {
+        RenderableProvider provider = null;
+
+        if (graphicsComponent.getRepresentation() instanceof ModelRepresentation) {
+            ModelRepresentation modelRepresentation = graphicsComponent.getRepresentation();
+            provider = modelRepresentation.get();
+        }
+
+        return provider;
     }
 }

@@ -48,10 +48,10 @@ public class Assets implements Updatable, AssetErrorListener {
 
     public void assetLoaded(Asset asset) {
         Bundle bundle = new Bundle();
-        bundle.put("asset", asset);
+        bundle.put(NHG.strings.defaults.assetKey, asset);
 
         NHG.messaging.send(new Message(NHG.strings.events.assetLoaded, bundle));
-        assetList.removeValue(asset, true);
+        //assetList.removeValue(asset, true);
     }
 
     public Array<Asset> getAssetList() {
@@ -64,13 +64,17 @@ public class Assets implements Updatable, AssetErrorListener {
 
     @SuppressWarnings("unchecked")
     public void queueAsset(Asset asset) {
-        FileHandle fileHandle = Gdx.files.internal(asset.source);
+        if (!assetManager.isLoaded(asset.source)) {
+            FileHandle fileHandle = Gdx.files.internal(asset.source);
 
-        if (fileHandle.exists()) {
-            assetManager.load(asset.source, asset.assetClass);
-            assetList.add(asset);
+            if (fileHandle.exists()) {
+                assetManager.load(asset.source, asset.assetClass);
+                assetList.add(asset);
+            } else {
+                NHG.logger.log(this, NHG.strings.messages.cannotQueueAssetFileNotFound, asset.source);
+            }
         } else {
-            NHG.logger.log(this, NHG.strings.messages.cannotQueueAssetFileNotFound, asset.source);
+            assetLoaded(asset);
         }
     }
 
@@ -80,5 +84,9 @@ public class Assets implements Updatable, AssetErrorListener {
                 queueAsset(asset);
             }
         }
+    }
+
+    public void clearQueue() {
+        assetList.clear();
     }
 }

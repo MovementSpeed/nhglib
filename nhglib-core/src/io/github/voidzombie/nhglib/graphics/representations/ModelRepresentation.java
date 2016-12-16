@@ -13,12 +13,15 @@ import io.github.voidzombie.nhglib.utils.graphics.TransformUtils;
  */
 public class ModelRepresentation implements Representation<ModelInstance> {
     private ModelInstance modelInstance;
-    private Vector3 translation;
+
     private Quaternion rotation;
+    private Vector3 translation;
     private Vector3 scale;
 
     public ModelRepresentation(Model model) {
-        this.modelInstance = new ModelInstance(model);
+        if (model != null) {
+            this.modelInstance = new ModelInstance(model);
+        }
 
         translation = TransformUtils.ZERO_VECTOR_3;
         rotation = TransformUtils.ZERO_QUATERNION;
@@ -32,33 +35,41 @@ public class ModelRepresentation implements Representation<ModelInstance> {
 
     @Override
     public void setTransform(Matrix4 transform) {
-        modelInstance.transform.set(transform);
+        if (modelInstance != null && transform != null) {
+            modelInstance.transform.set(transform);
+        }
     }
 
     @Override
     public void setTranslation(float x, float y, float z) {
-        translation.set(x, y, z);
-        modelInstance.transform.getRotation(rotation);
-        modelInstance.transform.getScale(scale);
+        if (modelInstance != null) {
+            translation.set(x, y, z);
+            modelInstance.transform.getRotation(rotation);
+            modelInstance.transform.getScale(scale);
 
-        modelInstance.transform.set(translation, rotation, scale);
+            modelInstance.transform.set(translation, rotation, scale);
+        }
     }
 
     @Override
     public void setRotation(float x, float y, float z) {
-        modelInstance.transform.getTranslation(translation);
-        rotation.setEulerAngles(y, x, z);
-        modelInstance.transform.getScale(scale);
+        if (modelInstance != null) {
+            modelInstance.transform.getTranslation(translation);
+            rotation.setEulerAngles(y, x, z);
+            modelInstance.transform.getScale(scale);
 
-        modelInstance.transform.set(translation, rotation, scale);
+            modelInstance.transform.set(translation, rotation, scale);
+        }
     }
 
     @Override
     public void setScale(float x, float y, float z) {
-        modelInstance.transform.getTranslation(translation);
-        modelInstance.transform.getRotation(rotation);
-        scale.set(x, y, z);
+        if (modelInstance != null) {
+            modelInstance.transform.getTranslation(translation);
+            modelInstance.transform.getRotation(rotation);
+            scale.set(x, y, z);
 
-        modelInstance.transform.set(translation, rotation, scale);
+            modelInstance.transform.set(translation, rotation, scale);
+        }
     }
 }

@@ -39,6 +39,7 @@ public class AssetStateLoading implements State<Assets> {
     private void publishLoadedAssets(Assets assets) {
         Observable.fromIterable(assets.getAssetList())
                 .filter((asset -> assets.assetManager.isLoaded(asset.source)))
+                .doFinally(assets::clearQueue)
                 .subscribe(asset -> {
                     NHG.logger.log(
                             this,

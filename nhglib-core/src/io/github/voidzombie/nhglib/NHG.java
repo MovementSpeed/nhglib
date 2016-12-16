@@ -1,6 +1,7 @@
 package io.github.voidzombie.nhglib;
 
 import io.github.voidzombie.nhglib.assets.Assets;
+import io.github.voidzombie.nhglib.graphics.scenes.SceneManager;
 import io.github.voidzombie.nhglib.runtime.ecs.utils.EntitySystem;
 import io.github.voidzombie.nhglib.runtime.messaging.Messaging;
 import io.github.voidzombie.nhglib.runtime.threading.Threading;
@@ -18,6 +19,7 @@ public class NHG {
     public final static Messaging messaging;
     public final static Threading threading;
     public final static EntitySystem entitySystem;
+    public final static SceneManager sceneManager;
 
     public static Boolean debugLogs = false;
 
@@ -28,5 +30,6 @@ public class NHG {
         messaging = new Messaging();
         threading = new Threading();
         entitySystem = new EntitySystem();
+        sceneManager = new SceneManager();
     }
 }
