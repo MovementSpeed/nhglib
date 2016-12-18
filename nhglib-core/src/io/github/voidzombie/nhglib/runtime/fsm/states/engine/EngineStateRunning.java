@@ -6,19 +6,24 @@ import com.badlogic.gdx.ai.msg.Telegram;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.runtime.entry.NHGEntry;
 import io.github.voidzombie.nhglib.runtime.fsm.base.EngineStates;
+import io.github.voidzombie.nhglib.runtime.messaging.Message;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
  */
 public class EngineStateRunning implements State<NHGEntry> {
     @Override
-    public void enter(NHGEntry nhgEntry) {
+    public void enter(final NHGEntry nhgEntry) {
         NHG.logger.log(this, "Engine is running.");
 
         NHG.messaging.get(NHG.strings.events.engineDestroy)
-                .subscribe(message -> {
-                    if (message.is(NHG.strings.events.engineDestroy)) {
-                        nhgEntry.getFsm().changeState(EngineStates.CLOSING);
+                .subscribe(new Consumer<Message>() {
+                    @Override
+                    public void accept(Message message) throws Exception {
+                        if (message.is(NHG.strings.events.engineDestroy)) {
+                            nhgEntry.getFsm().changeState(EngineStates.CLOSING);
+                        }
                     }
                 });
     }

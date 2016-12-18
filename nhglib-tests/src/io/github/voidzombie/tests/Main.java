@@ -19,7 +19,6 @@ import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.GraphicsCompo
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.entry.NHGEntry;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
-import io.github.voidzombie.nhglib.graphics.scenes.SceneGraph;
 import io.github.voidzombie.nhglib.utils.data.Bundle;
 import io.github.voidzombie.tests.systems.TestNodeSystem;
 import io.github.voidzombie.tests.systems.TestSystem;

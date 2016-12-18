@@ -6,7 +6,10 @@ import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.graphics.representations.ModelRepresentation;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.GraphicsComponent;
+import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Predicate;
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
@@ -23,12 +26,20 @@ public class SceneManager {
         }
 
         Observable.fromIterable(scene.sceneGraph.getEntities())
-                .filter(entity -> graphicsMapper.has(entity))
-                .subscribe(entity -> {
-                    GraphicsComponent graphicsComponent = graphicsMapper.get(entity);
+                .filter(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(Integer integer) throws Exception {
+                        return graphicsMapper.has(integer);
+                    }
+                })
+                .subscribe(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer integer) throws Exception {
+                        GraphicsComponent graphicsComponent = graphicsMapper.get(integer);
 
-                    if (graphicsComponent.state == GraphicsComponent.State.NOT_INITIALIZED) {
-                        loadGraphicsAsset(graphicsComponent);
+                        if (graphicsComponent.state == GraphicsComponent.State.NOT_INITIALIZED) {
+                            loadGraphicsAsset(graphicsComponent);
+                        }
                     }
                 });
     }
@@ -37,17 +48,23 @@ public class SceneManager {
         loadScene(currentScene);
     }
 
-    private void loadGraphicsAsset(GraphicsComponent graphicsComponent) {
+    private void loadGraphicsAsset(final GraphicsComponent graphicsComponent) {
         graphicsComponent.state = GraphicsComponent.State.LOADING;
 
         NHG.messaging.get(NHG.strings.events.assetLoaded)
-                .filter(message -> {
-                    Asset asset = (Asset) message.data.get(NHG.strings.defaults.assetKey);
-                    return graphicsComponent.asset.is(asset.alias);
+                .filter(new Predicate<Message>() {
+                    @Override
+                    public boolean test(Message message) throws Exception {
+                        Asset asset = (Asset) message.data.get(NHG.strings.defaults.assetKey);
+                        return graphicsComponent.asset.is(asset.alias);
+                    }
                 })
-                .subscribe(message -> {
-                    Asset asset = (Asset) message.data.get(NHG.strings.defaults.assetKey);
-                    createRepresentation(graphicsComponent, asset);
+                .subscribe(new Consumer<Message>() {
+                    @Override
+                    public void accept(Message message) throws Exception {
+                        Asset asset = (Asset) message.data.get(NHG.strings.defaults.assetKey);
+                        createRepresentation(graphicsComponent, asset);
+                    }
                 });
 
         NHG.assets.queueAsset(graphicsComponent.asset);
@@ -55,7 +72,9 @@ public class SceneManager {
 
     private void createRepresentation(GraphicsComponent graphicsComponent, Asset asset) {
         if (asset.isType(Model.class)) {
-            graphicsComponent.setRepresentation(new ModelRepresentation(NHG.assets.get(asset)));
+            Model model = NHG.assets.get(asset);
+            ModelRepresentation representation = new ModelRepresentation(model);
+            graphicsComponent.setRepresentation(representation);
         }
     }
 }

@@ -3,9 +3,13 @@ package io.github.voidzombie.nhglib.runtime.fsm.states.assets;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import io.github.voidzombie.nhglib.NHG;
+import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.assets.Assets;
 import io.github.voidzombie.nhglib.runtime.fsm.base.AssetsStates;
 import io.reactivex.Observable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Predicate;
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
@@ -36,17 +40,30 @@ public class AssetStateLoading implements State<Assets> {
         return false;
     }
 
-    private void publishLoadedAssets(Assets assets) {
+    private void publishLoadedAssets(final Assets assets) {
         Observable.fromIterable(assets.getAssetList())
-                .filter((asset -> assets.assetManager.isLoaded(asset.source)))
-                .doFinally(assets::clearQueue)
-                .subscribe(asset -> {
-                    NHG.logger.log(
-                            this,
-                            NHG.strings.messages.assetLoaded,
-                            asset.source);
+                .filter(new Predicate<Asset>() {
+                    @Override
+                    public boolean test(Asset asset) throws Exception {
+                        return assets.assetManager.isLoaded(asset.source);
+                    }
+                })
+                .doFinally(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        assets.clearQueue();
+                    }
+                })
+                .subscribe(new Consumer<Asset>() {
+                    @Override
+                    public void accept(Asset asset) throws Exception {
+                        NHG.logger.log(
+                                this,
+                                NHG.strings.messages.assetLoaded,
+                                asset.source);
 
-                    assets.assetLoaded(asset);
+                        assets.assetLoaded(asset);
+                    }
                 });
     }
 }

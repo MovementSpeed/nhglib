@@ -4,6 +4,7 @@ import com.artemis.PooledComponent;
 import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
@@ -25,7 +26,12 @@ public class MessageComponent extends PooledComponent {
 
     public void subscribe(String ... filters) {
         NHG.messaging.get(filters)
-                .subscribe(message -> messages.add(message));
+                .subscribe(new Consumer<Message>() {
+                    @Override
+                    public void accept(Message message) throws Exception {
+                        messages.add(message);
+                    }
+                });
 
         this.filters.clear();
         this.filters.addAll(filters);
@@ -37,20 +43,5 @@ public class MessageComponent extends PooledComponent {
 
     public Array<Message> getMessages() {
         return messages;
-    }
-
-    private Boolean filter(Message message) {
-        Boolean res = false;
-
-        for (int i = 0; i < filters.size; i++) {
-            String filter = filters.get(i);
-
-            if (message.is(filter)) {
-                res = true;
-                break;
-            }
-        }
-
-        return res;
     }
 }

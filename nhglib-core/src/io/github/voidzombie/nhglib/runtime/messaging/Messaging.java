@@ -1,6 +1,7 @@
 package io.github.voidzombie.nhglib.runtime.messaging;
 
 import io.reactivex.Observable;
+import io.reactivex.functions.Predicate;
 import io.reactivex.subjects.PublishSubject;
 
 /**
@@ -17,18 +18,21 @@ public class Messaging {
         messagePublisher.onNext(message);
     }
 
-    public Observable<Message> get(String ... filters) {
-        return messagePublisher.filter(message -> {
-            boolean res = false;
+    public Observable<Message> get(final String ... filters) {
+        return messagePublisher.filter(new Predicate<Message>() {
+            @Override
+            public boolean test(Message message) throws Exception {
+                boolean res = false;
 
-            for (String filter : filters) {
-                if (message.is(filter)) {
-                    res = true;
-                    break;
+                for (String filter : filters) {
+                    if (message.is(filter)) {
+                        res = true;
+                        break;
+                    }
                 }
-            }
 
-            return res;
+                return res;
+            }
         });
     }
 }
