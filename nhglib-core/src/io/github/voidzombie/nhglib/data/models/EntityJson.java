@@ -5,34 +5,53 @@ import com.badlogic.gdx.utils.JsonValue;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.graphics.scenes.SceneGraph;
 import io.github.voidzombie.nhglib.interfaces.JsonParseable;
+import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
+import io.github.voidzombie.nhglib.utils.scenes.SceneUtils;
 
 /**
  * Created by Fausto Napoli on 19/12/2016.
  */
 public class EntityJson implements JsonParseable<Integer> {
-    public Integer parentEntity;
-    public SceneGraph sceneGraphRef;
-    public TransformJson transform;
-    public Array<EntityJson> entities;
-
+    private Integer parentEntity;
     private Integer output;
-
-    public EntityJson() {
-        transform = new TransformJson();
-        entities = new Array<>();
-    }
+    private SceneGraph sceneGraphRef;
 
     @Override
     public void parse(JsonValue jsonValue) {
-        transform.parse(jsonValue.get("transform"));
+        TransformJson transformJson = new TransformJson();
+        transformJson.parse(jsonValue.get("transform"));
+
         int entity = sceneGraphRef.addSceneEntity(parentEntity);
+
+        NodeComponent nodeComponent = NHG.entitySystem.getComponent(entity, NodeComponent.class);
+
+        if (transformJson.type == TransformJson.Type.ABSOLUTE) {
+            nodeComponent.setTranslation(transformJson.position);
+            nodeComponent.setRotation(transformJson.rotation);
+            nodeComponent.setScale(transformJson.scale);
+        } else if (transformJson.type == TransformJson.Type.RELATIVE) {
+            NodeComponent parentNodeComponent =
+                    NHG.entitySystem.getComponent(parentEntity, NodeComponent.class);
+
+            nodeComponent.setTranslation(parentNodeComponent.getTranslation());
+            nodeComponent.setRotation(parentNodeComponent.getRotation());
+            nodeComponent.setScale(parentNodeComponent.getScale());
+
+            nodeComponent.translate(transformJson.position);
+            nodeComponent.rotate(transformJson.rotation);
+            nodeComponent.scale(transformJson.scale);
+        }
 
         JsonValue componentsJson = jsonValue.get("components");
 
-        for (JsonValue component : componentsJson) {
-            ComponentJson componentJson = new ComponentJson();
-            componentJson.entity = entity;
-            componentJson.parse(component);
+        for (JsonValue componentJsonValue : componentsJson) {
+            String type = componentJsonValue.getString("type");
+            ComponentJson componentJson = SceneUtils.getInstance().componentJsonFromType(type);
+
+            if (componentJson != null) {
+                componentJson.entity = entity;
+                componentJson.parse(componentJsonValue);
+            }
         }
 
         JsonValue entitiesJson = jsonValue.get("entities");
@@ -42,9 +61,17 @@ public class EntityJson implements JsonParseable<Integer> {
             entityJson.sceneGraphRef = sceneGraphRef;
             entityJson.parentEntity = entity;
             entityJson.parse(entityJsonValue);
-
-            entities.add(entityJson);
         }
+
+        output = entity;
+    }
+
+    public void setParentEntity(Integer parentEntity) {
+        this.parentEntity = parentEntity;
+    }
+
+    public void setSceneGraph(SceneGraph sceneGraph) {
+        this.sceneGraphRef = sceneGraph;
     }
 
     @Override

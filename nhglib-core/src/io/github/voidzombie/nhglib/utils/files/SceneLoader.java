@@ -3,8 +3,8 @@ package io.github.voidzombie.nhglib.utils.files;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetLoaderParameters;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.AsynchronousAssetLoader;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
-import com.badlogic.gdx.assets.loaders.SynchronousAssetLoader;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
@@ -17,28 +17,20 @@ import java.io.UnsupportedEncodingException;
 /**
  * Created by Fausto Napoli on 19/12/2016.
  */
-public class SceneLoader extends SynchronousAssetLoader<Scene, SceneLoader.SceneParameter> {
+public class SceneLoader extends AsynchronousAssetLoader<Scene, SceneLoader.SceneParameter> {
+    Scene scene;
+
     public SceneLoader(FileHandleResolver resolver) {
         super(resolver);
     }
 
     @Override
-    public Scene load(AssetManager assetManager, String fileName, FileHandle file, SceneParameter parameter) {
-        Scene scene = null;
-        byte[] bytes = file.readBytes();
+    public void loadAsync(AssetManager manager, String fileName, FileHandle file, SceneParameter parameter) {
+    }
 
-        try {
-            String json = new String(bytes, "UTF-8");
-
-            SceneJson sceneJson = new SceneJson();
-            sceneJson.parse(new JsonReader().parse(json));
-
-            scene = sceneJson.get();
-        } catch (UnsupportedEncodingException e) {
-            if (NHG.debugLogs) e.printStackTrace();
-        }
-
-        return scene;
+    @Override
+    public Scene loadSync(AssetManager manager, String fileName, FileHandle file, SceneParameter parameter) {
+        return getScene(file.readBytes());
     }
 
     @Override
@@ -47,5 +39,22 @@ public class SceneLoader extends SynchronousAssetLoader<Scene, SceneLoader.Scene
     }
 
     public static class SceneParameter extends AssetLoaderParameters<Scene> {
+    }
+
+    private Scene getScene(byte[] bytes) {
+        scene = new Scene();
+
+        try {
+            String json = new String(bytes, "UTF-8");
+
+            SceneJson sceneJson = new SceneJson();
+            sceneJson.parse(new JsonReader().parse(json).get("scene"));
+
+            scene = sceneJson.get();
+        } catch (UnsupportedEncodingException e) {
+            if (NHG.debugLogs) e.printStackTrace();
+        }
+
+        return scene;
     }
 }

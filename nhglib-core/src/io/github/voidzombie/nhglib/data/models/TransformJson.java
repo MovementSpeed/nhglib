@@ -8,7 +8,8 @@ import io.github.voidzombie.nhglib.utils.graphics.TransformUtils;
 /**
  * Created by Fausto Napoli on 19/12/2016.
  */
-public class TransformJson implements JsonParseable {
+public class TransformJson implements JsonParseable<TransformJson> {
+    public Type type;
     public Vector3 position;
     public Vector3 rotation;
     public Vector3 scale;
@@ -21,9 +22,12 @@ public class TransformJson implements JsonParseable {
 
     @Override
     public void parse(JsonValue jsonValue) {
+        String type = jsonValue.getString("type");
         JsonValue positionJson = jsonValue.get("position");
         JsonValue rotationJson = jsonValue.get("rotation");
         JsonValue scaleJson = jsonValue.get("scale");
+
+        this.type = Type.fromString(type);
 
         position.set(
                 positionJson.getFloat("x"),
@@ -39,5 +43,33 @@ public class TransformJson implements JsonParseable {
                 scaleJson.getFloat("x"),
                 scaleJson.getFloat("y"),
                 scaleJson.getFloat("z"));
+    }
+
+    @Override
+    public TransformJson get() {
+        return this;
+    }
+
+    public enum Type {
+        ABSOLUTE("absolute"),
+        RELATIVE("relative");
+
+        private String type;
+
+        Type(String type) {
+            this.type = type;
+        }
+
+        public static Type fromString(String type) {
+            Type t = null;
+
+            for (Type tp : Type.values()) {
+                if (tp.type.contentEquals(type)) {
+                    t = tp;
+                }
+            }
+
+            return t;
+        }
     }
 }

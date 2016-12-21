@@ -5,13 +5,16 @@ import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetErrorListener;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.NHG;
+import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 import io.github.voidzombie.nhglib.interfaces.Updatable;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.nhglib.runtime.fsm.base.AssetsStates;
 import io.github.voidzombie.nhglib.utils.data.Bundle;
+import io.github.voidzombie.nhglib.utils.files.SceneLoader;
 
 /**
  * Created by Fausto Napoli on 19/10/2016.
@@ -25,6 +28,7 @@ public class Assets implements Updatable, AssetErrorListener {
     public Assets() {
         fsm = new DefaultStateMachine<>(this, AssetsStates.IDLE);
         assetManager = new AssetManager();
+        assetManager.setLoader(Scene.class, new SceneLoader(assetManager.getFileHandleResolver()));
         assetManager.setErrorListener(this);
 
         assetList = new Array<>();
@@ -51,7 +55,6 @@ public class Assets implements Updatable, AssetErrorListener {
         bundle.put(NHG.strings.defaults.assetKey, asset);
 
         NHG.messaging.send(new Message(NHG.strings.events.assetLoaded, bundle));
-        //assetList.removeValue(asset, true);
     }
 
     public Array<Asset> getAssetList() {

@@ -4,9 +4,12 @@ import com.artemis.ComponentMapper;
 import com.badlogic.gdx.graphics.g3d.Model;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.assets.Asset;
+import io.github.voidzombie.nhglib.data.models.components.GraphicsComponentJson;
+import io.github.voidzombie.nhglib.data.models.components.MessageComponentJson;
 import io.github.voidzombie.nhglib.graphics.representations.ModelRepresentation;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.GraphicsComponent;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
+import io.github.voidzombie.nhglib.utils.scenes.SceneUtils;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Predicate;
@@ -17,6 +20,13 @@ import io.reactivex.functions.Predicate;
 public class SceneManager {
     private Scene currentScene;
     private ComponentMapper<GraphicsComponent> graphicsMapper;
+
+    public SceneManager() {
+        SceneUtils.getInstance().addComponentJsonMapping("graphics", GraphicsComponentJson.class);
+        SceneUtils.getInstance().addComponentJsonMapping("message", MessageComponentJson.class);
+
+        SceneUtils.getInstance().addAssetClassMapping("model", Model.class);
+    }
 
     public void loadScene(Scene scene) {
         currentScene = scene;

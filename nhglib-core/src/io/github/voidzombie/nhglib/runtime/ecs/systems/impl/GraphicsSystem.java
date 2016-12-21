@@ -55,8 +55,8 @@ public class GraphicsSystem extends NhgIteratingSystem {
 
     @Override
     protected void end() {
-        super.end();
         modelBatch.end();
+        super.end();
     }
 
     private RenderableProvider getRenderableProvider(GraphicsComponent graphicsComponent) {

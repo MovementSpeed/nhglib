@@ -32,7 +32,11 @@ public class Main extends NHGEntry {
     @Override
     public void engineStarted() {
         super.engineStarted();
+        NHG.debugLogs = true;
+
         scene = new Scene();
+
+        /*scene = new Scene();
 
         ModelBuilder modelBuilder = new ModelBuilder();
         Model box = modelBuilder.createBox(1f, 0.1f, 1f,
@@ -40,16 +44,6 @@ public class Main extends NHGEntry {
                 VertexAttributes.Usage.ColorUnpacked |
                         VertexAttributes.Usage.Normal |
                         VertexAttributes.Usage.Position);
-        
-        NHG.debugLogs = true;
-
-        for (int i = 0; i < 5; i++) {
-            int entity = NHG.entitySystem.createEntity();
-
-            MessageComponent messageComponent = NHG.entitySystem.createComponent(
-                    entity, MessageComponent.class);
-            messageComponent.subscribe("fire", "fly");
-        }
 
         // Root scene entity
         int rootSceneEntity = scene.sceneGraph.getRootEntity();
@@ -99,9 +93,11 @@ public class Main extends NHGEntry {
 
         for (int i = 0; i < 10; i++) {
             newEntity(MathUtils.random(-2f, 2f), MathUtils.random(0f, 0.5f), MathUtils.random(-2, 2f));
-        }
+        }*/
 
-        NHG.sceneManager.loadScene(scene);
+        //NHG.sceneManager.loadScene(scene);
+
+        NHG.assets.queueAsset(new Asset("scene", "myscene.nhs", Scene.class));
 
         // Subscribe to asset events
         NHG.messaging.get(NHG.strings.events.assetLoaded, NHG.strings.events.assetLoadingFinished)
@@ -109,6 +105,11 @@ public class Main extends NHGEntry {
                     if (message.is(NHG.strings.events.assetLoaded)) {
                         Asset asset = (Asset) message.data.get(NHG.strings.defaults.assetKey);
                         NHG.logger.log(this, "Loaded asset with alias: %s", asset.alias);
+
+                        if (asset.is("scene")) {
+                            scene = NHG.assets.get(asset);
+                            NHG.sceneManager.loadScene(scene);
+                        }
                     } else if (message.is(NHG.strings.events.assetLoadingFinished)) {
                         NHG.logger.log(this, "Loading finished!");
                     }
@@ -134,49 +135,51 @@ public class Main extends NHGEntry {
             NHG.messaging.send(new Message("fly"));
         }
 
-        int rootSceneEntity = scene.sceneGraph.getRootEntity();
-        NodeComponent rootNodeComponent = NHG.entitySystem.getComponent(
-                rootSceneEntity, NodeComponent.class);
+        if (scene != null) {
+            int rootSceneEntity = scene.sceneGraph.getRootEntity();
+            NodeComponent rootNodeComponent = NHG.entitySystem.getComponent(
+                    rootSceneEntity, NodeComponent.class);
 
-        boolean input = false;
+            boolean input = false;
 
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            rootNodeComponent.translate(0, 0, 0.01f);
-            input = true;
-        }
+            if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+                rootNodeComponent.translate(0, 0, 0.01f);
+                input = true;
+            }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            rootNodeComponent.translate(0, 0, -0.01f);
-            input = true;
-        }
+            if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+                rootNodeComponent.translate(0, 0, -0.01f);
+                input = true;
+            }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            rootNodeComponent.translate(-0.01f, 0, 0);
-            input = true;
-        }
+            if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+                rootNodeComponent.translate(-0.01f, 0, 0);
+                input = true;
+            }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            rootNodeComponent.translate(0.01f, 0, 0);
-            input = true;
-        }
+            if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+                rootNodeComponent.translate(0.01f, 0, 0);
+                input = true;
+            }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            rootNodeComponent.rotate(0, -1f, 0);
-            input = true;
-        }
+            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+                rootNodeComponent.rotate(0, -1f, 0);
+                input = true;
+            }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            rootNodeComponent.rotate(0, 1f, 0);
-            input = true;
-        }
+            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+                rootNodeComponent.rotate(0, 1f, 0);
+                input = true;
+            }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.N)) {
-            newEntity(MathUtils.random(-0.3f, 0.3f), MathUtils.random(0f, 0.5f), MathUtils.random(-0.3f, 0.3f));
-            NHG.sceneManager.refresh();
-        }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.N)) {
+                newEntity(MathUtils.random(-0.3f, 0.3f), MathUtils.random(0f, 0.5f), MathUtils.random(-0.3f, 0.3f));
+                NHG.sceneManager.refresh();
+            }
 
-        if (input) {
-            rootNodeComponent.applyTransforms();
+            if (input) {
+                rootNodeComponent.applyTransforms();
+            }
         }
     }
 
