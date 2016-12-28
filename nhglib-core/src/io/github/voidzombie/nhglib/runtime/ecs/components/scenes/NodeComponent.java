@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
-import io.github.voidzombie.nhglib.utils.graphics.TransformUtils;
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
@@ -26,17 +25,17 @@ public class NodeComponent extends PooledComponent {
 
     public NodeComponent() {
         node = new Node();
-        translation = TransformUtils.ZERO_VECTOR_3;
-        rotation = TransformUtils.ZERO_VECTOR_3;
-        scale = TransformUtils.ONE_VECTOR_3;
-        rotationQuaternion = TransformUtils.ZERO_QUATERNION;
+        translation = new Vector3();
+        rotation = new Vector3();
+        scale = new Vector3(1, 1, 1);
+        rotationQuaternion = new Quaternion();
     }
 
     @Override
     protected void reset() {
-        node.translation.set(TransformUtils.ZERO_VECTOR_3);
-        node.rotation.set(TransformUtils.ZERO_QUATERNION);
-        node.scale.set(TransformUtils.ONE_VECTOR_3);
+        node.translation.set(new Vector3());
+        node.rotation.set(new Quaternion());
+        node.scale.set(new Vector3());
     }
 
     public void setTranslation(Vector3 translation) {
@@ -146,11 +145,10 @@ public class NodeComponent extends PooledComponent {
      * {@link #applyTransforms() applyTransforms()} after you've completed all transforms on the node.
      */
     public void rotate(float x, float y, float z, boolean apply) {
-        float pitch = node.rotation.getPitch();
-        float yaw = node.rotation.getYaw();
-        float roll = node.rotation.getRoll();
+        Quaternion quaternion = new Quaternion();
+        quaternion.setEulerAngles(y, x, z);
 
-        node.rotation.setEulerAngles(yaw + y, pitch + x, roll + z);
+        node.rotation.mul(quaternion);
 
         if (apply) {
             applyTransforms();

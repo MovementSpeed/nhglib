@@ -1,16 +1,14 @@
 package io.github.voidzombie.nhglib.runtime.ecs.components.graphics;
 
 import com.artemis.PooledComponent;
-import com.badlogic.gdx.graphics.g3d.Model;
-import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.graphics.interfaces.Representation;
-import io.github.voidzombie.nhglib.graphics.representations.ModelRepresentation;
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
  */
 public class GraphicsComponent extends PooledComponent {
+    public Type type;
     public State state;
     public Asset asset;
 
@@ -34,8 +32,8 @@ public class GraphicsComponent extends PooledComponent {
 
     public void setRepresentation(Representation representation) {
         if (representation != null) {
-            this.representation = representation;
             state = State.READY;
+            this.representation = representation;
         }
     }
 
@@ -43,5 +41,22 @@ public class GraphicsComponent extends PooledComponent {
         NOT_INITIALIZED,
         LOADING,
         READY
+    }
+
+    public enum Type {
+        STATIC,
+        DYNAMIC;
+
+        public static Type fromString(String value) {
+            Type type = null;
+
+            if (value.contentEquals("dynamic")) {
+                type = DYNAMIC;
+            } else if (value.contentEquals("static")) {
+                type = STATIC;
+            }
+
+            return type;
+        }
     }
 }

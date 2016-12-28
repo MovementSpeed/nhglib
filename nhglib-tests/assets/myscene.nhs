@@ -5,9 +5,9 @@
     "entities":
     [
       {
+        "id":"root",
         "transform":
         {
-          "type":"absolute",
           "position":
           {
             "x":0.0,
@@ -31,10 +31,11 @@
         [
           {
             "type":"graphics",
+            "graphicsType":"static",
             "asset":
             {
               "alias":"weapon",
-              "source":"models/weapon.g3db",
+              "source":"models/corridors.g3db",
               "classAlias":"model"
             }
           },
@@ -50,14 +51,14 @@
         "entities":
         [
           {
+            "id":"weaponEntity1",
             "transform":
             {
-              "type":"relative",
               "position":
               {
                 "x":0.0,
-                "y":0.5,
-                "z":0.0,
+                "y":0.0,
+                "z":-0.5,
               },
               "rotation":
               {
@@ -76,6 +77,7 @@
             [
               {
                 "type":"graphics",
+                "graphicsType":"dynamic",
                 "asset":
                 {
                   "alias":"weapon1",
@@ -91,7 +93,54 @@
                 ]
               }
             ],
-            "entities": []
+            "entities":
+            [
+              {
+                "id":"weaponEntity2",
+                "transform":
+                {
+                  "position":
+                  {
+                    "x":0.0,
+                    "y":0.05,
+                    "z":0.0,
+                  },
+                  "rotation":
+                  {
+                    "x":0.0,
+                    "y":0.0,
+                    "z":0.0,
+                  },
+                  "scale":
+                  {
+                    "x":1.0,
+                    "y":1.0,
+                    "z":1.0,
+                  }
+                },
+                "components":
+                [
+                  {
+                    "type":"graphics",
+                    "graphicsType":"dynamic",
+                    "asset":
+                    {
+                      "alias":"weapon1",
+                      "source":"models/weapon.g3db",
+                      "classAlias":"model"
+                    }
+                  },
+                  {
+                    "type":"message",
+                    "filters":
+                    [
+                      "destroy"
+                    ]
+                  }
+                ],
+                "entities": []
+              }
+            ]
           }
         ]
       }

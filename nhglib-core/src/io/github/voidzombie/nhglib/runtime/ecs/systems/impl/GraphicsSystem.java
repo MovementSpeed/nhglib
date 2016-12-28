@@ -4,28 +4,44 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.ModelCache;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
-import io.github.voidzombie.nhglib.graphics.representations.ModelRepresentation;
+import io.github.voidzombie.nhglib.NHG;
+import io.github.voidzombie.nhglib.assets.Asset;
+import io.github.voidzombie.nhglib.graphics.interfaces.Representation;
 import io.github.voidzombie.nhglib.graphics.utils.DefaultPerspectiveCamera;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.GraphicsComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.base.NhgIteratingSystem;
+import io.github.voidzombie.nhglib.runtime.messaging.Message;
+import io.github.voidzombie.nhglib.runtime.threading.Work;
 import io.github.voidzombie.nhglib.utils.graphics.GLUtils;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
  */
 public class GraphicsSystem extends NhgIteratingSystem {
-    private ComponentMapper<NodeComponent> nodeMapper;
-    private ComponentMapper<GraphicsComponent> graphicsMapper;
+    private Boolean invalidateStaticCache;
+    private Boolean staticCacheInvalidated;
 
     private ModelBatch modelBatch;
+    private ModelCache dynamicCache;
+    private ModelCache staticCache;
     private DefaultPerspectiveCamera perspectiveCamera;
+
+    private ComponentMapper<NodeComponent> nodeMapper;
+    private ComponentMapper<GraphicsComponent> graphicsMapper;
 
     public GraphicsSystem() {
         super(Aspect.all(NodeComponent.class, GraphicsComponent.class));
 
+        staticCacheInvalidated = false;
+        invalidateStaticCache = false;
+
         modelBatch = new ModelBatch();
+        dynamicCache = new ModelCache();
+        staticCache = new ModelCache();
         perspectiveCamera = new DefaultPerspectiveCamera();
     }
 
@@ -33,40 +49,75 @@ public class GraphicsSystem extends NhgIteratingSystem {
     protected void begin() {
         super.begin();
         perspectiveCamera.update();
-
-        GLUtils.clearScreen(Color.WHITE);
-        modelBatch.begin(perspectiveCamera);
+        dynamicCache.begin(perspectiveCamera);
     }
 
     @Override
     protected void process(int entityId) {
-        NodeComponent nodeComponent = nodeMapper.get(entityId);
         GraphicsComponent graphicsComponent = graphicsMapper.get(entityId);
+        NodeComponent nodeComponent = nodeMapper.get(entityId);
 
-        if (graphicsComponent.getRepresentation() != null) {
-            RenderableProvider provider = getRenderableProvider(graphicsComponent);
+        Representation representation = graphicsComponent.getRepresentation();
 
-            if (provider != null) {
-                graphicsComponent.getRepresentation().setTransform(nodeComponent.getTransform());
-                modelBatch.render(provider);
+        if (representation != null) {
+            RenderableProvider provider = representation.get();
+
+            if (graphicsComponent.type == GraphicsComponent.Type.DYNAMIC) {
+                if (provider != null) {
+                    representation.setTransform(nodeComponent.getTransform());
+                    dynamicCache.add(provider);
+                }
             }
         }
     }
 
     @Override
     protected void end() {
-        modelBatch.end();
         super.end();
+        dynamicCache.end();
+
+        GLUtils.clearScreen(Color.BLACK);
+
+        modelBatch.begin(perspectiveCamera);
+        modelBatch.render(staticCache);
+        modelBatch.render(dynamicCache);
+        modelBatch.end();
     }
 
-    private RenderableProvider getRenderableProvider(GraphicsComponent graphicsComponent) {
-        RenderableProvider provider = null;
+    @Override
+    protected void inserted(int entityId) {
+        super.inserted(entityId);
+        final GraphicsComponent graphicsComponent = graphicsMapper.get(entityId);
 
-        if (graphicsComponent.getRepresentation() instanceof ModelRepresentation) {
-            ModelRepresentation modelRepresentation = graphicsComponent.getRepresentation();
-            provider = modelRepresentation.get();
+        NHG.messaging.get(NHG.strings.events.assetLoaded)
+                .subscribe(new Consumer<Message>() {
+                    @Override
+                    public void accept(Message message) throws Exception {
+                        if (graphicsComponent.type == GraphicsComponent.Type.STATIC) {
+                            Asset asset = (Asset) message.data.get(NHG.strings.defaults.assetKey);
+
+                            if (asset.is(graphicsComponent.asset.alias)) {
+                                rebuildCache(graphicsComponent.getRepresentation().get());
+                            }
+                        }
+                    }
+                });
+    }
+
+    private void rebuildCache(RenderableProvider ... renderableProviders) {
+        ModelCache previousModelCache = new ModelCache();
+
+        previousModelCache.begin(perspectiveCamera);
+        previousModelCache.add(staticCache);
+        previousModelCache.end();
+
+        staticCache.begin(perspectiveCamera);
+        staticCache.add(previousModelCache);
+
+        for (RenderableProvider provider : renderableProviders) {
+            staticCache.add(provider);
         }
 
-        return provider;
+        staticCache.end();
     }
 }

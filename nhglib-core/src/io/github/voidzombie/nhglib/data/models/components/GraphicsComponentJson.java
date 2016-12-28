@@ -15,11 +15,13 @@ public class GraphicsComponentJson extends ComponentJson {
         GraphicsComponent graphicsComponent =
                 NHG.entitySystem.createComponent(entity, GraphicsComponent.class);
 
+        String type = jsonValue.getString("graphicsType");
         JsonValue asset = jsonValue.get("asset");
 
         AssetJson assetJson = new AssetJson();
         assetJson.parse(asset);
 
+        graphicsComponent.type = GraphicsComponent.Type.fromString(type);
         graphicsComponent.asset = assetJson.get();
         output = graphicsComponent;
     }

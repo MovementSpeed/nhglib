@@ -7,7 +7,7 @@ public class Scene {
     public String name;
     public SceneGraph sceneGraph;
 
-    public Scene() {
-        sceneGraph = new SceneGraph();
+    public Scene(String rootId) {
+        sceneGraph = new SceneGraph(rootId);
     }
 }

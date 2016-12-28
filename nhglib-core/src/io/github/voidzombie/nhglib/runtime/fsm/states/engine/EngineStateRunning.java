@@ -30,10 +30,12 @@ public class EngineStateRunning implements State<NHGEntry> {
 
     @Override
     public void update(NHGEntry nhgEntry) {
-        NHG.assets.update();
-        NHG.entitySystem.update(Gdx.graphics.getDeltaTime());
+        float delta = Gdx.graphics.getDeltaTime();
 
-        nhgEntry.engineUpdate();
+        NHG.assets.update();
+        NHG.entitySystem.update(delta);
+
+        nhgEntry.engineUpdate(delta);
     }
 
     @Override

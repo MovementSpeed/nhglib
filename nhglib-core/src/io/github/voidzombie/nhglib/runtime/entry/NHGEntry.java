@@ -22,8 +22,8 @@ public class NHGEntry extends BaseGame {
     }
 
     @Override
-    public void engineUpdate() {
-        super.engineUpdate();
+    public void engineUpdate(float delta) {
+        super.engineUpdate(delta);
     }
 
     @Override

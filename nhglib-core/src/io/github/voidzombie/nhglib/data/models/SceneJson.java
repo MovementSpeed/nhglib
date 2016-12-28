@@ -1,6 +1,5 @@
 package io.github.voidzombie.nhglib.data.models;
 
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
@@ -13,15 +12,12 @@ import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 public class SceneJson implements JsonParseable<Scene> {
     private Scene output;
 
-    public SceneJson() {
-        output = new Scene();
-    }
-
     @Override
     public void parse(JsonValue jsonValue) {
         String name = jsonValue.getString("name");
         JsonValue entitiesJson = jsonValue.get("entities");
 
+        output = new Scene("root");
         output.name = name;
 
         int rootEntity = output.sceneGraph.getRootEntity();

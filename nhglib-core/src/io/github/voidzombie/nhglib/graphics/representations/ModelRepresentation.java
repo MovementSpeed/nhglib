@@ -2,16 +2,17 @@ package io.github.voidzombie.nhglib.graphics.representations;
 
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import io.github.voidzombie.nhglib.graphics.interfaces.Representation;
-import io.github.voidzombie.nhglib.utils.graphics.TransformUtils;
 
 /**
  * Created by Fausto Napoli on 09/12/2016.
  */
-public class ModelRepresentation implements Representation<ModelInstance> {
+public class ModelRepresentation implements Representation {
+    private Boolean cached;
     private ModelInstance modelInstance;
 
     private Quaternion rotation;
@@ -19,17 +20,19 @@ public class ModelRepresentation implements Representation<ModelInstance> {
     private Vector3 scale;
 
     public ModelRepresentation(Model model) {
+        cached = false;
+
         if (model != null) {
             this.modelInstance = new ModelInstance(model);
         }
 
-        translation = TransformUtils.ZERO_VECTOR_3;
-        rotation = TransformUtils.ZERO_QUATERNION;
-        scale = TransformUtils.ONE_VECTOR_3;
+        translation = new Vector3();
+        rotation = new Quaternion();
+        scale = new Vector3();
     }
 
     @Override
-    public ModelInstance get() {
+    public RenderableProvider get() {
         return modelInstance;
     }
 
@@ -71,5 +74,15 @@ public class ModelRepresentation implements Representation<ModelInstance> {
 
             modelInstance.transform.set(translation, rotation, scale);
         }
+    }
+
+    @Override
+    public void setCached(Boolean cached) {
+        this.cached = cached;
+    }
+
+    @Override
+    public Boolean isCached() {
+        return cached;
     }
 }

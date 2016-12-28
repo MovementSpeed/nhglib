@@ -10,7 +10,6 @@ public class EntitySystem {
 
     public void update(float delta) {
         entityWorld.setDelta(delta);
-        // TODO : this part is responsible for blocking everything
         entityWorld.process();
     }
 

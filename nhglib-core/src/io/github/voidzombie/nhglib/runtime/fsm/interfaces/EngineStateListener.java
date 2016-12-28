@@ -6,6 +6,6 @@ package io.github.voidzombie.nhglib.runtime.fsm.interfaces;
 public interface EngineStateListener {
     void engineStarted();
     void engineInitialized();
-    void engineUpdate();
+    void engineUpdate(float delta);
     void engineClosing();
 }

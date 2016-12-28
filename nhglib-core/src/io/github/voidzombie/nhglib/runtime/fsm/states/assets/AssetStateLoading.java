@@ -51,7 +51,7 @@ public class AssetStateLoading implements State<Assets> {
                 .doFinally(new Action() {
                     @Override
                     public void run() throws Exception {
-                        assets.clearQueue();
+                        assets.clearCompleted();
                     }
                 })
                 .subscribe(new Consumer<Asset>() {

@@ -1,7 +1,5 @@
 package io.github.voidzombie.nhglib.utils.scenes;
 
-import com.artemis.Component;
-import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.data.models.ComponentJson;
 
 import java.util.HashMap;

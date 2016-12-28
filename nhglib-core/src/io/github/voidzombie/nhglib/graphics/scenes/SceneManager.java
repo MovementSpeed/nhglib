@@ -38,8 +38,8 @@ public class SceneManager {
         Observable.fromIterable(scene.sceneGraph.getEntities())
                 .filter(new Predicate<Integer>() {
                     @Override
-                    public boolean test(Integer integer) throws Exception {
-                        return graphicsMapper.has(integer);
+                    public boolean test(Integer entity) throws Exception {
+                        return graphicsMapper.has(entity);
                     }
                 })
                 .subscribe(new Consumer<Integer>() {

@@ -1,6 +1,5 @@
 package io.github.voidzombie.nhglib.data.models;
 
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.graphics.scenes.SceneGraph;
@@ -18,29 +17,8 @@ public class EntityJson implements JsonParseable<Integer> {
 
     @Override
     public void parse(JsonValue jsonValue) {
-        TransformJson transformJson = new TransformJson();
-        transformJson.parse(jsonValue.get("transform"));
-
-        int entity = sceneGraphRef.addSceneEntity(parentEntity);
-
-        NodeComponent nodeComponent = NHG.entitySystem.getComponent(entity, NodeComponent.class);
-
-        if (transformJson.type == TransformJson.Type.ABSOLUTE) {
-            nodeComponent.setTranslation(transformJson.position);
-            nodeComponent.setRotation(transformJson.rotation);
-            nodeComponent.setScale(transformJson.scale);
-        } else if (transformJson.type == TransformJson.Type.RELATIVE) {
-            NodeComponent parentNodeComponent =
-                    NHG.entitySystem.getComponent(parentEntity, NodeComponent.class);
-
-            nodeComponent.setTranslation(parentNodeComponent.getTranslation());
-            nodeComponent.setRotation(parentNodeComponent.getRotation());
-            nodeComponent.setScale(parentNodeComponent.getScale());
-
-            nodeComponent.translate(transformJson.position);
-            nodeComponent.rotate(transformJson.rotation);
-            nodeComponent.scale(transformJson.scale);
-        }
+        String id = jsonValue.getString("id");
+        int entity = sceneGraphRef.addSceneEntity(id, parentEntity);
 
         JsonValue componentsJson = jsonValue.get("components");
 
@@ -62,6 +40,15 @@ public class EntityJson implements JsonParseable<Integer> {
             entityJson.parentEntity = entity;
             entityJson.parse(entityJsonValue);
         }
+
+        TransformJson transformJson = new TransformJson();
+        transformJson.parse(jsonValue.get("transform"));
+
+        NodeComponent nodeComponent = NHG.entitySystem.getComponent(entity, NodeComponent.class);
+
+        nodeComponent.setTranslation(transformJson.position);
+        nodeComponent.setRotation(transformJson.rotation);
+        nodeComponent.setScale(transformJson.scale);
 
         output = entity;
     }

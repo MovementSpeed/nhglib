@@ -4,9 +4,9 @@ import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
+import io.github.voidzombie.nhglib.runtime.fsm.base.EngineStates;
 import io.github.voidzombie.nhglib.runtime.fsm.interfaces.EngineConfigurationListener;
 import io.github.voidzombie.nhglib.runtime.fsm.interfaces.EngineStateListener;
-import io.github.voidzombie.nhglib.runtime.fsm.base.EngineStates;
 
 /**
  * Created by Fausto Napoli on 02/11/2016.
@@ -46,7 +46,7 @@ abstract class BaseGame implements
     }
 
     @Override
-    public void engineUpdate() {
+    public void engineUpdate(float delta) {
     }
 
     @Override

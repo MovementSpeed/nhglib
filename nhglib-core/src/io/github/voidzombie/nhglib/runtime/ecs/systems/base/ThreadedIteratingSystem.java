@@ -3,11 +3,9 @@ package io.github.voidzombie.nhglib.runtime.ecs.systems.base;
 import com.artemis.Aspect;
 import com.artemis.utils.IntBag;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.PerformanceCounter;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.runtime.threading.Threading;
 import io.github.voidzombie.nhglib.runtime.threading.Work;
-import io.reactivex.Observable;
 
 import java.util.Arrays;
 

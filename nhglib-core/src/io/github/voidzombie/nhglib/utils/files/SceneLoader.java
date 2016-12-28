@@ -18,8 +18,6 @@ import java.io.UnsupportedEncodingException;
  * Created by Fausto Napoli on 19/12/2016.
  */
 public class SceneLoader extends AsynchronousAssetLoader<Scene, SceneLoader.SceneParameter> {
-    Scene scene;
-
     public SceneLoader(FileHandleResolver resolver) {
         super(resolver);
     }
@@ -42,7 +40,7 @@ public class SceneLoader extends AsynchronousAssetLoader<Scene, SceneLoader.Scen
     }
 
     private Scene getScene(byte[] bytes) {
-        scene = new Scene();
+        Scene scene = null;
 
         try {
             String json = new String(bytes, "UTF-8");

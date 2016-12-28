@@ -5,14 +5,13 @@ import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetErrorListener;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 import io.github.voidzombie.nhglib.interfaces.Updatable;
-import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.nhglib.runtime.fsm.base.AssetsStates;
+import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.nhglib.utils.data.Bundle;
 import io.github.voidzombie.nhglib.utils.files.SceneLoader;
 
@@ -85,6 +84,16 @@ public class Assets implements Updatable, AssetErrorListener {
         if (assets != null) {
             for (Asset asset : assets) {
                 queueAsset(asset);
+            }
+        }
+    }
+
+    public void clearCompleted() {
+        for (int i = 0; i < assetList.size; i++) {
+            Asset asset = assetList.get(i);
+
+            if (NHG.assets.assetManager.isLoaded(asset.source)) {
+                assetList.removeValue(asset, true);
             }
         }
     }
