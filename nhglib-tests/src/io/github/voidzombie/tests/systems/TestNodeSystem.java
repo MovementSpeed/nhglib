@@ -6,15 +6,13 @@ import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.runtime.ecs.components.common.MessageComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
-import io.github.voidzombie.nhglib.runtime.ecs.systems.base.NhgIteratingSystem;
+import io.github.voidzombie.nhglib.runtime.ecs.systems.base.NHGIteratingSystem;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
-
-import java.io.IOException;
 
 /**
  * Created by Fausto Napoli on 13/12/2016.
  */
-public class TestNodeSystem extends NhgIteratingSystem {
+public class TestNodeSystem extends NHGIteratingSystem {
     private ComponentMapper<NodeComponent> nodeMapper;
     private ComponentMapper<MessageComponent> messageMapper;
 

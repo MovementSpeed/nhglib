@@ -31,7 +31,7 @@
         [
           {
             "type":"graphics",
-            "graphicsType":"static",
+            "graphicsType":"dynamic",
             "asset":
             {
               "alias":"weapon",

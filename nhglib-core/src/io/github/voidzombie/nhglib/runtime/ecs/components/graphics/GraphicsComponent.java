@@ -20,14 +20,14 @@ public class GraphicsComponent extends PooledComponent {
 
     @Override
     protected void reset() {
-        state = State.NOT_INITIALIZED;
+        invalidate();
         asset = null;
-        representation = null;
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends Representation> T getRepresentation() {
-        return (T) representation;
+    public void invalidate() {
+        state = State.NOT_INITIALIZED;
+        representation.invalidate();
+        representation = null;
     }
 
     public void setRepresentation(Representation representation) {
@@ -35,6 +35,11 @@ public class GraphicsComponent extends PooledComponent {
             state = State.READY;
             this.representation = representation;
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Representation> T getRepresentation() {
+        return (T) representation;
     }
 
     public enum State {

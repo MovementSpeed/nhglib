@@ -56,6 +56,13 @@ public class Assets implements Updatable, AssetErrorListener {
         NHG.messaging.send(new Message(NHG.strings.events.assetLoaded, bundle));
     }
 
+    public void assetUnloaded(Asset asset) {
+        Bundle bundle = new Bundle();
+        bundle.put(NHG.strings.defaults.assetKey, asset);
+
+        NHG.messaging.send(new Message(NHG.strings.events.assetUnloaded, bundle));
+    }
+
     public Array<Asset> getAssetList() {
         return assetList;
     }
@@ -84,6 +91,15 @@ public class Assets implements Updatable, AssetErrorListener {
         if (assets != null) {
             for (Asset asset : assets) {
                 queueAsset(asset);
+            }
+        }
+    }
+
+    public void unloadAsset(Asset asset) {
+        if (asset != null) {
+            if (assetManager.isLoaded(asset.source)) {
+                assetManager.unload(asset.source);
+                assetUnloaded(asset);
             }
         }
     }

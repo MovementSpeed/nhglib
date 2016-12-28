@@ -12,23 +12,20 @@ import io.github.voidzombie.nhglib.graphics.interfaces.Representation;
 import io.github.voidzombie.nhglib.graphics.utils.DefaultPerspectiveCamera;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.GraphicsComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
-import io.github.voidzombie.nhglib.runtime.ecs.systems.base.NhgIteratingSystem;
+import io.github.voidzombie.nhglib.runtime.ecs.systems.base.NHGIteratingSystem;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
-import io.github.voidzombie.nhglib.runtime.threading.Work;
 import io.github.voidzombie.nhglib.utils.graphics.GLUtils;
 import io.reactivex.functions.Consumer;
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
  */
-public class GraphicsSystem extends NhgIteratingSystem {
-    private Boolean invalidateStaticCache;
-    private Boolean staticCacheInvalidated;
+public class GraphicsSystem extends NHGIteratingSystem {
+    public DefaultPerspectiveCamera camera;
 
     private ModelBatch modelBatch;
     private ModelCache dynamicCache;
     private ModelCache staticCache;
-    private DefaultPerspectiveCamera perspectiveCamera;
 
     private ComponentMapper<NodeComponent> nodeMapper;
     private ComponentMapper<GraphicsComponent> graphicsMapper;
@@ -36,20 +33,18 @@ public class GraphicsSystem extends NhgIteratingSystem {
     public GraphicsSystem() {
         super(Aspect.all(NodeComponent.class, GraphicsComponent.class));
 
-        staticCacheInvalidated = false;
-        invalidateStaticCache = false;
-
         modelBatch = new ModelBatch();
         dynamicCache = new ModelCache();
         staticCache = new ModelCache();
-        perspectiveCamera = new DefaultPerspectiveCamera();
+
+        camera = new DefaultPerspectiveCamera();
     }
 
     @Override
     protected void begin() {
         super.begin();
-        perspectiveCamera.update();
-        dynamicCache.begin(perspectiveCamera);
+        camera.update();
+        dynamicCache.begin(camera);
     }
 
     @Override
@@ -78,7 +73,7 @@ public class GraphicsSystem extends NhgIteratingSystem {
 
         GLUtils.clearScreen(Color.BLACK);
 
-        modelBatch.begin(perspectiveCamera);
+        modelBatch.begin(camera);
         modelBatch.render(staticCache);
         modelBatch.render(dynamicCache);
         modelBatch.end();
@@ -107,11 +102,11 @@ public class GraphicsSystem extends NhgIteratingSystem {
     private void rebuildCache(RenderableProvider ... renderableProviders) {
         ModelCache previousModelCache = new ModelCache();
 
-        previousModelCache.begin(perspectiveCamera);
+        previousModelCache.begin(camera);
         previousModelCache.add(staticCache);
         previousModelCache.end();
 
-        staticCache.begin(perspectiveCamera);
+        staticCache.begin(camera);
         staticCache.add(previousModelCache);
 
         for (RenderableProvider provider : renderableProviders) {

@@ -5,7 +5,6 @@ import com.artemis.ComponentMapper;
 import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.runtime.ecs.components.common.MessageComponent;
-import io.github.voidzombie.nhglib.runtime.ecs.systems.base.NhgIteratingSystem;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.base.ThreadedIteratingSystem;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
 

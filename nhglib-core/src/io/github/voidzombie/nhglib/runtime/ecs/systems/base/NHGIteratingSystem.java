@@ -6,8 +6,8 @@ import com.artemis.systems.IteratingSystem;
 /**
  * Created by Fausto Napoli on 06/11/2016.
  */
-public abstract class NhgIteratingSystem extends IteratingSystem {
-    public NhgIteratingSystem(Aspect.Builder aspect) {
+public abstract class NHGIteratingSystem extends IteratingSystem {
+    public NHGIteratingSystem(Aspect.Builder aspect) {
         super(aspect);
     }
 }

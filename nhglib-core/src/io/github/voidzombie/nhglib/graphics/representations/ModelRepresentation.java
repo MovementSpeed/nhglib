@@ -12,7 +12,6 @@ import io.github.voidzombie.nhglib.graphics.interfaces.Representation;
  * Created by Fausto Napoli on 09/12/2016.
  */
 public class ModelRepresentation implements Representation {
-    private Boolean cached;
     private ModelInstance modelInstance;
 
     private Quaternion rotation;
@@ -20,8 +19,6 @@ public class ModelRepresentation implements Representation {
     private Vector3 scale;
 
     public ModelRepresentation(Model model) {
-        cached = false;
-
         if (model != null) {
             this.modelInstance = new ModelInstance(model);
         }
@@ -77,12 +74,7 @@ public class ModelRepresentation implements Representation {
     }
 
     @Override
-    public void setCached(Boolean cached) {
-        this.cached = cached;
-    }
-
-    @Override
-    public Boolean isCached() {
-        return cached;
+    public void invalidate() {
+        modelInstance = null;
     }
 }

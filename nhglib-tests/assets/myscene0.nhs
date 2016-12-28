@@ -5,13 +5,14 @@
     "entities":
     [
       {
+        "id":"weaponEntity1",
         "transform":
         {
           "position":
           {
             "x":0.0,
             "y":0.0,
-            "z":0.0,
+            "z":-1,
           },
           "rotation":
           {
@@ -21,35 +22,25 @@
           },
           "scale":
           {
-            "x":1.0,
-            "y":1.0,
-            "z":1.0,
+            "x":3.0,
+            "y":3.0,
+            "z":3.0,
           }
         },
         "components":
         [
           {
             "type":"graphics",
-            "graphicsType":"static",
+            "graphicsType":"dynamic",
             "asset":
             {
-              "alias":"weapon",
-              "source":"models/corridors.g3db",
+              "alias":"weapon1",
+              "source":"models/weapon.g3db",
               "classAlias":"model"
             }
-          },
-          {
-            "type":"message",
-            "filters":
-            [
-              "fire",
-              "fly"
-            ]
           }
         ],
-        "entities":
-        [
-        ]
+        "entities":[]
       }
     ]
   }

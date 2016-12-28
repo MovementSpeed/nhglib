@@ -23,6 +23,7 @@ public class Strings {
         public final String engineDestroy = "nhg_event_engine_destroy";
         public final String assetLoadingFinished = "nhg_event_asset_loading_finished";
         public final String assetLoaded = "nhg_event_asset_loaded";
+        public final String assetUnloaded = "nhg_event_asset_unloaded";
         public final String sceneLoaded = "nhg_event_scene_loaded";
     }
 }

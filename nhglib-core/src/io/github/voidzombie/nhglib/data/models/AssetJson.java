@@ -6,7 +6,7 @@ import io.github.voidzombie.nhglib.interfaces.JsonParseable;
 import io.github.voidzombie.nhglib.utils.scenes.SceneUtils;
 
 /**
- * Created by worse on 19/12/2016.
+ * Created by Fausto Napoli on 19/12/2016.
  */
 public class AssetJson implements JsonParseable<Asset> {
     private Asset output;

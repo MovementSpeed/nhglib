@@ -20,7 +20,6 @@ public class NHG {
     public final static Messaging messaging;
     public final static Threading threading;
     public final static EntitySystem entitySystem;
-    public final static SceneManager sceneManager;
     public final static Utils utils;
 
     public static Boolean debugLogs = false;
@@ -32,7 +31,6 @@ public class NHG {
         messaging = new Messaging();
         threading = new Threading();
         entitySystem = new EntitySystem();
-        sceneManager = new SceneManager();
         utils = new Utils();
     }
 }

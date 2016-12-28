@@ -35,6 +35,10 @@ public class EntitySystem {
                 .build(entityWorld);
     }
 
+    public <T extends BaseEntitySystem> T getEntitySystem(Class<T> systemClass) {
+        return entityWorld.getSystem(systemClass);
+    }
+
     public <T extends Component> T createComponent(int entity, Class<T> type) {
         return entityWorld.getMapper(type).create(entity);
     }
