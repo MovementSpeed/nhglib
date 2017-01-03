@@ -1,4 +1,4 @@
-package io.github.voidzombie.nhglib.data.models;
+package io.github.voidzombie.nhglib.data.models.serialization;
 
 import com.artemis.Component;
 import io.github.voidzombie.nhglib.interfaces.JsonParseable;

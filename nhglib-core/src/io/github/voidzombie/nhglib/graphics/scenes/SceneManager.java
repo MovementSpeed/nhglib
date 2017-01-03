@@ -2,12 +2,10 @@ package io.github.voidzombie.nhglib.graphics.scenes;
 
 import com.artemis.ComponentMapper;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ArrayMap;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.assets.Asset;
-import io.github.voidzombie.nhglib.data.models.components.GraphicsComponentJson;
-import io.github.voidzombie.nhglib.data.models.components.MessageComponentJson;
+import io.github.voidzombie.nhglib.data.models.serialization.components.GraphicsComponentJson;
+import io.github.voidzombie.nhglib.data.models.serialization.components.MessageComponentJson;
 import io.github.voidzombie.nhglib.graphics.representations.ModelRepresentation;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.GraphicsComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;

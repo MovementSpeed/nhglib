@@ -1,9 +1,9 @@
-package io.github.voidzombie.nhglib.data.models.components;
+package io.github.voidzombie.nhglib.data.models.serialization.components;
 
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.voidzombie.nhglib.NHG;
-import io.github.voidzombie.nhglib.data.models.AssetJson;
-import io.github.voidzombie.nhglib.data.models.ComponentJson;
+import io.github.voidzombie.nhglib.data.models.serialization.AssetJson;
+import io.github.voidzombie.nhglib.data.models.serialization.ComponentJson;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.GraphicsComponent;
 
 /**

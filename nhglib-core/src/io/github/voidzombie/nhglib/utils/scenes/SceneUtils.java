@@ -1,6 +1,6 @@
 package io.github.voidzombie.nhglib.utils.scenes;
 
-import io.github.voidzombie.nhglib.data.models.ComponentJson;
+import io.github.voidzombie.nhglib.data.models.serialization.ComponentJson;
 
 import java.util.HashMap;
 

@@ -3,41 +3,26 @@ package io.github.voidzombie.tests;
 import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.VertexAttributes;
-import com.badlogic.gdx.graphics.g3d.Material;
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.BoundingBox;
-import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.assets.Asset;
-import io.github.voidzombie.nhglib.graphics.representations.ModelRepresentation;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
-import io.github.voidzombie.nhglib.graphics.worlds.impl.DefaultWorld;
-import io.github.voidzombie.nhglib.runtime.ecs.components.common.MessageComponent;
-import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.GraphicsComponent;
+import io.github.voidzombie.nhglib.graphics.worlds.NHGWorld;
+import io.github.voidzombie.nhglib.graphics.worlds.strategies.impl.LargeWorldStrategy;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.GraphicsSystem;
 import io.github.voidzombie.nhglib.runtime.entry.NHGEntry;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
-import io.github.voidzombie.nhglib.utils.data.Bundle;
-import io.github.voidzombie.tests.systems.TestNodeSystem;
-import io.github.voidzombie.tests.systems.TestSystem;
+import io.github.voidzombie.nhglib.utils.data.Bounds;
 
 /**
  * Created by Fausto Napoli on 26/10/2016.
  */
 public class Main extends NHGEntry {
     private Scene scene;
-    private DefaultWorld world;
+    private NHGWorld world;
     private FPSLogger fpsLogger;
     private GraphicsSystem graphicsSystem;
     private ImmediateModeRenderer20 renderer20;
@@ -47,11 +32,14 @@ public class Main extends NHGEntry {
         super.engineStarted();
         NHG.debugLogs = true;
 
-        world = new DefaultWorld();
+        world = new NHGWorld(
+                new LargeWorldStrategy(),
+                new Bounds(1f, 1f, 1f));
+
         fpsLogger = new FPSLogger();
         renderer20 = new ImmediateModeRenderer20(false, true, 0);
 
-        NHG.assets.queueAsset(new Asset("scene", "myscene0.nhs", Scene.class));
+        NHG.assets.queueAsset(new Asset("scene", "myscene.nhs", Scene.class));
 
         // Subscribe to asset events
         NHG.messaging.get(NHG.strings.events.assetLoaded, NHG.strings.events.assetLoadingFinished)
@@ -61,8 +49,9 @@ public class Main extends NHGEntry {
 
                         if (asset.is("scene")) {
                             scene = NHG.assets.get(asset);
-
                             world.addScene(scene);
+                            world.loadScene("scene0");
+                            world.setReferenceEntity("weaponEntity1");
                         }
                     }
                 });
@@ -79,49 +68,51 @@ public class Main extends NHGEntry {
     @Override
     public void engineUpdate(float delta) {
         super.engineUpdate(delta);
-        //fpsLogger.log();
+        world.update();
 
         if (scene != null) {
-            int entity = scene.sceneGraph.getSceneEntity("root");
+            int entity = scene.sceneGraph.getSceneEntity("weaponEntity1");
             NodeComponent nodeComponent = NHG.entitySystem.getComponent(
                     entity, NodeComponent.class);
 
             boolean input = false;
 
             if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-                nodeComponent.translate(0, 0, 100f);
-                graphicsSystem.camera.position.add(0, 0, 100f);
-
-                NHG.logger.log(this, "%s", graphicsSystem.camera.position);
+                nodeComponent.translate(0, 0, 0.5f * delta);
                 input = true;
             }
 
             if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-                nodeComponent.translate(0, 0, -100f);
-                graphicsSystem.camera.position.add(0, 0, -100f);
-
-                NHG.logger.log(this, "%s", graphicsSystem.camera.position);
+                nodeComponent.translate(0, 0, -0.5f * delta);
                 input = true;
             }
 
             if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-                nodeComponent.translate(-0.1f * delta, 0, 0);
+                nodeComponent.translate(-0.5f * delta, 0, 0);
                 input = true;
             }
 
             if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-                nodeComponent.translate(0.1f * delta, 0, 0);
+                nodeComponent.translate(0.5f * delta, 0, 0);
+                input = true;
+            }
+
+            if (Gdx.input.isKeyPressed(Input.Keys.T)) {
+                nodeComponent.translate(0, -0.5f * delta, 0);
+                input = true;
+            }
+
+            if (Gdx.input.isKeyPressed(Input.Keys.G)) {
+                nodeComponent.translate(0, 0.5f * delta, 0);
                 input = true;
             }
 
             if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-                nodeComponent.rotate(0, -10f * delta, 0);
                 graphicsSystem.camera.rotate(1, 0, 1, 0);
                 input = true;
             }
 
             if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-                nodeComponent.rotate(0, 10f * delta, 0);
                 graphicsSystem.camera.rotate(-1, 0, 1, 0);
                 input = true;
             }
@@ -149,14 +140,6 @@ public class Main extends NHGEntry {
             if (input) {
                 nodeComponent.applyTransforms();
             }
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.X)) {
-            world.unloadScene("scene0");
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.Z)) {
-            world.loadScene("scene0");
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {

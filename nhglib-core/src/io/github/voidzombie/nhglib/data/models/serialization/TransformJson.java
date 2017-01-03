@@ -1,4 +1,4 @@
-package io.github.voidzombie.nhglib.data.models;
+package io.github.voidzombie.nhglib.data.models.serialization;
 
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.JsonValue;

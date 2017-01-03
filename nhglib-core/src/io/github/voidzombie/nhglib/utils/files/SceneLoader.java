@@ -9,7 +9,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import io.github.voidzombie.nhglib.NHG;
-import io.github.voidzombie.nhglib.data.models.SceneJson;
+import io.github.voidzombie.nhglib.data.models.serialization.SceneJson;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 
 import java.io.UnsupportedEncodingException;
