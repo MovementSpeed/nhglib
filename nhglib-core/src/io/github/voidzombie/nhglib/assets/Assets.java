@@ -7,12 +7,14 @@ import com.badlogic.gdx.assets.AssetErrorListener;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.JsonValue;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 import io.github.voidzombie.nhglib.interfaces.Updatable;
 import io.github.voidzombie.nhglib.runtime.fsm.base.AssetsStates;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.nhglib.utils.data.Bundle;
+import io.github.voidzombie.nhglib.utils.files.JsonLoader;
 import io.github.voidzombie.nhglib.utils.files.SceneLoader;
 
 /**
@@ -26,8 +28,10 @@ public class Assets implements Updatable, AssetErrorListener {
 
     public Assets() {
         fsm = new DefaultStateMachine<>(this, AssetsStates.IDLE);
+
         assetManager = new AssetManager();
         assetManager.setLoader(Scene.class, new SceneLoader(assetManager.getFileHandleResolver()));
+        assetManager.setLoader(JsonValue.class, new JsonLoader(assetManager.getFileHandleResolver()));
         assetManager.setErrorListener(this);
 
         assetList = new Array<>();
@@ -93,6 +97,10 @@ public class Assets implements Updatable, AssetErrorListener {
                 queueAsset(asset);
             }
         }
+    }
+
+    public void dequeueAsset(Asset asset) {
+        assetList.removeValue(asset, true);
     }
 
     public void unloadAsset(Asset asset) {

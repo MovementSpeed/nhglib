@@ -32,6 +32,7 @@ public class EngineStateRunning implements State<NHGEntry> {
     public void update(NHGEntry nhgEntry) {
         float delta = Gdx.graphics.getDeltaTime();
 
+        NHG.input.update();
         NHG.assets.update();
         NHG.entitySystem.update(delta);
 

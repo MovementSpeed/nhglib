@@ -16,7 +16,8 @@ public class Strings {
 
     public class Defaults {
         public final String modelsPath = "models/";
-        public final String assetKey = "asset";
+        public final String assetKey = "nhg_asset";
+        public final String inputKey = "nhg_input";
     }
 
     public class Events {
@@ -24,6 +25,7 @@ public class Strings {
         public final String assetLoadingFinished = "nhg_event_asset_loading_finished";
         public final String assetLoaded = "nhg_event_asset_loaded";
         public final String assetUnloaded = "nhg_event_asset_unloaded";
+        public final String keyInputTriggered = "nhg_event_input_triggered";
         public final String sceneLoaded = "nhg_event_scene_loaded";
     }
 }

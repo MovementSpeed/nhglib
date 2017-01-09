@@ -2,25 +2,27 @@ package io.github.voidzombie.tests;
 
 import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ArrayMap;
+import com.badlogic.gdx.utils.JsonValue;
 import io.github.voidzombie.nhglib.NHG;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 import io.github.voidzombie.nhglib.graphics.worlds.NHGWorld;
 import io.github.voidzombie.nhglib.graphics.worlds.strategies.impl.LargeWorldStrategy;
+import io.github.voidzombie.nhglib.input.*;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.GraphicsSystem;
 import io.github.voidzombie.nhglib.runtime.entry.NHGEntry;
-import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.nhglib.utils.data.Bounds;
 
 /**
  * Created by Fausto Napoli on 26/10/2016.
  */
-public class Main extends NHGEntry {
+public class Main extends NHGEntry implements InputListener {
     private Scene scene;
     private NHGWorld world;
     private FPSLogger fpsLogger;
@@ -34,12 +36,15 @@ public class Main extends NHGEntry {
 
         world = new NHGWorld(
                 new LargeWorldStrategy(),
-                new Bounds(1f, 1f, 1f));
+                new Bounds(2f, 2f, 2f));
 
         fpsLogger = new FPSLogger();
         renderer20 = new ImmediateModeRenderer20(false, true, 0);
 
+        NHG.input.addListener(this);
+
         NHG.assets.queueAsset(new Asset("scene", "myscene.nhs", Scene.class));
+        NHG.assets.queueAsset(new Asset("inputMap", "input.nhc", JsonValue.class));
 
         // Subscribe to asset events
         NHG.messaging.get(NHG.strings.events.assetLoaded, NHG.strings.events.assetLoadingFinished)
@@ -52,6 +57,9 @@ public class Main extends NHGEntry {
                             world.addScene(scene);
                             world.loadScene("scene0");
                             world.setReferenceEntity("weaponEntity1");
+                        } else if (asset.is("inputMap")) {
+                            NHG.input.fromJson(NHG.assets.get(asset));
+                            NHG.input.setActive("game", true);
                         }
                     }
                 });
@@ -77,7 +85,7 @@ public class Main extends NHGEntry {
 
             boolean input = false;
 
-            if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+            /*if (Gdx.input.isKeyPressed(Input.Keys.W)) {
                 nodeComponent.translate(0, 0, 0.5f * delta);
                 input = true;
             }
@@ -135,16 +143,16 @@ public class Main extends NHGEntry {
             if (Gdx.input.isKeyPressed(Input.Keys.V)) {
                 nodeComponent.rotate(0, 0, 10 * delta);
                 input = true;
-            }
+            }*/
 
             if (input) {
-                nodeComponent.applyTransforms();
+
             }
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+        /*if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             NHG.messaging.send(new Message(NHG.strings.events.engineDestroy));
-        }
+        }*/
 
         renderer20.begin(graphicsSystem.camera.combined, GL20.GL_LINES);
 
@@ -162,9 +170,44 @@ public class Main extends NHGEntry {
         super.onConfigureEntitySystems(configurationBuilder);
     }
 
+    @Override
+    public void onInput(NHGInput input) {
+        if (scene != null) {
+            int entity = scene.sceneGraph.getSceneEntity("weaponEntity1");
+            NodeComponent nodeComponent = NHG.entitySystem.getComponent(
+                    entity, NodeComponent.class);
+
+            switch (input.getName()) {
+                case "backward":
+                    nodeComponent.translate(0, 0, 0.5f * Gdx.graphics.getDeltaTime());
+                    break;
+
+                case "forward":
+                    nodeComponent.translate(0, 0, -0.5f * Gdx.graphics.getDeltaTime());
+                    break;
+
+                case "strafeLeft":
+                    nodeComponent.translate(-0.5f * Gdx.graphics.getDeltaTime(), 0, 0);
+                    break;
+
+                case "strafeRight":
+                    nodeComponent.translate(0.5f * Gdx.graphics.getDeltaTime(), 0, 0);
+                    break;
+
+                case "jump":
+                    break;
+
+                case "sprint":
+                    break;
+            }
+
+            nodeComponent.applyTransforms();
+        }
+    }
+
     public void line(float x1, float y1, float z1,
-                            float x2, float y2, float z2,
-                            float r, float g, float b, float a) {
+                     float x2, float y2, float z2,
+                     float r, float g, float b, float a) {
         renderer20.color(r, g, b, a);
         renderer20.vertex(x1, y1, z1);
         renderer20.color(r, g, b, a);

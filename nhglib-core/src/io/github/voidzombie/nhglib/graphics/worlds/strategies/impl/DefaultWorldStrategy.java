@@ -7,7 +7,7 @@ import io.github.voidzombie.nhglib.utils.data.Bounds;
 
 /**
  * Created by Fausto Napoli on 29/12/2016.
- * Handles small/medium sized worlds.
+ * Handles small sized worlds.
  */
 public class DefaultWorldStrategy extends WorldStrategy {
     @Override
