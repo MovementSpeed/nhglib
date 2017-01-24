@@ -144,7 +144,24 @@ public class Main extends NhgEntry implements InputListener {
             Vector2 stickVector = (Vector2) input.getInputSource().getValue();
 
             if (stickVector != null) {
-                nodeComponent.translate(stickVector.x * Gdx.graphics.getDeltaTime(), 0, stickVector.y * Gdx.graphics.getDeltaTime(), true);
+                switch (input.getName()) {
+                    case "movementStick":
+                        nodeComponent.translate(
+                                stickVector.x * Gdx.graphics.getDeltaTime(),
+                                0,
+                                stickVector.y * Gdx.graphics.getDeltaTime(),
+                                true);
+                        break;
+
+                    case "rotationStick":
+                        nodeComponent.rotate(
+                                stickVector.y * Gdx.graphics.getDeltaTime(),
+                                stickVector.x * Gdx.graphics.getDeltaTime(),
+                                0,
+                                true
+                        );
+                        break;
+                }
             }
         }
     }

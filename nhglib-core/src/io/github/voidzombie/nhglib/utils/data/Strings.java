@@ -12,6 +12,8 @@ public class Strings {
         public final String cannotQueueAssetFileNotFound = "Cannot queue asset \"%s\". File does not exist.";
         public final String assetLoaded = "Asset \"%s\" has been loaded.";
         public final String nullAssetSource = "Asset source cannot be null.";
+        public final String controllerConnected = "Controller %s connected.";
+        public final String controllerDisconnected = "Controller %s disconnected.";
     }
 
     public class Defaults {

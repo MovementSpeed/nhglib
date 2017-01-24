@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.JsonValue;
+import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.data.models.serialization.InputJson;
 import io.github.voidzombie.nhglib.utils.data.VectorPool;
 
@@ -24,7 +25,7 @@ public class InputHandler implements ControllerListener, InputProcessor {
     private Array<InputListener> inputListeners;
 
     private ArrayMap<Integer, NhgInput> keyInputsMap;
-    private ArrayMap<Integer, NhgInput> stickInputsMap;
+    private ArrayMap<Integer, Array<NhgInput>> stickInputsMap;
     private ArrayMap<Integer, NhgInput> activeKeyCodes;
     private ArrayMap<String, InputContext> inputContexts;
 
@@ -41,83 +42,22 @@ public class InputHandler implements ControllerListener, InputProcessor {
     }
 
     public void update() {
-        if (activeKeyCodes.size > 0) {
-            ArrayMap.Keys<Integer> keyCodes = activeKeyCodes.keys();
-
-            for (Integer keyCode : keyCodes) {
-                dispatchKeyInput(activeKeyCodes.get(keyCode));
-            }
-        }
-
-        Array<Controller> availableControllers = Controllers.getControllers();
-
-        for (int id = 0; id < availableControllers.size; id++) {
-            Controller c = availableControllers.get(id);
-
-            if (c != null) {
-                NhgInput input = stickInputsMap.get(id);
-
-                if (input != null) {
-                    Vector2 axis = VectorPool.getVector2();
-                    axis.set(0, 0);
-
-                    StickType stickType = input.getConfig().getStickType();
-
-                    switch (stickType) {
-                        case LEFT:
-                            if (Xbox.isXboxController(c)) {
-                                axis.x = c.getAxis(ControllerCodes.Xbox360.STICK_LEFT_HORIZONTAL);
-                                axis.y = c.getAxis(ControllerCodes.Xbox360.STICK_LEFT_VERTICAL);
-                            } else if (Ouya.isRunningOnOuya()) {
-                                axis.x = c.getAxis(Ouya.AXIS_LEFT_X);
-                                axis.y = c.getAxis(Ouya.AXIS_LEFT_Y);
-                            }
-                            break;
-
-                        case RIGHT:
-                            if (Xbox.isXboxController(c)) {
-                                axis.x = c.getAxis(ControllerCodes.Xbox360.STICK_RIGHT_HORIZONTAL);
-                                axis.y = c.getAxis(ControllerCodes.Xbox360.STICK_RIGHT_VERTICAL);
-                            } else if (Ouya.isRunningOnOuya()) {
-                                axis.x = c.getAxis(Ouya.AXIS_RIGHT_X);
-                                axis.y = c.getAxis(Ouya.AXIS_RIGHT_Y);
-                            }
-                            break;
-
-                        case VIRTUAL:
-                            break;
-                    }
-
-                    InputSource inputSource = input.getInputSource();
-                    inputSource.setName(c.getName());
-                    inputSource.setValue(axis);
-
-                    float deadZone = input.getConfig().getStickDeadZoneRadius();
-
-                    if (Math.abs(axis.x) < deadZone) {
-                        axis.x = 0;
-                    }
-
-                    if (Math.abs(axis.y) < deadZone) {
-                        axis.y = 0;
-                    }
-
-                    dispatchStickInput(input);
-                }
-            }
-        }
+        dispatchKeyInputs();
+        dispatchStickInputs();
     }
 
     // ControllerListener interface --------------------------------------
 
     @Override
     public void connected(Controller controller) {
+        Nhg.logger.log(this, Nhg.strings.messages.controllerConnected, controller.getName());
         mapStickInputs();
     }
 
     @Override
     public void disconnected(Controller controller) {
-
+        Nhg.logger.log(this, Nhg.strings.messages.controllerDisconnected, controller.getName());
+        mapStickInputs();
     }
 
     @Override
@@ -300,8 +240,87 @@ public class InputHandler implements ControllerListener, InputProcessor {
         Array<Controller> availableControllers = Controllers.getControllers();
 
         for (int id = 0; id < availableControllers.size; id++) {
-            NhgInput input = getStickInputWithControllerId(id);
+            Array<NhgInput> input = getStickInputsWithControllerId(id);
             stickInputsMap.put(id, input);
+        }
+    }
+
+    private void dispatchKeyInputs() {
+        if (activeKeyCodes.size > 0) {
+            ArrayMap.Keys<Integer> keyCodes = activeKeyCodes.keys();
+
+            for (Integer keyCode : keyCodes) {
+                dispatchKeyInput(activeKeyCodes.get(keyCode));
+            }
+        }
+    }
+
+    private void processStickInput(Controller controller, NhgInput input) {
+        Vector2 axis = VectorPool.getVector2();
+        axis.set(0, 0);
+
+        StickType stickType = input.getConfig().getStickType();
+
+        switch (stickType) {
+            case LEFT:
+                if (Xbox.isXboxController(controller)) {
+                    axis.x = controller.getAxis(ControllerCodes.Xbox360.STICK_LEFT_HORIZONTAL);
+                    axis.y = controller.getAxis(ControllerCodes.Xbox360.STICK_LEFT_VERTICAL);
+                } else if (Ouya.isRunningOnOuya()) {
+                    axis.x = controller.getAxis(Ouya.AXIS_LEFT_X);
+                    axis.y = controller.getAxis(Ouya.AXIS_LEFT_Y);
+                }
+                break;
+
+            case RIGHT:
+                if (Xbox.isXboxController(controller)) {
+                    axis.x = controller.getAxis(ControllerCodes.Xbox360.STICK_RIGHT_HORIZONTAL);
+                    axis.y = controller.getAxis(ControllerCodes.Xbox360.STICK_RIGHT_VERTICAL);
+                } else if (Ouya.isRunningOnOuya()) {
+                    axis.x = controller.getAxis(Ouya.AXIS_RIGHT_X);
+                    axis.y = controller.getAxis(Ouya.AXIS_RIGHT_Y);
+                }
+                break;
+
+            case VIRTUAL:
+                break;
+        }
+
+        InputSource inputSource = input.getInputSource();
+        inputSource.setName(controller.getName());
+        inputSource.setValue(axis);
+
+        float deadZone = input.getConfig().getStickDeadZoneRadius();
+
+        if (Math.abs(axis.x) < deadZone) {
+            axis.x = 0;
+        }
+
+        if (Math.abs(axis.y) < deadZone) {
+            axis.y = 0;
+        }
+
+        axis.scl(input.getConfig().getSensitivity());
+    }
+
+    private void dispatchStickInputs() {
+        Array<Controller> availableControllers = Controllers.getControllers();
+
+        for (int id = 0; id < availableControllers.size; id++) {
+            Controller controller = availableControllers.get(id);
+
+            if (controller != null) {
+                Array<NhgInput> stickInputs = stickInputsMap.get(id);
+
+                if (stickInputs != null) {
+                    for (NhgInput input : stickInputs) {
+                        if (input != null) {
+                            processStickInput(controller, input);
+                            dispatchStickInput(input);
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -322,8 +341,8 @@ public class InputHandler implements ControllerListener, InputProcessor {
         return res;
     }
 
-    private NhgInput getStickInputWithControllerId(int id) {
-        NhgInput res = null;
+    private Array<NhgInput> getStickInputsWithControllerId(int id) {
+        Array<NhgInput> res = new Array<>();
 
         for (InputContext context : inputContexts.values()) {
             ArrayMap.Values<NhgInput> inputs = context.getInputs();
@@ -332,8 +351,7 @@ public class InputHandler implements ControllerListener, InputProcessor {
                 if (in.getType() == InputType.STICK &&
                         in.getConfig().getControllerId() != null &&
                         in.getConfig().getControllerId().compareTo(id) == 0) {
-                    res = in;
-                    break;
+                    res.add(in);
                 }
             }
         }

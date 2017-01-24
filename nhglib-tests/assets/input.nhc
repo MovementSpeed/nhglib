@@ -61,9 +61,24 @@
             "min":-1,
             "max":1,
             "stickDeadZoneRadius":0.5,
-            "sensitivity":1.0,
+            "horizontalSensitivity":1.0,
+            "verticalSensitivity":1.0,
             "stickType":"left",
-            "controllerId":1
+            "controllerId":0
+          }
+        },
+        {
+          "name":"rotationStick",
+          "type":"stick",
+          "config":
+          {
+            "min":-1,
+            "max":1,
+            "stickDeadZoneRadius":0.3,
+            "horizontalSensitivity":50.0,
+            "verticalSensitivity":25.0,
+            "stickType":"right",
+            "controllerId":0
           }
         },
         {
@@ -125,10 +140,14 @@
           "type":"inputXY",
           "config":
           {
-            "sensitivity":0.2
+            "horizontalSensitivity":0.2
           }
         }
       ]
     }
-  ]
+  ],
+  "configurations":
+  {
+
+  }
 }
