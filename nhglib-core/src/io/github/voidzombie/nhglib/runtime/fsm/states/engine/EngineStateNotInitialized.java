@@ -4,18 +4,18 @@ import com.artemis.World;
 import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
-import io.github.voidzombie.nhglib.NHG;
+import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.GraphicsSystem;
-import io.github.voidzombie.nhglib.runtime.entry.NHGEntry;
+import io.github.voidzombie.nhglib.runtime.entry.NhgEntry;
 import io.github.voidzombie.nhglib.runtime.fsm.base.EngineStates;
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
  */
-public class EngineStateNotInitialized implements State<NHGEntry> {
+public class EngineStateNotInitialized implements State<NhgEntry> {
     @Override
-    public void enter(NHGEntry nhgEntry) {
-        NHG.logger.log(this, "Engine is not initialized.");
+    public void enter(NhgEntry nhgEntry) {
+        Nhg.logger.log(this, "Engine is not initialized.");
 
         // Setup the ECS' world.
         WorldConfigurationBuilder configurationBuilder = new WorldConfigurationBuilder();
@@ -23,24 +23,24 @@ public class EngineStateNotInitialized implements State<NHGEntry> {
 
         nhgEntry.onConfigureEntitySystems(configurationBuilder);
 
-        NHG.entitySystem.setEntityWorld(new World(configurationBuilder.build()));
+        Nhg.entitySystem.setEntityWorld(new World(configurationBuilder.build()));
         nhgEntry.engineStarted();
 
         nhgEntry.getFsm().changeState(EngineStates.INITIALIZED);
     }
 
     @Override
-    public void update(NHGEntry entity) {
+    public void update(NhgEntry entity) {
 
     }
 
     @Override
-    public void exit(NHGEntry entity) {
+    public void exit(NhgEntry entity) {
 
     }
 
     @Override
-    public boolean onMessage(NHGEntry entity, Telegram telegram) {
+    public boolean onMessage(NhgEntry entity, Telegram telegram) {
         return false;
     }
 }

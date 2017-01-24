@@ -3,7 +3,7 @@ package io.github.voidzombie.nhglib.graphics.scenes;
 import com.artemis.Archetype;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
-import io.github.voidzombie.nhglib.NHG;
+import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 
 /**
@@ -22,10 +22,10 @@ public class SceneGraph {
     public SceneGraph(String rootId) {
         entities = new Array<>();
         entityIds = new ArrayMap<>();
-        sceneEntityArchetype = NHG.entitySystem.createArchetype(NodeComponent.class);
+        sceneEntityArchetype = Nhg.entitySystem.createArchetype(NodeComponent.class);
 
         rootEntity = createSceneEntity(rootId);
-        rootNodeComponent = NHG.entitySystem.getComponent(
+        rootNodeComponent = Nhg.entitySystem.getComponent(
                 rootEntity, NodeComponent.class);
         rootNodeComponent.id = rootEntity;
 
@@ -43,7 +43,7 @@ public class SceneGraph {
     public int addSceneEntity(String id) {
         int entity = createSceneEntity(id);
 
-        NodeComponent nodeComponent = NHG.entitySystem.getComponent(
+        NodeComponent nodeComponent = Nhg.entitySystem.getComponent(
                 entity, NodeComponent.class);
         nodeComponent.id = entity;
 
@@ -55,11 +55,11 @@ public class SceneGraph {
     public int addSceneEntity(String id, int parentEntity) {
         int entity = createSceneEntity(id);
 
-        NodeComponent nodeComponent = NHG.entitySystem
+        NodeComponent nodeComponent = Nhg.entitySystem
                 .getComponent(entity, NodeComponent.class);
         nodeComponent.id = entity;
 
-        NodeComponent parentNodeComponent = NHG.entitySystem
+        NodeComponent parentNodeComponent = Nhg.entitySystem
                 .getComponent(parentEntity, NodeComponent.class);
 
         parentNodeComponent.node.addChild(nodeComponent.node);
@@ -76,7 +76,7 @@ public class SceneGraph {
     }
 
     private int createSceneEntity(String id) {
-        int entity = NHG.entitySystem.createEntity(sceneEntityArchetype);
+        int entity = Nhg.entitySystem.createEntity(sceneEntityArchetype);
         entityIds.put(id, entity);
 
         return entity;

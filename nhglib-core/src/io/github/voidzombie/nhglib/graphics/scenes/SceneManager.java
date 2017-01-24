@@ -2,7 +2,7 @@ package io.github.voidzombie.nhglib.graphics.scenes;
 
 import com.artemis.ComponentMapper;
 import com.badlogic.gdx.graphics.g3d.Model;
-import io.github.voidzombie.nhglib.NHG;
+import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.data.models.serialization.components.GraphicsComponentJson;
 import io.github.voidzombie.nhglib.data.models.serialization.components.MessageComponentJson;
@@ -25,8 +25,8 @@ public class SceneManager {
     private ComponentMapper<NodeComponent> nodeMapper;
 
     public SceneManager() {
-        graphicsMapper = NHG.entitySystem.getMapper(GraphicsComponent.class);
-        nodeMapper = NHG.entitySystem.getMapper(NodeComponent.class);
+        graphicsMapper = Nhg.entitySystem.getMapper(GraphicsComponent.class);
+        nodeMapper = Nhg.entitySystem.getMapper(NodeComponent.class);
 
         SceneUtils.getInstance().addComponentJsonMapping("graphics", GraphicsComponentJson.class);
         SceneUtils.getInstance().addComponentJsonMapping("message", MessageComponentJson.class);
@@ -81,7 +81,7 @@ public class SceneManager {
                         GraphicsComponent graphicsComponent = graphicsMapper.get(integer);
                         graphicsComponent.invalidate();
 
-                        NHG.assets.unloadAsset(graphicsComponent.asset);
+                        Nhg.assets.unloadAsset(graphicsComponent.asset);
                     }
                 });
     }
@@ -97,28 +97,28 @@ public class SceneManager {
     private void loadGraphicsAsset(final GraphicsComponent graphicsComponent) {
         graphicsComponent.state = GraphicsComponent.State.LOADING;
 
-        NHG.messaging.get(NHG.strings.events.assetLoaded)
+        Nhg.messaging.get(Nhg.strings.events.assetLoaded)
                 .filter(new Predicate<Message>() {
                     @Override
                     public boolean test(Message message) throws Exception {
-                        Asset asset = (Asset) message.data.get(NHG.strings.defaults.assetKey);
+                        Asset asset = (Asset) message.data.get(Nhg.strings.defaults.assetKey);
                         return graphicsComponent.asset.is(asset.alias);
                     }
                 })
                 .subscribe(new Consumer<Message>() {
                     @Override
                     public void accept(Message message) throws Exception {
-                        Asset asset = (Asset) message.data.get(NHG.strings.defaults.assetKey);
+                        Asset asset = (Asset) message.data.get(Nhg.strings.defaults.assetKey);
                         createRepresentation(graphicsComponent, asset);
                     }
                 });
 
-        NHG.assets.queueAsset(graphicsComponent.asset);
+        Nhg.assets.queueAsset(graphicsComponent.asset);
     }
 
     private void createRepresentation(GraphicsComponent graphicsComponent, Asset asset) {
         if (asset.isType(Model.class)) {
-            Model model = NHG.assets.get(asset);
+            Model model = Nhg.assets.get(asset);
             ModelRepresentation representation = new ModelRepresentation(model);
             graphicsComponent.setRepresentation(representation);
         }

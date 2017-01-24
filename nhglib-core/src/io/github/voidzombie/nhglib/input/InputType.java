@@ -4,19 +4,29 @@ package io.github.voidzombie.nhglib.input;
  * Created by Fausto Napoli on 08/01/2017.
  */
 public enum InputType {
-    ACTION,
-    VALUE;
+    INPUT_XY,
+    KEY,
+    BUTTON,
+    STICK;
 
     public static InputType fromString(String value) {
         InputType res = null;
 
-        switch (value.toLowerCase()) {
-            case "action":
-                res = ACTION;
+        switch (value) {
+            case "inputXY":
+                res = INPUT_XY;
                 break;
 
-            case "value":
-                res = VALUE;
+            case "key":
+                res = KEY;
+                break;
+
+            case "button":
+                res = BUTTON;
+                break;
+
+            case "stick":
+                res = STICK;
                 break;
         }
 

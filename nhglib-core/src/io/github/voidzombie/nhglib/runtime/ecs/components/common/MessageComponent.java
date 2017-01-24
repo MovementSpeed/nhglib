@@ -2,7 +2,7 @@ package io.github.voidzombie.nhglib.runtime.ecs.components.common;
 
 import com.artemis.PooledComponent;
 import com.badlogic.gdx.utils.Array;
-import io.github.voidzombie.nhglib.NHG;
+import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.reactivex.functions.Consumer;
 
@@ -25,7 +25,7 @@ public class MessageComponent extends PooledComponent {
     }
 
     public void subscribe(String ... filters) {
-        NHG.messaging.get(filters)
+        Nhg.messaging.get(filters)
                 .subscribe(new Consumer<Message>() {
                     @Override
                     public void accept(Message message) throws Exception {

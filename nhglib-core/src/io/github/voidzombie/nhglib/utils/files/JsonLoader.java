@@ -9,11 +9,6 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import io.github.voidzombie.nhglib.NHG;
-import io.github.voidzombie.nhglib.data.models.serialization.SceneJson;
-import io.github.voidzombie.nhglib.graphics.scenes.Scene;
-
-import java.io.UnsupportedEncodingException;
 
 /**
  * Created by Fausto Napoli on 19/12/2016.

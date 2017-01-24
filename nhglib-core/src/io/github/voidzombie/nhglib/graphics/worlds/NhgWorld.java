@@ -1,7 +1,7 @@
 package io.github.voidzombie.nhglib.graphics.worlds;
 
 import com.badlogic.gdx.utils.ArrayMap;
-import io.github.voidzombie.nhglib.NHG;
+import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 import io.github.voidzombie.nhglib.graphics.scenes.SceneManager;
 import io.github.voidzombie.nhglib.graphics.worlds.strategies.base.WorldStrategy;
@@ -12,7 +12,7 @@ import io.github.voidzombie.nhglib.utils.data.Bounds;
  * Created by Fausto Napoli on 28/12/2016.
  * Manages how the engine should handle the game world\space.
  */
-public class NHGWorld {
+public class NhgWorld {
     private Bounds bounds;
     private SceneManager sceneManager;
     private WorldStrategy worldStrategy;
@@ -20,7 +20,7 @@ public class NHGWorld {
 
     private ArrayMap<String, Scene> scenes;
 
-    public NHGWorld(WorldStrategy strategy, Bounds bounds) {
+    public NhgWorld(WorldStrategy strategy, Bounds bounds) {
         this.worldStrategy = strategy;
         this.bounds = bounds;
 
@@ -30,6 +30,11 @@ public class NHGWorld {
 
     public void addScene(Scene scene) {
         scenes.put(scene.name, scene);
+    }
+
+    public void loadScene(Scene scene) {
+        addScene(scene);
+        loadScene(scene.name);
     }
 
     public void loadScene(String name) {
@@ -52,7 +57,7 @@ public class NHGWorld {
                     sceneManager.getCurrentScene().sceneGraph.getSceneEntity(entityName);
 
             referenceNodeComponent =
-                    NHG.entitySystem.getComponent(referenceEntity, NodeComponent.class);
+                    Nhg.entitySystem.getComponent(referenceEntity, NodeComponent.class);
         }
     }
 

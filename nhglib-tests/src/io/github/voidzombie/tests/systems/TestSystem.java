@@ -3,7 +3,7 @@ package io.github.voidzombie.tests.systems;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.badlogic.gdx.utils.Array;
-import io.github.voidzombie.nhglib.NHG;
+import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.runtime.ecs.components.common.MessageComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.base.ThreadedIteratingSystem;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
@@ -31,10 +31,10 @@ public class TestSystem extends ThreadedIteratingSystem {
 
         for (Message message : messages) {
             if (message.is("fire")) {
-                NHG.logger.log(this, "Message \"fire\" received by entity %d", entityId);
+                Nhg.logger.log(this, "Message \"fire\" received by entity %d", entityId);
                 messageComponent.consume(message);
             } else if (message.is("fly")) {
-                NHG.logger.log(this, "Message \"fly\" received by entity %d", entityId);
+                Nhg.logger.log(this, "Message \"fly\" received by entity %d", entityId);
                 messageComponent.consume(message);
             }
         }

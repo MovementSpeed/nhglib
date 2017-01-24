@@ -8,7 +8,7 @@ import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
-import io.github.voidzombie.nhglib.NHG;
+import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.data.models.serialization.SceneJson;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 
@@ -50,7 +50,7 @@ public class SceneLoader extends AsynchronousAssetLoader<Scene, SceneLoader.Scen
 
             scene = sceneJson.get();
         } catch (UnsupportedEncodingException e) {
-            if (NHG.debugLogs) e.printStackTrace();
+            if (Nhg.debugLogs) e.printStackTrace();
         }
 
         return scene;

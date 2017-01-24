@@ -15,7 +15,7 @@ abstract class BaseGame implements
         ApplicationListener,
         EngineStateListener,
         EngineConfigurationListener {
-    private DefaultStateMachine<NHGEntry, EngineStates> fsm;
+    private DefaultStateMachine<NhgEntry, EngineStates> fsm;
 
     @Override
     public final void create() {}
@@ -57,11 +57,11 @@ abstract class BaseGame implements
     public void onConfigureEntitySystems(WorldConfigurationBuilder configurationBuilder) {
     }
 
-    void init(NHGEntry nhgEntry) {
-        fsm = new DefaultStateMachine<NHGEntry, EngineStates>(nhgEntry, EngineStates.START);
+    void init(NhgEntry nhgEntry) {
+        fsm = new DefaultStateMachine<NhgEntry, EngineStates>(nhgEntry, EngineStates.START);
     }
 
-    public final StateMachine<NHGEntry, EngineStates> getFsm() {
+    public final StateMachine<NhgEntry, EngineStates> getFsm() {
         return fsm;
     }
 }

@@ -27,18 +27,20 @@ public class InputJson implements JsonParseable<Array<InputContext>> {
 
             for (JsonValue inputJson : inputsJson) {
                 String inputName = inputJson.getString("name");
-                String inputSourceString = inputJson.getString("source");
                 String inputTypeString = inputJson.getString("type");
                 JsonValue configJson = inputJson.get("config");
 
-                InputSource inputSource = InputSource.fromString(inputSourceString);
                 InputType inputType = InputType.fromString(inputTypeString);
-
                 InputConfig inputConfig = new InputConfig();
 
                 try {
                     inputConfig.setKeycode(configJson.getInt("keycode"));
                 } catch (IllegalArgumentException e) {}
+
+                try {
+                    inputConfig.setControllerId(configJson.getInt("controllerId"));
+                } catch (IllegalArgumentException e) {
+                }
 
                 try {
                     inputConfig.setMinValue(configJson.getFloat("min"));
@@ -49,6 +51,11 @@ public class InputJson implements JsonParseable<Array<InputContext>> {
                 } catch (IllegalArgumentException e) {}
 
                 try {
+                    inputConfig.setStickDeadZoneRadius(configJson.getFloat("stickDeadZoneRadius"));
+                } catch (IllegalArgumentException e) {
+                }
+
+                try {
                     inputConfig.setSensitivity(configJson.getFloat("sensitivity"));
                 } catch (IllegalArgumentException e) {}
 
@@ -56,8 +63,12 @@ public class InputJson implements JsonParseable<Array<InputContext>> {
                     inputConfig.setInputMode(InputMode.fromString(configJson.getString("inputMode")));
                 } catch (IllegalArgumentException e) {}
 
-                NHGInput input = new NHGInput(inputName);
-                input.setSource(inputSource);
+                try {
+                    inputConfig.setStickType(StickType.fromString(configJson.getString("stickType")));
+                } catch (IllegalArgumentException e) {
+                }
+
+                NhgInput input = new NhgInput(inputName);
                 input.setType(inputType);
                 input.setConfig(inputConfig);
 

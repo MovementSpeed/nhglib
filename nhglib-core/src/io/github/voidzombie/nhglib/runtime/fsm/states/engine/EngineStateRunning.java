@@ -3,8 +3,8 @@ package io.github.voidzombie.nhglib.runtime.fsm.states.engine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
-import io.github.voidzombie.nhglib.NHG;
-import io.github.voidzombie.nhglib.runtime.entry.NHGEntry;
+import io.github.voidzombie.nhglib.Nhg;
+import io.github.voidzombie.nhglib.runtime.entry.NhgEntry;
 import io.github.voidzombie.nhglib.runtime.fsm.base.EngineStates;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.reactivex.functions.Consumer;
@@ -12,16 +12,16 @@ import io.reactivex.functions.Consumer;
 /**
  * Created by Fausto Napoli on 08/12/2016.
  */
-public class EngineStateRunning implements State<NHGEntry> {
+public class EngineStateRunning implements State<NhgEntry> {
     @Override
-    public void enter(final NHGEntry nhgEntry) {
-        NHG.logger.log(this, "Engine is running.");
+    public void enter(final NhgEntry nhgEntry) {
+        Nhg.logger.log(this, "Engine is running.");
 
-        NHG.messaging.get(NHG.strings.events.engineDestroy)
+        Nhg.messaging.get(Nhg.strings.events.engineDestroy)
                 .subscribe(new Consumer<Message>() {
                     @Override
                     public void accept(Message message) throws Exception {
-                        if (message.is(NHG.strings.events.engineDestroy)) {
+                        if (message.is(Nhg.strings.events.engineDestroy)) {
                             nhgEntry.getFsm().changeState(EngineStates.CLOSING);
                         }
                     }
@@ -29,21 +29,22 @@ public class EngineStateRunning implements State<NHGEntry> {
     }
 
     @Override
-    public void update(NHGEntry nhgEntry) {
+    public void update(NhgEntry nhgEntry) {
         float delta = Gdx.graphics.getDeltaTime();
 
-        NHG.input.update();
-        NHG.assets.update();
-        NHG.entitySystem.update(delta);
+        Nhg.input.update();
+        Nhg.assets.update();
+        Nhg.entitySystem.update(delta);
 
         nhgEntry.engineUpdate(delta);
     }
 
     @Override
-    public void exit(NHGEntry entity) {}
+    public void exit(NhgEntry entity) {
+    }
 
     @Override
-    public boolean onMessage(NHGEntry entity, Telegram telegram) {
+    public boolean onMessage(NhgEntry entity, Telegram telegram) {
         return false;
     }
 }

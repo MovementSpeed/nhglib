@@ -2,13 +2,27 @@
   "contexts":
   [
     {
+      "name":"global",
+      "inputs":
+      [
+        {
+          "name":"exit",
+          "type":"key",
+          "config":
+          {
+            "keycode":131,
+            "inputMode":"single"
+          }
+        }
+      ]
+    },
+    {
       "name":"menu",
       "inputs":
       [
         {
           "name":"menuDown",
-          "type":"action",
-          "source":"button",
+          "type":"key",
           "config":
           {
             "keycode":40,
@@ -17,8 +31,7 @@
         },
         {
           "name":"menuUp",
-          "type":"action",
-          "source":"button",
+          "type":"key",
           "config":
           {
             "keycode":38,
@@ -27,8 +40,7 @@
         },
         {
           "name":"select",
-          "type":"action",
-          "source":"button",
+          "type":"key",
           "config":
           {
             "keycode":66,
@@ -42,20 +54,21 @@
       "inputs":
       [
         {
-          "name":"virtualMovementStick",
-          "type":"value",
-          "source":"custom",
+          "name":"movementStick",
+          "type":"stick",
           "config":
           {
             "min":-1,
             "max":1,
-            "sensitivity":1.0
+            "stickDeadZoneRadius":0.5,
+            "sensitivity":1.0,
+            "stickType":"left",
+            "controllerId":1
           }
         },
         {
           "name":"forward",
-          "type":"action",
-          "source":"button",
+          "type":"key",
           "config":
           {
             "keycode":51,
@@ -64,8 +77,7 @@
         },
         {
           "name":"backward",
-          "type":"action",
-          "source":"button",
+          "type":"key",
           "config":
           {
             "keycode":47,
@@ -74,8 +86,7 @@
         },
         {
           "name":"strafeLeft",
-          "type":"action",
-          "source":"button",
+          "type":"key",
           "config":
           {
             "keycode":29,
@@ -84,8 +95,7 @@
         },
         {
           "name":"strafeRight",
-          "type":"action",
-          "source":"button",
+          "type":"key",
           "config":
           {
             "keycode":32,
@@ -94,8 +104,7 @@
         },
         {
           "name":"jump",
-          "type":"action",
-          "source":"button",
+          "type":"key",
           "config":
           {
             "keycode":62,
@@ -104,8 +113,7 @@
         },
         {
           "name":"sprint",
-          "type":"action",
-          "source":"button",
+          "type":"key",
           "config":
           {
             "keycode":59,
@@ -114,8 +122,7 @@
         },
         {
           "name":"look",
-          "type":"value",
-          "source":"inputXY",
+          "type":"inputXY",
           "config":
           {
             "sensitivity":0.2

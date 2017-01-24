@@ -6,13 +6,13 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelCache;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
-import io.github.voidzombie.nhglib.NHG;
+import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.graphics.interfaces.Representation;
 import io.github.voidzombie.nhglib.graphics.utils.DefaultPerspectiveCamera;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.GraphicsComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
-import io.github.voidzombie.nhglib.runtime.ecs.systems.base.NHGIteratingSystem;
+import io.github.voidzombie.nhglib.runtime.ecs.systems.base.NhgIteratingSystem;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.nhglib.utils.graphics.GLUtils;
 import io.reactivex.functions.Consumer;
@@ -20,7 +20,7 @@ import io.reactivex.functions.Consumer;
 /**
  * Created by Fausto Napoli on 08/12/2016.
  */
-public class GraphicsSystem extends NHGIteratingSystem {
+public class GraphicsSystem extends NhgIteratingSystem {
     public DefaultPerspectiveCamera camera;
 
     private ModelBatch modelBatch;
@@ -84,12 +84,12 @@ public class GraphicsSystem extends NHGIteratingSystem {
         super.inserted(entityId);
         final GraphicsComponent graphicsComponent = graphicsMapper.get(entityId);
 
-        NHG.messaging.get(NHG.strings.events.assetLoaded)
+        Nhg.messaging.get(Nhg.strings.events.assetLoaded)
                 .subscribe(new Consumer<Message>() {
                     @Override
                     public void accept(Message message) throws Exception {
                         if (graphicsComponent.type == GraphicsComponent.Type.STATIC) {
-                            Asset asset = (Asset) message.data.get(NHG.strings.defaults.assetKey);
+                            Asset asset = (Asset) message.data.get(Nhg.strings.defaults.assetKey);
 
                             if (asset.is(graphicsComponent.asset.alias)) {
                                 rebuildCache(graphicsComponent.getRepresentation().get());

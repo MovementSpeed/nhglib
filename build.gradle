@@ -110,6 +110,7 @@ project(":nhglib-core") {
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-ai:1.8.0"
+        compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
         compile "net.onedaybeard.artemis:artemis-odb:2.0.0"
         compile 'com.google.guava:guava:20.0'
         compile 'io.reactivex.rxjava2:rxjava:2.0.2'
@@ -189,6 +190,8 @@ project(":nhglib-android") {
 
     dependencies {
         compile project(':nhglib-core')
+        compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-controllers-android:$gdxVersion"
     }
 }
 
@@ -341,6 +344,8 @@ project(":nhglib-desktop") {
 
     dependencies {
         compile project(':nhglib-core')
+        compile "com.badlogicgames.gdx:gdx-controllers-desktop:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-controllers-platform:$gdxVersion:natives-desktop"
     }
 }
 
@@ -417,6 +422,9 @@ project(":nhglib-html") {
 
     dependencies {
         compile project(':nhglib-core')
+        compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion:sources"
+        compile "com.badlogicgames.gdx:gdx-controllers-gwt:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-controllers-gwt:$gdxVersion:sources"
     }
 }
 
@@ -427,5 +435,7 @@ project(":nhglib-tests") {
         compile project(':nhglib-core')
         compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+        compile "com.badlogicgames.gdx:gdx-controllers-desktop:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-controllers-platform:$gdxVersion:natives-desktop"
     }
 }

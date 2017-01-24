@@ -1,30 +1,29 @@
 package io.github.voidzombie.nhglib.input;
 
 /**
- * Created by Fausto Napoli on 08/01/2017.
+ * Created by Fausto Napoli on 22/01/2017.
  */
-public enum InputSource {
-    INPUT_XY,
-    BUTTON,
-    CUSTOM;
+public class InputSource {
+    private String name;
+    private Object value;
 
-    public static InputSource fromString(String value) {
-        InputSource res = null;
+    public void setName(String name) {
+        this.name = name;
+    }
 
-        switch (value) {
-            case "inputXY":
-                res = INPUT_XY;
-                break;
+    public void setValue(Object value) {
+        this.value = value;
+    }
 
-            case "button":
-                res = BUTTON;
-                break;
+    public Boolean is(String name) {
+        return name.contentEquals(name);
+    }
 
-            case "custom":
-                res = CUSTOM;
-                break;
-        }
+    public String getName() {
+        return name;
+    }
 
-        return res;
+    public Object getValue() {
+        return value;
     }
 }

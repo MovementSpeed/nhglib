@@ -2,7 +2,7 @@ package io.github.voidzombie.nhglib.runtime.fsm.states.assets;
 
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
-import io.github.voidzombie.nhglib.NHG;
+import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Assets;
 import io.github.voidzombie.nhglib.runtime.fsm.base.AssetsStates;
 
@@ -12,7 +12,7 @@ import io.github.voidzombie.nhglib.runtime.fsm.base.AssetsStates;
 public class AssetStateIdle implements State<Assets> {
     @Override
     public void enter(Assets assets) {
-        NHG.logger.log(this, "Asset manager is idle.");
+        Nhg.logger.log(this, "Asset manager is idle.");
     }
 
     @Override

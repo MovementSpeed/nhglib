@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.ArrayMap;
  * Created by Fausto Napoli on 08/01/2017.
  */
 public class InputContext {
-    private final ArrayMap<String, NHGInput> inputMap;
+    private final ArrayMap<String, NhgInput> inputMap;
 
     private Boolean active;
     private String name;
@@ -26,7 +26,7 @@ public class InputContext {
         this.name = name;
     }
 
-    public void addInput(NHGInput input) {
+    public void addInput(NhgInput input) {
         if (input != null) {
             inputMap.put(input.getName(), input);
         }
@@ -40,11 +40,11 @@ public class InputContext {
         return name;
     }
 
-    public NHGInput getInput(String name) {
+    public NhgInput getInput(String name) {
         return inputMap.get(name);
     }
 
-    public ArrayMap.Values<NHGInput> getInputs() {
+    public ArrayMap.Values<NhgInput> getInputs() {
         return inputMap.values();
     }
 }

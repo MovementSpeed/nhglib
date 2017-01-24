@@ -1,7 +1,7 @@
 package io.github.voidzombie.nhglib.data.models.serialization;
 
 import com.badlogic.gdx.utils.JsonValue;
-import io.github.voidzombie.nhglib.NHG;
+import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 import io.github.voidzombie.nhglib.interfaces.JsonParseable;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
@@ -29,7 +29,7 @@ public class SceneJson implements JsonParseable<Scene> {
             entityJson.parse(entity);
         }
 
-        NodeComponent nodeComponent = NHG.entitySystem.getComponent(rootEntity, NodeComponent.class);
+        NodeComponent nodeComponent = Nhg.entitySystem.getComponent(rootEntity, NodeComponent.class);
         nodeComponent.applyTransforms();
     }
 

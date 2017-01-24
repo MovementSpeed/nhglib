@@ -1,6 +1,6 @@
 package io.github.voidzombie.nhglib.assets;
 
-import io.github.voidzombie.nhglib.NHG;
+import io.github.voidzombie.nhglib.Nhg;
 
 /**
  * Created by Fausto Napoli on 25/10/2016.
@@ -20,7 +20,7 @@ public class Asset {
         } else if (source != null) {
             this.alias = source;
         } else {
-            throw new NullPointerException(NHG.strings.messages.nullAssetSource);
+            throw new NullPointerException(Nhg.strings.messages.nullAssetSource);
         }
 
         this.source = source;

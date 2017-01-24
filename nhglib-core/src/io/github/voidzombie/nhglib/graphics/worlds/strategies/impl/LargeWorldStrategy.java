@@ -1,6 +1,6 @@
 package io.github.voidzombie.nhglib.graphics.worlds.strategies.impl;
 
-import io.github.voidzombie.nhglib.NHG;
+import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 import io.github.voidzombie.nhglib.graphics.worlds.strategies.base.WorldStrategy;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
@@ -17,7 +17,7 @@ public class LargeWorldStrategy extends WorldStrategy {
             Bounds.Info boundsInfo = bounds.boundsInfo(referenceNodeComponent.getTranslation());
 
             if (!boundsInfo.inBounds) {
-                NodeComponent rootNodeComponent = NHG.entitySystem.getComponent(
+                NodeComponent rootNodeComponent = Nhg.entitySystem.getComponent(
                         scene.sceneGraph.getRootEntity(),
                         NodeComponent.class);
 

@@ -16,7 +16,7 @@ public class Threading {
 
     public Threading() {
         executor = Executors.newFixedThreadPool(cores);
-        latches = new ArrayMap<Integer, ResettableCountDownLatch>();
+        latches = new ArrayMap<>();
     }
 
     public void execute(Work work) {
@@ -49,5 +49,9 @@ public class Threading {
 
     public void setLatchCount(int latchId, int count) {
         createLatch(latchId, count);
+    }
+
+    public void terminate() {
+        executor.shutdown();
     }
 }

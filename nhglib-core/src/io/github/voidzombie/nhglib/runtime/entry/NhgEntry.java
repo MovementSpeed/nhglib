@@ -6,8 +6,8 @@ import com.artemis.WorldConfigurationBuilder;
  * Created by Fausto Napoli on 26/11/2016.
  * Public entry point for games using this library.
  */
-public class NHGEntry extends BaseGame {
-    public NHGEntry() {
+public class NhgEntry extends BaseGame {
+    public NhgEntry() {
         init(this);
     }
 

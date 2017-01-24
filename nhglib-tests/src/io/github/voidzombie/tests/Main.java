@@ -5,26 +5,27 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ArrayMap;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
-import io.github.voidzombie.nhglib.NHG;
+import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
-import io.github.voidzombie.nhglib.graphics.worlds.NHGWorld;
+import io.github.voidzombie.nhglib.graphics.worlds.NhgWorld;
 import io.github.voidzombie.nhglib.graphics.worlds.strategies.impl.LargeWorldStrategy;
-import io.github.voidzombie.nhglib.input.*;
+import io.github.voidzombie.nhglib.input.InputListener;
+import io.github.voidzombie.nhglib.input.NhgInput;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.GraphicsSystem;
-import io.github.voidzombie.nhglib.runtime.entry.NHGEntry;
+import io.github.voidzombie.nhglib.runtime.entry.NhgEntry;
+import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.nhglib.utils.data.Bounds;
 
 /**
  * Created by Fausto Napoli on 26/10/2016.
  */
-public class Main extends NHGEntry implements InputListener {
+public class Main extends NhgEntry implements InputListener {
     private Scene scene;
-    private NHGWorld world;
+    private NhgWorld world;
     private FPSLogger fpsLogger;
     private GraphicsSystem graphicsSystem;
     private ImmediateModeRenderer20 renderer20;
@@ -32,40 +33,40 @@ public class Main extends NHGEntry implements InputListener {
     @Override
     public void engineStarted() {
         super.engineStarted();
-        NHG.debugLogs = true;
+        Nhg.debugLogs = true;
 
-        world = new NHGWorld(
+        world = new NhgWorld(
                 new LargeWorldStrategy(),
                 new Bounds(2f, 2f, 2f));
 
         fpsLogger = new FPSLogger();
         renderer20 = new ImmediateModeRenderer20(false, true, 0);
 
-        NHG.input.addListener(this);
+        Nhg.input.addListener(this);
 
-        NHG.assets.queueAsset(new Asset("scene", "myscene.nhs", Scene.class));
-        NHG.assets.queueAsset(new Asset("inputMap", "input.nhc", JsonValue.class));
+        Nhg.assets.queueAsset(new Asset("scene", "myscene.nhs", Scene.class));
+        Nhg.assets.queueAsset(new Asset("inputMap", "input.nhc", JsonValue.class));
 
         // Subscribe to asset events
-        NHG.messaging.get(NHG.strings.events.assetLoaded, NHG.strings.events.assetLoadingFinished)
+        Nhg.messaging.get(Nhg.strings.events.assetLoaded, Nhg.strings.events.assetLoadingFinished)
                 .subscribe(message -> {
-                    if (message.is(NHG.strings.events.assetLoaded)) {
-                        Asset asset = (Asset) message.data.get(NHG.strings.defaults.assetKey);
+                    if (message.is(Nhg.strings.events.assetLoaded)) {
+                        Asset asset = (Asset) message.data.get(Nhg.strings.defaults.assetKey);
 
                         if (asset.is("scene")) {
-                            scene = NHG.assets.get(asset);
-                            world.addScene(scene);
-                            world.loadScene("scene0");
+                            scene = Nhg.assets.get(asset);
+                            world.loadScene(scene);
                             world.setReferenceEntity("weaponEntity1");
                         } else if (asset.is("inputMap")) {
-                            NHG.input.fromJson(NHG.assets.get(asset));
-                            NHG.input.setActive("game", true);
+                            Nhg.input.fromJson(Nhg.assets.get(asset));
+                            Nhg.input.setActive("game", true);
+                            Nhg.input.setActive("global", true);
                         }
                     }
                 });
 
-        graphicsSystem = NHG.entitySystem.getEntitySystem(GraphicsSystem.class);
-        graphicsSystem.camera.position.set(0, 0, 2f);
+        graphicsSystem = Nhg.entitySystem.getEntitySystem(GraphicsSystem.class);
+        graphicsSystem.camera.position.set(0, 0, 1f);
     }
 
     @Override
@@ -78,89 +79,13 @@ public class Main extends NHGEntry implements InputListener {
         super.engineUpdate(delta);
         world.update();
 
-        if (scene != null) {
-            int entity = scene.sceneGraph.getSceneEntity("weaponEntity1");
-            NodeComponent nodeComponent = NHG.entitySystem.getComponent(
-                    entity, NodeComponent.class);
-
-            boolean input = false;
-
-            /*if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-                nodeComponent.translate(0, 0, 0.5f * delta);
-                input = true;
-            }
-
-            if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-                nodeComponent.translate(0, 0, -0.5f * delta);
-                input = true;
-            }
-
-            if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-                nodeComponent.translate(-0.5f * delta, 0, 0);
-                input = true;
-            }
-
-            if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-                nodeComponent.translate(0.5f * delta, 0, 0);
-                input = true;
-            }
-
-            if (Gdx.input.isKeyPressed(Input.Keys.T)) {
-                nodeComponent.translate(0, -0.5f * delta, 0);
-                input = true;
-            }
-
-            if (Gdx.input.isKeyPressed(Input.Keys.G)) {
-                nodeComponent.translate(0, 0.5f * delta, 0);
-                input = true;
-            }
-
-            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-                graphicsSystem.camera.rotate(1, 0, 1, 0);
-                input = true;
-            }
-
-            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-                graphicsSystem.camera.rotate(-1, 0, 1, 0);
-                input = true;
-            }
-
-            if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-                nodeComponent.rotate(-10 * delta, 0, 0);
-                input = true;
-            }
-
-            if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-                nodeComponent.rotate(10 * delta, 0, 0);
-                input = true;
-            }
-
-            if (Gdx.input.isKeyPressed(Input.Keys.C)) {
-                nodeComponent.rotate(0, 0, -10 * delta);
-                input = true;
-            }
-
-            if (Gdx.input.isKeyPressed(Input.Keys.V)) {
-                nodeComponent.rotate(0, 0, 10 * delta);
-                input = true;
-            }*/
-
-            if (input) {
-
-            }
-        }
-
-        /*if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            NHG.messaging.send(new Message(NHG.strings.events.engineDestroy));
-        }*/
-
         renderer20.begin(graphicsSystem.camera.combined, GL20.GL_LINES);
 
         cube(0, 0, 0, 1, 1, 1, 0, 1, 0, 1);
-        cube(1.01f, 0, 0, 1, 1, 1, 1, 0, 0, 1);
+        /*cube(1.01f, 0, 0, 1, 1, 1, 1, 0, 0, 1);
         cube(-1.01f, 0, 0, 1, 1, 1, 1, 0, 0, 1);
         cube(0, 0, 1.01f, 1, 1, 1, 1, 0, 0, 1);
-        cube(0, 0, -1.01f, 1, 1, 1, 1, 0, 0, 1);
+        cube(0, 0, -1.01f, 1, 1, 1, 1, 0, 0, 1);*/
 
         renderer20.end();
     }
@@ -171,10 +96,10 @@ public class Main extends NHGEntry implements InputListener {
     }
 
     @Override
-    public void onInput(NHGInput input) {
+    public void onKeyInput(NhgInput input) {
         if (scene != null) {
             int entity = scene.sceneGraph.getSceneEntity("weaponEntity1");
-            NodeComponent nodeComponent = NHG.entitySystem.getComponent(
+            NodeComponent nodeComponent = Nhg.entitySystem.getComponent(
                     entity, NodeComponent.class);
 
             switch (input.getName()) {
@@ -199,9 +124,28 @@ public class Main extends NHGEntry implements InputListener {
 
                 case "sprint":
                     break;
+
+                case "exit":
+                    Nhg.messaging.send(new Message(Nhg.strings.events.engineDestroy));
+                    break;
             }
 
             nodeComponent.applyTransforms();
+        }
+    }
+
+    @Override
+    public void onStickInput(NhgInput input) {
+        if (scene != null) {
+            int entity = scene.sceneGraph.getSceneEntity("weaponEntity1");
+            NodeComponent nodeComponent = Nhg.entitySystem.getComponent(
+                    entity, NodeComponent.class);
+
+            Vector2 stickVector = (Vector2) input.getInputSource().getValue();
+
+            if (stickVector != null) {
+                nodeComponent.translate(stickVector.x * Gdx.graphics.getDeltaTime(), 0, stickVector.y * Gdx.graphics.getDeltaTime(), true);
+            }
         }
     }
 

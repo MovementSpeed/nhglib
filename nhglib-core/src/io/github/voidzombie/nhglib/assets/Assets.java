@@ -8,7 +8,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
-import io.github.voidzombie.nhglib.NHG;
+import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 import io.github.voidzombie.nhglib.interfaces.Updatable;
 import io.github.voidzombie.nhglib.runtime.fsm.base.AssetsStates;
@@ -46,25 +46,25 @@ public class Assets implements Updatable, AssetErrorListener {
     // AssetErrorListener
     @Override
     public void error(AssetDescriptor asset, Throwable throwable) {
-        NHG.logger.log(this, throwable.getMessage());
+        Nhg.logger.log(this, throwable.getMessage());
     }
 
     public void assetLoadingFinished() {
-        NHG.messaging.send(new Message(NHG.strings.events.assetLoadingFinished));
+        Nhg.messaging.send(new Message(Nhg.strings.events.assetLoadingFinished));
     }
 
     public void assetLoaded(Asset asset) {
         Bundle bundle = new Bundle();
-        bundle.put(NHG.strings.defaults.assetKey, asset);
+        bundle.put(Nhg.strings.defaults.assetKey, asset);
 
-        NHG.messaging.send(new Message(NHG.strings.events.assetLoaded, bundle));
+        Nhg.messaging.send(new Message(Nhg.strings.events.assetLoaded, bundle));
     }
 
     public void assetUnloaded(Asset asset) {
         Bundle bundle = new Bundle();
-        bundle.put(NHG.strings.defaults.assetKey, asset);
+        bundle.put(Nhg.strings.defaults.assetKey, asset);
 
-        NHG.messaging.send(new Message(NHG.strings.events.assetUnloaded, bundle));
+        Nhg.messaging.send(new Message(Nhg.strings.events.assetUnloaded, bundle));
     }
 
     public Array<Asset> getAssetList() {
@@ -84,7 +84,7 @@ public class Assets implements Updatable, AssetErrorListener {
                 assetManager.load(asset.source, asset.assetClass);
                 assetList.add(asset);
             } else {
-                NHG.logger.log(this, NHG.strings.messages.cannotQueueAssetFileNotFound, asset.source);
+                Nhg.logger.log(this, Nhg.strings.messages.cannotQueueAssetFileNotFound, asset.source);
             }
         } else {
             assetLoaded(asset);
@@ -116,7 +116,7 @@ public class Assets implements Updatable, AssetErrorListener {
         for (int i = 0; i < assetList.size; i++) {
             Asset asset = assetList.get(i);
 
-            if (NHG.assets.assetManager.isLoaded(asset.source)) {
+            if (Nhg.assets.assetManager.isLoaded(asset.source)) {
                 assetList.removeValue(asset, true);
             }
         }
