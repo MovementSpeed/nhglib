@@ -8,11 +8,6 @@
         {
           "name":"exit",
           "type":"key",
-          "config":
-          {
-            "keycode":131,
-            "inputMode":"single"
-          }
         }
       ]
     },
@@ -22,30 +17,15 @@
       [
         {
           "name":"menuDown",
-          "type":"key",
-          "config":
-          {
-            "keycode":40,
-            "inputMode":"single"
-          }
+          "type":"key"
         },
         {
           "name":"menuUp",
-          "type":"key",
-          "config":
-          {
-            "keycode":38,
-            "inputMode":"single"
-          }
+          "type":"key"
         },
         {
           "name":"select",
-          "type":"key",
-          "config":
-          {
-            "keycode":66,
-            "inputMode":"single"
-          }
+          "type":"key"
         }
       ]
     },
@@ -55,99 +35,140 @@
       [
         {
           "name":"movementStick",
-          "type":"stick",
-          "config":
-          {
-            "min":-1,
-            "max":1,
-            "stickDeadZoneRadius":0.5,
-            "horizontalSensitivity":1.0,
-            "verticalSensitivity":1.0,
-            "stickType":"left",
-            "controllerId":0
-          }
+          "type":"stick"
         },
         {
           "name":"rotationStick",
-          "type":"stick",
-          "config":
-          {
-            "min":-1,
-            "max":1,
-            "stickDeadZoneRadius":0.3,
-            "horizontalSensitivity":50.0,
-            "verticalSensitivity":25.0,
-            "stickType":"right",
-            "controllerId":0
-          }
+          "type":"stick"
         },
         {
           "name":"forward",
-          "type":"key",
-          "config":
-          {
-            "keycode":51,
-            "inputMode":"repeat"
-          }
+          "type":"key"
         },
         {
           "name":"backward",
-          "type":"key",
-          "config":
-          {
-            "keycode":47,
-            "inputMode":"repeat"
-          }
+          "type":"key"
         },
         {
           "name":"strafeLeft",
-          "type":"key",
-          "config":
-          {
-            "keycode":29,
-            "inputMode":"repeat"
-          }
+          "type":"key"
         },
         {
           "name":"strafeRight",
-          "type":"key",
-          "config":
-          {
-            "keycode":32,
-            "inputMode":"repeat"
-          }
+          "type":"key"
         },
         {
           "name":"jump",
-          "type":"key",
-          "config":
-          {
-            "keycode":62,
-            "inputMode":"single"
-          }
+          "type":"key"
         },
         {
           "name":"sprint",
-          "type":"key",
-          "config":
-          {
-            "keycode":59,
-            "inputMode":"repeat"
-          }
+          "type":"key"
         },
         {
           "name":"look",
-          "type":"inputXY",
-          "config":
-          {
-            "horizontalSensitivity":0.2
-          }
+          "type":"pointer"
         }
       ]
     }
   ],
   "configurations":
   {
-
+    "keys":
+    [
+      {
+        "name":"exit",
+        "keyCode":131,
+        "inputMode":"single"
+      },
+      {
+        "name":"menuDown",
+        "keyCode":40,
+        "inputMode":"single"
+      },
+      {
+        "name":"menuUp",
+        "keyCode":38,
+        "inputMode":"single"
+      },
+      {
+        "name":"select",
+        "keyCode":66,
+        "inputMode":"single"
+      },
+      {
+        "name":"forward",
+        "keyCode":51,
+        "inputMode":"repeat"
+      },
+      {
+        "name":"backward",
+        "keyCode":47,
+        "inputMode":"repeat"
+      },
+      {
+        "name":"strafeLeft",
+        "keyCode":29,
+        "inputMode":"repeat"
+      },
+      {
+        "name":"strafeRight",
+        "keyCode":32,
+        "inputMode":"repeat"
+      },
+      {
+        "name":"jump",
+        "keyCode":62,
+        "inputMode":"single"
+      },
+      {
+        "name":"sprint",
+        "keyCode":59,
+        "inputMode":"repeat"
+      }
+    ],
+    "sticks":
+    [
+      {
+        "name":"movementStick",
+        "stickType":"left",
+        "controllerId":0
+      },
+      {
+        "name":"rotationStick",
+        "stickType":"right",
+        "controllerId":0
+      }
+    ],
+    "controllers":
+    [
+      {
+        "id":0,
+        "leftStick":
+        {
+          "deadZoneRadius":0.4,
+          "horizontalSensitivity":1.0,
+          "verticalSensitivity":1.0,
+          "invertHorizontalAxis":false,
+          "invertVerticalAxis":false
+        },
+        "rightStick":
+        {
+          "deadZoneRadius":0.3,
+          "horizontalSensitivity":50.0,
+          "verticalSensitivity":25.0,
+          "invertHorizontalAxis":true,
+          "invertVerticalAxis":false
+        }
+      }
+    ],
+    "pointers":
+    [
+      {
+        "name":"look",
+        "horizontalSensitivity":0.2,
+        "verticalSensitivity":0.2
+      }
+    ]
   }
 }

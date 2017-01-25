@@ -1,5 +1,8 @@
 package io.github.voidzombie.nhglib.input;
 
+import io.github.voidzombie.nhglib.input.models.InputSource;
+import io.github.voidzombie.nhglib.input.models.InputType;
+
 /**
  * Created by Fausto Napoli on 08/01/2017.
  */
@@ -7,14 +10,12 @@ public class NhgInput {
     private Boolean handled;
     private String name;
     private InputType type;
-    private InputConfig config;
     private InputSource inputSource;
 
     public NhgInput(String name) {
         this.name = name;
 
         handled = false;
-        config = new InputConfig();
         inputSource = new InputSource();
     }
 
@@ -28,10 +29,6 @@ public class NhgInput {
 
     public void setType(InputType type) {
         this.type = type;
-    }
-
-    public void setConfig(InputConfig config) {
-        this.config = config;
     }
 
     public void setInputSource(InputSource inputSource) {
@@ -52,10 +49,6 @@ public class NhgInput {
 
     public InputType getType() {
         return type;
-    }
-
-    public InputConfig getConfig() {
-        return config;
     }
 
     public InputSource getInputSource() {

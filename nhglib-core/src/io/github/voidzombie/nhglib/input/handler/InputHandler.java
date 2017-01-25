@@ -1,4 +1,4 @@
-package io.github.voidzombie.nhglib.input;
+package io.github.voidzombie.nhglib.input.handler;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
@@ -14,13 +14,24 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.voidzombie.nhglib.Nhg;
+import io.github.voidzombie.nhglib.data.models.serialization.InputConfigurationsJson;
 import io.github.voidzombie.nhglib.data.models.serialization.InputJson;
+import io.github.voidzombie.nhglib.input.InputListener;
+import io.github.voidzombie.nhglib.input.NhgInput;
+import io.github.voidzombie.nhglib.input.configuration.InputConfigurations;
+import io.github.voidzombie.nhglib.input.configuration.impls.KeyInputConfiguration;
+import io.github.voidzombie.nhglib.input.configuration.impls.StickInputConfiguration;
+import io.github.voidzombie.nhglib.input.controllers.ControllerCodes;
+import io.github.voidzombie.nhglib.input.controllers.ControllerConfiguration;
+import io.github.voidzombie.nhglib.input.controllers.StickConfiguration;
+import io.github.voidzombie.nhglib.input.models.*;
 import io.github.voidzombie.nhglib.utils.data.VectorPool;
 
 /**
  * Created by Fausto Napoli on 08/01/2017.
  */
 public class InputHandler implements ControllerListener, InputProcessor {
+    private InputConfigurations config;
     private Array<InputContext> activeContexts;
     private Array<InputListener> inputListeners;
 
@@ -102,7 +113,9 @@ public class InputHandler implements ControllerListener, InputProcessor {
         NhgInput input = keyInputsMap.get(keycode);
 
         if (input != null) {
-            if (input.getConfig().getInputMode() == InputMode.REPEAT) {
+            KeyInputConfiguration conf = config.getKeyConfiguration(input.getName());
+
+            if (conf.getInputMode() == InputMode.REPEAT) {
                 activeKeyCodes.put(keycode, input);
             } else {
                 dispatchKeyInput(input);
@@ -181,6 +194,10 @@ public class InputHandler implements ControllerListener, InputProcessor {
             addContext(inputContext);
         }
 
+        InputConfigurationsJson configurationsJson = new InputConfigurationsJson();
+        configurationsJson.parse(jsonValue);
+        config = configurationsJson.get();
+
         mapKeyInputs();
         mapStickInputs();
     }
@@ -255,11 +272,21 @@ public class InputHandler implements ControllerListener, InputProcessor {
         }
     }
 
-    private void processStickInput(Controller controller, NhgInput input) {
+    private void processStickInput(Integer controllerId, Controller controller, NhgInput input) {
         Vector2 axis = VectorPool.getVector2();
         axis.set(0, 0);
 
-        StickType stickType = input.getConfig().getStickType();
+        boolean invertHorizontalAxis = false;
+        boolean invertVerticalAxis = false;
+
+        float deadZone = 0f;
+        float horizontalSensitivity = 1f;
+        float verticalSensitivity = 1f;
+
+        StickInputConfiguration conf = config.getStickConfiguration(input.getName());
+        StickType stickType = conf.getStickType();
+
+        ControllerConfiguration controllerConf = config.getControllerConfiguration(controllerId);
 
         switch (stickType) {
             case LEFT:
@@ -270,6 +297,15 @@ public class InputHandler implements ControllerListener, InputProcessor {
                     axis.x = controller.getAxis(Ouya.AXIS_LEFT_X);
                     axis.y = controller.getAxis(Ouya.AXIS_LEFT_Y);
                 }
+
+                StickConfiguration stickConfiguration = controllerConf.getLeftStick();
+
+                invertHorizontalAxis = stickConfiguration.getInvertHorizontalAxis();
+                invertVerticalAxis = stickConfiguration.getInvertVerticalAxis();
+
+                deadZone = stickConfiguration.getDeadZoneRadius();
+                horizontalSensitivity = stickConfiguration.getHorizontalSensitivity();
+                verticalSensitivity = stickConfiguration.getVerticalSensitivity();
                 break;
 
             case RIGHT:
@@ -280,17 +316,28 @@ public class InputHandler implements ControllerListener, InputProcessor {
                     axis.x = controller.getAxis(Ouya.AXIS_RIGHT_X);
                     axis.y = controller.getAxis(Ouya.AXIS_RIGHT_Y);
                 }
+
+                stickConfiguration = controllerConf.getRightStick();
+
+                invertHorizontalAxis = stickConfiguration.getInvertHorizontalAxis();
+                invertVerticalAxis = stickConfiguration.getInvertVerticalAxis();
+
+                deadZone = stickConfiguration.getDeadZoneRadius();
+                horizontalSensitivity = stickConfiguration.getHorizontalSensitivity();
+                verticalSensitivity = stickConfiguration.getVerticalSensitivity();
                 break;
 
             case VIRTUAL:
                 break;
         }
 
-        InputSource inputSource = input.getInputSource();
-        inputSource.setName(controller.getName());
-        inputSource.setValue(axis);
+        if (invertHorizontalAxis) {
+            axis.x *= -1;
+        }
 
-        float deadZone = input.getConfig().getStickDeadZoneRadius();
+        if (invertVerticalAxis) {
+            axis.y *= -1;
+        }
 
         if (Math.abs(axis.x) < deadZone) {
             axis.x = 0;
@@ -300,7 +347,11 @@ public class InputHandler implements ControllerListener, InputProcessor {
             axis.y = 0;
         }
 
-        axis.scl(input.getConfig().getSensitivity());
+        axis.scl(horizontalSensitivity, verticalSensitivity);
+
+        InputSource inputSource = input.getInputSource();
+        inputSource.setName(controller.getName());
+        inputSource.setValue(axis);
     }
 
     private void dispatchStickInputs() {
@@ -315,7 +366,7 @@ public class InputHandler implements ControllerListener, InputProcessor {
                 if (stickInputs != null) {
                     for (NhgInput input : stickInputs) {
                         if (input != null) {
-                            processStickInput(controller, input);
+                            processStickInput(id, controller, input);
                             dispatchStickInput(input);
                         }
                     }
@@ -331,7 +382,9 @@ public class InputHandler implements ControllerListener, InputProcessor {
             ArrayMap.Values<NhgInput> inputs = context.getInputs();
 
             for (NhgInput in : inputs) {
-                if (in.getType() == InputType.KEY && in.getConfig().getKeycode().compareTo(keycode) == 0) {
+                KeyInputConfiguration conf = config.getKeyConfiguration(in.getName());
+
+                if (in.getType() == InputType.KEY && conf.getKeyCode().compareTo(keycode) == 0) {
                     res = in;
                     break;
                 }
@@ -348,9 +401,11 @@ public class InputHandler implements ControllerListener, InputProcessor {
             ArrayMap.Values<NhgInput> inputs = context.getInputs();
 
             for (NhgInput in : inputs) {
+                StickInputConfiguration conf = config.getStickConfiguration(in.getName());
+
                 if (in.getType() == InputType.STICK &&
-                        in.getConfig().getControllerId() != null &&
-                        in.getConfig().getControllerId().compareTo(id) == 0) {
+                        conf.getControllerId() != null &&
+                        conf.getControllerId().compareTo(id) == 0) {
                     res.add(in);
                 }
             }

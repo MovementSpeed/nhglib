@@ -2,7 +2,9 @@ package io.github.voidzombie.nhglib.data.models.serialization;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
-import io.github.voidzombie.nhglib.input.*;
+import io.github.voidzombie.nhglib.input.NhgInput;
+import io.github.voidzombie.nhglib.input.models.InputContext;
+import io.github.voidzombie.nhglib.input.models.InputType;
 import io.github.voidzombie.nhglib.interfaces.JsonParseable;
 
 /**
@@ -26,53 +28,7 @@ public class InputJson implements JsonParseable<Array<InputContext>> {
             InputContext inputContext = new InputContext(name);
 
             for (JsonValue inputJson : inputsJson) {
-                String inputName = inputJson.getString("name");
-                String inputTypeString = inputJson.getString("type");
-                JsonValue configJson = inputJson.get("config");
-
-                InputType inputType = InputType.fromString(inputTypeString);
-                InputConfig inputConfig = new InputConfig();
-
-                try {
-                    inputConfig.setKeycode(configJson.getInt("keycode"));
-                } catch (IllegalArgumentException e) {}
-
-                try {
-                    inputConfig.setControllerId(configJson.getInt("controllerId"));
-                } catch (IllegalArgumentException e) {
-                }
-
-                try {
-                    inputConfig.setMinValue(configJson.getFloat("min"));
-                } catch (IllegalArgumentException e) {}
-
-                try {
-                    inputConfig.setMaxValue(configJson.getFloat("max"));
-                } catch (IllegalArgumentException e) {}
-
-                try {
-                    inputConfig.setStickDeadZoneRadius(configJson.getFloat("stickDeadZoneRadius"));
-                } catch (IllegalArgumentException e) {
-                }
-
-                try {
-                    inputConfig.setSensitivity(configJson.getFloat("sensitivity"));
-                } catch (IllegalArgumentException e) {}
-
-                try {
-                    inputConfig.setInputMode(InputMode.fromString(configJson.getString("inputMode")));
-                } catch (IllegalArgumentException e) {}
-
-                try {
-                    inputConfig.setStickType(StickType.fromString(configJson.getString("stickType")));
-                } catch (IllegalArgumentException e) {
-                }
-
-                NhgInput input = new NhgInput(inputName);
-                input.setType(inputType);
-                input.setConfig(inputConfig);
-
-                inputContext.addInput(input);
+                inputContext.addInput(inputFromJson(inputJson));
             }
 
             inputContexts.add(inputContext);
@@ -82,5 +38,17 @@ public class InputJson implements JsonParseable<Array<InputContext>> {
     @Override
     public Array<InputContext> get() {
         return inputContexts;
+    }
+
+    private NhgInput inputFromJson(JsonValue inputJson) {
+        String inputName = inputJson.getString("name");
+        String inputTypeString = inputJson.getString("type");
+
+        InputType inputType = InputType.fromString(inputTypeString);
+
+        NhgInput input = new NhgInput(inputName);
+        input.setType(inputType);
+
+        return input;
     }
 }

@@ -1,10 +1,10 @@
-package io.github.voidzombie.nhglib.input;
+package io.github.voidzombie.nhglib.input.models;
 
 /**
  * Created by Fausto Napoli on 08/01/2017.
  */
 public enum InputType {
-    INPUT_XY,
+    POINTER,
     KEY,
     BUTTON,
     STICK;
@@ -13,8 +13,8 @@ public enum InputType {
         InputType res = null;
 
         switch (value) {
-            case "inputXY":
-                res = INPUT_XY;
+            case "pointer":
+                res = POINTER;
                 break;
 
             case "key":

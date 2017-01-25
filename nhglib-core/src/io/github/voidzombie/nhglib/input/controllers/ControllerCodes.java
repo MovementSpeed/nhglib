@@ -1,4 +1,4 @@
-package io.github.voidzombie.nhglib.input;
+package io.github.voidzombie.nhglib.input.controllers;
 
 /**
  * Created by Fausto Napoli on 23/01/2017.

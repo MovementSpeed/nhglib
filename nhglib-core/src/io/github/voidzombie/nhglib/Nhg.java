@@ -1,7 +1,7 @@
 package io.github.voidzombie.nhglib;
 
 import io.github.voidzombie.nhglib.assets.Assets;
-import io.github.voidzombie.nhglib.input.InputHandler;
+import io.github.voidzombie.nhglib.input.handler.InputHandler;
 import io.github.voidzombie.nhglib.runtime.ecs.utils.EntitySystem;
 import io.github.voidzombie.nhglib.runtime.messaging.Messaging;
 import io.github.voidzombie.nhglib.runtime.threading.Threading;

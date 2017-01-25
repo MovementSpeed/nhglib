@@ -1,4 +1,4 @@
-package io.github.voidzombie.nhglib.input;
+package io.github.voidzombie.nhglib.input.models;
 
 /**
  * Created by Fausto Napoli on 09/01/2017.
