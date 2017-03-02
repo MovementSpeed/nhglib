@@ -66,6 +66,24 @@
           "type":"key"
         },
         {
+          "name":"mouseLook",
+          "type":"mouse"
+        },
+        {
+          "name":"fire",
+          "type":"mouse"
+        },
+        {
+          "name":"aim",
+          "type":"mouse"
+        }
+      ]
+    },
+    {
+      "name":"gameMobile",
+      "inputs":
+      [
+        {
           "name":"look",
           "type":"pointer"
         }
@@ -165,9 +183,30 @@
     "pointers":
     [
       {
+        "id":0,
         "name":"look",
+        "sourceType":"pointerDeltaXY",
         "horizontalSensitivity":0.2,
         "verticalSensitivity":0.2
+      }
+    ],
+    "mouse":
+    [
+      {
+        "name":"mouseLook",
+        "sourceType":"mouseXY",
+        "horizontalSensitivity":0.2,
+        "verticalSensitivity":0.2
+      },
+      {
+        "name":"fire",
+        "sourceType":"mouseLeft",
+        "inputMode":"repeat"
+      },
+      {
+        "name":"aim",
+        "sourceType":"mouseRight",
+        "inputMode":"single"
       }
     ]
   }

@@ -20,6 +20,8 @@ import io.github.voidzombie.nhglib.input.InputListener;
 import io.github.voidzombie.nhglib.input.NhgInput;
 import io.github.voidzombie.nhglib.input.configuration.InputConfigurations;
 import io.github.voidzombie.nhglib.input.configuration.impls.KeyInputConfiguration;
+import io.github.voidzombie.nhglib.input.configuration.impls.MouseInputConfiguration;
+import io.github.voidzombie.nhglib.input.configuration.impls.PointerInputConfiguration;
 import io.github.voidzombie.nhglib.input.configuration.impls.StickInputConfiguration;
 import io.github.voidzombie.nhglib.input.controllers.ControllerCodes;
 import io.github.voidzombie.nhglib.input.controllers.ControllerConfiguration;
@@ -36,25 +38,31 @@ public class InputHandler implements ControllerListener, InputProcessor {
     private Array<InputListener> inputListeners;
 
     private ArrayMap<Integer, NhgInput> keyInputsMap;
+    private ArrayMap<Integer, NhgInput> pointerInputsMap;
+    private ArrayMap<MouseSourceType, NhgInput> mouseInputsMap;
     private ArrayMap<Integer, Array<NhgInput>> stickInputsMap;
+
     private ArrayMap<Integer, NhgInput> activeKeyCodes;
+    private ArrayMap<Integer, NhgInput> activePointers;
+    private ArrayMap<MouseSourceType, NhgInput> activeMouseInputs;
     private ArrayMap<String, InputContext> inputContexts;
 
     public InputHandler() {
         activeContexts = new Array<>();
+        activeKeyCodes = new ArrayMap<>();
+        activePointers = new ArrayMap<>();
+        activeMouseInputs = new ArrayMap<>();
+
         inputListeners = new Array<>();
         inputContexts = new ArrayMap<>();
-        activeKeyCodes = new ArrayMap<>();
+
         keyInputsMap = new ArrayMap<>();
+        pointerInputsMap = new ArrayMap<>();
         stickInputsMap = new ArrayMap<>();
+        mouseInputsMap = new ArrayMap<>();
 
         Controllers.addListener(this);
         Gdx.input.setInputProcessor(this);
-    }
-
-    public void update() {
-        dispatchKeyInputs();
-        dispatchStickInputs();
     }
 
     // ControllerListener interface --------------------------------------
@@ -141,12 +149,35 @@ public class InputHandler implements ControllerListener, InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return false;
+        NhgInput input = pointerInputsMap.get(pointer);
+
+        if (input != null) {
+            activePointers.put(pointer, input);
+        }
+
+        MouseSourceType sourceType = MouseSourceType.fromButtonCode(button);
+        NhgInput mouseInput = mouseInputsMap.get(sourceType);
+
+        if (mouseInput != null) {
+            activeMouseInputs.put(sourceType, mouseInput);
+        }
+
+        return true;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return false;
+        if (activePointers.containsKey(pointer)) {
+            activePointers.removeKey(pointer);
+        }
+
+        MouseSourceType sourceType = MouseSourceType.fromButtonCode(button);
+
+        if (activeMouseInputs.containsKey(sourceType)) {
+            activeMouseInputs.removeKey(sourceType);
+        }
+
+        return true;
     }
 
     @Override
@@ -156,12 +187,22 @@ public class InputHandler implements ControllerListener, InputProcessor {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-        return false;
+        NhgInput input = mouseInputsMap.get(MouseSourceType.MOUSE_XY);
+        activeMouseInputs.put(MouseSourceType.MOUSE_XY, input);
+
+        return true;
     }
 
     @Override
     public boolean scrolled(int amount) {
         return false;
+    }
+
+    public void update() {
+        dispatchKeyInputs();
+        dispatchStickInputs();
+        dispatchPointerInputs();
+        dispatchMouseInputs();
     }
 
     public void setActive(String contextName, Boolean active) {
@@ -200,6 +241,8 @@ public class InputHandler implements ControllerListener, InputProcessor {
 
         mapKeyInputs();
         mapStickInputs();
+        mapPointerInputs();
+        mapMouseInputs();
     }
 
     public void addListener(InputListener inputListener) {
@@ -247,9 +290,25 @@ public class InputHandler implements ControllerListener, InputProcessor {
         }
     }
 
+    private void dispatchPointerInput(NhgInput input) {
+        for (InputListener inputListener : inputListeners) {
+            inputListener.onPointerInput(input);
+        }
+    }
+
+    private void dispatchMouseInput(NhgInput input) {
+        for (InputListener inputListener : inputListeners) {
+            inputListener.onMouseInput(input);
+        }
+    }
+
     private void mapKeyInputs() {
         for (int keyCode = 0; keyCode < 256; keyCode++) {
-            keyInputsMap.put(keyCode, getKeyInputWithKeycode(keyCode));
+            NhgInput input = getKeyInputWithKeycode(keyCode);
+
+            if (input != null) {
+                keyInputsMap.put(keyCode, input);
+            }
         }
     }
 
@@ -258,7 +317,30 @@ public class InputHandler implements ControllerListener, InputProcessor {
 
         for (int id = 0; id < availableControllers.size; id++) {
             Array<NhgInput> input = getStickInputsWithControllerId(id);
-            stickInputsMap.put(id, input);
+
+            if (input.size > 0) {
+                stickInputsMap.put(id, input);
+            }
+        }
+    }
+
+    private void mapPointerInputs() {
+        for (int pointer = 0; pointer < 10; pointer++) {
+            NhgInput input = getPointerInputWithId(pointer);
+
+            if (input != null) {
+                pointerInputsMap.put(pointer, input);
+            }
+        }
+    }
+
+    private void mapMouseInputs() {
+        for (MouseSourceType sourceType : MouseSourceType.values()) {
+            NhgInput input = getMouseInputWithSourceType(sourceType);
+
+            if (input != null) {
+                mouseInputsMap.put(sourceType, input);
+            }
         }
     }
 
@@ -375,6 +457,68 @@ public class InputHandler implements ControllerListener, InputProcessor {
         }
     }
 
+    private void processPointerInput(Integer pointer, NhgInput input) {
+        Vector2 axis = VectorPool.getVector2();
+        PointerInputConfiguration conf = config.getPointerConfiguration(input.getName());
+
+        switch (conf.getPointerSourceType()) {
+            case POINTER_DELTA_XY:
+                axis.set(Gdx.input.getDeltaX(pointer), Gdx.input.getDeltaY(pointer));
+                axis.scl(conf.getHorizontalSensitivity(), conf.getVerticalSensitivity());
+                break;
+
+            case POINTER_XY:
+                axis.set(Gdx.input.getX(pointer), Gdx.input.getY(pointer));
+                break;
+        }
+
+        InputSource inputSource = input.getInputSource();
+        inputSource.setName(input.getName());
+        inputSource.setValue(axis);
+    }
+
+    private void dispatchPointerInputs() {
+        if (activePointers.size > 0) {
+            ArrayMap.Keys<Integer> pointers = activePointers.keys();
+
+            for (Integer pointer : pointers) {
+                NhgInput input = activePointers.get(pointer);
+
+                processPointerInput(pointer, input);
+                dispatchPointerInput(input);
+            }
+        }
+    }
+
+    private void processMouseInput(NhgInput input) {
+        MouseInputConfiguration conf = config.getMouseConfiguration(input.getName());
+
+        if (conf.getMouseSourceType() == MouseSourceType.MOUSE_XY) {
+            Vector2 axis = VectorPool.getVector2();
+
+            axis.set(Gdx.input.getDeltaX(), Gdx.input.getDeltaY());
+            axis.scl(conf.getHorizontalSensitivity(), conf.getVerticalSensitivity());
+
+            InputSource inputSource = input.getInputSource();
+            inputSource.setName(input.getName());
+            inputSource.setValue(axis);
+
+            activeMouseInputs.removeKey(MouseSourceType.MOUSE_XY);
+        }
+    }
+
+    private void dispatchMouseInputs() {
+        if (activeMouseInputs.size > 0) {
+            ArrayMap.Keys<MouseSourceType> mouseInputs = activeMouseInputs.keys();
+
+            for (MouseSourceType mouseInput : mouseInputs) {
+                NhgInput input = activeMouseInputs.get(mouseInput);
+                processMouseInput(input);
+                dispatchMouseInput(input);
+            }
+        }
+    }
+
     private NhgInput getKeyInputWithKeycode(int keycode) {
         NhgInput res = null;
 
@@ -385,6 +529,44 @@ public class InputHandler implements ControllerListener, InputProcessor {
                 KeyInputConfiguration conf = config.getKeyConfiguration(in.getName());
 
                 if (in.getType() == InputType.KEY && conf.getKeyCode().compareTo(keycode) == 0) {
+                    res = in;
+                    break;
+                }
+            }
+        }
+
+        return res;
+    }
+
+    private NhgInput getPointerInputWithId(int id) {
+        NhgInput res = null;
+
+        for (InputContext context : inputContexts.values()) {
+            ArrayMap.Values<NhgInput> inputs = context.getInputs();
+
+            for (NhgInput in : inputs) {
+                PointerInputConfiguration conf = config.getPointerConfiguration(in.getName());
+
+                if (in.getType() == InputType.POINTER && conf.getId().compareTo(id) == 0) {
+                    res = in;
+                    break;
+                }
+            }
+        }
+
+        return res;
+    }
+
+    private NhgInput getMouseInputWithSourceType(MouseSourceType sourceType) {
+        NhgInput res = null;
+
+        for (InputContext context : inputContexts.values()) {
+            ArrayMap.Values<NhgInput> inputs = context.getInputs();
+
+            for (NhgInput in : inputs) {
+                MouseInputConfiguration conf = config.getMouseConfiguration(in.getName());
+
+                if (in.getType() == InputType.MOUSE && conf.getMouseSourceType().button == sourceType.button) {
                     res = in;
                     break;
                 }

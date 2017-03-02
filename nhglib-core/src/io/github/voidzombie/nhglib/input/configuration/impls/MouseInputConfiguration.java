@@ -1,22 +1,16 @@
 package io.github.voidzombie.nhglib.input.configuration.impls;
 
 import io.github.voidzombie.nhglib.input.configuration.base.InputConfiguration;
-import io.github.voidzombie.nhglib.input.models.PointerSourceType;
+import io.github.voidzombie.nhglib.input.models.MouseSourceType;
 
 /**
  * Created by Fausto Napoli on 24/01/2017.
  */
-public class PointerInputConfiguration extends InputConfiguration {
-    private Integer id;
-
+public class MouseInputConfiguration extends InputConfiguration {
     private Float horizontalSensitivity;
     private Float verticalSensitivity;
 
-    private PointerSourceType pointerSourceType;
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    private MouseSourceType mouseSourceType;
 
     public void setHorizontalSensitivity(Float horizontalSensitivity) {
         this.horizontalSensitivity = horizontalSensitivity;
@@ -26,12 +20,8 @@ public class PointerInputConfiguration extends InputConfiguration {
         this.verticalSensitivity = verticalSensitivity;
     }
 
-    public void setPointerSourceType(PointerSourceType pointerSourceType) {
-        this.pointerSourceType = pointerSourceType;
-    }
-
-    public Integer getId() {
-        return id;
+    public void setMouseSourceType(MouseSourceType mouseSourceType) {
+        this.mouseSourceType = mouseSourceType;
     }
 
     public Float getHorizontalSensitivity() {
@@ -42,7 +32,7 @@ public class PointerInputConfiguration extends InputConfiguration {
         return verticalSensitivity;
     }
 
-    public PointerSourceType getPointerSourceType() {
-        return pointerSourceType;
+    public MouseSourceType getMouseSourceType() {
+        return mouseSourceType;
     }
 }

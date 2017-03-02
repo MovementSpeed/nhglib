@@ -7,4 +7,8 @@ public interface InputListener {
     void onKeyInput(NhgInput input);
 
     void onStickInput(NhgInput input);
+
+    void onPointerInput(NhgInput input);
+
+    void onMouseInput(NhgInput input);
 }

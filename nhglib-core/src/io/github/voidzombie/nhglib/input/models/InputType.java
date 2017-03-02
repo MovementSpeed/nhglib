@@ -7,7 +7,8 @@ public enum InputType {
     POINTER,
     KEY,
     BUTTON,
-    STICK;
+    STICK,
+    MOUSE;
 
     public static InputType fromString(String value) {
         InputType res = null;
@@ -27,6 +28,10 @@ public enum InputType {
 
             case "stick":
                 res = STICK;
+                break;
+
+            case "mouse":
+                res = MOUSE;
                 break;
         }
 

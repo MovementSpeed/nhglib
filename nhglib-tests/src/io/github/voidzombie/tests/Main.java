@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.voidzombie.nhglib.Nhg;
@@ -29,6 +30,7 @@ public class Main extends NhgEntry implements InputListener {
     private FPSLogger fpsLogger;
     private GraphicsSystem graphicsSystem;
     private ImmediateModeRenderer20 renderer20;
+    private Quaternion cameraQuaternion;
 
     @Override
     public void engineStarted() {
@@ -67,6 +69,8 @@ public class Main extends NhgEntry implements InputListener {
 
         graphicsSystem = Nhg.entitySystem.getEntitySystem(GraphicsSystem.class);
         graphicsSystem.camera.position.set(0, 0, 1f);
+
+        cameraQuaternion = new Quaternion();
     }
 
     @Override
@@ -163,6 +167,42 @@ public class Main extends NhgEntry implements InputListener {
                         break;
                 }
             }
+        }
+    }
+
+    @Override
+    public void onPointerInput(NhgInput input) {
+        Vector2 pointerVector = (Vector2) input.getInputSource().getValue();
+
+        if (pointerVector != null) {
+            switch (input.getName()) {
+                case "look":
+                    float horizontalAxis = cameraQuaternion.getYaw() + pointerVector.x;
+                    float verticalAxis = cameraQuaternion.getPitch() + pointerVector.y;
+
+                    cameraQuaternion.setEulerAngles(horizontalAxis, verticalAxis, 0);
+
+                    graphicsSystem.camera.up.set(0, 1, 0);
+                    graphicsSystem.camera.direction.set(0, 0, -1);
+                    graphicsSystem.camera.rotate(cameraQuaternion);
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public void onMouseInput(NhgInput input) {
+        Vector2 pointerVector = (Vector2) input.getInputSource().getValue();
+
+        if (pointerVector != null) {
+            float horizontalAxis = cameraQuaternion.getYaw() + pointerVector.x;
+            float verticalAxis = cameraQuaternion.getPitch() + pointerVector.y;
+
+            cameraQuaternion.setEulerAngles(horizontalAxis, verticalAxis, 0);
+
+            graphicsSystem.camera.up.set(0, 1, 0);
+            graphicsSystem.camera.direction.set(0, 0, -1);
+            graphicsSystem.camera.rotate(cameraQuaternion);
         }
     }
 
