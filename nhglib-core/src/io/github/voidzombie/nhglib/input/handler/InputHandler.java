@@ -278,30 +278,6 @@ public class InputHandler implements ControllerListener, InputProcessor {
         return activeContexts;
     }
 
-    private void dispatchKeyInput(NhgInput input) {
-        for (InputListener inputListener : inputListeners) {
-            inputListener.onKeyInput(input);
-        }
-    }
-
-    private void dispatchStickInput(NhgInput input) {
-        for (InputListener inputListener : inputListeners) {
-            inputListener.onStickInput(input);
-        }
-    }
-
-    private void dispatchPointerInput(NhgInput input) {
-        for (InputListener inputListener : inputListeners) {
-            inputListener.onPointerInput(input);
-        }
-    }
-
-    private void dispatchMouseInput(NhgInput input) {
-        for (InputListener inputListener : inputListeners) {
-            inputListener.onMouseInput(input);
-        }
-    }
-
     private void mapKeyInputs() {
         for (int keyCode = 0; keyCode < 256; keyCode++) {
             NhgInput input = getKeyInputWithKeycode(keyCode);
@@ -469,6 +445,30 @@ public class InputHandler implements ControllerListener, InputProcessor {
         }
     }
 
+    private void dispatchKeyInput(NhgInput input) {
+        for (InputListener inputListener : inputListeners) {
+            inputListener.onKeyInput(input);
+        }
+    }
+
+    private void dispatchStickInput(NhgInput input) {
+        for (InputListener inputListener : inputListeners) {
+            inputListener.onStickInput(input);
+        }
+    }
+
+    private void dispatchPointerInput(NhgInput input) {
+        for (InputListener inputListener : inputListeners) {
+            inputListener.onPointerInput(input);
+        }
+    }
+
+    private void dispatchMouseInput(NhgInput input) {
+        for (InputListener inputListener : inputListeners) {
+            inputListener.onMouseInput(input);
+        }
+    }
+
     private void dispatchKeyInputs() {
         if (activeKeyCodes.size > 0) {
             ArrayMap.Keys<Integer> keyCodes = activeKeyCodes.keys();
@@ -476,7 +476,7 @@ public class InputHandler implements ControllerListener, InputProcessor {
             for (Integer keyCode : keyCodes) {
                 NhgInput input = activeKeyCodes.get(keyCode);
 
-                if (input != null) {
+                if (input != null && isValidInput(input)) {
                     dispatchKeyInput(input);
                 }
             }
@@ -494,7 +494,7 @@ public class InputHandler implements ControllerListener, InputProcessor {
 
                 if (stickInputs != null) {
                     for (NhgInput input : stickInputs) {
-                        if (input != null) {
+                        if (input != null && isValidInput(input)) {
                             processStickInput(id, controller, input);
                             dispatchStickInput(input);
                         }
@@ -511,7 +511,7 @@ public class InputHandler implements ControllerListener, InputProcessor {
             for (Integer pointer : pointers) {
                 NhgInput input = activePointers.get(pointer);
 
-                if (input != null) {
+                if (input != null && isValidInput(input)) {
                     processPointerInput(pointer, input);
                     dispatchPointerInput(input);
                 }
@@ -526,12 +526,24 @@ public class InputHandler implements ControllerListener, InputProcessor {
             for (MouseSourceType mouseInput : mouseInputs) {
                 NhgInput input = activeMouseInputs.get(mouseInput);
 
-                if (input != null) {
+                if (input != null && isValidInput(input)) {
                     processMouseInput(input);
                     dispatchMouseInput(input);
                 }
             }
         }
+    }
+
+    private boolean isValidInput(NhgInput input) {
+        boolean validInput = false;
+
+        for (InputContext context : activeContexts) {
+            if (context.getInput(input.getName()) != null) {
+                validInput = true;
+            }
+        }
+
+        return validInput;
     }
 
     private NhgInput getKeyInputWithKeycode(int keycode) {
