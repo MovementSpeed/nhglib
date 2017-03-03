@@ -2,6 +2,7 @@ package io.github.voidzombie.nhglib.runtime.ecs.systems.impl;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelCache;
@@ -21,7 +22,7 @@ import io.reactivex.functions.Consumer;
  * Created by Fausto Napoli on 08/12/2016.
  */
 public class GraphicsSystem extends NhgIteratingSystem {
-    public DefaultPerspectiveCamera camera;
+    public Camera camera;
 
     private ModelBatch modelBatch;
     private ModelCache dynamicCache;
@@ -97,6 +98,10 @@ public class GraphicsSystem extends NhgIteratingSystem {
                         }
                     }
                 });
+    }
+
+    public void setCamera(Camera camera) {
+        this.camera = camera;
     }
 
     private void rebuildCache(RenderableProvider ... renderableProviders) {

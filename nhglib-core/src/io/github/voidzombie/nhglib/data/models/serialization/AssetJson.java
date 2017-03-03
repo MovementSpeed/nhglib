@@ -17,7 +17,7 @@ public class AssetJson implements JsonParseable<Asset> {
         String source = jsonValue.getString("source");
         String classString = jsonValue.getString("classAlias");
 
-        Class assetClass = SceneUtils.getInstance().assetClassFromClassAlias(classString);
+        Class assetClass = SceneUtils.get().assetClassFromClassAlias(classString);
         output = new Asset(alias, source, assetClass);
     }
 

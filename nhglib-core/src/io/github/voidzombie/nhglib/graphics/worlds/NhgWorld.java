@@ -20,6 +20,10 @@ public class NhgWorld {
 
     private ArrayMap<String, Scene> scenes;
 
+    public NhgWorld(WorldStrategy strategy) {
+        this(strategy, new Bounds(1f, 1f, 1f));
+    }
+
     public NhgWorld(WorldStrategy strategy, Bounds bounds) {
         this.worldStrategy = strategy;
         this.bounds = bounds;

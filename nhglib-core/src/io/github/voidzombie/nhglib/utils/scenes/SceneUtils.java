@@ -18,7 +18,7 @@ public class SceneUtils {
         componentJsonClassesMapping = new HashMap<>();
     }
 
-    public static SceneUtils getInstance() {
+    public static SceneUtils get() {
         if (instance == null) {
             instance = new SceneUtils();
         }
