@@ -2,7 +2,6 @@ rootProject.name = 'nhglib'
 include 'nhglib-core'
 include 'nhglib-android'
 include 'nhglib-ios'
-include 'nhglib-html'
 include 'nhglib-desktop'
 include 'nhglib-tests'
 
