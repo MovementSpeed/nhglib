@@ -143,7 +143,7 @@ project(":nhglib-desktop") {
     }
 }
 
-project(":nhglib-html") {
+/*project(":nhglib-html") {
     apply plugin: "java"
     apply plugin: 'signing'
     apply plugin: 'maven'
@@ -169,7 +169,7 @@ project(":nhglib-html") {
         compile "com.badlogicgames.gdx:gdx-controllers-gwt:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-controllers-gwt:$gdxVersion:sources"
     }
-}
+}*/
 
 project(":nhglib-tests") {
     apply plugin: "java"
