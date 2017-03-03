@@ -1,0 +1,445 @@
+apply plugin: 'io.codearte.nexus-staging'
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
+        classpath 'com.android.tools.build:gradle:2.0.0'
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
+    }
+}
+
+allprojects {
+    apply plugin: "eclipse"
+    apply plugin: "idea"
+
+    version = '0.1.2'
+
+    ext {
+        gdxVersion = '1.9.5'
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+    }
+}
+
+project(":nhglib-core") {
+    apply plugin: "java"
+    apply plugin: 'signing'
+    apply plugin: 'maven'
+
+    group = 'com.github.VoidZombie'
+
+    // Signature of artifacts
+    signing {
+        sign configurations.archives
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                // POM signature
+                beforeDeployment {
+                    MavenDeployment deployment -> signing.signPom(deployment)
+                }
+
+                // Target repository
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUser, password: ossrhPassword)
+                }
+
+                pom.project {
+                    name project.name
+                    description project.description
+                    packaging 'jar'
+                    groupId 'io.github.voidzombie'
+                    artifactId project.name
+                    url 'https://github.com/VoidZombie/nhglib'
+
+                    scm {
+                        connection 'scm:git:https://github.com/VoidZombie/nhglib.git'
+                        developerConnection 'scm:git:git@github.com:VoidZombie/nhglib.git'
+                        url 'https://github.com/VoidZombie/nhglib.git'
+                    }
+
+                    licenses {
+                        license {
+                            name 'The MIT License (MIT)'
+                            url 'http://opensource.org/licenses/MIT'
+                            distribution 'repo'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = 'VoidZombie'
+                            name = 'Fausto Napoli'
+                            email = 'worsearoom@gmail.com'
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    task javadocJar(type: Jar) {
+        classifier = 'javadoc'
+        from javadoc
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives javadocJar, sourcesJar
+    }
+
+    dependencies {
+        compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-ai:1.8.0"
+        compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
+        compile "net.onedaybeard.artemis:artemis-odb:2.0.0"
+        compile 'com.google.guava:guava:20.0'
+        compile 'io.reactivex.rxjava2:rxjava:2.0.2'
+    }
+}
+
+project(":nhglib-android") {
+    apply plugin: "java"
+    apply plugin: 'signing'
+    apply plugin: 'maven'
+
+    // Signature of artifacts
+    signing {
+        sign configurations.archives
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                // POM signature
+                beforeDeployment {
+                    MavenDeployment deployment -> signing.signPom(deployment)
+                }
+
+                // Target repository
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUser, password: ossrhPassword)
+                }
+
+                pom.project {
+                    name project.name
+                    description project.description
+                    packaging 'jar'
+                    groupId 'io.github.voidzombie'
+                    artifactId project.name
+                    url 'https://github.com/VoidZombie/nhglib'
+
+                    scm {
+                        connection 'scm:git:https://github.com/VoidZombie/nhglib.git'
+                        developerConnection 'scm:git:git@github.com:VoidZombie/nhglib.git'
+                        url 'https://github.com/VoidZombie/nhglib.git'
+                    }
+
+                    licenses {
+                        license {
+                            name 'The MIT License (MIT)'
+                            url 'http://opensource.org/licenses/MIT'
+                            distribution 'repo'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = 'VoidZombie'
+                            name = 'Fausto Napoli'
+                            email = 'worsearoom@gmail.com'
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    task javadocJar(type: Jar) {
+        classifier = 'javadoc'
+        from javadoc
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives javadocJar, sourcesJar
+    }
+
+    dependencies {
+        compile project(':nhglib-core')
+        compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-controllers-android:$gdxVersion"
+    }
+}
+
+project(":nhglib-ios") {
+    apply plugin: "java"
+    apply plugin: 'signing'
+    apply plugin: 'maven'
+
+    group='io.github.voidzombie'
+
+    // Signature of artifacts
+    signing {
+        sign configurations.archives
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                // POM signature
+                beforeDeployment {
+                    MavenDeployment deployment -> signing.signPom(deployment)
+                }
+
+                // Target repository
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUser, password: ossrhPassword)
+                }
+
+                pom.project {
+                    name project.name
+                    description project.description
+                    packaging 'jar'
+                    groupId 'io.github.voidzombie'
+                    artifactId project.name
+                    url 'https://github.com/VoidZombie/nhglib'
+
+                    scm {
+                        connection 'scm:git:https://github.com/VoidZombie/nhglib.git'
+                        developerConnection 'scm:git:git@github.com:VoidZombie/nhglib.git'
+                        url 'https://github.com/VoidZombie/nhglib.git'
+                    }
+
+                    licenses {
+                        license {
+                            name 'The MIT License (MIT)'
+                            url 'http://opensource.org/licenses/MIT'
+                            distribution 'repo'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = 'VoidZombie'
+                            name = 'Fausto Napoli'
+                            email = 'worsearoom@gmail.com'
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    task javadocJar(type: Jar) {
+        classifier = 'javadoc'
+        from javadoc
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives javadocJar, sourcesJar
+    }
+
+    dependencies {
+        compile project(':nhglib-core')
+    }
+}
+
+project(":nhglib-desktop") {
+    apply plugin: "java"
+    apply plugin: 'signing'
+    apply plugin: 'maven'
+
+    // Signature of artifacts
+    signing {
+        sign configurations.archives
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                // POM signature
+                beforeDeployment {
+                    MavenDeployment deployment -> signing.signPom(deployment)
+                }
+
+                // Target repository
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUser, password: ossrhPassword)
+                }
+
+                pom.project {
+                    name project.name
+                    description project.description
+                    packaging 'jar'
+                    groupId 'io.github.voidzombie'
+                    artifactId project.name
+                    url 'https://github.com/VoidZombie/nhglib'
+
+                    scm {
+                        connection 'scm:git:https://github.com/VoidZombie/nhglib.git'
+                        developerConnection 'scm:git:git@github.com:VoidZombie/nhglib.git'
+                        url 'https://github.com/VoidZombie/nhglib.git'
+                    }
+
+                    licenses {
+                        license {
+                            name 'The MIT License (MIT)'
+                            url 'http://opensource.org/licenses/MIT'
+                            distribution 'repo'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = 'VoidZombie'
+                            name = 'Fausto Napoli'
+                            email = 'worsearoom@gmail.com'
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    task javadocJar(type: Jar) {
+        classifier = 'javadoc'
+        from javadoc
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives javadocJar, sourcesJar
+    }
+
+    dependencies {
+        compile project(':nhglib-core')
+        compile "com.badlogicgames.gdx:gdx-controllers-desktop:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-controllers-platform:$gdxVersion:natives-desktop"
+    }
+}
+
+project(":nhglib-html") {
+    apply plugin: "java"
+    apply plugin: 'signing'
+    apply plugin: 'maven'
+
+    // Signature of artifacts
+    signing {
+        sign configurations.archives
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                // POM signature
+                beforeDeployment {
+                    MavenDeployment deployment -> signing.signPom(deployment)
+                }
+
+                // Target repository
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUser, password: ossrhPassword)
+                }
+
+                pom.project {
+                    name project.name
+                    description project.description
+                    packaging 'jar'
+                    groupId 'io.github.voidzombie'
+                    artifactId project.name
+                    url 'https://github.com/VoidZombie/nhglib'
+
+                    scm {
+                        connection 'scm:git:https://github.com/VoidZombie/nhglib.git'
+                        developerConnection 'scm:git:git@github.com:VoidZombie/nhglib.git'
+                        url 'https://github.com/VoidZombie/nhglib.git'
+                    }
+
+                    licenses {
+                        license {
+                            name 'The MIT License (MIT)'
+                            url 'http://opensource.org/licenses/MIT'
+                            distribution 'repo'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = 'VoidZombie'
+                            name = 'Fausto Napoli'
+                            email = 'worsearoom@gmail.com'
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    task javadocJar(type: Jar) {
+        classifier = 'javadoc'
+        from javadoc
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives javadocJar, sourcesJar
+    }
+
+    dependencies {
+        compile project(':nhglib-core')
+        compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion:sources"
+        compile "com.badlogicgames.gdx:gdx-controllers-gwt:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-controllers-gwt:$gdxVersion:sources"
+    }
+}
+
+project(":nhglib-tests") {
+    apply plugin: "java"
+
+    dependencies {
+        compile project(':nhglib-core')
+        compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+        compile "com.badlogicgames.gdx:gdx-controllers-desktop:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-controllers-platform:$gdxVersion:natives-desktop"
+    }
+}
