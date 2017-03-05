@@ -137,7 +137,7 @@
       {
         "name":"jump",
         "keyCode":62,
-        "inputMode":"single"
+        "inputMode":"repeat"
       },
       {
         "name":"sprint",

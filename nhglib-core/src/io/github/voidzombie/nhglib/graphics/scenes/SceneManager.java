@@ -11,7 +11,6 @@ import io.github.voidzombie.nhglib.graphics.representations.ModelRepresentation;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.CameraComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.GraphicsComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
-import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.GraphicsSystem;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.nhglib.utils.scenes.SceneUtils;
 import io.reactivex.Observable;
@@ -48,8 +47,6 @@ public class SceneManager {
                     public void accept(Integer entity) throws Exception {
                         if (graphicsMapper.has(entity)) {
                             loadGraphicsAsset(entity);
-                        } else if (cameraMapper.has(entity)) {
-                            loadCamera(entity);
                         }
                     }
                 });
@@ -126,11 +123,5 @@ public class SceneManager {
             ModelRepresentation representation = new ModelRepresentation(model);
             graphicsComponent.setRepresentation(representation);
         }
-    }
-
-    private void loadCamera(Integer entity) {
-        CameraComponent cameraComponent = cameraMapper.get(entity);
-        GraphicsSystem graphicsSystem = Nhg.entitySystem.getEntitySystem(GraphicsSystem.class);
-        graphicsSystem.setCamera(cameraComponent.camera);
     }
 }

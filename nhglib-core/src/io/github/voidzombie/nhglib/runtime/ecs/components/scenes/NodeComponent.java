@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
+import io.github.voidzombie.nhglib.utils.data.QuaternionPool;
+import io.github.voidzombie.nhglib.utils.data.VectorPool;
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
@@ -21,13 +23,24 @@ public class NodeComponent extends PooledComponent {
     private Vector3 translation;
     private Vector3 rotation;
     private Vector3 scale;
+
+    private Vector3 translationDelta;
+    private Vector3 rotationDelta;
+    private Vector3 scaleDelta;
+
     private Quaternion rotationQuaternion;
 
     public NodeComponent() {
         node = new Node();
+
         translation = new Vector3();
         rotation = new Vector3();
         scale = new Vector3(1, 1, 1);
+
+        translationDelta = new Vector3();
+        rotationDelta = new Vector3();
+        scaleDelta = new Vector3();
+
         rotationQuaternion = new Quaternion();
     }
 
@@ -36,6 +49,10 @@ public class NodeComponent extends PooledComponent {
         node.translation.set(new Vector3());
         node.rotation.set(new Quaternion());
         node.scale.set(new Vector3());
+
+        translationDelta.set(Vector3.Zero);
+        rotationDelta.set(Vector3.Zero);
+        scaleDelta.set(Vector3.Zero);
     }
 
     public void setTranslation(Vector3 translation) {
@@ -51,6 +68,11 @@ public class NodeComponent extends PooledComponent {
     }
 
     public void setTranslation(float x, float y, float z, boolean apply) {
+        translationDelta.set(
+                translation.x - x,
+                translation.y - y,
+                translation.z - z);
+
         node.translation.set(x, y, z);
 
         if (apply) {
@@ -79,6 +101,11 @@ public class NodeComponent extends PooledComponent {
      * {@link #applyTransforms() applyTransforms()} after you've completed all transforms on the node.
      */
     public void translate(float x, float y, float z, boolean apply) {
+        translationDelta.set(
+                translation.x - x,
+                translation.y - y,
+                translation.z - z);
+
         node.translation.add(x, y, z);
 
         if (apply) {
@@ -99,6 +126,11 @@ public class NodeComponent extends PooledComponent {
     }
 
     public void setRotation(float x, float y, float z, boolean apply) {
+        rotationDelta.set(
+                rotation.x - x,
+                rotation.y - y,
+                rotation.z - z);
+
         node.rotation.setEulerAngles(y, x, z);
 
         if (apply) {
@@ -145,7 +177,12 @@ public class NodeComponent extends PooledComponent {
      * {@link #applyTransforms() applyTransforms()} after you've completed all transforms on the node.
      */
     public void rotate(float x, float y, float z, boolean apply) {
-        Quaternion quaternion = new Quaternion();
+        rotationDelta.set(
+                rotation.x - x,
+                rotation.y - y,
+                rotation.z - z);
+
+        Quaternion quaternion = QuaternionPool.getQuaternion();
         quaternion.setEulerAngles(y, x, z);
 
         node.rotation.mul(quaternion);
@@ -168,6 +205,11 @@ public class NodeComponent extends PooledComponent {
     }
 
     public void setScale(float x, float y, float z, boolean apply) {
+        scaleDelta.set(
+                scale.x - x,
+                scale.y - y,
+                scale.z - z);
+
         node.scale.set(x, y, z);
 
         if (apply) {
@@ -196,6 +238,11 @@ public class NodeComponent extends PooledComponent {
      * {@link #applyTransforms() applyTransforms()} after you've completed all transforms on the node.
      */
     public void scale(float x, float y, float z, boolean apply) {
+        scaleDelta.set(
+                scale.x - x,
+                scale.y - y,
+                scale.z - z);
+
         node.scale.add(x, y, z);
 
         if (apply) {
@@ -243,6 +290,60 @@ public class NodeComponent extends PooledComponent {
         return getScale().z;
     }
 
+    public Float getXDelta() {
+        Float res = translationDelta.x;
+        translationDelta.x = 0;
+        return res;
+    }
+
+    public Float getYDelta() {
+        Float res = translationDelta.y;
+        translationDelta.y = 0;
+        return res;
+    }
+
+    public Float getZDelta() {
+        Float res = translationDelta.z;
+        translationDelta.z = 0;
+        return res;
+    }
+
+    public Float getXRotationDelta() {
+        Float res = rotationDelta.x;
+        rotationDelta.x = 0;
+        return res;
+    }
+
+    public Float getYRotationDelta() {
+        Float res = rotationDelta.y;
+        rotationDelta.y = 0;
+        return res;
+    }
+
+    public Float getZRotationDelta() {
+        Float res = rotationDelta.z;
+        rotationDelta.z = 0;
+        return res;
+    }
+
+    public Float getXScaleDelta() {
+        Float res = scaleDelta.x;
+        scaleDelta.x = 0;
+        return res;
+    }
+
+    public Float getYScaleDelta() {
+        Float res = scaleDelta.y;
+        scaleDelta.y = 0;
+        return res;
+    }
+
+    public Float getZScaleDelta() {
+        Float res = scaleDelta.z;
+        scaleDelta.z = 0;
+        return res;
+    }
+
     public Matrix4 getTransform() {
         return node.globalTransform;
     }
@@ -265,5 +366,31 @@ public class NodeComponent extends PooledComponent {
     public Vector3 getScale() {
         node.globalTransform.getScale(scale);
         return scale;
+    }
+
+    public Vector3 getTranslationDelta() {
+        Vector3 res = VectorPool.getVector3().set(translationDelta);
+        translationDelta.set(Vector3.Zero);
+
+        return res;
+    }
+
+    public Vector3 getRotationDelta() {
+        Vector3 res = VectorPool.getVector3().set(rotationDelta);
+        rotationDelta.set(Vector3.Zero);
+
+        return res;
+    }
+
+    public Vector3 getScaleDelta() {
+        Vector3 res = VectorPool.getVector3().set(scaleDelta);
+        scaleDelta.set(Vector3.Zero);
+
+        return res;
+    }
+
+    public Quaternion getRotationQuaternion() {
+        getRotation();
+        return rotationQuaternion;
     }
 }

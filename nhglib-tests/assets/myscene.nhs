@@ -95,6 +95,42 @@
             "entities":
             [
               {
+                "id":"camera",
+                "transform":
+                {
+                  "position":
+                  {
+                    "x":0.0,
+                    "y":0.0,
+                    "z":1.0,
+                  },
+                  "rotation":
+                  {
+                    "x":0.0,
+                    "y":0.0,
+                    "z":0.0,
+                  },
+                  "scale":
+                  {
+                    "x":1.0,
+                    "y":1.0,
+                    "z":1.0,
+                  }
+                },
+                "components":
+                [
+                  {
+                    "type":"camera",
+                    "cameraType":"perspective",
+                    "fieldOfView":67,
+                    "nearPlane":0.01,
+                    "farPlane":100
+                  }
+                ],
+                "entities":
+                []
+              },
+              {
                 "id":"weaponEntity2",
                 "transform":
                 {

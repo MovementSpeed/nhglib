@@ -7,10 +7,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelCache;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
+import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.graphics.interfaces.Representation;
-import io.github.voidzombie.nhglib.graphics.utils.DefaultPerspectiveCamera;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.GraphicsComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.base.NhgIteratingSystem;
@@ -22,11 +22,13 @@ import io.reactivex.functions.Consumer;
  * Created by Fausto Napoli on 08/12/2016.
  */
 public class GraphicsSystem extends NhgIteratingSystem {
-    public Camera camera;
+    public Array<Camera> cameras;
 
-    private ModelBatch modelBatch;
-    private ModelCache dynamicCache;
-    private ModelCache staticCache;
+    private CameraSystem cameraSystem;
+
+    private Array<ModelBatch> modelBatches;
+    private Array<ModelCache> dynamicCaches;
+    private Array<ModelCache> staticCaches;
 
     private ComponentMapper<NodeComponent> nodeMapper;
     private ComponentMapper<GraphicsComponent> graphicsMapper;
@@ -34,18 +36,33 @@ public class GraphicsSystem extends NhgIteratingSystem {
     public GraphicsSystem() {
         super(Aspect.all(NodeComponent.class, GraphicsComponent.class));
 
-        modelBatch = new ModelBatch();
-        dynamicCache = new ModelCache();
-        staticCache = new ModelCache();
-
-        camera = new DefaultPerspectiveCamera();
+        modelBatches = new Array<>();
+        dynamicCaches = new Array<>();
+        staticCaches = new Array<>();
     }
 
     @Override
     protected void begin() {
         super.begin();
-        camera.update();
-        dynamicCache.begin(camera);
+
+        if (cameraSystem == null) {
+            cameraSystem = Nhg.entitySystem.getEntitySystem(CameraSystem.class);
+        }
+
+        cameras = cameraSystem.cameras;
+
+        for (int i = 0; i < cameras.size - modelBatches.size; i++) {
+            modelBatches.add(new ModelBatch());
+            dynamicCaches.add(new ModelCache());
+            staticCaches.add(new ModelCache());
+        }
+
+        for (int i = 0; i < cameras.size; i++) {
+            Camera camera = cameras.get(i);
+
+            ModelCache dynamicCache = dynamicCaches.get(i);
+            dynamicCache.begin(camera);
+        }
     }
 
     @Override
@@ -61,7 +78,10 @@ public class GraphicsSystem extends NhgIteratingSystem {
             if (graphicsComponent.type == GraphicsComponent.Type.DYNAMIC) {
                 if (provider != null) {
                     representation.setTransform(nodeComponent.getTransform());
-                    dynamicCache.add(provider);
+
+                    for (ModelCache modelCache : dynamicCaches) {
+                        modelCache.add(provider);
+                    }
                 }
             }
         }
@@ -70,14 +90,22 @@ public class GraphicsSystem extends NhgIteratingSystem {
     @Override
     protected void end() {
         super.end();
-        dynamicCache.end();
 
-        GLUtils.clearScreen(Color.BLACK);
+        for (int i = 0; i < cameras.size; i++) {
+            Camera camera = cameras.get(i);
+            ModelBatch modelBatch = modelBatches.get(i);
+            ModelCache dynamicCache = dynamicCaches.get(i);
+            ModelCache staticCache = staticCaches.get(i);
 
-        modelBatch.begin(camera);
-        modelBatch.render(staticCache);
-        modelBatch.render(dynamicCache);
-        modelBatch.end();
+            dynamicCache.end();
+
+            GLUtils.clearScreen(Color.BLACK);
+
+            modelBatch.begin(camera);
+            modelBatch.render(staticCache);
+            modelBatch.render(dynamicCache);
+            modelBatch.end();
+        }
     }
 
     @Override
@@ -100,24 +128,26 @@ public class GraphicsSystem extends NhgIteratingSystem {
                 });
     }
 
-    public void setCamera(Camera camera) {
-        this.camera = camera;
-    }
-
     private void rebuildCache(RenderableProvider ... renderableProviders) {
-        ModelCache previousModelCache = new ModelCache();
+        Array<ModelCache> previousModelCaches = new Array<>(staticCaches);
 
-        previousModelCache.begin(camera);
-        previousModelCache.add(staticCache);
-        previousModelCache.end();
+        for (int i = 0; i < cameras.size; i++) {
+            ModelCache previousModelCache = previousModelCaches.get(i);
+            ModelCache staticCache = staticCaches.get(i);
+            Camera camera = cameras.get(i);
 
-        staticCache.begin(camera);
-        staticCache.add(previousModelCache);
+            previousModelCache.begin(camera);
+            previousModelCache.add(staticCache);
+            previousModelCache.end();
 
-        for (RenderableProvider provider : renderableProviders) {
-            staticCache.add(provider);
+            staticCache.begin(camera);
+            staticCache.add(previousModelCache);
+
+            for (RenderableProvider provider : renderableProviders) {
+                staticCache.add(provider);
+            }
+
+            staticCache.end();
         }
-
-        staticCache.end();
     }
 }

@@ -14,6 +14,12 @@ public class VectorPool {
         protected Vector2 newObject() {
             return new Vector2(0f, 0f);
         }
+
+        @Override
+        protected void reset(Vector2 object) {
+            super.reset(object);
+            object.set(Vector2.Zero);
+        }
     };
 
     private static Pool<Vector3> vector3Pool = new Pool<Vector3>() {
@@ -21,12 +27,24 @@ public class VectorPool {
         protected Vector3 newObject() {
             return new Vector3(0f, 0f, 0f);
         }
+
+        @Override
+        protected void reset(Vector3 object) {
+            super.reset(object);
+            object.set(Vector3.Zero);
+        }
     };
 
     private static Pool<Vector4> vector4Pool = new Pool<Vector4>() {
         @Override
         protected Vector4 newObject() {
             return new Vector4(0f, 0f, 0f, 0f);
+        }
+
+        @Override
+        protected void reset(Vector4 object) {
+            super.reset(object);
+            object.set(Vector4.Zero);
         }
     };
 

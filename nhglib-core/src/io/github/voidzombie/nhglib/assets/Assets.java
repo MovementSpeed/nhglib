@@ -46,7 +46,7 @@ public class Assets implements Updatable, AssetErrorListener {
     // AssetErrorListener
     @Override
     public void error(AssetDescriptor asset, Throwable throwable) {
-        Nhg.logger.log(this, throwable.getMessage());
+        Nhg.logger.log(this, throwable.toString());
     }
 
     public void assetLoadingFinished() {

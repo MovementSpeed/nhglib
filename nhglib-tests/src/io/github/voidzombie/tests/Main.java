@@ -3,7 +3,6 @@ package io.github.voidzombie.tests;
 import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.FPSLogger;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
@@ -31,6 +30,7 @@ public class Main extends NhgEntry implements InputListener {
     private GraphicsSystem graphicsSystem;
     private ImmediateModeRenderer20 renderer20;
     private Quaternion cameraQuaternion;
+    private NodeComponent cameraNode;
 
     @Override
     public void engineStarted() {
@@ -57,8 +57,13 @@ public class Main extends NhgEntry implements InputListener {
 
                         if (asset.is("scene")) {
                             scene = Nhg.assets.get(asset);
+
                             world.loadScene(scene);
                             world.setReferenceEntity("weaponEntity1");
+
+                            Integer cameraEntity = scene.sceneGraph.getSceneEntity("camera");
+                            cameraNode = Nhg.entitySystem.getComponent(
+                                    cameraEntity, NodeComponent.class);
                         } else if (asset.is("inputMap")) {
                             Nhg.input.fromJson(Nhg.assets.get(asset));
                             Nhg.input.setActive("game", true);
@@ -66,9 +71,6 @@ public class Main extends NhgEntry implements InputListener {
                         }
                     }
                 });
-
-        graphicsSystem = Nhg.entitySystem.getEntitySystem(GraphicsSystem.class);
-        graphicsSystem.camera.position.set(0, 0, 1f);
 
         cameraQuaternion = new Quaternion();
     }
@@ -82,16 +84,6 @@ public class Main extends NhgEntry implements InputListener {
     public void engineUpdate(float delta) {
         super.engineUpdate(delta);
         world.update();
-
-        renderer20.begin(graphicsSystem.camera.combined, GL20.GL_LINES);
-
-        cube(0, 0, 0, 1, 1, 1, 0, 1, 0, 1);
-        /*cube(1.01f, 0, 0, 1, 1, 1, 1, 0, 0, 1);
-        cube(-1.01f, 0, 0, 1, 1, 1, 1, 0, 0, 1);
-        cube(0, 0, 1.01f, 1, 1, 1, 1, 0, 0, 1);
-        cube(0, 0, -1.01f, 1, 1, 1, 1, 0, 0, 1);*/
-
-        renderer20.end();
     }
 
     @Override
@@ -124,9 +116,11 @@ public class Main extends NhgEntry implements InputListener {
                     break;
 
                 case "jump":
+                    cameraNode.rotate(0, 0, 0.1f);
                     break;
 
                 case "sprint":
+                    cameraNode.rotate(0, 0, -0.1f);
                     break;
 
                 case "exit":
@@ -177,14 +171,11 @@ public class Main extends NhgEntry implements InputListener {
         if (pointerVector != null) {
             switch (input.getName()) {
                 case "look":
-                    float horizontalAxis = cameraQuaternion.getYaw() + pointerVector.x;
-                    float verticalAxis = cameraQuaternion.getPitch() + pointerVector.y;
+                    float horizontalAxis = pointerVector.x;
+                    float verticalAxis = pointerVector.y;
 
-                    cameraQuaternion.setEulerAngles(horizontalAxis, verticalAxis, 0);
-
-                    graphicsSystem.camera.up.set(0, 1, 0);
-                    graphicsSystem.camera.direction.set(0, 0, -1);
-                    graphicsSystem.camera.rotate(cameraQuaternion);
+                    cameraNode.rotate(verticalAxis, horizontalAxis, 0);
+                    cameraNode.applyTransforms();
                     break;
             }
         }
@@ -195,14 +186,11 @@ public class Main extends NhgEntry implements InputListener {
         Vector2 pointerVector = (Vector2) input.getInputSource().getValue();
 
         if (pointerVector != null) {
-            float horizontalAxis = cameraQuaternion.getYaw() + pointerVector.x;
-            float verticalAxis = cameraQuaternion.getPitch() + pointerVector.y;
+            float horizontalAxis = pointerVector.x;
+            float verticalAxis = pointerVector.y;
 
-            cameraQuaternion.setEulerAngles(horizontalAxis, verticalAxis, 0);
-
-            graphicsSystem.camera.up.set(0, 1, 0);
-            graphicsSystem.camera.direction.set(0, 0, -1);
-            graphicsSystem.camera.rotate(cameraQuaternion);
+            cameraNode.rotate(verticalAxis, horizontalAxis, 0);
+            cameraNode.applyTransforms();
         }
     }
 
