@@ -16,6 +16,7 @@ public class GraphicsComponent extends PooledComponent {
 
     public GraphicsComponent() {
         state = State.NOT_INITIALIZED;
+        type = Type.DYNAMIC;
     }
 
     @Override

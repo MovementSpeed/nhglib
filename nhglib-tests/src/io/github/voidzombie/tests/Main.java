@@ -4,7 +4,6 @@ import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.voidzombie.nhglib.Nhg;
@@ -15,7 +14,6 @@ import io.github.voidzombie.nhglib.graphics.worlds.strategies.impl.LargeWorldStr
 import io.github.voidzombie.nhglib.input.InputListener;
 import io.github.voidzombie.nhglib.input.NhgInput;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
-import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.GraphicsSystem;
 import io.github.voidzombie.nhglib.runtime.entry.NhgEntry;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.nhglib.utils.data.Bounds;
@@ -27,9 +25,7 @@ public class Main extends NhgEntry implements InputListener {
     private Scene scene;
     private NhgWorld world;
     private FPSLogger fpsLogger;
-    private GraphicsSystem graphicsSystem;
     private ImmediateModeRenderer20 renderer20;
-    private Quaternion cameraQuaternion;
     private NodeComponent cameraNode;
 
     @Override
@@ -71,8 +67,6 @@ public class Main extends NhgEntry implements InputListener {
                         }
                     }
                 });
-
-        cameraQuaternion = new Quaternion();
     }
 
     @Override

@@ -3,6 +3,7 @@ package io.github.voidzombie.nhglib.graphics.representations;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
@@ -12,15 +13,20 @@ import io.github.voidzombie.nhglib.graphics.interfaces.Representation;
  * Created by Fausto Napoli on 09/12/2016.
  */
 public class ModelRepresentation implements Representation {
-    private ModelInstance modelInstance;
-
     private Quaternion rotation;
     private Vector3 translation;
     private Vector3 scale;
 
+    private ModelInstance modelInstance;
+    private AnimationController animationController;
+
     public ModelRepresentation(Model model) {
         if (model != null) {
             this.modelInstance = new ModelInstance(model);
+
+            if (modelInstance.animations.size > 0) {
+                animationController = new AnimationController(modelInstance);
+            }
         }
 
         translation = new Vector3();
@@ -76,5 +82,14 @@ public class ModelRepresentation implements Representation {
     @Override
     public void invalidate() {
         modelInstance = null;
+        animationController = null;
+    }
+
+    public ModelInstance getModelInstance() {
+        return modelInstance;
+    }
+
+    public AnimationController getAnimationController() {
+        return animationController;
     }
 }
