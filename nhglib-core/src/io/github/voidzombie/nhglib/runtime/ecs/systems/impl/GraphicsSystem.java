@@ -2,6 +2,7 @@ package io.github.voidzombie.nhglib.runtime.ecs.systems.impl;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.graphics.interfaces.Representation;
+import io.github.voidzombie.nhglib.graphics.representations.ModelRepresentation;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.GraphicsComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.base.NhgIteratingSystem;
@@ -71,6 +73,7 @@ public class GraphicsSystem extends NhgIteratingSystem {
         NodeComponent nodeComponent = nodeMapper.get(entityId);
 
         Representation representation = graphicsComponent.getRepresentation();
+        processSpecifics(representation);
 
         if (representation != null) {
             RenderableProvider provider = representation.get();
@@ -148,6 +151,16 @@ public class GraphicsSystem extends NhgIteratingSystem {
             }
 
             staticCache.end();
+        }
+    }
+
+    private void processSpecifics(Representation representation) {
+        if (representation instanceof ModelRepresentation) {
+            ModelRepresentation modelRepresentation = ((ModelRepresentation) representation);
+
+            if (modelRepresentation.getAnimationController() != null) {
+                modelRepresentation.getAnimationController().update(Gdx.graphics.getDeltaTime());
+            }
         }
     }
 }
