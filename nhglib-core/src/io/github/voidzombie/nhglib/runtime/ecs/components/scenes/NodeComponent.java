@@ -106,7 +106,13 @@ public class NodeComponent extends PooledComponent {
                 translation.y - y,
                 translation.z - z);
 
-        node.translation.add(x, y, z);
+        Vector3 translation = VectorPool.getVector3();
+        translation.set(x, y, z);
+
+        float len = translation.len();
+        translation.rot(node.localTransform).nor().scl(len);
+
+        node.translation.add(translation);
 
         if (apply) {
             applyTransforms();

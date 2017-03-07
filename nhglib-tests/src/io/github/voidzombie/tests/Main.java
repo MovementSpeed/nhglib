@@ -102,11 +102,11 @@ public class Main extends NhgEntry implements InputListener {
                     break;
 
                 case "strafeLeft":
-                    nodeComponent.translate(-0.5f * Gdx.graphics.getDeltaTime(), 0, 0);
+                    nodeComponent.rotate(0, -10 * Gdx.graphics.getDeltaTime(), 0);
                     break;
 
                 case "strafeRight":
-                    nodeComponent.translate(0.5f * Gdx.graphics.getDeltaTime(), 0, 0);
+                    nodeComponent.rotate(0, 10 * Gdx.graphics.getDeltaTime(), 0);
                     break;
 
                 case "jump":
