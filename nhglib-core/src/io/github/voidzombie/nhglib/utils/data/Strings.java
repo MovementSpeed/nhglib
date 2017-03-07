@@ -20,6 +20,7 @@ public class Strings {
         public final String modelsPath = "models/";
         public final String assetKey = "nhg_asset";
         public final String inputKey = "nhg_input";
+        public final String sceneKey = "nhg_scene";
     }
 
     public class Events {

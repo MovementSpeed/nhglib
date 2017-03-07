@@ -34,7 +34,7 @@
             "graphicsType":"dynamic",
             "asset":
             {
-              "alias":"weapon",
+              "alias":"corridors",
               "source":"models/corridors.g3db",
               "classAlias":"model"
             }
@@ -160,7 +160,7 @@
                     "graphicsType":"dynamic",
                     "asset":
                     {
-                      "alias":"weapon1",
+                      "alias":"weapon2",
                       "source":"models/weapon.g3db",
                       "classAlias":"model"
                     }

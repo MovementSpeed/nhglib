@@ -2,35 +2,56 @@ package io.github.voidzombie.nhglib.graphics.scenes;
 
 import com.artemis.ComponentMapper;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.data.models.serialization.components.CameraComponentJson;
 import io.github.voidzombie.nhglib.data.models.serialization.components.GraphicsComponentJson;
 import io.github.voidzombie.nhglib.data.models.serialization.components.MessageComponentJson;
 import io.github.voidzombie.nhglib.graphics.representations.ModelRepresentation;
-import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.CameraComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.GraphicsComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
+import io.github.voidzombie.nhglib.utils.data.Bundle;
 import io.github.voidzombie.nhglib.utils.scenes.SceneUtils;
 import io.reactivex.Observable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Predicate;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
  */
 public class SceneManager {
     private Scene currentScene;
+
     private ComponentMapper<GraphicsComponent> graphicsMapper;
     private ComponentMapper<NodeComponent> nodeMapper;
-    private ComponentMapper<CameraComponent> cameraMapper;
+
+    private Subject<Integer> sizeSubject;
+    private Array<Asset> assetsToLoad;
 
     public SceneManager() {
+        sizeSubject = PublishSubject.create();
+        sizeSubject.subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer integer) throws Exception {
+                if (integer == 0) {
+                    Bundle bundle = new Bundle();
+                    bundle.put(Nhg.strings.defaults.sceneKey, currentScene);
+
+                    Message message = new Message(Nhg.strings.events.sceneLoaded, bundle);
+                    Nhg.messaging.send(message);
+                }
+            }
+        });
+
+        assetsToLoad = new Array<>();
+
         graphicsMapper = Nhg.entitySystem.getMapper(GraphicsComponent.class);
         nodeMapper = Nhg.entitySystem.getMapper(NodeComponent.class);
-        cameraMapper = Nhg.entitySystem.getMapper(CameraComponent.class);
 
         SceneUtils.get().addComponentJsonMapping("graphics", GraphicsComponentJson.class);
         SceneUtils.get().addComponentJsonMapping("message", MessageComponentJson.class);
@@ -39,14 +60,21 @@ public class SceneManager {
     }
 
     public void loadScene(Scene scene) {
+        assetsToLoad.clear();
         currentScene = scene;
 
         Observable.fromIterable(scene.sceneGraph.getEntities())
+                .doFinally(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        Nhg.assets.queueAssets(assetsToLoad);
+                    }
+                })
                 .subscribe(new Consumer<Integer>() {
                     @Override
                     public void accept(Integer entity) throws Exception {
                         if (graphicsMapper.has(entity)) {
-                            loadGraphicsAsset(entity);
+                            fetchAssets(entity);
                         }
                     }
                 });
@@ -91,7 +119,7 @@ public class SceneManager {
         return currentScene;
     }
 
-    private void loadGraphicsAsset(Integer entity) {
+    private void fetchAssets(Integer entity) {
         final GraphicsComponent graphicsComponent = graphicsMapper.get(entity);
 
         if (graphicsComponent.state == GraphicsComponent.State.NOT_INITIALIZED) {
@@ -110,10 +138,12 @@ public class SceneManager {
                         public void accept(Message message) throws Exception {
                             Asset asset = (Asset) message.data.get(Nhg.strings.defaults.assetKey);
                             createRepresentation(graphicsComponent, asset);
+                            assetsToLoad.removeValue(graphicsComponent.asset, true);
+                            sizeSubject.onNext(assetsToLoad.size);
                         }
                     });
 
-            Nhg.assets.queueAsset(graphicsComponent.asset);
+            assetsToLoad.add(graphicsComponent.asset);
         }
     }
 
