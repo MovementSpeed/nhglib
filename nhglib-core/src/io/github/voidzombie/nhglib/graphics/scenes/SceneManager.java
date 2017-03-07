@@ -143,7 +143,12 @@ public class SceneManager {
                         }
                     });
 
-            assetsToLoad.add(graphicsComponent.asset);
+            if (assetsToLoad.contains(graphicsComponent.asset, false)) {
+                Nhg.messaging.send(new Message(Nhg.strings.events.engineDestroy));
+                throw new RuntimeException("A scene cannot contain multiple assets with the same alias.");
+            } else {
+                assetsToLoad.add(graphicsComponent.asset);
+            }
         }
     }
 

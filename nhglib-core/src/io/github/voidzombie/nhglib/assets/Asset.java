@@ -2,6 +2,8 @@ package io.github.voidzombie.nhglib.assets;
 
 import io.github.voidzombie.nhglib.Nhg;
 
+import java.util.Objects;
+
 /**
  * Created by Fausto Napoli on 25/10/2016.
  */
@@ -25,6 +27,23 @@ public class Asset {
 
         this.source = source;
         this.assetClass = assetClass;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+
+        if (!(o instanceof Asset)) {
+            return false;
+        }
+
+        Asset asset = (Asset) o;
+        return Objects.equals(alias, asset.alias);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(alias);
     }
 
     public boolean is(String alias) {
