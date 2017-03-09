@@ -44,7 +44,7 @@ public abstract class ThreadedIteratingSystem extends NhgBaseEntitySystem {
                 Nhg.threading.setLatchCount(latchId, rows);
             }
 
-            if (previousSplit != split) {
+            if (previousRows != rows || previousSplit != split) {
                 splitEntities = new int[rows][split];
 
                 int from;
@@ -65,10 +65,6 @@ public abstract class ThreadedIteratingSystem extends NhgBaseEntitySystem {
                         postProcessList(splitEntities[i]);
                     }
                 }
-            }
-
-            if (rows > splitEntities.length) {
-                rows = splitEntities.length;
             }
 
             for (int i = 0; i < rows; i++) {
