@@ -81,7 +81,13 @@ public class Assets implements Updatable, AssetErrorListener {
             FileHandle fileHandle = Gdx.files.internal(asset.source);
 
             if (fileHandle.exists()) {
-                assetManager.load(asset.source, asset.assetClass);
+
+                if (asset.parameters == null) {
+                    assetManager.load(asset.source, asset.assetClass);
+                } else {
+                    assetManager.load(asset.source, asset.assetClass, asset.parameters);
+                }
+
                 assetList.add(asset);
             } else {
                 Nhg.logger.log(this, Nhg.strings.messages.cannotQueueAssetFileNotFound, asset.source);

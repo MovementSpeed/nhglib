@@ -1,5 +1,6 @@
 package io.github.voidzombie.nhglib.assets;
 
+import com.badlogic.gdx.assets.AssetLoaderParameters;
 import io.github.voidzombie.nhglib.Nhg;
 
 import java.util.Objects;
@@ -11,6 +12,7 @@ public class Asset {
     public String alias;
     public String source;
     public Class assetClass;
+    public AssetLoaderParameters parameters;
 
     public Asset(Asset asset) {
         this(asset.alias, asset.source, asset.assetClass);
@@ -27,6 +29,20 @@ public class Asset {
 
         this.source = source;
         this.assetClass = assetClass;
+    }
+
+    public Asset(String alias, String source, Class assetClass, AssetLoaderParameters parameters) {
+        if (alias != null) {
+            this.alias = alias;
+        } else if (source != null) {
+            this.alias = source;
+        } else {
+            throw new NullPointerException(Nhg.strings.messages.nullAssetSource);
+        }
+
+        this.source = source;
+        this.assetClass = assetClass;
+        this.parameters = parameters;
     }
 
     @Override
