@@ -67,6 +67,10 @@ public abstract class ThreadedIteratingSystem extends NhgBaseEntitySystem {
                 }
             }
 
+            if (rows > splitEntities.length) {
+                rows = splitEntities.length;
+            }
+
             for (int i = 0; i < rows; i++) {
                 Nhg.threading.execute(new ProcessWork(splitEntities[i]));
             }
