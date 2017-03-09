@@ -68,4 +68,12 @@ public class NhgWorld {
     public Scene getScene(String name) {
         return scenes.get(name);
     }
+
+    public Scene getCurrentScene() {
+        return sceneManager.getCurrentScene();
+    }
+
+    public SceneManager getSceneManager() {
+        return sceneManager;
+    }
 }
