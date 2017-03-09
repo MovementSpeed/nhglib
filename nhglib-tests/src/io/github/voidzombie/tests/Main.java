@@ -17,6 +17,7 @@ import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.entry.NhgEntry;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.nhglib.utils.data.Bounds;
+import io.github.voidzombie.tests.systems.TestNodeSystem;
 
 /**
  * Created by Fausto Napoli on 26/10/2016.
@@ -83,6 +84,7 @@ public class Main extends NhgEntry implements InputListener {
     @Override
     public void onConfigureEntitySystems(WorldConfigurationBuilder configurationBuilder) {
         super.onConfigureEntitySystems(configurationBuilder);
+        configurationBuilder.with(new TestNodeSystem());
     }
 
     @Override

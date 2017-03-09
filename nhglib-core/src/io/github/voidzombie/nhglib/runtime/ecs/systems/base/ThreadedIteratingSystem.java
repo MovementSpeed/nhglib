@@ -21,7 +21,6 @@ public abstract class ThreadedIteratingSystem extends NhgBaseEntitySystem {
     public ThreadedIteratingSystem(Aspect.Builder aspect) {
         super(aspect);
         latchId = 2165;
-
         Nhg.threading.createLatch(latchId, Threading.cores);
     }
 
@@ -30,48 +29,50 @@ public abstract class ThreadedIteratingSystem extends NhgBaseEntitySystem {
         IntBag actives = subscription.getEntities();
         int activesSize = actives.size();
 
-        int previousSplit = split;
-        split = MathUtils.ceil((float) actives.size() / (float) Threading.cores);
+        if (activesSize > 0) {
+            int previousSplit = split;
+            split = MathUtils.ceil((float) actives.size() / (float) Threading.cores);
 
-        int previousRows = rows;
-        if (activesSize > Threading.cores) {
-            rows = Threading.cores;
-        } else {
-            rows = activesSize;
-        }
+            int previousRows = rows;
+            if (activesSize > Threading.cores) {
+                rows = Threading.cores;
+            } else {
+                rows = activesSize;
+            }
 
-        if (previousRows != rows) {
-            Nhg.threading.setLatchCount(latchId, rows);
-        }
+            if (previousRows != rows) {
+                Nhg.threading.setLatchCount(latchId, rows);
+            }
 
-        if (previousSplit != split) {
-            splitEntities = new int[rows][split];
+            if (previousSplit != split) {
+                splitEntities = new int[rows][split];
 
-            int from;
-            int to;
-            int[] data = actives.getData();
+                int from;
+                int to;
+                int[] data = actives.getData();
 
-            for (int i = 0; i < rows; i++) {
-                if (split == 1) {
-                    splitEntities[i][0] = data[i];
-                } else {
-                    from = i * split;
-                    to = from + split;
+                for (int i = 0; i < rows; i++) {
+                    if (split == 1) {
+                        splitEntities[i][0] = data[i];
+                    } else {
+                        from = i * split;
+                        to = from + split;
 
-                    splitEntities[i] = Arrays.copyOfRange(data, from, to);
-                }
+                        splitEntities[i] = Arrays.copyOfRange(data, from, to);
+                    }
 
-                if (i > 0) {
-                    postProcessList(splitEntities[i]);
+                    if (i > 0) {
+                        postProcessList(splitEntities[i]);
+                    }
                 }
             }
-        }
 
-        for (int i = 0; i < rows; i++) {
-            Nhg.threading.execute(new ProcessWork(splitEntities[i]));
-        }
+            for (int i = 0; i < rows; i++) {
+                Nhg.threading.execute(new ProcessWork(splitEntities[i]));
+            }
 
-        Nhg.threading.awaitLatch(latchId);
+            Nhg.threading.awaitLatch(latchId);
+        }
     }
 
     protected abstract void process(int entityId);
