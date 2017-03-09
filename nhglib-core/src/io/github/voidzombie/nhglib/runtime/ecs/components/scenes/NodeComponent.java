@@ -80,6 +80,21 @@ public class NodeComponent extends PooledComponent {
         }
     }
 
+    public void setTranslationX(float x) {
+        translationDelta.x = translation.x - x;
+        node.translation.x = x;
+    }
+
+    public void setTranslationY(float y) {
+        translationDelta.y = translation.y - y;
+        node.translation.y = y;
+    }
+
+    public void setTranslationZ(float z) {
+        translationDelta.z = translation.z - z;
+        node.translation.z = z;
+    }
+
     public void translate(Vector3 translation) {
         translate(translation, false);
     }
