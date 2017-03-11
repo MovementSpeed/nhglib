@@ -1,7 +1,6 @@
-package io.github.voidzombie.nhglib.input;
+package io.github.voidzombie.nhglib.input.models;
 
-import io.github.voidzombie.nhglib.input.models.InputSource;
-import io.github.voidzombie.nhglib.input.models.InputType;
+import io.github.voidzombie.nhglib.input.enums.InputAction;
 
 /**
  * Created by Fausto Napoli on 08/01/2017.
@@ -11,6 +10,7 @@ public class NhgInput {
     private String name;
     private InputType type;
     private InputSource inputSource;
+    private InputAction inputAction;
 
     public NhgInput(String name) {
         this.name = name;
@@ -35,6 +35,10 @@ public class NhgInput {
         this.inputSource = inputSource;
     }
 
+    public void setInputAction(InputAction inputAction) {
+        this.inputAction = inputAction;
+    }
+
     public Boolean is(String name) {
         return this.name.contentEquals(name);
     }
@@ -53,5 +57,9 @@ public class NhgInput {
 
     public InputSource getInputSource() {
         return inputSource;
+    }
+
+    public InputAction getInputAction() {
+        return inputAction;
     }
 }

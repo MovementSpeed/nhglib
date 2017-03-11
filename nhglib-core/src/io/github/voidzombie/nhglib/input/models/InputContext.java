@@ -1,7 +1,6 @@
 package io.github.voidzombie.nhglib.input.models;
 
 import com.badlogic.gdx.utils.ArrayMap;
-import io.github.voidzombie.nhglib.input.NhgInput;
 
 /**
  * Created by Fausto Napoli on 08/01/2017.

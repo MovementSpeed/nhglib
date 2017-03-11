@@ -16,8 +16,6 @@ import com.badlogic.gdx.utils.JsonValue;
 import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.data.models.serialization.InputConfigurationsJson;
 import io.github.voidzombie.nhglib.data.models.serialization.InputJson;
-import io.github.voidzombie.nhglib.input.InputListener;
-import io.github.voidzombie.nhglib.input.NhgInput;
 import io.github.voidzombie.nhglib.input.configuration.InputConfigurations;
 import io.github.voidzombie.nhglib.input.configuration.impls.KeyInputConfiguration;
 import io.github.voidzombie.nhglib.input.configuration.impls.MouseInputConfiguration;
@@ -26,6 +24,8 @@ import io.github.voidzombie.nhglib.input.configuration.impls.StickInputConfigura
 import io.github.voidzombie.nhglib.input.controllers.ControllerCodes;
 import io.github.voidzombie.nhglib.input.controllers.ControllerConfiguration;
 import io.github.voidzombie.nhglib.input.controllers.StickConfiguration;
+import io.github.voidzombie.nhglib.input.enums.InputAction;
+import io.github.voidzombie.nhglib.input.interfaces.InputListener;
 import io.github.voidzombie.nhglib.input.models.*;
 import io.github.voidzombie.nhglib.utils.data.VectorPool;
 
@@ -121,6 +121,7 @@ public class InputHandler implements ControllerListener, InputProcessor {
         NhgInput input = keyInputsMap.get(keycode);
 
         if (input != null) {
+            input.setInputAction(InputAction.DOWN);
             KeyInputConfiguration conf = config.getKeyConfiguration(input.getName());
 
             if (conf.getInputMode() == InputMode.REPEAT) {
@@ -135,6 +136,13 @@ public class InputHandler implements ControllerListener, InputProcessor {
 
     @Override
     public boolean keyUp(int keycode) {
+        NhgInput input = keyInputsMap.get(keycode);
+
+        if (input != null) {
+            input.setInputAction(InputAction.UP);
+            dispatchKeyInput(input);
+        }
+
         if (activeKeyCodes.containsKey(keycode)) {
             activeKeyCodes.removeKey(keycode);
         }
@@ -152,6 +160,7 @@ public class InputHandler implements ControllerListener, InputProcessor {
         NhgInput input = pointerInputsMap.get(pointer);
 
         if (input != null) {
+            input.setInputAction(InputAction.DOWN);
             activePointers.put(pointer, input);
         }
 
@@ -167,14 +176,17 @@ public class InputHandler implements ControllerListener, InputProcessor {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        if (activePointers.containsKey(pointer)) {
-            activePointers.removeKey(pointer);
+        NhgInput input = pointerInputsMap.get(pointer);
+
+        if (input != null) {
+            input.setInputAction(InputAction.UP);
         }
 
         MouseSourceType sourceType = MouseSourceType.fromButtonCode(button);
+        NhgInput mouseInput = mouseInputsMap.get(sourceType);
 
-        if (activeMouseInputs.containsKey(sourceType)) {
-            activeMouseInputs.removeKey(sourceType);
+        if (mouseInput != null) {
+            mouseInput.setInputAction(InputAction.UP);
         }
 
         return true;
@@ -514,6 +526,12 @@ public class InputHandler implements ControllerListener, InputProcessor {
                 if (input != null && isValidInput(input)) {
                     processPointerInput(pointer, input);
                     dispatchPointerInput(input);
+
+                    if (input.getInputAction() == InputAction.UP) {
+                        if (activePointers.containsKey(pointer)) {
+                            activePointers.removeKey(pointer);
+                        }
+                    }
                 }
             }
         }
@@ -529,6 +547,12 @@ public class InputHandler implements ControllerListener, InputProcessor {
                 if (input != null && isValidInput(input)) {
                     processMouseInput(input);
                     dispatchMouseInput(input);
+
+                    if (input.getInputAction() == InputAction.UP) {
+                        if (activeMouseInputs.containsKey(mouseInput)) {
+                            activeMouseInputs.removeKey(mouseInput);
+                        }
+                    }
                 }
             }
         }

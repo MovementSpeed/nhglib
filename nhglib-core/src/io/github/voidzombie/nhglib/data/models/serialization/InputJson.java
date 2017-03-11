@@ -2,9 +2,9 @@ package io.github.voidzombie.nhglib.data.models.serialization;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
-import io.github.voidzombie.nhglib.input.NhgInput;
 import io.github.voidzombie.nhglib.input.models.InputContext;
 import io.github.voidzombie.nhglib.input.models.InputType;
+import io.github.voidzombie.nhglib.input.models.NhgInput;
 import io.github.voidzombie.nhglib.interfaces.JsonParseable;
 
 /**
