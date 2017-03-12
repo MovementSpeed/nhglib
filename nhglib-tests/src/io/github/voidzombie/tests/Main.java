@@ -65,7 +65,7 @@ public class Main extends NhgEntry implements InputListener {
                                 cameraNode = Nhg.entitySystem.getComponent(
                                         cameraEntity, NodeComponent.class);
                             } else if (asset.is("inputMap")) {
-                                Nhg.input.fromJson(Nhg.assets.get(asset));
+                                Nhg.input.fromJson((JsonValue) Nhg.assets.get(asset));
                                 Nhg.input.setActive("game", true);
                                 Nhg.input.setActive("global", true);
                             }
