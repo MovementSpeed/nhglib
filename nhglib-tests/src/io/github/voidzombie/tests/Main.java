@@ -18,6 +18,7 @@ import io.github.voidzombie.nhglib.runtime.entry.NhgEntry;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.nhglib.utils.data.Bounds;
 import io.github.voidzombie.tests.systems.TestNodeSystem;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by Fausto Napoli on 26/10/2016.
@@ -48,23 +49,26 @@ public class Main extends NhgEntry implements InputListener {
 
         // Subscribe to asset events
         Nhg.messaging.get(Nhg.strings.events.assetLoaded, Nhg.strings.events.assetLoadingFinished)
-                .subscribe(message -> {
-                    if (message.is(Nhg.strings.events.assetLoaded)) {
-                        Asset asset = (Asset) message.data.get(Nhg.strings.defaults.assetKey);
+                .subscribe(new Consumer<Message>() {
+                    @Override
+                    public void accept(Message message) throws Exception {
+                        if (message.is(Nhg.strings.events.assetLoaded)) {
+                            Asset asset = (Asset) message.data.get(Nhg.strings.defaults.assetKey);
 
-                        if (asset.is("scene")) {
-                            scene = Nhg.assets.get(asset);
+                            if (asset.is("scene")) {
+                                scene = Nhg.assets.get(asset);
 
-                            world.loadScene(scene);
-                            world.setReferenceEntity("weaponEntity1");
+                                world.loadScene(scene);
+                                world.setReferenceEntity("weaponEntity1");
 
-                            Integer cameraEntity = scene.sceneGraph.getSceneEntity("camera");
-                            cameraNode = Nhg.entitySystem.getComponent(
-                                    cameraEntity, NodeComponent.class);
-                        } else if (asset.is("inputMap")) {
-                            Nhg.input.fromJson(Nhg.assets.get(asset));
-                            Nhg.input.setActive("game", true);
-                            Nhg.input.setActive("global", true);
+                                Integer cameraEntity = scene.sceneGraph.getSceneEntity("camera");
+                                cameraNode = Nhg.entitySystem.getComponent(
+                                        cameraEntity, NodeComponent.class);
+                            } else if (asset.is("inputMap")) {
+                                Nhg.input.fromJson(Nhg.assets.get(asset));
+                                Nhg.input.setActive("game", true);
+                                Nhg.input.setActive("global", true);
+                            }
                         }
                     }
                 });
