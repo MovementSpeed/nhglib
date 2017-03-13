@@ -217,7 +217,7 @@ public class InputHandler implements ControllerListener, InputProcessor {
         dispatchMouseInputs();
     }
 
-    public void setActive(String contextName, Boolean active) {
+    public void setActiveContext(String contextName, Boolean active) {
         if (active != null) {
             InputContext inputContext = inputContexts.get(contextName);
 

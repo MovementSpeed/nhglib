@@ -5,6 +5,7 @@ import com.artemis.ComponentMapper;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelCache;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
@@ -13,6 +14,7 @@ import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.graphics.interfaces.Representation;
 import io.github.voidzombie.nhglib.graphics.representations.ModelRepresentation;
+import io.github.voidzombie.nhglib.graphics.shaders.NhgShaderProvider;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.GraphicsComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.base.NhgIteratingSystem;
@@ -24,10 +26,11 @@ import io.reactivex.functions.Consumer;
  * Created by Fausto Napoli on 08/12/2016.
  */
 public class GraphicsSystem extends NhgIteratingSystem {
-    public Array<Camera> cameras;
-
+    private NhgShaderProvider shaderProvider;
     private CameraSystem cameraSystem;
+    private Environment environment;
 
+    private Array<Camera> cameras;
     private Array<ModelBatch> modelBatches;
     private Array<ModelCache> dynamicCaches;
     private Array<ModelCache> staticCaches;
@@ -37,6 +40,9 @@ public class GraphicsSystem extends NhgIteratingSystem {
 
     public GraphicsSystem() {
         super(Aspect.all(NodeComponent.class, GraphicsComponent.class));
+
+        environment = new Environment();
+        shaderProvider = new NhgShaderProvider(environment);
 
         modelBatches = new Array<>();
         dynamicCaches = new Array<>();
@@ -54,7 +60,7 @@ public class GraphicsSystem extends NhgIteratingSystem {
         cameras = cameraSystem.cameras;
 
         for (int i = 0; i < cameras.size - modelBatches.size; i++) {
-            modelBatches.add(new ModelBatch());
+            modelBatches.add(new ModelBatch(shaderProvider));
             dynamicCaches.add(new ModelCache());
             staticCaches.add(new ModelCache());
         }
@@ -105,8 +111,8 @@ public class GraphicsSystem extends NhgIteratingSystem {
             GLUtils.clearScreen(Color.BLACK);
 
             modelBatch.begin(camera);
-            modelBatch.render(staticCache);
-            modelBatch.render(dynamicCache);
+            modelBatch.render(staticCache, environment);
+            modelBatch.render(dynamicCache, environment);
             modelBatch.end();
         }
     }
@@ -129,6 +135,10 @@ public class GraphicsSystem extends NhgIteratingSystem {
                         }
                     }
                 });
+    }
+
+    public Environment getEnvironment() {
+        return environment;
     }
 
     private void rebuildCache(RenderableProvider ... renderableProviders) {

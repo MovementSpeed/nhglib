@@ -9,7 +9,7 @@ import io.github.voidzombie.nhglib.input.controllers.ControllerConfiguration;
 import io.github.voidzombie.nhglib.input.models.MouseSourceType;
 
 /**
- * Created by worse on 25/01/2017.
+ * Created by Fausto Napoli on 25/01/2017.
  */
 public class InputConfigurations {
     public final Array<KeyInputConfiguration> keyInputConfigurations;
