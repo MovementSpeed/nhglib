@@ -11,6 +11,7 @@ import io.github.voidzombie.nhglib.enums.LightType;
 import io.github.voidzombie.nhglib.graphics.lights.NhgDirectionalLight;
 import io.github.voidzombie.nhglib.graphics.lights.NhgPointLight;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.LightComponent;
+import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.GraphicsSystem;
 
 /**
  * Created by Fausto Napoli on 19/12/2016.
@@ -18,6 +19,8 @@ import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.LightComponen
 public class LightComponentJson extends ComponentJson {
     @Override
     public void parse(JsonValue jsonValue) {
+        GraphicsSystem graphicsSystem = Nhg.entitySystem.getEntitySystem(GraphicsSystem.class);
+
         LightComponent lightComponent =
                 Nhg.entitySystem.createComponent(entity, LightComponent.class);
 
@@ -47,6 +50,10 @@ public class LightComponentJson extends ComponentJson {
                 Float exponent = jsonValue.getFloat("exponent");
                 light = new SpotLight().set(color, Vector3.Zero, Vector3.Z, intensity, cutoffAngle, exponent);
                 break;
+        }
+
+        if (light != null) {
+            graphicsSystem.getEnvironment().add(light);
         }
 
         lightComponent.light = light;
