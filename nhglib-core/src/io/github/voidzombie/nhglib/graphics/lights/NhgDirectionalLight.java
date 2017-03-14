@@ -7,10 +7,10 @@ import com.badlogic.gdx.math.Vector3;
 /**
  * Created by Fausto Napoli on 13/03/2017.
  */
-public class IntensityDirectionalLight extends DirectionalLight {
+public class NhgDirectionalLight extends DirectionalLight {
     public float intensity = 1.0f;
 
-    public IntensityDirectionalLight set(Color color, Vector3 direction, float intensity) {
+    public NhgDirectionalLight set(Color color, Vector3 direction, float intensity) {
         this.intensity = intensity;
         super.set(color, direction);
 

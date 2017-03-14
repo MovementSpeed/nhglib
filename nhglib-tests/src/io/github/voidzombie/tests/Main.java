@@ -12,7 +12,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
-import io.github.voidzombie.nhglib.graphics.lights.IntensityDirectionalLight;
+import io.github.voidzombie.nhglib.graphics.lights.NhgDirectionalLight;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 import io.github.voidzombie.nhglib.graphics.worlds.NhgWorld;
 import io.github.voidzombie.nhglib.graphics.worlds.strategies.impl.LargeWorldStrategy;
@@ -55,7 +55,7 @@ public class Main extends NhgEntry implements InputListener {
 
         Environment environment = Nhg.entitySystem.getEntitySystem(GraphicsSystem.class).getEnvironment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, new Color(0.2666f, 0.3607f, 0.4117f, 1.0f)));
-        environment.add(new IntensityDirectionalLight().set(new Color(0.9294f, 0.9764f, 1.0f, 1.0f), new Vector3(-1, -1, -1), 1.0f));
+        environment.add(new NhgDirectionalLight().set(new Color(0.9294f, 0.9764f, 1.0f, 1.0f), new Vector3(-1, -1, -1), 1.0f));
 
         // Subscribe to asset events
         Nhg.messaging.get(Nhg.strings.events.assetLoaded, Nhg.strings.events.assetLoadingFinished)

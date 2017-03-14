@@ -7,6 +7,7 @@ import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.data.models.serialization.components.CameraComponentJson;
 import io.github.voidzombie.nhglib.data.models.serialization.components.GraphicsComponentJson;
+import io.github.voidzombie.nhglib.data.models.serialization.components.LightComponentJson;
 import io.github.voidzombie.nhglib.data.models.serialization.components.MessageComponentJson;
 import io.github.voidzombie.nhglib.graphics.representations.ModelRepresentation;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.GraphicsComponent;
@@ -56,6 +57,7 @@ public class SceneManager {
         SceneUtils.get().addComponentJsonMapping("graphics", GraphicsComponentJson.class);
         SceneUtils.get().addComponentJsonMapping("message", MessageComponentJson.class);
         SceneUtils.get().addComponentJsonMapping("camera", CameraComponentJson.class);
+        SceneUtils.get().addComponentJsonMapping("light", LightComponentJson.class);
         SceneUtils.get().addAssetClassMapping("model", Model.class);
     }
 

@@ -19,8 +19,8 @@ import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import io.github.voidzombie.nhglib.graphics.lights.IntensityDirectionalLight;
-import io.github.voidzombie.nhglib.graphics.lights.RadiusPointLight;
+import io.github.voidzombie.nhglib.graphics.lights.NhgDirectionalLight;
+import io.github.voidzombie.nhglib.graphics.lights.NhgPointLight;
 import io.github.voidzombie.nhglib.utils.graphics.ShaderUtils;
 
 /**
@@ -85,14 +85,12 @@ public class LightingShader extends BaseShader {
 
         String prefix = ShaderUtils.createPrefix(renderable, skinned);
 
-        String vert =
-                prefix +
-                        Gdx.files.internal("shaders/" + "lighting_shader" + ".vert")
+        String vert = prefix +
+                Gdx.files.internal("shaders/" + "lighting_shader" + ".vert")
                                 .readString();
 
-        String frag =
-                prefix +
-                        Gdx.files.internal("shaders/" + "lighting_shader" + ".frag")
+        String frag = prefix +
+                Gdx.files.internal("shaders/" + "lighting_shader" + ".frag")
                                 .readString();
 
         shaderProgram = new ShaderProgram(vert, frag);
@@ -129,22 +127,6 @@ public class LightingShader extends BaseShader {
                 shader.set(inputID, tmpM.set(renderable.worldTransform).inv().transpose());
             }
         });
-
-        /*register("u_texScale", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                TextureAttribute diffuseAttr = (TextureAttribute) combinedAttributes.get(TextureAttribute.Diffuse);
-                shader.set(inputID, new Vector2(diffuseAttr.scaleU, diffuseAttr.scaleV));
-            }
-        });
-
-        register("u_texOffset", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                TextureAttribute diffuseAttr = (TextureAttribute) combinedAttributes.get(TextureAttribute.Diffuse);
-                shader.set(inputID, new Vector2(diffuseAttr.offsetU, diffuseAttr.offsetV));
-            }
-        });*/
 
         register("u_diffuse", new LocalSetter() {
             @Override
@@ -256,7 +238,7 @@ public class LightingShader extends BaseShader {
             Array<DirectionalLight> directionalLights = directionalLightsAttribute.lights;
 
             for (int i = 0; i < directionalLights.size; i++) {
-                IntensityDirectionalLight directionalLight = (IntensityDirectionalLight) directionalLights.get(i);
+                NhgDirectionalLight directionalLight = (NhgDirectionalLight) directionalLights.get(i);
 
                 int address = dirLightsLoc + i * dirLightsSize;
 
@@ -283,22 +265,22 @@ public class LightingShader extends BaseShader {
             Array<PointLight> pointLights = pointLightsAttribute.lights;
 
             for (int i = 0; i < pointLights.size; i++) {
-                RadiusPointLight radiusPointLight = (RadiusPointLight) pointLights.get(i);
+                NhgPointLight nhgPointLight = (NhgPointLight) pointLights.get(i);
 
                 int address = pntLightsLoc + i * pntLightsSize;
 
                 shaderProgram.setUniformf(address + pntLightsColorOffset,
-                        radiusPointLight.color.r,
-                        radiusPointLight.color.g,
-                        radiusPointLight.color.b);
+                        nhgPointLight.color.r,
+                        nhgPointLight.color.g,
+                        nhgPointLight.color.b);
 
                 shaderProgram.setUniformf(address + pntLightsPositionOffset,
-                        radiusPointLight.position.x,
-                        radiusPointLight.position.y,
-                        radiusPointLight.position.z);
+                        nhgPointLight.position.x,
+                        nhgPointLight.position.y,
+                        nhgPointLight.position.z);
 
-                shaderProgram.setUniformf(address + pntLightsIntensityOffset, radiusPointLight.intensity);
-                shaderProgram.setUniformf(address + pntLightsRadiusOffset, radiusPointLight.radius);
+                shaderProgram.setUniformf(address + pntLightsIntensityOffset, nhgPointLight.intensity);
+                shaderProgram.setUniformf(address + pntLightsRadiusOffset, nhgPointLight.radius);
 
                 if (pntLightsSize <= 0) break;
             }
