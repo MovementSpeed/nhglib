@@ -313,7 +313,7 @@ public class TiledForwardShader extends BaseShader {
             column++;
 
             for (int k = 0; k < lightsFrustum.get(row).size; k++) {
-                int j = (lightsFrustum.get(row).get(i));
+                int j = (lightsFrustum.get(row).get(k));
 
                 color.set(((float) j) / 255.0f, 0, 0, 0);
 
