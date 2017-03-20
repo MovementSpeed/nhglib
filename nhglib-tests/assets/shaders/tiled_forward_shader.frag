@@ -42,7 +42,7 @@ varying vec3 v_normal;
 
 void main() {
     vec3 viewDir = normalize(-v_position);
-    vec4 contribution = vec4(0.0);
+    vec4 contribution = vec4(1.0, 1.0, 1.0, 0.0);
 
     #ifdef diffuse
         vec4 color = texture2D(u_diffuse, v_texCoord);
@@ -91,7 +91,7 @@ void main() {
 
             // apply lighting
             float lightAttenuation = clamp(1.0 - lightDistance / lightRadius, 0.0, 1.0);
-            att *= att;
+            lightAttenuation *= lightAttenuation;
 
             float diffuseTerm =
                     lightAttenuation *
@@ -120,5 +120,5 @@ void main() {
         }
     #endif
 
-    gl_FragColor = color * contribution;
+    gl_FragColor = vec4(color * contribution);
 }

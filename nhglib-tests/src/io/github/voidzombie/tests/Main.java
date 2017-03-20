@@ -5,14 +5,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
-import io.github.voidzombie.nhglib.graphics.lights.forward.NhgDirectionalLight;
+import io.github.voidzombie.nhglib.graphics.lights.tiled.NhgLight;
+import io.github.voidzombie.nhglib.graphics.lights.tiled.NhgLightsAttribute;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 import io.github.voidzombie.nhglib.graphics.worlds.NhgWorld;
 import io.github.voidzombie.nhglib.graphics.worlds.strategies.impl.LargeWorldStrategy;
@@ -54,8 +53,21 @@ public class Main extends NhgEntry implements InputListener {
         Nhg.assets.queueAsset(new Asset("inputMap", "input.nhc", JsonValue.class));
 
         Environment environment = Nhg.entitySystem.getEntitySystem(GraphicsSystem.class).getEnvironment();
+
+        NhgLight light = new NhgLight();
+        light.position.set(0f, 0, 0f);
+        light.color.set(Color.WHITE);
+        light.intensity = 5.0f;
+        light.radius = 5.0f;
+
+        NhgLightsAttribute lightsAttribute = new NhgLightsAttribute();
+        lightsAttribute.lights.add(light);
+
+        environment.set(lightsAttribute);
+
+        /*Environment environment = Nhg.entitySystem.getEntitySystem(GraphicsSystem.class).getEnvironment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, new Color(0.2666f, 0.3607f, 0.4117f, 1.0f)));
-        environment.add(new NhgDirectionalLight().set(new Color(0.9294f, 0.9764f, 1.0f, 1.0f), new Vector3(-1, -1, -1), 1.0f));
+        environment.add(new NhgDirectionalLight().set(new Color(0.9294f, 0.9764f, 1.0f, 1.0f), new Vector3(-1, -1, -1), 1.0f));*/
 
         // Subscribe to asset events
         Nhg.messaging.get(Nhg.strings.events.assetLoaded, Nhg.strings.events.assetLoadingFinished)

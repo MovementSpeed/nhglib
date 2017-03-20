@@ -2,7 +2,7 @@ attribute vec4 a_position;
 attribute vec3 a_normal;
 attribute vec3 a_binormal;
 attribute vec3 a_tangent;
-attribute vec2 a_texCoord;
+attribute vec2 a_texCoord0;
 
 #ifdef boneWeight0Flag
     #define boneWeightsFlag

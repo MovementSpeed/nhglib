@@ -40,6 +40,7 @@ public class TiledForwardShader extends BaseShader {
 
     private Camera camera;
     private Renderable renderable;
+    private Environment environment;
     private SmallFrustums frustums;
     private ShaderProgram shaderProgram;
 
@@ -49,6 +50,8 @@ public class TiledForwardShader extends BaseShader {
 
     public TiledForwardShader(Renderable renderable, Environment environment) {
         this.renderable = renderable;
+        this.environment = environment;
+
         String prefix = createPrefix(renderable);
 
         String vert = prefix + Gdx.files.internal("shaders/tiled_forward_shader.vert").readString();
@@ -357,6 +360,14 @@ public class TiledForwardShader extends BaseShader {
 
         if (hasBones) {
             prefix += "#define numBones " + 12 + "\n";
+        }
+
+        prefix += "#define diffuse\n";
+
+        NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
+
+        if (lightsAttribute != null) {
+            prefix += "#define lights " + lightsAttribute.lights.size + "\n";
         }
 
         return prefix;
