@@ -149,47 +149,50 @@ public class TiledForwardShader extends BaseShader {
         });
 
         NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
-        lights = lightsAttribute.lights;
 
-        for (int light = 0; light < lights.size; light++) {
-            final NhgLight nhgLight = lights.get(light);
+        if (lightsAttribute != null) {
+            lights = lightsAttribute.lights;
 
-            String lightUniform = "u_lightsList[" + light + "].";
+            for (int light = 0; light < lights.size; light++) {
+                final NhgLight nhgLight = lights.get(light);
 
-            register(lightUniform + "position", new LocalSetter() {
-                @Override
-                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                    shader.set(inputID, getViewSpacePosition(nhgLight));
-                }
-            });
+                String lightUniform = "u_lightsList[" + light + "].";
 
-            register(lightUniform + "direction", new LocalSetter() {
-                @Override
-                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                    shader.set(inputID, nhgLight.direction);
-                }
-            });
+                register(lightUniform + "position", new LocalSetter() {
+                    @Override
+                    public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                        shader.set(inputID, getViewSpacePosition(nhgLight));
+                    }
+                });
 
-            register(lightUniform + "intensity", new LocalSetter() {
-                @Override
-                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                    shader.set(inputID, nhgLight.intensity);
-                }
-            });
+                register(lightUniform + "direction", new LocalSetter() {
+                    @Override
+                    public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                        shader.set(inputID, nhgLight.direction);
+                    }
+                });
 
-            register(lightUniform + "innerAngle", new LocalSetter() {
-                @Override
-                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                    shader.set(inputID, nhgLight.innerAngle);
-                }
-            });
+                register(lightUniform + "intensity", new LocalSetter() {
+                    @Override
+                    public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                        shader.set(inputID, nhgLight.intensity);
+                    }
+                });
 
-            register(lightUniform + "outerAngle", new LocalSetter() {
-                @Override
-                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                    shader.set(inputID, nhgLight.outerAngle);
-                }
-            });
+                register(lightUniform + "innerAngle", new LocalSetter() {
+                    @Override
+                    public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                        shader.set(inputID, nhgLight.innerAngle);
+                    }
+                });
+
+                register(lightUniform + "outerAngle", new LocalSetter() {
+                    @Override
+                    public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                        shader.set(inputID, nhgLight.outerAngle);
+                    }
+                });
+            }
         }
     }
 
@@ -242,9 +245,11 @@ public class TiledForwardShader extends BaseShader {
 
         frustums.setFrustums(((PerspectiveCamera) camera));
 
-        for (NhgLight light : lights) {
-            // ignoring culling
-            lightsToRender.add(light);
+        if (lights != null) {
+            for (NhgLight light : lights) {
+                // ignoring culling
+                lightsToRender.add(light);
+            }
         }
 
         createLightTexture();
@@ -323,18 +328,21 @@ public class TiledForwardShader extends BaseShader {
     }
 
     private void updateBones(Renderable renderable) {
-        bones = new float[renderable.bones.length * 16];
+        if (renderable.bones != null) {
+            bones = new float[renderable.bones.length * 16];
 
-        for (int i = 0; i < bones.length; i++) {
-            final int idx = i / 16;
-            bones[i] = (idx >= renderable.bones.length || renderable.bones[idx] == null) ?
-                    idtMatrix.val[i % 16] : renderable.bones[idx].val[i % 16];
+            for (int i = 0; i < bones.length; i++) {
+                final int idx = i / 16;
+                bones[i] = (idx >= renderable.bones.length || renderable.bones[idx] == null) ?
+                        idtMatrix.val[i % 16] : renderable.bones[idx].val[i % 16];
+            }
+
+            shaderProgram.setUniformMatrix4fv("u_bones", bones, 0, bones.length);
         }
-
-        shaderProgram.setUniformMatrix4fv("u_bones", bones, 0, bones.length);
     }
 
     private String createPrefix(Renderable renderable) {
+        boolean hasBones = false;
         String prefix = "";
         final int n = renderable.meshPart.mesh.getVertexAttributes().size();
 
@@ -342,12 +350,13 @@ public class TiledForwardShader extends BaseShader {
             final VertexAttribute attr = renderable.meshPart.mesh.getVertexAttributes().get(i);
 
             if (attr.usage == VertexAttributes.Usage.BoneWeight) {
-                if (i == 0) {
-                    prefix += "#define numBones " + 12 + "\n";
-                }
-
+                hasBones = true;
                 prefix += "#define boneWeight" + attr.unit + "Flag\n";
             }
+        }
+
+        if (hasBones) {
+            prefix += "#define numBones " + 12 + "\n";
         }
 
         return prefix;
