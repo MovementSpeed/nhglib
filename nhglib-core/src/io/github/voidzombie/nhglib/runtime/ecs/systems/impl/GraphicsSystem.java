@@ -14,7 +14,7 @@ import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.graphics.interfaces.Representation;
 import io.github.voidzombie.nhglib.graphics.representations.ModelRepresentation;
-import io.github.voidzombie.nhglib.graphics.shaders.NhgShaderProvider;
+import io.github.voidzombie.nhglib.graphics.shaders.forward.NhgLightingShaderProvider;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.GraphicsComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.base.NhgIteratingSystem;
@@ -26,7 +26,7 @@ import io.reactivex.functions.Consumer;
  * Created by Fausto Napoli on 08/12/2016.
  */
 public class GraphicsSystem extends NhgIteratingSystem {
-    private NhgShaderProvider shaderProvider;
+    private NhgLightingShaderProvider shaderProvider;
     private CameraSystem cameraSystem;
     private Environment environment;
 
@@ -42,7 +42,7 @@ public class GraphicsSystem extends NhgIteratingSystem {
         super(Aspect.all(NodeComponent.class, GraphicsComponent.class));
 
         environment = new Environment();
-        shaderProvider = new NhgShaderProvider(environment);
+        shaderProvider = new NhgLightingShaderProvider(environment);
 
         modelBatches = new Array<>();
         dynamicCaches = new Array<>();

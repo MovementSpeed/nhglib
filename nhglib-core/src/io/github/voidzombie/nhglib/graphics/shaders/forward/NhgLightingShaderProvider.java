@@ -1,4 +1,4 @@
-package io.github.voidzombie.nhglib.graphics.shaders;
+package io.github.voidzombie.nhglib.graphics.shaders.forward;
 
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Renderable;
@@ -9,10 +9,10 @@ import io.github.voidzombie.nhglib.utils.graphics.ShaderUtils;
 /**
  * Created by worse on 13/03/2017.
  */
-public class NhgShaderProvider extends DefaultShaderProvider {
+public class NhgLightingShaderProvider extends DefaultShaderProvider {
     private Environment environment;
 
-    public NhgShaderProvider(Environment environment) {
+    public NhgLightingShaderProvider(Environment environment) {
         this.environment = environment;
     }
 

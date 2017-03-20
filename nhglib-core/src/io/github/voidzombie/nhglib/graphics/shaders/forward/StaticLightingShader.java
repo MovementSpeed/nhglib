@@ -1,4 +1,4 @@
-package io.github.voidzombie.nhglib.graphics.shaders;
+package io.github.voidzombie.nhglib.graphics.shaders.forward;
 
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import io.github.voidzombie.nhglib.utils.graphics.ShaderUtils;

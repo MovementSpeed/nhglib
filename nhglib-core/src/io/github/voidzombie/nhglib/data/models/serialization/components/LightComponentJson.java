@@ -8,8 +8,8 @@ import com.badlogic.gdx.utils.JsonValue;
 import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.data.models.serialization.ComponentJson;
 import io.github.voidzombie.nhglib.enums.LightType;
-import io.github.voidzombie.nhglib.graphics.lights.NhgDirectionalLight;
-import io.github.voidzombie.nhglib.graphics.lights.NhgPointLight;
+import io.github.voidzombie.nhglib.graphics.lights.forward.NhgDirectionalLight;
+import io.github.voidzombie.nhglib.graphics.lights.forward.NhgPointLight;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.LightComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.GraphicsSystem;
 

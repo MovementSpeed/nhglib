@@ -1,4 +1,4 @@
-package io.github.voidzombie.nhglib.graphics.lights;
+package io.github.voidzombie.nhglib.graphics.lights.forward;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.environment.PointLight;

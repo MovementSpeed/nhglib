@@ -55,7 +55,7 @@ varying vec3 v_position;
 varying vec3 v_normal;
 varying vec2 v_texCoord;
 
-const float outerConeAngle = 0.93; // 20 degrees cos(20 deg)
+const float outerConeAngle = 180; // 20 degrees cos(20 deg)
 
 vec3 computeLighting() {
     vec3 lighting = vec3(0.0);
@@ -100,9 +100,9 @@ vec3 computeLighting() {
 
                 float currentAngle = dot(-normalize(lightDir), normalize(u_spotLights[i].direction));
                 float innerConeAngle = cos(radians(u_spotLights[i].cutoffAngle));
-                float conesAngleDiff = abs(innerConeAngle - outerConeAngle);
+                float conesAngleDiff = abs(innerConeAngle - cos(radians(outerConeAngle)));
 
-                float spotEffect = clamp((currentAngle - outerConeAngle) / conesAngleDiff, 0.0, 1.0);
+                float spotEffect = clamp((currentAngle - cos(radians(outerConeAngle))) / conesAngleDiff, 0.0, 1.0);
 
                 float dist2 = dot(lightDir, lightDir);
                 lightDir *= inversesqrt(dist2);

@@ -1,4 +1,4 @@
-package io.github.voidzombie.nhglib.graphics.shaders;
+package io.github.voidzombie.nhglib.graphics.shaders.forward;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
@@ -19,8 +19,8 @@ import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import io.github.voidzombie.nhglib.graphics.lights.NhgDirectionalLight;
-import io.github.voidzombie.nhglib.graphics.lights.NhgPointLight;
+import io.github.voidzombie.nhglib.graphics.lights.forward.NhgDirectionalLight;
+import io.github.voidzombie.nhglib.graphics.lights.forward.NhgPointLight;
 import io.github.voidzombie.nhglib.utils.graphics.ShaderUtils;
 
 /**
