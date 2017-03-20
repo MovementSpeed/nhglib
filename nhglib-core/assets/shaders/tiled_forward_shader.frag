@@ -41,8 +41,8 @@ varying vec3 v_position;
 varying vec3 v_normal;
 
 void main() {
-    vec3 viewDir = normalize(-v);
-    vec4 contribution = vec4(0.0);
+    vec3 viewDir = normalize(-v_position);
+    vec4 contribution = vec4(1.0, 1.0, 1.0, 0.0);
 
     #ifdef diffuse
         vec4 color = texture2D(u_diffuse, v_texCoord);
@@ -68,7 +68,7 @@ void main() {
             float lightRadius = lightInfo.a * 255.0;
             lightInfo.a = 1.0;
 
-            vec3 lightDirection = u_lightsList[lightId].position - v;
+            vec3 lightDirection = u_lightsList[lightId].position - v_position;
             float lightDistance = length(lightDirection);
 
             vec3 N = normalize(v_normal);
@@ -91,12 +91,13 @@ void main() {
 
             // apply lighting
             float lightAttenuation = clamp(1.0 - lightDistance / lightRadius, 0.0, 1.0);
-            att *= att;
+            lightAttenuation *= lightAttenuation;
 
             float diffuseTerm =
                     lightAttenuation *
                     clamp(NdotDir, 0.0, 1.0) *
-                    clamp((lightRadius - lightDistance), 0.0, 1.0);
+                    clamp((lightRadius - lightDistance), 0.0, 1.0)
+                    * u_lightsList[lightId].intensity;
 
             float specularTerm = 0.0;
 
@@ -120,5 +121,5 @@ void main() {
         }
     #endif
 
-    gl_FragColor = color * contribution;
+    gl_FragColor = vec4(color * contribution);
 }

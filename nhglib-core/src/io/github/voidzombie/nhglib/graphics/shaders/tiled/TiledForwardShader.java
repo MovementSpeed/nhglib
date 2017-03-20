@@ -57,6 +57,7 @@ public class TiledForwardShader extends BaseShader {
         String vert = prefix + Gdx.files.internal("shaders/tiled_forward_shader.vert").readString();
         String frag = prefix + Gdx.files.internal("shaders/tiled_forward_shader.frag").readString();
 
+        ShaderProgram.pedantic = false;
         shaderProgram = new ShaderProgram(vert, frag);
 
         String shaderLog = shaderProgram.getLog();

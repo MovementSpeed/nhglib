@@ -63,48 +63,52 @@ void main() {
     vec4 position;
     vec3 normal;
 
-    mat4 skinning = mat4(1.0);
+    #ifdef numBones
+        mat4 skinning = mat4(1.0);
 
-    #ifdef boneWeight0Flag
-        skinning += (a_boneWeight0.y) * u_bones[int(a_boneWeight0.x)];
+        #ifdef boneWeight0Flag
+            skinning += (a_boneWeight0.y) * u_bones[int(a_boneWeight0.x)];
+        #endif
+
+        #ifdef boneWeight1Flag
+            skinning += (a_boneWeight1.y) * u_bones[int(a_boneWeight1.x)];
+        #endif
+
+        #ifdef boneWeight2Flag
+            skinning += (a_boneWeight2.y) * u_bones[int(a_boneWeight2.x)];
+        #endif
+
+        #ifdef boneWeight3Flag
+            skinning += (a_boneWeight3.y) * u_bones[int(a_boneWeight3.x)];
+        #endif
+
+        #ifdef boneWeight4Flag
+            skinning += (a_boneWeight4.y) * u_bones[int(a_boneWeight4.x)];
+        #endif
+
+        #ifdef boneWeight5Flag
+            skinning += (a_boneWeight5.y) * u_bones[int(a_boneWeight5.x)];
+        #endif
+
+        #ifdef boneWeight6Flag
+            skinning += (a_boneWeight6.y) * u_bones[int(a_boneWeight6.x)];
+        #endif
+
+        #ifdef boneWeight7Flag
+            skinning += (a_boneWeight7.y) * u_bones[int(a_boneWeight7.x)];
+        #endif
+    #else
+        mat4 skinning = mat4(1.0);
     #endif
 
-    #ifdef boneWeight1Flag
-        skinning += (a_boneWeight1.y) * u_bones[int(a_boneWeight1.x)];
-    #endif
-
-    #ifdef boneWeight2Flag
-        skinning += (a_boneWeight2.y) * u_bones[int(a_boneWeight2.x)];
-    #endif
-
-    #ifdef boneWeight3Flag
-        skinning += (a_boneWeight3.y) * u_bones[int(a_boneWeight3.x)];
-    #endif
-
-    #ifdef boneWeight4Flag
-        skinning += (a_boneWeight4.y) * u_bones[int(a_boneWeight4.x)];
-    #endif
-
-    #ifdef boneWeight5Flag
-        skinning += (a_boneWeight5.y) * u_bones[int(a_boneWeight5.x)];
-    #endif
-
-    #ifdef boneWeight6Flag
-        skinning += (a_boneWeight6.y) * u_bones[int(a_boneWeight6.x)];
-    #endif
-
-    #ifdef boneWeight7Flag
-        skinning += (a_boneWeight7.y) * u_bones[int(a_boneWeight7.x)];
-    #endif
-
-    pos = u_modelMatrix * skinning * a_position;
+    position = u_modelMatrix * skinning * a_position;
     normal = normalize(vec3(u_viewMatrix * u_modelMatrix * skinning * vec4(a_normal, 0.0)));
 
-	v_position = vec3(u_viewMatrix * pos);
+	v_position = vec3(u_viewMatrix * position);
     v_normal = normal;
     v_binormal = a_binormal;
     v_tangent = a_tangent;
 
-    gl_Position = u_mvpMatrix * pos;
-    v_texCoord = a_texCoord;
+    gl_Position = u_mvpMatrix * position;
+    v_texCoord = a_texCoord0;
 }
