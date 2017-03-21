@@ -260,8 +260,9 @@ public class TiledForwardShader extends BaseShader {
 
         if (lights != null) {
             for (NhgLight light : lights) {
-                // ignoring culling
-                lightsToRender.add(light);
+                if (camera.frustum.sphereInFrustum(light.position, light.radius)) {
+                    lightsToRender.add(light);
+                }
             }
         }
 
