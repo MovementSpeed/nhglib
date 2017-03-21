@@ -157,63 +157,6 @@ public class TiledForwardShader extends BaseShader {
 
         NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
         lights = lightsAttribute.lights;
-
-        /*NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
-
-        if (lightsAttribute != null) {
-            lights = lightsAttribute.lights;
-
-            for (int light = 0; light < lights.size; light++) {
-                final NhgLight nhgLight = lights.get(light);
-
-                String lightUniform = "u_lightsList[" + light + "].";
-
-                register(lightUniform + "position", new LocalSetter() {
-                    @Override
-                    public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                        if (lightsToRender.contains(nhgLight, true)) {
-                            shader.set(inputID, getViewSpacePosition(nhgLight));
-                        }
-                    }
-                });
-
-                register(lightUniform + "direction", new LocalSetter() {
-                    @Override
-                    public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                        if (lightsToRender.contains(nhgLight, true)) {
-                            shader.set(inputID, nhgLight.direction);
-                        }
-                    }
-                });
-
-                register(lightUniform + "intensity", new LocalSetter() {
-                    @Override
-                    public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                        if (lightsToRender.contains(nhgLight, true)) {
-                            shader.set(inputID, nhgLight.intensity);
-                        }
-                    }
-                });
-
-                register(lightUniform + "innerAngle", new LocalSetter() {
-                    @Override
-                    public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                        if (lightsToRender.contains(nhgLight, true)) {
-                            shader.set(inputID, nhgLight.innerAngle);
-                        }
-                    }
-                });
-
-                register(lightUniform + "outerAngle", new LocalSetter() {
-                    @Override
-                    public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                        if (lightsToRender.contains(nhgLight, true)) {
-                            shader.set(inputID, nhgLight.outerAngle);
-                        }
-                    }
-                });
-            }
-        }*/
     }
 
     @Override
@@ -273,7 +216,8 @@ public class TiledForwardShader extends BaseShader {
 
         if (lights != null) {
             for (NhgLight light : lights) {
-                if (camera.frustum.sphereInFrustum(light.position, light.radius)) {
+                if (camera.frustum.sphereInFrustum(light.position, light.radius) &&
+                        camera.position.dst(light.position) < 10f) {
                     lightsToRender.add(light);
                 }
             }
