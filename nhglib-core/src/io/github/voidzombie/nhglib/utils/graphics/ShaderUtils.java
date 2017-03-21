@@ -84,7 +84,7 @@ public class ShaderUtils {
         boolean res = false;
         TextureAttribute attribute = (TextureAttribute) renderable.material.get(TextureAttribute.Diffuse);
 
-        if (attribute != null) {
+        if (attribute != null && attribute.textureDescription.texture != null) {
             res = true;
         }
 
@@ -95,7 +95,7 @@ public class ShaderUtils {
         boolean res = false;
         TextureAttribute attribute = (TextureAttribute) renderable.material.get(TextureAttribute.Normal);
 
-        if (attribute != null) {
+        if (attribute != null && attribute.textureDescription.texture != null) {
             res = true;
         }
 
@@ -106,7 +106,7 @@ public class ShaderUtils {
         boolean res = false;
         TextureAttribute attribute = (TextureAttribute) renderable.material.get(TextureAttribute.Specular);
 
-        if (attribute != null) {
+        if (attribute != null && attribute.textureDescription.texture != null) {
             res = true;
         }
 
