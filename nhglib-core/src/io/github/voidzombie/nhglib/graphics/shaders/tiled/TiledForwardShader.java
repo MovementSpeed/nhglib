@@ -168,35 +168,45 @@ public class TiledForwardShader extends BaseShader {
                 register(lightUniform + "position", new LocalSetter() {
                     @Override
                     public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                        shader.set(inputID, getViewSpacePosition(nhgLight));
+                        if (lightsToRender.contains(nhgLight, true)) {
+                            shader.set(inputID, getViewSpacePosition(nhgLight));
+                        }
                     }
                 });
 
                 register(lightUniform + "direction", new LocalSetter() {
                     @Override
                     public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                        shader.set(inputID, nhgLight.direction);
+                        if (lightsToRender.contains(nhgLight, true)) {
+                            shader.set(inputID, nhgLight.direction);
+                        }
                     }
                 });
 
                 register(lightUniform + "intensity", new LocalSetter() {
                     @Override
                     public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                        shader.set(inputID, nhgLight.intensity);
+                        if (lightsToRender.contains(nhgLight, true)) {
+                            shader.set(inputID, nhgLight.intensity);
+                        }
                     }
                 });
 
                 register(lightUniform + "innerAngle", new LocalSetter() {
                     @Override
                     public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                        shader.set(inputID, nhgLight.innerAngle);
+                        if (lightsToRender.contains(nhgLight, true)) {
+                            shader.set(inputID, nhgLight.innerAngle);
+                        }
                     }
                 });
 
                 register(lightUniform + "outerAngle", new LocalSetter() {
                     @Override
                     public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                        shader.set(inputID, nhgLight.outerAngle);
+                        if (lightsToRender.contains(nhgLight, true)) {
+                            shader.set(inputID, nhgLight.outerAngle);
+                        }
                     }
                 });
             }
