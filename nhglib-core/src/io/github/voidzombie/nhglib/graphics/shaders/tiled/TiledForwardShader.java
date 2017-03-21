@@ -217,7 +217,7 @@ public class TiledForwardShader extends BaseShader {
         if (lights != null) {
             for (NhgLight light : lights) {
                 if (camera.frustum.sphereInFrustum(light.position, light.radius) &&
-                        camera.position.dst(light.position) < 10f) {
+                        camera.position.dst(light.position) < 2f) {
                     lightsToRender.add(light);
                 }
             }
