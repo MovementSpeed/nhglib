@@ -155,6 +155,9 @@ public class TiledForwardShader extends BaseShader {
             }
         });
 
+        NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
+        lights = lightsAttribute.lights;
+
         /*NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
 
         if (lightsAttribute != null) {
