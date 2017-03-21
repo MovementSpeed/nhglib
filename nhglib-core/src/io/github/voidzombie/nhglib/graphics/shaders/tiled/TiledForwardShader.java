@@ -155,7 +155,7 @@ public class TiledForwardShader extends BaseShader {
             }
         });
 
-        NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
+        /*NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
 
         if (lightsAttribute != null) {
             lights = lightsAttribute.lights;
@@ -210,7 +210,7 @@ public class TiledForwardShader extends BaseShader {
                     }
                 });
             }
-        }
+        }*/
     }
 
     @Override
@@ -285,6 +285,17 @@ public class TiledForwardShader extends BaseShader {
 
     @Override
     public void render(Renderable renderable) {
+        for (int light = 0; light < lightsToRender.size; light++) {
+            NhgLight nhgLight = lightsToRender.get(light);
+            String lightUniform = "u_lightsList[" + light + "].";
+
+            shaderProgram.setUniformf(lightUniform + "position", getViewSpacePosition(nhgLight));
+            shaderProgram.setUniformf(lightUniform + "direction", nhgLight.direction);
+            shaderProgram.setUniformf(lightUniform + "intensity", nhgLight.intensity);
+            shaderProgram.setUniformf(lightUniform + "innerAngle", nhgLight.innerAngle);
+            shaderProgram.setUniformf(lightUniform + "outerAngle", nhgLight.outerAngle);
+        }
+
         updateBones(renderable);
         super.render(renderable);
     }
