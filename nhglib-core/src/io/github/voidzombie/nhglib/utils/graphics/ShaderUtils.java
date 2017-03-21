@@ -4,14 +4,12 @@ import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Renderable;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.DirectionalLightsAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.PointLightsAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.SpotLightsAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.*;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
 import com.badlogic.gdx.utils.Array;
+import io.github.voidzombie.nhglib.graphics.lights.tiled.NhgLightsAttribute;
 
 /**
  * Created by Fausto Napoli on 13/03/2017.
@@ -80,5 +78,47 @@ public class ShaderUtils {
 
     public static boolean isRenderableSkinned(Renderable renderable) {
         return renderable.bones != null && renderable.bones.length > 0;
+    }
+
+    public static boolean hasDiffuse(Renderable renderable) {
+        boolean res = false;
+        TextureAttribute attribute = (TextureAttribute) renderable.material.get(TextureAttribute.Diffuse);
+
+        if (attribute != null) {
+            res = true;
+        }
+
+        return res;
+    }
+
+    public static boolean hasNormal(Renderable renderable) {
+        boolean res = false;
+        TextureAttribute attribute = (TextureAttribute) renderable.material.get(TextureAttribute.Normal);
+
+        if (attribute != null) {
+            res = true;
+        }
+
+        return res;
+    }
+
+    public static boolean hasSpecular(Renderable renderable) {
+        boolean res = false;
+        TextureAttribute attribute = (TextureAttribute) renderable.material.get(TextureAttribute.Specular);
+
+        if (attribute != null) {
+            res = true;
+        }
+
+        return res;
+    }
+
+    public static boolean useBones(Renderable renderable) {
+        return renderable.bones != null && renderable.bones.length > 0;
+    }
+
+    public static boolean hasLights(Environment environment) {
+        NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
+        return lightsAttribute != null && lightsAttribute.lights.size > 0;
     }
 }

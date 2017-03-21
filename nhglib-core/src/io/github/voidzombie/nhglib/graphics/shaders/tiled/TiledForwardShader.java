@@ -19,6 +19,7 @@ import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.graphics.lights.tiled.NhgLight;
 import io.github.voidzombie.nhglib.graphics.lights.tiled.NhgLightsAttribute;
 import io.github.voidzombie.nhglib.utils.data.VectorPool;
+import io.github.voidzombie.nhglib.utils.graphics.ShaderUtils;
 
 /**
  * Created by Fausto Napoli on 18/03/2017.
@@ -39,6 +40,7 @@ public class TiledForwardShader extends BaseShader {
     private Texture lightInfoTexture;
 
     private Camera camera;
+    private Params params;
     private Renderable renderable;
     private Environment environment;
     private SmallFrustums frustums;
@@ -48,9 +50,10 @@ public class TiledForwardShader extends BaseShader {
     private Array<NhgLight> lights;
     private Array<NhgLight> lightsToRender;
 
-    public TiledForwardShader(Renderable renderable, Environment environment) {
+    public TiledForwardShader(Renderable renderable, Environment environment, Params params) {
         this.renderable = renderable;
         this.environment = environment;
+        this.params = params;
 
         String prefix = createPrefix(renderable);
 
@@ -240,7 +243,11 @@ public class TiledForwardShader extends BaseShader {
 
     @Override
     public boolean canRender(Renderable instance) {
-        return true;
+        return (ShaderUtils.hasDiffuse(instance) == params.diffuse) &&
+                (ShaderUtils.hasNormal(instance) == params.normal) &&
+                (ShaderUtils.hasSpecular(instance) == params.specular) &&
+                (ShaderUtils.useBones(instance) == params.useBones) &&
+                (ShaderUtils.hasLights(instance.environment) == params.lit);
     }
 
     @Override
@@ -346,28 +353,35 @@ public class TiledForwardShader extends BaseShader {
     }
 
     private String createPrefix(Renderable renderable) {
-        boolean hasBones = false;
         String prefix = "";
-        final int n = renderable.meshPart.mesh.getVertexAttributes().size();
 
-        for (int i = 0; i < n; i++) {
-            final VertexAttribute attr = renderable.meshPart.mesh.getVertexAttributes().get(i);
+        if (params.useBones) {
+            prefix += "#define numBones " + 12 + "\n";
+            final int n = renderable.meshPart.mesh.getVertexAttributes().size();
 
-            if (attr.usage == VertexAttributes.Usage.BoneWeight) {
-                hasBones = true;
-                prefix += "#define boneWeight" + attr.unit + "Flag\n";
+            for (int i = 0; i < n; i++) {
+                final VertexAttribute attr = renderable.meshPart.mesh.getVertexAttributes().get(i);
+
+                if (attr.usage == VertexAttributes.Usage.BoneWeight) {
+                    prefix += "#define boneWeight" + attr.unit + "Flag\n";
+                }
             }
         }
 
-        if (hasBones) {
-            prefix += "#define numBones " + 12 + "\n";
+        if (params.diffuse) {
+            prefix += "#define diffuse\n";
         }
 
-        prefix += "#define diffuse\n";
+        if (params.normal) {
+            prefix += "#define normal\n";
+        }
 
-        NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
+        if (params.specular) {
+            prefix += "#define specular\n";
+        }
 
-        if (lightsAttribute != null) {
+        if (params.lit) {
+            NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
             prefix += "#define lights " + lightsAttribute.lights.size + "\n";
         }
 
@@ -380,5 +394,13 @@ public class TiledForwardShader extends BaseShader {
                 .mul(camera.view);
 
         return position;
+    }
+
+    public static class Params {
+        boolean useBones;
+        boolean diffuse;
+        boolean normal;
+        boolean specular;
+        boolean lit;
     }
 }

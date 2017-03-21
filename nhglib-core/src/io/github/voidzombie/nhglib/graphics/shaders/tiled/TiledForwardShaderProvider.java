@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.Shader;
 import com.badlogic.gdx.graphics.g3d.utils.BaseShaderProvider;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import io.github.voidzombie.nhglib.utils.graphics.ShaderUtils;
 
 /**
  * Created by Fausto Napoli on 20/03/2017.
@@ -19,6 +20,13 @@ public class TiledForwardShaderProvider extends BaseShaderProvider {
 
     @Override
     protected Shader createShader(Renderable renderable) {
-        return new TiledForwardShader(renderable, environment);
+        TiledForwardShader.Params params = new TiledForwardShader.Params();
+        params.diffuse = ShaderUtils.hasDiffuse(renderable);
+        params.normal = ShaderUtils.hasNormal(renderable);
+        params.specular = ShaderUtils.hasSpecular(renderable);
+        params.useBones = ShaderUtils.useBones(renderable);
+        params.lit = ShaderUtils.hasLights(environment);
+
+        return new TiledForwardShader(renderable, environment, params);
     }
 }
