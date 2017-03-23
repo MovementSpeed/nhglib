@@ -57,8 +57,8 @@ public class TiledForwardShader extends BaseShader {
 
         String prefix = createPrefix(renderable);
 
-        String vert = prefix + Gdx.files.internal("shaders/tiled_forward_shader.vert").readString();
-        String frag = prefix + Gdx.files.internal("shaders/tiled_forward_shader.frag").readString();
+        String vert = prefix + Gdx.files.internal(params.vertexShaderPath).readString();
+        String frag = prefix + Gdx.files.internal(params.fragmentShaderPath).readString();
 
         ShaderProgram.pedantic = false;
         shaderProgram = new ShaderProgram(vert, frag);
@@ -73,19 +73,8 @@ public class TiledForwardShader extends BaseShader {
             Nhg.logger.log(this, shaderLog);
         }
 
-        register("u_cameraPosition", new GlobalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, shader.camera.position);
-            }
-        });
-
-        register("u_mvpMatrix", new GlobalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, shader.camera.combined);
-            }
-        });
+        NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
+        lights = lightsAttribute.lights;
 
         register("u_viewMatrix", new GlobalSetter() {
             @Override
@@ -115,99 +104,110 @@ public class TiledForwardShader extends BaseShader {
             }
         });
 
-        register("u_albedo", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                TextureAttribute textureAttribute = (TextureAttribute) combinedAttributes.get(TextureAttribute.Diffuse);
+        if (params.albedo) {
+            register("u_albedo", new LocalSetter() {
+                @Override
+                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                    TextureAttribute textureAttribute = (TextureAttribute) combinedAttributes.get(TextureAttribute.Diffuse);
 
-                if (textureAttribute != null) {
-                    shader.set(inputID, textureAttribute.textureDescription.texture);
+                    if (textureAttribute != null) {
+                        shader.set(inputID, textureAttribute.textureDescription.texture);
+                    }
                 }
-            }
-        });
+            });
+        }
 
-        register("u_metalness", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                TextureAttribute textureAttribute = (TextureAttribute) combinedAttributes.get(TextureAttribute.Specular);
+        if (params.metalness) {
+            register("u_metalness", new LocalSetter() {
+                @Override
+                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                    TextureAttribute textureAttribute = (TextureAttribute) combinedAttributes.get(TextureAttribute.Specular);
 
-                if (textureAttribute != null) {
-                    shader.set(inputID, textureAttribute.textureDescription.texture);
+                    if (textureAttribute != null) {
+                        shader.set(inputID, textureAttribute.textureDescription.texture);
+                    }
                 }
-            }
-        });
+            });
+        }
 
-        register("u_roughness", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                TextureAttribute textureAttribute = (TextureAttribute) combinedAttributes.get(TextureAttribute.Bump);
+        if (params.roughness) {
+            register("u_roughness", new LocalSetter() {
+                @Override
+                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                    TextureAttribute textureAttribute = (TextureAttribute) combinedAttributes.get(TextureAttribute.Bump);
 
-                if (textureAttribute != null) {
-                    shader.set(inputID, textureAttribute.textureDescription.texture);
+                    if (textureAttribute != null) {
+                        shader.set(inputID, textureAttribute.textureDescription.texture);
+                    }
                 }
-            }
-        });
+            });
+        }
 
-        register("u_normal", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                TextureAttribute textureAttribute = (TextureAttribute) combinedAttributes.get(TextureAttribute.Normal);
+        if (params.normal) {
+            register("u_normal", new LocalSetter() {
+                @Override
+                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                    TextureAttribute textureAttribute = (TextureAttribute) combinedAttributes.get(TextureAttribute.Normal);
 
-                if (textureAttribute != null) {
-                    shader.set(inputID, textureAttribute.textureDescription.texture);
+                    if (textureAttribute != null) {
+                        shader.set(inputID, textureAttribute.textureDescription.texture);
+                    }
                 }
-            }
-        });
+            });
+        }
 
-        register("u_lights", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, lightTexture);
-            }
-        });
+        if (params.lit) {
+            register("u_lights", new LocalSetter() {
+                @Override
+                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                    shader.set(inputID, lightTexture);
+                }
+            });
 
-        register("u_lightInfo", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, lightInfoTexture);
-            }
-        });
-
-        NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
-        lights = lightsAttribute.lights;
+            register("u_lightInfo", new LocalSetter() {
+                @Override
+                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                    shader.set(inputID, lightInfoTexture);
+                }
+            });
+        }
     }
 
     @Override
     public void init() {
         super.init(shaderProgram, renderable);
 
-        idtMatrix = new Matrix4();
-        bones = new float[0];
-
-        lightsFrustum = new Array<>();
-        lightsToRender = new Array<>();
-
-        for (int i = 0; i < 100; i++) {
-            lightsFrustum.add(new IntArray());
+        if (params.useBones) {
+            idtMatrix = new Matrix4();
+            bones = new float[0];
         }
 
-        color = new Color();
-        matrix = new Matrix4();
-        vector = VectorPool.getVector3();
+        if (params.lit) {
+            lightsFrustum = new Array<>();
+            lightsToRender = new Array<>();
 
-        lightTexture = new Texture(64, 128, Pixmap.Format.RGBA8888);
-        lightTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+            for (int i = 0; i < 100; i++) {
+                lightsFrustum.add(new IntArray());
+            }
 
-        lightInfoTexture = new Texture(1, 128, Pixmap.Format.RGBA8888);
-        lightInfoTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+            color = new Color();
+            matrix = new Matrix4();
+            vector = VectorPool.getVector3();
 
-        lightPixmap = new Pixmap(64, 128, Pixmap.Format.RGBA8888);
-        lightPixmap.setBlending(Pixmap.Blending.None);
+            lightTexture = new Texture(64, 128, Pixmap.Format.RGBA8888);
+            lightTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
-        lightInfoPixmap = new Pixmap(1, 128, Pixmap.Format.RGBA8888);
-        lightInfoPixmap.setBlending(Pixmap.Blending.None);
+            lightInfoTexture = new Texture(1, 128, Pixmap.Format.RGBA8888);
+            lightInfoTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
-        frustums = new SmallFrustums(10, 10);
+            lightPixmap = new Pixmap(64, 128, Pixmap.Format.RGBA8888);
+            lightPixmap.setBlending(Pixmap.Blending.None);
+
+            lightInfoPixmap = new Pixmap(1, 128, Pixmap.Format.RGBA8888);
+            lightInfoPixmap.setBlending(Pixmap.Blending.None);
+
+            frustums = new SmallFrustums(10, 10);
+        }
     }
 
     @Override
@@ -217,31 +217,37 @@ public class TiledForwardShader extends BaseShader {
 
     @Override
     public boolean canRender(Renderable instance) {
-        boolean diffuse = ShaderUtils.hasDiffuse(instance) == params.diffuse;
+        boolean albedo = ShaderUtils.hasAlbedo(instance) == params.albedo;
+        boolean metalness = ShaderUtils.hasMetalness(instance) == params.metalness;
+        boolean roughness = ShaderUtils.hasRoughness(instance) == params.roughness;
+
         boolean normal = ShaderUtils.hasNormal(instance) == params.normal;
-        boolean specular = ShaderUtils.hasSpecular(instance) == params.specular;
+        boolean ambientOcclusion = ShaderUtils.hasAmbientOcclusion(instance) == params.ambientOcclusion;
+
         boolean bones = ShaderUtils.useBones(instance) == params.useBones;
         boolean lit = ShaderUtils.hasLights(instance.environment) == params.lit;
 
-        return diffuse && normal && specular && bones && lit;
+        return albedo && metalness && roughness && normal && ambientOcclusion && bones && lit;
     }
 
     @Override
     public void begin(Camera camera, RenderContext context) {
         this.camera = camera;
 
-        frustums.setFrustums(((PerspectiveCamera) camera));
+        if (params.lit) {
+            frustums.setFrustums(((PerspectiveCamera) camera));
 
-        if (lights != null) {
-            for (NhgLight light : lights) {
-                if (camera.frustum.sphereInFrustum(light.position, light.radius) &&
-                        camera.position.dst(light.position) < 15f) {
-                    lightsToRender.add(light);
+            if (lights != null) {
+                for (NhgLight light : lights) {
+                    if (camera.frustum.sphereInFrustum(light.position, light.radius) &&
+                            camera.position.dst(light.position) < 15f) {
+                        lightsToRender.add(light);
+                    }
                 }
             }
-        }
 
-        createLightTexture();
+            createLightTexture();
+        }
 
         super.begin(camera, context);
         Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
@@ -250,26 +256,33 @@ public class TiledForwardShader extends BaseShader {
 
     @Override
     public void render(Renderable renderable) {
-        for (int light = 0; light < lightsToRender.size; light++) {
-            NhgLight nhgLight = lightsToRender.get(light);
-            String lightUniform = "u_lightsList[" + light + "].";
+        if (params.lit) {
+            for (int light = 0; light < lightsToRender.size; light++) {
+                NhgLight nhgLight = lightsToRender.get(light);
+                String lightUniform = "u_lightsList[" + light + "].";
 
-            shaderProgram.setUniformf(lightUniform + "position", getViewSpacePosition(nhgLight));
-            shaderProgram.setUniformf(lightUniform + "direction", nhgLight.direction);
-            shaderProgram.setUniformf(lightUniform + "intensity", nhgLight.intensity);
-            shaderProgram.setUniformf(lightUniform + "innerAngle", nhgLight.innerAngle);
-            shaderProgram.setUniformf(lightUniform + "outerAngle", nhgLight.outerAngle);
+                shaderProgram.setUniformf(lightUniform + "position", getViewSpacePosition(nhgLight));
+                shaderProgram.setUniformf(lightUniform + "direction", nhgLight.direction);
+                shaderProgram.setUniformf(lightUniform + "intensity", nhgLight.intensity);
+                shaderProgram.setUniformf(lightUniform + "innerAngle", nhgLight.innerAngle);
+                shaderProgram.setUniformf(lightUniform + "outerAngle", nhgLight.outerAngle);
+            }
         }
 
-        updateBones(renderable);
+        if (params.useBones) {
+            updateBones(renderable);
+        }
+
         super.render(renderable);
     }
 
     @Override
     public void end() {
-        lightsToRender.clear();
-        super.end();
+        if (params.lit) {
+            lightsToRender.clear();
+        }
 
+        super.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
         Gdx.gl.glDisable(GL20.GL_CULL_FACE);
     }
@@ -357,20 +370,24 @@ public class TiledForwardShader extends BaseShader {
             }
         }
 
-        if (params.diffuse) {
-            prefix += "#define diffuse\n";
+        if (params.albedo) {
+            prefix += "#define albedoMap\n";
         }
 
-        if (params.normal) {
-            prefix += "#define normal\n";
-        }
-
-        if (params.specular) {
-            prefix += "#define specular\n";
+        if (params.metalness) {
+            prefix += "#define metalnessMap\n";
         }
 
         if (params.roughness) {
-            prefix += "#define roughness\n";
+            prefix += "#define roughnessMap\n";
+        }
+
+        if (params.normal) {
+            prefix += "#define normalMap\n";
+        }
+
+        if (params.ambientOcclusion) {
+            prefix += "#define ambientOcclusionMap";
         }
 
         if (params.lit) {
@@ -390,11 +407,15 @@ public class TiledForwardShader extends BaseShader {
     }
 
     public static class Params {
-        boolean useBones;
-        boolean diffuse;
-        boolean normal;
-        boolean specular;
+        boolean albedo;
+        boolean metalness;
         boolean roughness;
+        boolean normal;
+        boolean ambientOcclusion;
+        boolean useBones;
         boolean lit;
+
+        String vertexShaderPath;
+        String fragmentShaderPath;
     }
 }
