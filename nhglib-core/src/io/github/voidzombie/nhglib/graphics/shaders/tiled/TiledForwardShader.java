@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.IntArray;
 import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.graphics.lights.tiled.NhgLight;
 import io.github.voidzombie.nhglib.graphics.lights.tiled.NhgLightsAttribute;
+import io.github.voidzombie.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
 import io.github.voidzombie.nhglib.utils.data.VectorPool;
 import io.github.voidzombie.nhglib.utils.graphics.ShaderUtils;
 
@@ -108,7 +109,7 @@ public class TiledForwardShader extends BaseShader {
             register("u_albedo", new LocalSetter() {
                 @Override
                 public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                    TextureAttribute textureAttribute = (TextureAttribute) combinedAttributes.get(TextureAttribute.Diffuse);
+                    PbrTextureAttribute textureAttribute = (PbrTextureAttribute) combinedAttributes.get(PbrTextureAttribute.Albedo);
 
                     if (textureAttribute != null) {
                         shader.set(inputID, textureAttribute.textureDescription.texture);
@@ -121,7 +122,7 @@ public class TiledForwardShader extends BaseShader {
             register("u_metalness", new LocalSetter() {
                 @Override
                 public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                    TextureAttribute textureAttribute = (TextureAttribute) combinedAttributes.get(TextureAttribute.Specular);
+                    PbrTextureAttribute textureAttribute = (PbrTextureAttribute) combinedAttributes.get(PbrTextureAttribute.Metalness);
 
                     if (textureAttribute != null) {
                         shader.set(inputID, textureAttribute.textureDescription.texture);
@@ -134,7 +135,20 @@ public class TiledForwardShader extends BaseShader {
             register("u_roughness", new LocalSetter() {
                 @Override
                 public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                    TextureAttribute textureAttribute = (TextureAttribute) combinedAttributes.get(TextureAttribute.Bump);
+                    PbrTextureAttribute textureAttribute = (PbrTextureAttribute) combinedAttributes.get(PbrTextureAttribute.Roughness);
+
+                    if (textureAttribute != null) {
+                        shader.set(inputID, textureAttribute.textureDescription.texture);
+                    }
+                }
+            });
+        }
+
+        if (params.ambientOcclusion) {
+            register("u_roughness", new LocalSetter() {
+                @Override
+                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                    PbrTextureAttribute textureAttribute = (PbrTextureAttribute) combinedAttributes.get(PbrTextureAttribute.AmbientOcclusion);
 
                     if (textureAttribute != null) {
                         shader.set(inputID, textureAttribute.textureDescription.texture);
