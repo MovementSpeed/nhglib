@@ -138,7 +138,7 @@ public class TiledForwardShader extends BaseShader {
             }
         });
 
-        register("u_roughness", new LocalSetter() {
+        register("u_ambientOcclusion", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
                 PbrTextureAttribute textureAttribute = (PbrTextureAttribute) combinedAttributes.get(PbrTextureAttribute.AmbientOcclusion);

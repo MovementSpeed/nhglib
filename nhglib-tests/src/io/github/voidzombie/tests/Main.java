@@ -7,23 +7,18 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.Timer;
 import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.graphics.lights.tiled.NhgLight;
 import io.github.voidzombie.nhglib.graphics.lights.tiled.NhgLightsAttribute;
-import io.github.voidzombie.nhglib.graphics.representations.ModelRepresentation;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 import io.github.voidzombie.nhglib.graphics.worlds.NhgWorld;
 import io.github.voidzombie.nhglib.graphics.worlds.strategies.impl.LargeWorldStrategy;
 import io.github.voidzombie.nhglib.input.interfaces.InputListener;
 import io.github.voidzombie.nhglib.input.models.NhgInput;
-import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.GraphicsComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.GraphicsSystem;
 import io.github.voidzombie.nhglib.runtime.entry.NhgEntry;
@@ -84,9 +79,9 @@ public class Main extends NhgEntry implements InputListener {
 
         environment.set(lightsAttribute);
 
-        /*Environment environment = Nhg.entitySystem.getEntitySystem(GraphicsSystem.class).getEnvironment();
-        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, new Color(0.2666f, 0.3607f, 0.4117f, 1.0f)));
-        environment.add(new NhgDirectionalLight().set(new Color(0.9294f, 0.9764f, 1.0f, 1.0f), new Vector3(-1, -1, -1), 1.0f));*/
+        //Environment environment = Nhg.entitySystem.getEntitySystem(GraphicsSystem.class).getEnvironment();
+        //environment.set(new ColorAttribute(ColorAttribute.AmbientLight, new Color(0.2666f, 0.3607f, 0.4117f, 1.0f)));
+        //environment.add(new NhgDirectionalLight().set(new Color(0.9294f, 0.9764f, 1.0f, 1.0f), new Vector3(-1, -1, -1), 1.0f));
 
         // Subscribe to asset events
         Nhg.messaging.get(Nhg.strings.events.assetLoaded, Nhg.strings.events.assetLoadingFinished)
