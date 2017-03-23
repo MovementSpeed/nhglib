@@ -105,123 +105,107 @@ public class TiledForwardShader extends BaseShader {
             }
         });
 
-        if (params.albedo) {
-            register("u_albedo", new LocalSetter() {
-                @Override
-                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                    PbrTextureAttribute textureAttribute = (PbrTextureAttribute) combinedAttributes.get(PbrTextureAttribute.Albedo);
+        register("u_albedo", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                PbrTextureAttribute textureAttribute = (PbrTextureAttribute) combinedAttributes.get(PbrTextureAttribute.Albedo);
 
-                    if (textureAttribute != null) {
-                        shader.set(inputID, textureAttribute.textureDescription.texture);
-                    }
+                if (textureAttribute != null) {
+                    shader.set(inputID, textureAttribute.textureDescription.texture);
                 }
-            });
-        }
+            }
+        });
 
-        if (params.metalness) {
-            register("u_metalness", new LocalSetter() {
-                @Override
-                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                    PbrTextureAttribute textureAttribute = (PbrTextureAttribute) combinedAttributes.get(PbrTextureAttribute.Metalness);
+        register("u_metalness", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                PbrTextureAttribute textureAttribute = (PbrTextureAttribute) combinedAttributes.get(PbrTextureAttribute.Metalness);
 
-                    if (textureAttribute != null) {
-                        shader.set(inputID, textureAttribute.textureDescription.texture);
-                    }
+                if (textureAttribute != null) {
+                    shader.set(inputID, textureAttribute.textureDescription.texture);
                 }
-            });
-        }
+            }
+        });
 
-        if (params.roughness) {
-            register("u_roughness", new LocalSetter() {
-                @Override
-                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                    PbrTextureAttribute textureAttribute = (PbrTextureAttribute) combinedAttributes.get(PbrTextureAttribute.Roughness);
+        register("u_roughness", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                PbrTextureAttribute textureAttribute = (PbrTextureAttribute) combinedAttributes.get(PbrTextureAttribute.Roughness);
 
-                    if (textureAttribute != null) {
-                        shader.set(inputID, textureAttribute.textureDescription.texture);
-                    }
+                if (textureAttribute != null) {
+                    shader.set(inputID, textureAttribute.textureDescription.texture);
                 }
-            });
-        }
+            }
+        });
 
-        if (params.ambientOcclusion) {
-            register("u_roughness", new LocalSetter() {
-                @Override
-                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                    PbrTextureAttribute textureAttribute = (PbrTextureAttribute) combinedAttributes.get(PbrTextureAttribute.AmbientOcclusion);
+        register("u_roughness", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                PbrTextureAttribute textureAttribute = (PbrTextureAttribute) combinedAttributes.get(PbrTextureAttribute.AmbientOcclusion);
 
-                    if (textureAttribute != null) {
-                        shader.set(inputID, textureAttribute.textureDescription.texture);
-                    }
+                if (textureAttribute != null) {
+                    shader.set(inputID, textureAttribute.textureDescription.texture);
                 }
-            });
-        }
+            }
+        });
 
-        if (params.normal) {
-            register("u_normal", new LocalSetter() {
-                @Override
-                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                    TextureAttribute textureAttribute = (TextureAttribute) combinedAttributes.get(TextureAttribute.Normal);
+        register("u_normal", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                TextureAttribute textureAttribute = (TextureAttribute) combinedAttributes.get(TextureAttribute.Normal);
 
-                    if (textureAttribute != null) {
-                        shader.set(inputID, textureAttribute.textureDescription.texture);
-                    }
+                if (textureAttribute != null) {
+                    shader.set(inputID, textureAttribute.textureDescription.texture);
                 }
-            });
-        }
+            }
+        });
 
-        if (params.lit) {
-            register("u_lights", new LocalSetter() {
-                @Override
-                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                    shader.set(inputID, lightTexture);
-                }
-            });
+        register("u_lights", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                shader.set(inputID, lightTexture);
+            }
+        });
 
-            register("u_lightInfo", new LocalSetter() {
-                @Override
-                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                    shader.set(inputID, lightInfoTexture);
-                }
-            });
-        }
+        register("u_lightInfo", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                shader.set(inputID, lightInfoTexture);
+            }
+        });
     }
 
     @Override
     public void init() {
         super.init(shaderProgram, renderable);
 
-        if (params.useBones) {
-            idtMatrix = new Matrix4();
-            bones = new float[0];
+        idtMatrix = new Matrix4();
+        bones = new float[0];
+
+        lightsFrustum = new Array<>();
+        lightsToRender = new Array<>();
+
+        for (int i = 0; i < 100; i++) {
+            lightsFrustum.add(new IntArray());
         }
 
-        if (params.lit) {
-            lightsFrustum = new Array<>();
-            lightsToRender = new Array<>();
+        color = new Color();
+        matrix = new Matrix4();
+        vector = VectorPool.getVector3();
 
-            for (int i = 0; i < 100; i++) {
-                lightsFrustum.add(new IntArray());
-            }
+        lightTexture = new Texture(64, 128, Pixmap.Format.RGBA8888);
+        lightTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
-            color = new Color();
-            matrix = new Matrix4();
-            vector = VectorPool.getVector3();
+        lightInfoTexture = new Texture(1, 128, Pixmap.Format.RGBA8888);
+        lightInfoTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
-            lightTexture = new Texture(64, 128, Pixmap.Format.RGBA8888);
-            lightTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        lightPixmap = new Pixmap(64, 128, Pixmap.Format.RGBA8888);
+        lightPixmap.setBlending(Pixmap.Blending.None);
 
-            lightInfoTexture = new Texture(1, 128, Pixmap.Format.RGBA8888);
-            lightInfoTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        lightInfoPixmap = new Pixmap(1, 128, Pixmap.Format.RGBA8888);
+        lightInfoPixmap.setBlending(Pixmap.Blending.None);
 
-            lightPixmap = new Pixmap(64, 128, Pixmap.Format.RGBA8888);
-            lightPixmap.setBlending(Pixmap.Blending.None);
-
-            lightInfoPixmap = new Pixmap(1, 128, Pixmap.Format.RGBA8888);
-            lightInfoPixmap.setBlending(Pixmap.Blending.None);
-
-            frustums = new SmallFrustums(10, 10);
-        }
+        frustums = new SmallFrustums(10, 10);
     }
 
     @Override
@@ -248,20 +232,18 @@ public class TiledForwardShader extends BaseShader {
     public void begin(Camera camera, RenderContext context) {
         this.camera = camera;
 
-        if (params.lit) {
-            frustums.setFrustums(((PerspectiveCamera) camera));
+        frustums.setFrustums(((PerspectiveCamera) camera));
 
-            if (lights != null) {
-                for (NhgLight light : lights) {
-                    if (camera.frustum.sphereInFrustum(light.position, light.radius) &&
-                            camera.position.dst(light.position) < 15f) {
-                        lightsToRender.add(light);
-                    }
+        if (lights != null) {
+            for (NhgLight light : lights) {
+                if (camera.frustum.sphereInFrustum(light.position, light.radius) &&
+                        camera.position.dst(light.position) < 15f) {
+                    lightsToRender.add(light);
                 }
             }
-
-            createLightTexture();
         }
+
+        createLightTexture();
 
         super.begin(camera, context);
         Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
@@ -270,31 +252,25 @@ public class TiledForwardShader extends BaseShader {
 
     @Override
     public void render(Renderable renderable) {
-        if (params.lit) {
-            for (int light = 0; light < lightsToRender.size; light++) {
-                NhgLight nhgLight = lightsToRender.get(light);
-                String lightUniform = "u_lightsList[" + light + "].";
+        for (int light = 0; light < lightsToRender.size; light++) {
+            NhgLight nhgLight = lightsToRender.get(light);
+            String lightUniform = "u_lightsList[" + light + "].";
 
-                shaderProgram.setUniformf(lightUniform + "position", getViewSpacePosition(nhgLight));
-                shaderProgram.setUniformf(lightUniform + "direction", nhgLight.direction);
-                shaderProgram.setUniformf(lightUniform + "intensity", nhgLight.intensity);
-                shaderProgram.setUniformf(lightUniform + "innerAngle", nhgLight.innerAngle);
-                shaderProgram.setUniformf(lightUniform + "outerAngle", nhgLight.outerAngle);
-            }
+            shaderProgram.setUniformf(lightUniform + "position", getViewSpacePosition(nhgLight));
+            shaderProgram.setUniformf(lightUniform + "direction", nhgLight.direction);
+            shaderProgram.setUniformf(lightUniform + "intensity", nhgLight.intensity);
+            shaderProgram.setUniformf(lightUniform + "innerAngle", nhgLight.innerAngle);
+            shaderProgram.setUniformf(lightUniform + "outerAngle", nhgLight.outerAngle);
         }
 
-        if (params.useBones) {
-            updateBones(renderable);
-        }
+        updateBones(renderable);
 
         super.render(renderable);
     }
 
     @Override
     public void end() {
-        if (params.lit) {
-            lightsToRender.clear();
-        }
+        lightsToRender.clear();
 
         super.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
