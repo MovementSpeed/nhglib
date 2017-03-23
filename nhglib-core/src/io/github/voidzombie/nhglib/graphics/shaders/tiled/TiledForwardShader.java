@@ -115,7 +115,7 @@ public class TiledForwardShader extends BaseShader {
             }
         });
 
-        register("u_diffuse", new LocalSetter() {
+        register("u_albedo", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
                 TextureAttribute textureAttribute = (TextureAttribute) combinedAttributes.get(TextureAttribute.Diffuse);
@@ -126,10 +126,21 @@ public class TiledForwardShader extends BaseShader {
             }
         });
 
-        register("u_specular", new LocalSetter() {
+        register("u_metalness", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
                 TextureAttribute textureAttribute = (TextureAttribute) combinedAttributes.get(TextureAttribute.Specular);
+
+                if (textureAttribute != null) {
+                    shader.set(inputID, textureAttribute.textureDescription.texture);
+                }
+            }
+        });
+
+        register("u_roughness", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                TextureAttribute textureAttribute = (TextureAttribute) combinedAttributes.get(TextureAttribute.Bump);
 
                 if (textureAttribute != null) {
                     shader.set(inputID, textureAttribute.textureDescription.texture);
