@@ -35,10 +35,6 @@ uniform int u_graphicsHeight;
     uniform sampler2D u_roughness;
 #endif
 
-#ifdef ambientOcclusionMap
-    uniform sampler2D u_occlusion;
-#endif
-
 #ifdef normalMap
     uniform sampler2D u_normal;
 
@@ -104,11 +100,7 @@ void main() {
         float roughness = 0.5;
     #endif
 
-    #ifdef ambientOcclusionMap
-        float ambientOcclusion = texture2D(u_occlusion, v_texCoord).r;
-    #else
-        float ambientOcclusion = 0.1;
-    #endif
+    float ambientOcclusion = 0.03;
 
     vec3 N = normalize(v_normal);
     vec3 V = normalize(-v_position);
@@ -163,7 +155,7 @@ void main() {
         }
     #endif
 
-    vec3 ambient = vec3(0.03) * albedo * ambientOcclusion;
+    vec3 ambient = vec3(0.03) * albedo;
     vec3 color = ambient + Lo;
 
     color = color / (color + vec3(1.0));

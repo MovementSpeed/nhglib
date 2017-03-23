@@ -43,10 +43,7 @@ public class GraphicsSystem extends NhgIteratingSystem {
         super(Aspect.all(NodeComponent.class, GraphicsComponent.class));
 
         environment = new Environment();
-        shaderProvider = new TiledForwardShaderProvider(
-                "shaders/tiled_forward_shader.vert",
-                "shaders/tiled_forward_shader.frag",
-                environment);
+        shaderProvider = new TiledForwardShaderProvider(environment);
 
         modelBatches = new Array<>();
         dynamicCaches = new Array<>();
@@ -139,10 +136,6 @@ public class GraphicsSystem extends NhgIteratingSystem {
                         }
                     }
                 });
-    }
-
-    public void setShaderProvider(ShaderProvider provider) {
-        this.shaderProvider = provider;
     }
 
     public Environment getEnvironment() {
