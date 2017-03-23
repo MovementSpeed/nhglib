@@ -113,6 +113,17 @@ public class ShaderUtils {
         return res;
     }
 
+    public static boolean hasRoughness(Renderable renderable) {
+        boolean res = false;
+        TextureAttribute attribute = (TextureAttribute) renderable.material.get(TextureAttribute.Bump);
+
+        if (attribute != null && attribute.textureDescription.texture != null) {
+            res = true;
+        }
+
+        return res;
+    }
+
     public static boolean useBones(Renderable renderable) {
         return renderable.bones != null && renderable.bones.length > 0;
     }

@@ -369,6 +369,10 @@ public class TiledForwardShader extends BaseShader {
             prefix += "#define specular\n";
         }
 
+        if (params.roughness) {
+            prefix += "#define roughness\n";
+        }
+
         if (params.lit) {
             NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
             prefix += "#define lights " + lightsAttribute.lights.size + "\n";
@@ -390,6 +394,7 @@ public class TiledForwardShader extends BaseShader {
         boolean diffuse;
         boolean normal;
         boolean specular;
+        boolean roughness;
         boolean lit;
     }
 }

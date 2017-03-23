@@ -24,6 +24,7 @@ public class TiledForwardShaderProvider extends BaseShaderProvider {
         params.diffuse = ShaderUtils.hasDiffuse(renderable);
         params.normal = ShaderUtils.hasNormal(renderable);
         params.specular = ShaderUtils.hasSpecular(renderable);
+        params.roughness = ShaderUtils.hasRoughness(renderable);
         params.useBones = ShaderUtils.useBones(renderable);
         params.lit = ShaderUtils.hasLights(environment);
 
