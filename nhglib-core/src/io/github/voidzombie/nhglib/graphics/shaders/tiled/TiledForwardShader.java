@@ -137,17 +137,6 @@ public class TiledForwardShader extends BaseShader {
             }
         });
 
-        register("u_normal", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                TextureAttribute textureAttribute = (TextureAttribute) combinedAttributes.get(TextureAttribute.Normal);
-
-                if (textureAttribute != null) {
-                    shader.set(inputID, textureAttribute.textureDescription.texture);
-                }
-            }
-        });
-
         register("u_lights", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
@@ -207,12 +196,10 @@ public class TiledForwardShader extends BaseShader {
         boolean metalness = ShaderUtils.hasSpecular(instance) == params.metalness;
         boolean roughness = ShaderUtils.hasBump(instance) == params.roughness;
 
-        boolean normal = ShaderUtils.hasNormal(instance) == params.normal;
-
         boolean bones = ShaderUtils.useBones(instance) == params.useBones;
         boolean lit = ShaderUtils.hasLights(instance.environment) == params.lit;
 
-        return albedo && metalness && roughness && normal && bones && lit;
+        return albedo && metalness && roughness && bones && lit;
     }
 
     @Override
@@ -348,19 +335,15 @@ public class TiledForwardShader extends BaseShader {
         }
 
         if (params.albedo) {
-            prefix += "#define albedoMap\n";
+            prefix += "#define diffuse\n";
         }
 
         if (params.metalness) {
-            prefix += "#define metalnessMap\n";
+            prefix += "#define specular\n";
         }
 
         if (params.roughness) {
-            prefix += "#define roughnessMap\n";
-        }
-
-        if (params.normal) {
-            prefix += "#define normalMap\n";
+            prefix += "#define roughness\n";
         }
 
         if (params.lit) {
@@ -383,7 +366,6 @@ public class TiledForwardShader extends BaseShader {
         boolean albedo;
         boolean metalness;
         boolean roughness;
-        boolean normal;
         boolean useBones;
         boolean lit;
     }

@@ -23,23 +23,16 @@ uniform int u_graphicsHeight;
     #endif
 #endif
 
-#ifdef albedoMap
+#ifdef diffuse
     uniform sampler2D u_albedo;
 #endif
 
-#ifdef metalnessMap
+#ifdef specular
     uniform sampler2D u_metalness;
 #endif
 
-#ifdef roughnessMap
+#ifdef roughness
     uniform sampler2D u_roughness;
-#endif
-
-#ifdef normalMap
-    uniform sampler2D u_normal;
-
-    varying vec3 v_binormal;
-    varying vec3 v_tangent;
 #endif
 
 varying vec2 v_texCoord;
@@ -82,22 +75,22 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float rough) {
 }
 
 void main() {
-    #ifdef albedoMap
+    #ifdef diffuse
         vec3 albedo = texture2D(u_albedo, v_texCoord).rgb;
     #else
         vec3 albedo = vec3(1.0);
     #endif
 
-    #ifdef metalnessMap
+    #ifdef specular
         float metalness = texture2D(u_metalness, v_texCoord).r;
     #else
         float metalness = 0.5;
     #endif
 
-    #ifdef roughnessMap
-        float roughness = texture2D(u_roughness, v_texCoord).r;
+    #ifdef roughness
+        float rough = texture2D(u_roughness, v_texCoord).r;
     #else
-        float roughness = 0.5;
+        float rough = 0.5;
     #endif
 
     float ambientOcclusion = 0.03;
@@ -138,8 +131,8 @@ void main() {
 
             vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
 
-            float NDF = DistributionGGX(N, H, roughness);
-            float G = GeometrySmith(N, V, L, roughness);
+            float NDF = DistributionGGX(N, H, rough);
+            float G = GeometrySmith(N, V, L, rough);
 
             vec3 nominator = NDF * G * F;
             float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.001;

@@ -25,7 +25,6 @@ public class TiledForwardShaderProvider extends BaseShaderProvider {
         params.albedo = ShaderUtils.hasAlbedo(renderable);
         params.metalness = ShaderUtils.hasMetalness(renderable);
         params.roughness = ShaderUtils.hasRoughness(renderable);
-        params.normal = ShaderUtils.hasNormal(renderable);
         params.useBones = ShaderUtils.useBones(renderable);
         params.lit = ShaderUtils.hasLights(environment);
 
