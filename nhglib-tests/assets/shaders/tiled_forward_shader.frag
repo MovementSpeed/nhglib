@@ -42,7 +42,7 @@ varying vec3 v_normal;
 
 void main() {
     vec3 viewDir = normalize(-v_position);
-    vec4 contribution = vec4(1.0, 1.0, 1.0, 0.0);
+    vec4 contribution = vec4(0.3);
 
     #ifdef diffuse
         vec4 color = texture2D(u_diffuse, v_texCoord);
@@ -54,7 +54,7 @@ void main() {
         int tileX = int(gl_FragCoord.x) / (u_graphicsWidth / 10);
         int tileY = int(gl_FragCoord.y) / (u_graphicsHeight / 10);
 
-        float textureRow = float(tileY * 10.0 + tileX) / 128.0;
+        float textureRow = float(tileY * 10 + tileX) / 128.0;
 
         vec4 pixel = texture2D(u_lights, vec2(0.5 / 64.0, textureRow));
         int pixelCeil = int(ceil(pixel.r * 255.0));
@@ -96,24 +96,20 @@ void main() {
             float diffuseTerm =
                     lightAttenuation *
                     clamp(NdotDir, 0.0, 1.0) *
-                    clamp((lightRadius - lightDistance), 0.0, 1.0);
+                    clamp((lightRadius - lightDistance), 0.0, 1.0)
+                    * u_lightsList[lightId].intensity;
 
             float specularTerm = 0.0;
 
             #ifdef specular
-                float specular = 0.0;
-                float shininess = texture2D(u_specular, v_texCoord.st).a;
-                float lambertian = max(NdotDir, 0.0);
+                float shininess = texture2D(u_specular, v_texCoord.st).r * 255.0;
 
-                if (lambertian > 0.0) {
+                if (shininess < 255.0) {
                     vec3 R = reflect(-L, pn);
                     vec3 V = normalize(viewDir);
 
-                    float specularAngle = max(dot(R, V), 0.0);
-                    specular = pow(specularAngle, shininess * 255.0);
+                    specularTerm = pow(max(dot(R, V), 0.0), shininess);
                 }
-
-                specularTerm = (lightAttenuation * 16.0 * specular) * shininess;
             #endif
 
             contribution += (diffuseTerm + specularTerm) * lightInfo;

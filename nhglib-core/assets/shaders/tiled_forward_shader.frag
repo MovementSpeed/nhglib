@@ -4,6 +4,7 @@ precision mediump float;
 
 uniform int u_graphicsWidth;
 uniform int u_graphicsHeight;
+uniform mat4 u_mvpMatrix;
 
 #ifdef lights
     #if lights > 0
@@ -42,7 +43,7 @@ varying vec3 v_normal;
 
 void main() {
     vec3 viewDir = normalize(-v_position);
-    vec4 contribution = vec4(1.0, 1.0, 1.0, 0.0);
+    vec4 contribution = vec4(0.3);
 
     #ifdef diffuse
         vec4 color = texture2D(u_diffuse, v_texCoord);
@@ -54,7 +55,7 @@ void main() {
         int tileX = int(gl_FragCoord.x) / (u_graphicsWidth / 10);
         int tileY = int(gl_FragCoord.y) / (u_graphicsHeight / 10);
 
-        float textureRow = float(tileY * 10.0 + tileX) / 128.0;
+        float textureRow = float(tileY * 10 + tileX) / 128.0;
 
         vec4 pixel = texture2D(u_lights, vec2(0.5 / 64.0, textureRow));
         int pixelCeil = int(ceil(pixel.r * 255.0));
@@ -102,20 +103,16 @@ void main() {
             float specularTerm = 0.0;
 
             #ifdef specular
-                float specular = 0.0;
-                float shininess = texture2D(u_specular, v_texCoord.st).a;
-                float lambertian = max(NdotDir, 0.0);
-
-                if (lambertian > 0.0) {
-                    vec3 R = reflect(-L, pn);
-                    vec3 V = normalize(viewDir);
-
-                    float specularAngle = max(dot(R, V), 0.0);
-                    specular = pow(specularAngle, shininess * 255.0);
-                }
-
-                specularTerm = (lightAttenuation * 16.0 * specular) * shininess;
+                // 0 is a rough surface, 1 is a smooth surface
+                float gloss = texture2D(u_specular, v_texCoord.st).r;
+            #else
+                float gloss = 0.5;
             #endif
+
+            vec3 R = reflect(-L, pn);
+            vec3 V = normalize(viewDir);
+
+            specularTerm = pow(max(dot(R, V), 0.0), exp2(10.0 * gloss + 1.0));
 
             contribution += (diffuseTerm + specularTerm) * lightInfo;
         }

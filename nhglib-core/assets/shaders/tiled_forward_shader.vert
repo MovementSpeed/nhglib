@@ -64,7 +64,7 @@ void main() {
     vec3 normal;
 
     #ifdef numBones
-        mat4 skinning = mat4(1.0);
+        mat4 skinning = mat4(0.0);
 
         #ifdef boneWeight0Flag
             skinning += (a_boneWeight0.y) * u_bones[int(a_boneWeight0.x)];

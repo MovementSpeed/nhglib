@@ -2,21 +2,28 @@ package io.github.voidzombie.tests;
 
 import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.loaders.TextureLoader;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.FPSLogger;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.Timer;
 import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.graphics.lights.tiled.NhgLight;
 import io.github.voidzombie.nhglib.graphics.lights.tiled.NhgLightsAttribute;
+import io.github.voidzombie.nhglib.graphics.representations.ModelRepresentation;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 import io.github.voidzombie.nhglib.graphics.worlds.NhgWorld;
 import io.github.voidzombie.nhglib.graphics.worlds.strategies.impl.LargeWorldStrategy;
 import io.github.voidzombie.nhglib.input.interfaces.InputListener;
 import io.github.voidzombie.nhglib.input.models.NhgInput;
+import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.GraphicsComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.GraphicsSystem;
 import io.github.voidzombie.nhglib.runtime.entry.NhgEntry;
@@ -35,6 +42,10 @@ public class Main extends NhgEntry implements InputListener {
     private ImmediateModeRenderer20 renderer20;
     private NodeComponent cameraNode;
 
+    private Texture albedo;
+    private Texture metallic;
+    private Texture roughness;
+
     @Override
     public void engineStarted() {
         super.engineStarted();
@@ -49,6 +60,14 @@ public class Main extends NhgEntry implements InputListener {
 
         Nhg.input.addListener(this);
 
+        TextureLoader.TextureParameter param = new TextureLoader.TextureParameter();
+        param.minFilter = Texture.TextureFilter.MipMap;
+        param.magFilter = Texture.TextureFilter.Linear;
+        param.genMipMaps = true;
+
+        Nhg.assets.queueAsset(new Asset("albedo", "textures/cavefloor1_Base_Color.png", Texture.class, param));
+        Nhg.assets.queueAsset(new Asset("metallic", "textures/cavefloor1_Metallic.png", Texture.class, param));
+        Nhg.assets.queueAsset(new Asset("roughness", "textures/cavefloor1_Roughness.png", Texture.class, param));
         Nhg.assets.queueAsset(new Asset("scene", "myscene.nhs", Scene.class));
         Nhg.assets.queueAsset(new Asset("inputMap", "input.nhc", JsonValue.class));
 
@@ -90,6 +109,12 @@ public class Main extends NhgEntry implements InputListener {
                                 Nhg.input.fromJson((JsonValue) Nhg.assets.get(asset));
                                 Nhg.input.setActiveContext("game", true);
                                 Nhg.input.setActiveContext("global", true);
+                            } else if (asset.is("albedo")) {
+                                albedo = Nhg.assets.get(asset);
+                            } else if (asset.is("roughness")) {
+                                roughness = Nhg.assets.get(asset);
+                            } else if (asset.is("metallic")) {
+                                metallic = Nhg.assets.get(asset);
                             }
                         }
                     }
