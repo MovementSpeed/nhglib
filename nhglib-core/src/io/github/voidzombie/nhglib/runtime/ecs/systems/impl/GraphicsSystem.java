@@ -9,13 +9,13 @@ import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelCache;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
-import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ShaderProvider;
 import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.graphics.interfaces.Representation;
 import io.github.voidzombie.nhglib.graphics.representations.ModelRepresentation;
+import io.github.voidzombie.nhglib.graphics.shaders.tiled.TiledForwardShaderProvider;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.GraphicsComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.base.NhgIteratingSystem;
@@ -43,7 +43,10 @@ public class GraphicsSystem extends NhgIteratingSystem {
         super(Aspect.all(NodeComponent.class, GraphicsComponent.class));
 
         environment = new Environment();
-        shaderProvider = new DefaultShaderProvider();
+        shaderProvider = new TiledForwardShaderProvider(
+                "shaders/tiled_forward_shader.vert",
+                "shaders/tiled_forward_shader.frag",
+                environment);
 
         modelBatches = new Array<>();
         dynamicCaches = new Array<>();
