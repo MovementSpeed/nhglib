@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
 import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.graphics.lights.tiled.NhgLightsAttribute;
-import io.github.voidzombie.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
 
 /**
  * Created by Fausto Napoli on 13/03/2017.
@@ -114,53 +113,9 @@ public class ShaderUtils {
         return res;
     }
 
-    public static boolean hasBump(Renderable renderable) {
-        boolean res = false;
-        TextureAttribute attribute = (TextureAttribute) renderable.material.get(TextureAttribute.Bump);
-
-        if (attribute != null && attribute.textureDescription.texture != null) {
-            res = true;
-        }
-
-        return res;
-    }
-
-    public static boolean hasAlbedo(Renderable renderable) {
-        boolean res = false;
-        PbrTextureAttribute attribute = (PbrTextureAttribute) renderable.material.get(PbrTextureAttribute.Albedo);
-
-        if (attribute != null && attribute.textureDescription.texture != null) {
-            res = true;
-        }
-
-        return res;
-    }
-
-    public static boolean hasMetalness(Renderable renderable) {
-        boolean res = false;
-        PbrTextureAttribute attribute = (PbrTextureAttribute) renderable.material.get(PbrTextureAttribute.Metalness);
-
-        if (attribute != null && attribute.textureDescription.texture != null) {
-            res = true;
-        }
-
-        return res;
-    }
-
     public static boolean hasRoughness(Renderable renderable) {
         boolean res = false;
-        PbrTextureAttribute attribute = (PbrTextureAttribute) renderable.material.get(PbrTextureAttribute.Roughness);
-
-        if (attribute != null && attribute.textureDescription.texture != null) {
-            res = true;
-        }
-
-        return res;
-    }
-
-    public static boolean hasAmbientOcclusion(Renderable renderable) {
-        boolean res = false;
-        PbrTextureAttribute attribute = (PbrTextureAttribute) renderable.material.get(PbrTextureAttribute.AmbientOcclusion);
+        TextureAttribute attribute = (TextureAttribute) renderable.material.get(TextureAttribute.Bump);
 
         if (attribute != null && attribute.textureDescription.texture != null) {
             res = true;

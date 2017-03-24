@@ -21,9 +21,9 @@ public class TiledForwardShaderProvider extends BaseShaderProvider {
     @Override
     protected Shader createShader(Renderable renderable) {
         TiledForwardShader.Params params = new TiledForwardShader.Params();
-
-        params.albedo = ShaderUtils.hasAlbedo(renderable);
-        params.metalness = ShaderUtils.hasMetalness(renderable);
+        params.diffuse = ShaderUtils.hasDiffuse(renderable);
+        params.normal = ShaderUtils.hasNormal(renderable);
+        params.specular = ShaderUtils.hasSpecular(renderable);
         params.roughness = ShaderUtils.hasRoughness(renderable);
         params.useBones = ShaderUtils.useBones(renderable);
         params.lit = ShaderUtils.hasLights(environment);
