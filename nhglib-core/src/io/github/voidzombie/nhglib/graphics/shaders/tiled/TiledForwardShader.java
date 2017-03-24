@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g3d.Attributes;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.Shader;
-import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.shaders.BaseShader;
 import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -18,6 +17,7 @@ import com.badlogic.gdx.utils.IntArray;
 import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.graphics.lights.tiled.NhgLight;
 import io.github.voidzombie.nhglib.graphics.lights.tiled.NhgLightsAttribute;
+import io.github.voidzombie.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
 import io.github.voidzombie.nhglib.utils.data.VectorPool;
 import io.github.voidzombie.nhglib.utils.graphics.ShaderUtils;
 
@@ -118,7 +118,7 @@ public class TiledForwardShader extends BaseShader {
         register("u_albedo", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                TextureAttribute textureAttribute = (TextureAttribute) combinedAttributes.get(TextureAttribute.Diffuse);
+                PbrTextureAttribute textureAttribute = (PbrTextureAttribute) combinedAttributes.get(PbrTextureAttribute.Albedo);
 
                 if (textureAttribute != null) {
                     shader.set(inputID, textureAttribute.textureDescription.texture);
@@ -129,7 +129,7 @@ public class TiledForwardShader extends BaseShader {
         register("u_metalness", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                TextureAttribute textureAttribute = (TextureAttribute) combinedAttributes.get(TextureAttribute.Specular);
+                PbrTextureAttribute textureAttribute = (PbrTextureAttribute) combinedAttributes.get(PbrTextureAttribute.Metalness);
 
                 if (textureAttribute != null) {
                     shader.set(inputID, textureAttribute.textureDescription.texture);
@@ -140,7 +140,7 @@ public class TiledForwardShader extends BaseShader {
         register("u_roughness", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                TextureAttribute textureAttribute = (TextureAttribute) combinedAttributes.get(TextureAttribute.Bump);
+                PbrTextureAttribute textureAttribute = (PbrTextureAttribute) combinedAttributes.get(PbrTextureAttribute.Roughness);
 
                 if (textureAttribute != null) {
                     shader.set(inputID, textureAttribute.textureDescription.texture);
@@ -208,7 +208,7 @@ public class TiledForwardShader extends BaseShader {
     public boolean canRender(Renderable instance) {
         boolean diffuse = ShaderUtils.hasAlbedo(instance) == params.albedo;
         boolean metalness = ShaderUtils.hasMetalness(instance) == params.metalness;
-        boolean roughness = ShaderUtils.hasRoughness(renderable);
+        boolean roughness = ShaderUtils.hasRoughness(renderable) == params.roughness;
         boolean bones = ShaderUtils.useBones(instance) == params.useBones;
         boolean lit = ShaderUtils.hasLights(instance.environment) == params.lit;
 
