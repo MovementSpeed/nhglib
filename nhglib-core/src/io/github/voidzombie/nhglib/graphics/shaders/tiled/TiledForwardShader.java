@@ -73,8 +73,19 @@ public class TiledForwardShader extends BaseShader {
             Nhg.logger.log(this, shaderLog);
         }
 
-        NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
-        lights = lightsAttribute.lights;
+        register("u_cameraPosition", new GlobalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                shader.set(inputID, shader.camera.position);
+            }
+        });
+
+        register("u_mvpMatrix", new GlobalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                shader.set(inputID, shader.camera.combined);
+            }
+        });
 
         register("u_viewMatrix", new GlobalSetter() {
             @Override
@@ -137,6 +148,17 @@ public class TiledForwardShader extends BaseShader {
             }
         });
 
+        register("u_normal", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                TextureAttribute textureAttribute = (TextureAttribute) combinedAttributes.get(TextureAttribute.Normal);
+
+                if (textureAttribute != null) {
+                    shader.set(inputID, textureAttribute.textureDescription.texture);
+                }
+            }
+        });
+
         register("u_lights", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
@@ -150,6 +172,9 @@ public class TiledForwardShader extends BaseShader {
                 shader.set(inputID, lightInfoTexture);
             }
         });
+
+        NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
+        lights = lightsAttribute.lights;
     }
 
     @Override
@@ -192,14 +217,13 @@ public class TiledForwardShader extends BaseShader {
 
     @Override
     public boolean canRender(Renderable instance) {
-        boolean albedo = ShaderUtils.hasDiffuse(instance) == params.albedo;
-        boolean metalness = ShaderUtils.hasSpecular(instance) == params.metalness;
-        boolean roughness = ShaderUtils.hasBump(instance) == params.roughness;
-
+        boolean diffuse = ShaderUtils.hasDiffuse(instance) == params.diffuse;
+        boolean normal = ShaderUtils.hasNormal(instance) == params.normal;
+        boolean specular = ShaderUtils.hasSpecular(instance) == params.specular;
         boolean bones = ShaderUtils.useBones(instance) == params.useBones;
         boolean lit = ShaderUtils.hasLights(instance.environment) == params.lit;
 
-        return albedo && metalness && roughness && bones && lit;
+        return diffuse && normal && specular && bones && lit;
     }
 
     @Override
@@ -238,15 +262,14 @@ public class TiledForwardShader extends BaseShader {
         }
 
         updateBones(renderable);
-
         super.render(renderable);
     }
 
     @Override
     public void end() {
         lightsToRender.clear();
-
         super.end();
+
         Gdx.gl.glDisable(GL20.GL_BLEND);
         Gdx.gl.glDisable(GL20.GL_CULL_FACE);
     }
@@ -334,11 +357,15 @@ public class TiledForwardShader extends BaseShader {
             }
         }
 
-        if (params.albedo) {
+        if (params.diffuse) {
             prefix += "#define diffuse\n";
         }
 
-        if (params.metalness) {
+        if (params.normal) {
+            prefix += "#define normal\n";
+        }
+
+        if (params.specular) {
             prefix += "#define specular\n";
         }
 
@@ -363,10 +390,11 @@ public class TiledForwardShader extends BaseShader {
     }
 
     public static class Params {
-        boolean albedo;
-        boolean metalness;
-        boolean roughness;
         boolean useBones;
+        boolean diffuse;
+        boolean normal;
+        boolean specular;
+        boolean roughness;
         boolean lit;
     }
 }
