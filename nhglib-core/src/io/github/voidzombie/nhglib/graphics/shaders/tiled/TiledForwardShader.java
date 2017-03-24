@@ -206,12 +206,13 @@ public class TiledForwardShader extends BaseShader {
 
     @Override
     public boolean canRender(Renderable instance) {
-        boolean diffuse = ShaderUtils.hasDiffuse(instance) == params.albedo;
-        boolean specular = ShaderUtils.hasSpecular(instance) == params.metalness;
+        boolean diffuse = ShaderUtils.hasAlbedo(instance) == params.albedo;
+        boolean metalness = ShaderUtils.hasMetalness(instance) == params.metalness;
+        boolean roughness = ShaderUtils.hasRoughness(renderable);
         boolean bones = ShaderUtils.useBones(instance) == params.useBones;
         boolean lit = ShaderUtils.hasLights(instance.environment) == params.lit;
 
-        return diffuse && specular && bones && lit;
+        return diffuse && metalness && roughness && bones && lit;
     }
 
     @Override
