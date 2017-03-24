@@ -113,7 +113,7 @@ public class ShaderUtils {
         return res;
     }
 
-    public static boolean hasRoughness(Renderable renderable) {
+    public static boolean hasBump(Renderable renderable) {
         boolean res = false;
         TextureAttribute attribute = (TextureAttribute) renderable.material.get(TextureAttribute.Bump);
 

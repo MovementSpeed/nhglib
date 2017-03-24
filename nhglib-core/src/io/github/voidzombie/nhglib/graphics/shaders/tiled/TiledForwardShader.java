@@ -148,17 +148,6 @@ public class TiledForwardShader extends BaseShader {
             }
         });
 
-        register("u_normal", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                TextureAttribute textureAttribute = (TextureAttribute) combinedAttributes.get(TextureAttribute.Normal);
-
-                if (textureAttribute != null) {
-                    shader.set(inputID, textureAttribute.textureDescription.texture);
-                }
-            }
-        });
-
         register("u_lights", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
@@ -217,13 +206,12 @@ public class TiledForwardShader extends BaseShader {
 
     @Override
     public boolean canRender(Renderable instance) {
-        boolean diffuse = ShaderUtils.hasDiffuse(instance) == params.diffuse;
-        boolean normal = ShaderUtils.hasNormal(instance) == params.normal;
-        boolean specular = ShaderUtils.hasSpecular(instance) == params.specular;
+        boolean diffuse = ShaderUtils.hasDiffuse(instance) == params.albedo;
+        boolean specular = ShaderUtils.hasSpecular(instance) == params.metalness;
         boolean bones = ShaderUtils.useBones(instance) == params.useBones;
         boolean lit = ShaderUtils.hasLights(instance.environment) == params.lit;
 
-        return diffuse && normal && specular && bones && lit;
+        return diffuse && specular && bones && lit;
     }
 
     @Override
@@ -357,20 +345,16 @@ public class TiledForwardShader extends BaseShader {
             }
         }
 
-        if (params.diffuse) {
-            prefix += "#define diffuse\n";
+        if (params.albedo) {
+            prefix += "#define defAlbedo\n";
         }
 
-        if (params.normal) {
-            prefix += "#define normal\n";
-        }
-
-        if (params.specular) {
-            prefix += "#define specular\n";
+        if (params.metalness) {
+            prefix += "#define defMetalness\n";
         }
 
         if (params.roughness) {
-            prefix += "#define roughness\n";
+            prefix += "#define defRoughness\n";
         }
 
         if (params.lit) {
@@ -391,9 +375,8 @@ public class TiledForwardShader extends BaseShader {
 
     public static class Params {
         boolean useBones;
-        boolean diffuse;
-        boolean normal;
-        boolean specular;
+        boolean albedo;
+        boolean metalness;
         boolean roughness;
         boolean lit;
     }
