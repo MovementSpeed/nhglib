@@ -9,6 +9,7 @@ import com.badlogic.gdx.assets.loaders.TextureLoader;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.model.data.ModelData;
 import com.badlogic.gdx.graphics.g3d.model.data.ModelMaterial;
 import com.badlogic.gdx.graphics.g3d.model.data.ModelTexture;
@@ -18,6 +19,7 @@ import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;
 import io.github.voidzombie.nhglib.assets.Asset;
+import io.github.voidzombie.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
 
 import java.util.Iterator;
 
@@ -132,6 +134,9 @@ public abstract class NhgModelLoader<P extends NhgModelLoader.ModelParameters> e
                 disposables.remove();
             }
         }
+
+        TextureAttribute textureAttribute = (TextureAttribute) result.materials.get(0).get(TextureAttribute.Diffuse);
+        result.materials.get(0).set(PbrTextureAttribute.createAlbedo(textureAttribute.textureDescription.texture));
 
         data = null;
         return result;
