@@ -6,16 +6,21 @@ import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetErrorListener;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.UBJsonReader;
 import io.github.voidzombie.nhglib.Nhg;
+import io.github.voidzombie.nhglib.assets.loaders.JsonLoader;
+import io.github.voidzombie.nhglib.assets.loaders.NhgG3dModelLoader;
+import io.github.voidzombie.nhglib.assets.loaders.SceneLoader;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 import io.github.voidzombie.nhglib.interfaces.Updatable;
 import io.github.voidzombie.nhglib.runtime.fsm.base.AssetsStates;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.nhglib.utils.data.Bundle;
-import io.github.voidzombie.nhglib.utils.files.JsonLoader;
-import io.github.voidzombie.nhglib.utils.files.SceneLoader;
 
 /**
  * Created by Fausto Napoli on 19/10/2016.
@@ -24,7 +29,8 @@ public class Assets implements Updatable, AssetErrorListener {
     public final DefaultStateMachine<Assets, AssetsStates> fsm;
     public final AssetManager assetManager;
 
-    private Array<Asset> assetList;
+    private ArrayMap<String, Asset> assetCache;
+    private Array<Asset> assetQueue;
 
     public Assets() {
         fsm = new DefaultStateMachine<>(this, AssetsStates.IDLE);
@@ -32,9 +38,16 @@ public class Assets implements Updatable, AssetErrorListener {
         assetManager = new AssetManager();
         assetManager.setLoader(Scene.class, new SceneLoader(assetManager.getFileHandleResolver()));
         assetManager.setLoader(JsonValue.class, new JsonLoader(assetManager.getFileHandleResolver()));
+
+        assetManager.setLoader(Model.class, ".g3db", new NhgG3dModelLoader(
+                new UBJsonReader(), assetManager.getFileHandleResolver()));
+
         assetManager.setErrorListener(this);
 
-        assetList = new Array<>();
+        assetQueue = new Array<>();
+        assetCache = new ArrayMap<>();
+
+        Texture.setAssetManager(assetManager);
     }
 
     // Updatable
@@ -67,16 +80,30 @@ public class Assets implements Updatable, AssetErrorListener {
         Nhg.messaging.send(new Message(Nhg.strings.events.assetUnloaded, bundle));
     }
 
-    public Array<Asset> getAssetList() {
-        return assetList;
+    public Array<Asset> getAssetQueue() {
+        return assetQueue;
+    }
+
+    public <T> T get(String alias) {
+        return get(assetCache.get(alias));
     }
 
     public <T> T get(Asset asset) {
         return assetManager.get(asset.source);
     }
 
+    public Asset getAsset(String alias) {
+        return assetCache.get(alias);
+    }
+
+    public ArrayMap.Values<Asset> getCachedAssets() {
+        return assetCache.values();
+    }
+
     @SuppressWarnings("unchecked")
     public void queueAsset(Asset asset) {
+        assetCache.put(asset.alias, asset);
+
         if (!assetManager.isLoaded(asset.source)) {
             FileHandle fileHandle = Gdx.files.internal(asset.source);
 
@@ -88,7 +115,7 @@ public class Assets implements Updatable, AssetErrorListener {
                     assetManager.load(asset.source, asset.assetClass, asset.parameters);
                 }
 
-                assetList.add(asset);
+                assetQueue.add(asset);
             } else {
                 Nhg.logger.log(this, Nhg.strings.messages.cannotQueueAssetFileNotFound, asset.source);
             }
@@ -106,7 +133,7 @@ public class Assets implements Updatable, AssetErrorListener {
     }
 
     public void dequeueAsset(Asset asset) {
-        assetList.removeValue(asset, true);
+        assetQueue.removeValue(asset, true);
     }
 
     public void unloadAsset(Asset asset) {
@@ -119,16 +146,16 @@ public class Assets implements Updatable, AssetErrorListener {
     }
 
     public void clearCompleted() {
-        for (int i = 0; i < assetList.size; i++) {
-            Asset asset = assetList.get(i);
+        for (int i = 0; i < assetQueue.size; i++) {
+            Asset asset = assetQueue.get(i);
 
             if (Nhg.assets.assetManager.isLoaded(asset.source)) {
-                assetList.removeValue(asset, true);
+                assetQueue.removeValue(asset, true);
             }
         }
     }
 
     public void clearQueue() {
-        assetList.clear();
+        assetQueue.clear();
     }
 }

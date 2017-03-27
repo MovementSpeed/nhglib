@@ -1,4 +1,4 @@
-package io.github.voidzombie.nhglib.utils.files;
+package io.github.voidzombie.nhglib.assets.loaders;
 
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetLoaderParameters;

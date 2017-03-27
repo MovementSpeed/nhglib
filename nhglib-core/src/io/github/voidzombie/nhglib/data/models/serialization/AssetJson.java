@@ -17,12 +17,26 @@ public class AssetJson implements JsonParseable<Asset> {
         String source = jsonValue.getString("source");
         String classString = jsonValue.getString("classAlias");
 
+        String dependenciesPath = jsonValue.getString(
+                "dependenciesPath",
+                getDefaultDependenciesPath(source));
+
+        if (!dependenciesPath.endsWith("/")) {
+            dependenciesPath += "/";
+        }
+
         Class assetClass = SceneUtils.get().assetClassFromClassAlias(classString);
+
         output = new Asset(alias, source, assetClass);
+        output.dependenciesPath = dependenciesPath;
     }
 
     @Override
     public Asset get() {
         return output;
+    }
+
+    private String getDefaultDependenciesPath(String sourcePath) {
+        return sourcePath.substring(0, sourcePath.lastIndexOf("/"));
     }
 }

@@ -41,7 +41,7 @@ public class AssetStateLoading implements State<Assets> {
     }
 
     private void publishLoadedAssets(final Assets assets) {
-        Array<Asset> assetsCopy = new Array<>(assets.getAssetList());
+        Array<Asset> assetsCopy = new Array<>(assets.getAssetQueue());
 
         Observable.fromIterable(assetsCopy)
                 .filter(new Predicate<Asset>() {

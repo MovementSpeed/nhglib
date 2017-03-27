@@ -11,6 +11,8 @@ import java.util.Objects;
 public class Asset {
     public String alias;
     public String source;
+    public String dependenciesPath;
+
     public Class assetClass;
     public AssetLoaderParameters parameters;
 

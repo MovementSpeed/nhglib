@@ -30,7 +30,7 @@
         "components":
         [
           {
-            "type":"graphics",
+            "type":"modelRenderable",
             "graphicsType":"dynamic",
             "asset":
             {
@@ -38,7 +38,13 @@
               "source":"models/corridors.g3db",
               "dependenciesPath":"textures/",
               "classAlias":"model"
-            }
+            },
+            "materials":
+            [
+              {
+                
+              }
+            ]
           },
           {
             "type":"message",

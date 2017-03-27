@@ -130,7 +130,6 @@ void main() {
             vec3 radiance = lightInfo.rgb * lightAttenuation;
 
             vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
-
             float NDF = DistributionGGX(N, H, roughness);
             float G = GeometrySmith(N, V, L, roughness);
 
@@ -143,7 +142,7 @@ void main() {
 
             kD *= 1.0 - metalness;
 
-            float NdotL = max(dot(N, L), 0.0);
+            float NdotL = max(dot(N, L), 0.0) * u_lightsList[lightId].intensity;
             Lo += (kD * albedo / M_PI + brdf) * radiance * NdotL;
         }
     #endif
