@@ -136,9 +136,13 @@ public abstract class NhgModelLoader<P extends NhgModelLoader.ModelParameters> e
             }
         }
 
+        // Automatically convert all materials to PBR
         for (Material material : result.materials) {
             TextureAttribute textureAttribute = (TextureAttribute) material.get(TextureAttribute.Diffuse);
-            material.set(PbrTextureAttribute.createAlbedo(textureAttribute.textureDescription.texture));
+
+            if (textureAttribute != null) {
+                material.set(PbrTextureAttribute.createAlbedo(textureAttribute.textureDescription.texture));
+            }
         }
 
         data = null;

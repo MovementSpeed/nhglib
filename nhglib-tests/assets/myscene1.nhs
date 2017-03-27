@@ -30,7 +30,7 @@
         "components":
         [
           {
-            "type":"modelRenderable",
+            "type":"model",
             "graphicsType":"dynamic",
             "asset":
             {
@@ -42,15 +42,35 @@
             "materials":
             [
               {
-                
+                "targetNode":"Cube",
+                "type":"albedo",
+                "asset":
+                {
+                  "alias":"albedoMat",
+                  "source":"textures/cavefloor1_Base_Color.png",
+                  "classAlias":"texture"
+                }
+              },
+              {
+                "targetNode":"Cube",
+                "type":"metalness",
+                "asset":
+                {
+                  "alias":"metalnessMat",
+                  "source":"textures/cavefloor1_Metallic.png",
+                  "classAlias":"texture"
+                }
+              },
+              {
+                "targetNode":"Cube",
+                "type":"roughness",
+                "asset":
+                {
+                  "alias":"roughnessMat",
+                  "source":"textures/cavefloor1_Roughness.png",
+                  "classAlias":"texture"
+                }
               }
-            ]
-          },
-          {
-            "type":"message",
-            "filters":
-            [
-              "example"
             ]
           }
         ],
@@ -82,7 +102,7 @@
             "components":
             [
               {
-                "type":"graphics",
+                "type":"model",
                 "graphicsType":"dynamic",
                 "asset":
                 {
@@ -90,13 +110,6 @@
                   "source":"models/weapon.g3db",
                   "classAlias":"model"
                 }
-              },
-              {
-                "type":"message",
-                "filters":
-                [
-                  "destroy"
-                ]
               }
             ],
             "entities":
@@ -163,7 +176,7 @@
                 "components":
                 [
                   {
-                    "type":"graphics",
+                    "type":"model",
                     "graphicsType":"dynamic",
                     "asset":
                     {
@@ -171,13 +184,6 @@
                       "source":"models/weapon.g3db",
                       "classAlias":"model"
                     }
-                  },
-                  {
-                    "type":"message",
-                    "filters":
-                    [
-                      "destroy"
-                    ]
                   }
                 ],
                 "entities": []

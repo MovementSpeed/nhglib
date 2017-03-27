@@ -60,9 +60,9 @@ public class Main extends NhgEntry implements InputListener {
         param.magFilter = Texture.TextureFilter.Linear;
         param.genMipMaps = true;
 
-        Nhg.assets.queueAsset(new Asset("albedo", "textures/cavefloor1_Base_Color.png", Texture.class, param));
-        Nhg.assets.queueAsset(new Asset("metallic", "textures/cavefloor1_Metallic.png", Texture.class, param));
-        Nhg.assets.queueAsset(new Asset("roughness", "textures/cavefloor1_Roughness.png", Texture.class, param));
+//        Nhg.assets.queueAsset(new Asset("albedo", "textures/cavefloor1_Base_Color.png", Texture.class, param));
+//        Nhg.assets.queueAsset(new Asset("metallic", "textures/cavefloor1_Metallic.png", Texture.class, param));
+//        Nhg.assets.queueAsset(new Asset("roughness", "textures/cavefloor1_Roughness.png", Texture.class, param));
         Nhg.assets.queueAsset(new Asset("scene", "myscene.nhs", Scene.class));
         Nhg.assets.queueAsset(new Asset("inputMap", "input.nhc", JsonValue.class));
 
@@ -78,10 +78,6 @@ public class Main extends NhgEntry implements InputListener {
         lightsAttribute.lights.add(light);
 
         environment.set(lightsAttribute);
-
-        //Environment environment = Nhg.entitySystem.getEntitySystem(GraphicsSystem.class).getEnvironment();
-        //environment.set(new ColorAttribute(ColorAttribute.AmbientLight, new Color(0.2666f, 0.3607f, 0.4117f, 1.0f)));
-        //environment.add(new NhgDirectionalLight().set(new Color(0.9294f, 0.9764f, 1.0f, 1.0f), new Vector3(-1, -1, -1), 1.0f));
 
         // Subscribe to asset events
         Nhg.messaging.get(Nhg.strings.events.assetLoaded, Nhg.strings.events.assetLoadingFinished)
