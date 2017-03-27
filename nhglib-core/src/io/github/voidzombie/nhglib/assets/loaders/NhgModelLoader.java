@@ -8,6 +8,7 @@ import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.TextureLoader;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.model.data.ModelData;
@@ -135,8 +136,10 @@ public abstract class NhgModelLoader<P extends NhgModelLoader.ModelParameters> e
             }
         }
 
-        TextureAttribute textureAttribute = (TextureAttribute) result.materials.get(0).get(TextureAttribute.Diffuse);
-        result.materials.get(0).set(PbrTextureAttribute.createAlbedo(textureAttribute.textureDescription.texture));
+        for (Material material : result.materials) {
+            TextureAttribute textureAttribute = (TextureAttribute) material.get(TextureAttribute.Diffuse);
+            material.set(PbrTextureAttribute.createAlbedo(textureAttribute.textureDescription.texture));
+        }
 
         data = null;
         return result;
