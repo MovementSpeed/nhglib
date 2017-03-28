@@ -1,16 +1,17 @@
 package io.github.voidzombie.nhglib.graphics.scenes;
 
 import com.artemis.ComponentMapper;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
-import io.github.voidzombie.nhglib.data.models.serialization.components.CameraComponentJson;
-import io.github.voidzombie.nhglib.data.models.serialization.components.GraphicsComponentJson;
-import io.github.voidzombie.nhglib.data.models.serialization.components.LightComponentJson;
-import io.github.voidzombie.nhglib.data.models.serialization.components.MessageComponentJson;
-import io.github.voidzombie.nhglib.graphics.representations.ModelRepresentation;
-import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.GraphicsComponent;
+import io.github.voidzombie.nhglib.data.models.serialization.PbrMaterialJson;
+import io.github.voidzombie.nhglib.data.models.serialization.components.*;
+import io.github.voidzombie.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
+import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.ModelComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.nhglib.utils.data.Bundle;
@@ -28,7 +29,7 @@ import io.reactivex.subjects.Subject;
 public class SceneManager {
     private Scene currentScene;
 
-    private ComponentMapper<GraphicsComponent> graphicsMapper;
+    private ComponentMapper<ModelComponent> modelMapper;
     private ComponentMapper<NodeComponent> nodeMapper;
 
     private Subject<Integer> sizeSubject;
@@ -51,14 +52,17 @@ public class SceneManager {
 
         assetsToLoad = new Array<>();
 
-        graphicsMapper = Nhg.entitySystem.getMapper(GraphicsComponent.class);
+        modelMapper = Nhg.entitySystem.getMapper(ModelComponent.class);
         nodeMapper = Nhg.entitySystem.getMapper(NodeComponent.class);
 
         SceneUtils.get().addComponentJsonMapping("graphics", GraphicsComponentJson.class);
         SceneUtils.get().addComponentJsonMapping("message", MessageComponentJson.class);
         SceneUtils.get().addComponentJsonMapping("camera", CameraComponentJson.class);
         SceneUtils.get().addComponentJsonMapping("light", LightComponentJson.class);
+        SceneUtils.get().addComponentJsonMapping("model", ModelComponentJson.class);
+
         SceneUtils.get().addAssetClassMapping("model", Model.class);
+        SceneUtils.get().addAssetClassMapping("texture", Texture.class);
     }
 
     public void loadScene(Scene scene) {
@@ -75,8 +79,8 @@ public class SceneManager {
                 .subscribe(new Consumer<Integer>() {
                     @Override
                     public void accept(Integer entity) throws Exception {
-                        if (graphicsMapper.has(entity)) {
-                            fetchAssets(entity);
+                        if (modelMapper.has(entity)) {
+                            loadAssets(entity);
                         }
                     }
                 });
@@ -87,7 +91,7 @@ public class SceneManager {
                 .filter(new Predicate<Integer>() {
                     @Override
                     public boolean test(Integer entity) throws Exception {
-                        return graphicsMapper.has(entity);
+                        return modelMapper.has(entity);
                     }
                 })
                 .doFinally(new Action() {
@@ -105,10 +109,8 @@ public class SceneManager {
                 .subscribe(new Consumer<Integer>() {
                     @Override
                     public void accept(Integer integer) throws Exception {
-                        GraphicsComponent graphicsComponent = graphicsMapper.get(integer);
-                        graphicsComponent.invalidate();
-
-                        Nhg.assets.unloadAsset(graphicsComponent.asset);
+                        ModelComponent modelComponent = modelMapper.get(integer);
+                        Nhg.assets.unloadAsset(modelComponent.asset);
                     }
                 });
     }
@@ -121,44 +123,67 @@ public class SceneManager {
         return currentScene;
     }
 
-    private void fetchAssets(Integer entity) {
-        final GraphicsComponent graphicsComponent = graphicsMapper.get(entity);
+    private void loadAssets(Integer entity) {
+        final ModelComponent modelComponent = modelMapper.get(entity);
 
-        if (graphicsComponent.state == GraphicsComponent.State.NOT_INITIALIZED) {
-            graphicsComponent.state = GraphicsComponent.State.LOADING;
+        // Group all assets
+        final Array<Asset> allAssets = new Array<>();
+        final Asset modelAsset = modelComponent.asset;
 
-            Nhg.messaging.get(Nhg.strings.events.assetLoaded)
-                    .filter(new Predicate<Message>() {
-                        @Override
-                        public boolean test(Message message) throws Exception {
-                            Asset asset = (Asset) message.data.get(Nhg.strings.defaults.assetKey);
-                            return graphicsComponent.asset.is(asset.alias);
-                        }
-                    })
-                    .subscribe(new Consumer<Message>() {
-                        @Override
-                        public void accept(Message message) throws Exception {
-                            Asset asset = (Asset) message.data.get(Nhg.strings.defaults.assetKey);
-                            createRepresentation(graphicsComponent, asset);
-                            assetsToLoad.removeValue(graphicsComponent.asset, true);
-                            sizeSubject.onNext(assetsToLoad.size);
-                        }
-                    });
-
-            if (assetsToLoad.contains(graphicsComponent.asset, false)) {
-                Nhg.messaging.send(new Message(Nhg.strings.events.engineDestroy));
-                throw new RuntimeException("A scene cannot contain multiple assets with the same alias.");
-            } else {
-                assetsToLoad.add(graphicsComponent.asset);
-            }
+        for (PbrMaterialJson mat : modelComponent.pbrMaterials) {
+            allAssets.add(mat.albedoAsset);
+            allAssets.add(mat.metalnessAsset);
+            allAssets.add(mat.roughnessAsset);
         }
+
+        // Start loading them
+        Nhg.assets.queueAsset(modelAsset);
+
+        // Wait for them
+        Nhg.messaging.get(Nhg.strings.events.assetLoaded)
+                .subscribe(new Consumer<Message>() {
+                    @Override
+                    public void accept(Message message) throws Exception {
+                        Asset asset = (Asset) message.data.get(Nhg.strings.defaults.assetKey);
+
+                        if (asset != null) {
+                            if (asset.is(modelAsset.alias)) {
+                                Model model = Nhg.assets.get(asset);
+                                modelComponent.model = new ModelInstance(model);
+
+                                if (modelComponent.model.animations.size > 0) {
+                                    modelComponent.animationController =
+                                            new AnimationController(modelComponent.model);
+                                }
+
+                                Nhg.assets.queueAssets(allAssets);
+                            } else {
+                                if (allAssets.contains(asset, false)) {
+                                    processMaterialAsset(modelComponent, asset);
+
+                                    allAssets.removeValue(asset, false);
+                                    sizeSubject.onNext(allAssets.size);
+                                }
+                            }
+                        }
+                    }
+                });
     }
 
-    private void createRepresentation(GraphicsComponent graphicsComponent, Asset asset) {
-        if (asset.isType(Model.class)) {
-            Model model = Nhg.assets.get(asset);
-            ModelRepresentation representation = new ModelRepresentation(model);
-            graphicsComponent.setRepresentation(representation);
+    private void processMaterialAsset(ModelComponent modelComponent, Asset asset) {
+        Texture texture = Nhg.assets.get(asset);
+
+        for (PbrMaterialJson mat : modelComponent.pbrMaterials) {
+            if (asset.is(mat.albedoAsset.alias)) {
+                modelComponent.model.materials.get(0)
+                        .set(PbrTextureAttribute.createAlbedo(texture));
+            } else if (asset.is(mat.metalnessAsset.alias)) {
+                modelComponent.model.materials.get(0)
+                        .set(PbrTextureAttribute.createMetalness(texture));
+            } else if (asset.is(mat.roughnessAsset.alias)) {
+                modelComponent.model.materials.get(0)
+                        .set(PbrTextureAttribute.createRoughness(texture));
+            }
         }
     }
 }

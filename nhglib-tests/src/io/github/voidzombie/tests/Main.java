@@ -63,16 +63,16 @@ public class Main extends NhgEntry implements InputListener {
 //        Nhg.assets.queueAsset(new Asset("albedo", "textures/cavefloor1_Base_Color.png", Texture.class, param));
 //        Nhg.assets.queueAsset(new Asset("metallic", "textures/cavefloor1_Metallic.png", Texture.class, param));
 //        Nhg.assets.queueAsset(new Asset("roughness", "textures/cavefloor1_Roughness.png", Texture.class, param));
-        Nhg.assets.queueAsset(new Asset("scene", "myscene.nhs", Scene.class));
+        Nhg.assets.queueAsset(new Asset("scene", "myscene1.nhs", Scene.class));
         Nhg.assets.queueAsset(new Asset("inputMap", "input.nhc", JsonValue.class));
 
         Environment environment = Nhg.entitySystem.getEntitySystem(GraphicsSystem.class).getEnvironment();
 
         NhgLight light = new NhgLight();
-        light.position.set(0f, 0, 0f);
+        light.position.set(0f, -0.1f, 0f);
         light.color.set(Color.WHITE);
-        light.intensity = 5.0f;
-        light.radius = 5.0f;
+        light.intensity = 1.0f;
+        light.radius = 1.0f;
 
         NhgLightsAttribute lightsAttribute = new NhgLightsAttribute();
         lightsAttribute.lights.add(light);
@@ -91,7 +91,7 @@ public class Main extends NhgEntry implements InputListener {
                                 scene = Nhg.assets.get(asset);
 
                                 world.loadScene(scene);
-                                world.setReferenceEntity("weaponEntity1");
+                                world.setReferenceEntity("weaponEntity2");
 
                                 Integer cameraEntity = scene.sceneGraph.getSceneEntity("camera");
                                 cameraNode = Nhg.entitySystem.getComponent(
@@ -121,6 +121,13 @@ public class Main extends NhgEntry implements InputListener {
     public void engineUpdate(float delta) {
         super.engineUpdate(delta);
         world.update();
+
+        if (scene != null) {
+            int entity = scene.sceneGraph.getSceneEntity("weaponEntity1");
+            NodeComponent nodeComponent = Nhg.entitySystem.getComponent(
+                    entity, NodeComponent.class);
+            nodeComponent.rotate(0, 0.1f, 0, true);
+        }
     }
 
     @Override
@@ -132,7 +139,7 @@ public class Main extends NhgEntry implements InputListener {
     @Override
     public void onKeyInput(NhgInput input) {
         if (scene != null) {
-            int entity = scene.sceneGraph.getSceneEntity("weaponEntity1");
+            int entity = scene.sceneGraph.getSceneEntity("weaponEntity2");
             NodeComponent nodeComponent = Nhg.entitySystem.getComponent(
                     entity, NodeComponent.class);
 
@@ -146,11 +153,11 @@ public class Main extends NhgEntry implements InputListener {
                     break;
 
                 case "strafeLeft":
-                    nodeComponent.rotate(0, -10 * Gdx.graphics.getDeltaTime(), 0);
+                    nodeComponent.rotate(0, -100 * Gdx.graphics.getDeltaTime(), 0);
                     break;
 
                 case "strafeRight":
-                    nodeComponent.rotate(0, 10 * Gdx.graphics.getDeltaTime(), 0);
+                    nodeComponent.rotate(0, 100 * Gdx.graphics.getDeltaTime(), 0);
                     break;
 
                 case "jump":

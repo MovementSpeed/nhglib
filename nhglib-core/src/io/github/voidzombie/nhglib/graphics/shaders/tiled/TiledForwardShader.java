@@ -73,13 +73,6 @@ public class TiledForwardShader extends BaseShader {
             Nhg.logger.log(this, shaderLog);
         }
 
-        register("u_cameraPosition", new GlobalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, shader.camera.position);
-            }
-        });
-
         register("u_mvpMatrix", new GlobalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {

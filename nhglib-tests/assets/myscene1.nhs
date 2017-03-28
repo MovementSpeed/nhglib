@@ -43,32 +43,32 @@
             [
               {
                 "targetNode":"Cube",
-                "type":"albedo",
-                "asset":
+                "albedo":
                 {
-                  "alias":"albedoMat",
-                  "source":"textures/cavefloor1_Base_Color.png",
-                  "classAlias":"texture"
-                }
-              },
-              {
-                "targetNode":"Cube",
-                "type":"metalness",
-                "asset":
+                  "asset":
+                  {
+                    "alias":"albedoAsset1",
+                    "source":"textures/rustedmetalmix-albedo.png",
+                    "classAlias":"texture"
+                  }
+                },
+                "metalness":
                 {
-                  "alias":"metalnessMat",
-                  "source":"textures/cavefloor1_Metallic.png",
-                  "classAlias":"texture"
-                }
-              },
-              {
-                "targetNode":"Cube",
-                "type":"roughness",
-                "asset":
+                  "asset":
+                  {
+                    "alias":"metalnessAsset1",
+                    "source":"textures/rustedmetalmix-metalness.png",
+                    "classAlias":"texture"
+                  }
+                },
+                "roughness":
                 {
-                  "alias":"roughnessMat",
-                  "source":"textures/cavefloor1_Roughness.png",
-                  "classAlias":"texture"
+                  "asset":
+                  {
+                    "alias":"roughnessAsset1",
+                    "source":"textures/rustedmetalmix-roughness.png",
+                    "classAlias":"texture"
+                  }
                 }
               }
             ]
@@ -121,8 +121,8 @@
                   "position":
                   {
                     "x":0.0,
-                    "y":0.0,
-                    "z":1.0,
+                    "y":-0.1,
+                    "z":0.2,
                   },
                   "rotation":
                   {

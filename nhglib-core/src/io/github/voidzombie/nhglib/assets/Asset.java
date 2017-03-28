@@ -1,9 +1,8 @@
 package io.github.voidzombie.nhglib.assets;
 
 import com.badlogic.gdx.assets.AssetLoaderParameters;
+import com.google.common.base.Objects;
 import io.github.voidzombie.nhglib.Nhg;
-
-import java.util.Objects;
 
 /**
  * Created by Fausto Napoli on 25/10/2016.
@@ -56,12 +55,12 @@ public class Asset {
         }
 
         Asset asset = (Asset) o;
-        return Objects.equals(alias, asset.alias);
+        return Objects.equal(alias, asset.alias);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(alias);
+        return Objects.hashCode(alias, source, dependenciesPath);
     }
 
     public boolean is(String alias) {

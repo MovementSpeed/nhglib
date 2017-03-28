@@ -13,10 +13,8 @@ import com.badlogic.gdx.graphics.g3d.utils.ShaderProvider;
 import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
-import io.github.voidzombie.nhglib.graphics.interfaces.Representation;
-import io.github.voidzombie.nhglib.graphics.representations.ModelRepresentation;
 import io.github.voidzombie.nhglib.graphics.shaders.tiled.TiledForwardShaderProvider;
-import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.GraphicsComponent;
+import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.ModelComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.base.NhgIteratingSystem;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
@@ -37,10 +35,10 @@ public class GraphicsSystem extends NhgIteratingSystem {
     private Array<ModelCache> staticCaches;
 
     private ComponentMapper<NodeComponent> nodeMapper;
-    private ComponentMapper<GraphicsComponent> graphicsMapper;
+    private ComponentMapper<ModelComponent> modelMapper;
 
     public GraphicsSystem() {
-        super(Aspect.all(NodeComponent.class, GraphicsComponent.class));
+        super(Aspect.all(NodeComponent.class, ModelComponent.class));
 
         environment = new Environment();
         shaderProvider = new TiledForwardShaderProvider(environment);
@@ -76,23 +74,18 @@ public class GraphicsSystem extends NhgIteratingSystem {
 
     @Override
     protected void process(int entityId) {
-        GraphicsComponent graphicsComponent = graphicsMapper.get(entityId);
+        ModelComponent modelComponent = modelMapper.get(entityId);
         NodeComponent nodeComponent = nodeMapper.get(entityId);
 
-        Representation representation = graphicsComponent.getRepresentation();
-        processSpecifics(representation);
+        if (modelComponent.animationController != null) {
+            modelComponent.animationController.update(Gdx.graphics.getDeltaTime());
+        }
 
-        if (representation != null) {
-            RenderableProvider provider = representation.get();
+        if (modelComponent.type == ModelComponent.Type.DYNAMIC && modelComponent.model != null) {
+            modelComponent.model.transform.set(nodeComponent.getTransform());
 
-            if (graphicsComponent.type == GraphicsComponent.Type.DYNAMIC) {
-                if (provider != null) {
-                    representation.setTransform(nodeComponent.getTransform());
-
-                    for (ModelCache modelCache : dynamicCaches) {
-                        modelCache.add(provider);
-                    }
-                }
+            for (ModelCache modelCache : dynamicCaches) {
+                modelCache.add(modelComponent.model);
             }
         }
     }
@@ -121,17 +114,17 @@ public class GraphicsSystem extends NhgIteratingSystem {
     @Override
     protected void inserted(int entityId) {
         super.inserted(entityId);
-        final GraphicsComponent graphicsComponent = graphicsMapper.get(entityId);
+        final ModelComponent modelComponent = modelMapper.get(entityId);
 
         Nhg.messaging.get(Nhg.strings.events.assetLoaded)
                 .subscribe(new Consumer<Message>() {
                     @Override
                     public void accept(Message message) throws Exception {
-                        if (graphicsComponent.type == GraphicsComponent.Type.STATIC) {
+                        if (modelComponent.type == ModelComponent.Type.STATIC) {
                             Asset asset = (Asset) message.data.get(Nhg.strings.defaults.assetKey);
 
-                            if (asset.is(graphicsComponent.asset.alias)) {
-                                rebuildCache(graphicsComponent.getRepresentation().get());
+                            if (asset.is(modelComponent.asset.alias)) {
+                                rebuildCache(modelComponent.model);
                             }
                         }
                     }
@@ -162,16 +155,6 @@ public class GraphicsSystem extends NhgIteratingSystem {
             }
 
             staticCache.end();
-        }
-    }
-
-    private void processSpecifics(Representation representation) {
-        if (representation instanceof ModelRepresentation) {
-            ModelRepresentation modelRepresentation = ((ModelRepresentation) representation);
-
-            if (modelRepresentation.getAnimationController() != null) {
-                modelRepresentation.getAnimationController().update(Gdx.graphics.getDeltaTime());
-            }
         }
     }
 }
