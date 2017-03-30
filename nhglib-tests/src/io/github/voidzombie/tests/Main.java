@@ -100,12 +100,6 @@ public class Main extends NhgEntry implements InputListener {
                                 Nhg.input.fromJson((JsonValue) Nhg.assets.get(asset));
                                 Nhg.input.setActiveContext("game", true);
                                 Nhg.input.setActiveContext("global", true);
-                            } else if (asset.is("albedo")) {
-                                albedo = Nhg.assets.get(asset);
-                            } else if (asset.is("roughness")) {
-                                roughness = Nhg.assets.get(asset);
-                            } else if (asset.is("metallic")) {
-                                metallic = Nhg.assets.get(asset);
                             }
                         }
                     }

@@ -141,6 +141,28 @@ public class TiledForwardShader extends BaseShader {
             }
         });
 
+        register("u_normal", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                PbrTextureAttribute textureAttribute = (PbrTextureAttribute) combinedAttributes.get(PbrTextureAttribute.Normal);
+
+                if (textureAttribute != null) {
+                    shader.set(inputID, textureAttribute.textureDescription.texture);
+                }
+            }
+        });
+
+        register("u_ambientOcclusion", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                PbrTextureAttribute textureAttribute = (PbrTextureAttribute) combinedAttributes.get(PbrTextureAttribute.AmbientOcclusion);
+
+                if (textureAttribute != null) {
+                    shader.set(inputID, textureAttribute.textureDescription.texture);
+                }
+            }
+        });
+
         register("u_lights", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
@@ -202,10 +224,12 @@ public class TiledForwardShader extends BaseShader {
         boolean diffuse = ShaderUtils.hasAlbedo(instance) == params.albedo;
         boolean metalness = ShaderUtils.hasMetalness(instance) == params.metalness;
         boolean roughness = ShaderUtils.hasRoughness(renderable) == params.roughness;
+        boolean normal = ShaderUtils.hasPbrNormal(renderable) == params.roughness;
+        boolean ambientOcclusion = ShaderUtils.hasAmbientOcclusion(renderable) == params.roughness;
         boolean bones = ShaderUtils.useBones(instance) == params.useBones;
         boolean lit = ShaderUtils.hasLights(instance.environment) == params.lit;
 
-        return diffuse && metalness && roughness && bones && lit;
+        return diffuse && metalness && roughness && normal && ambientOcclusion && bones && lit;
     }
 
     @Override
@@ -351,6 +375,14 @@ public class TiledForwardShader extends BaseShader {
             prefix += "#define defRoughness\n";
         }
 
+        if (params.normal) {
+            prefix += "#define defNormal\n";
+        }
+
+        if (params.ambientOcclusion) {
+            prefix += "#define defAmbientOcclusion\n";
+        }
+
         if (params.lit) {
             NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
             prefix += "#define lights " + lightsAttribute.lights.size + "\n";
@@ -372,6 +404,8 @@ public class TiledForwardShader extends BaseShader {
         boolean albedo;
         boolean metalness;
         boolean roughness;
+        boolean normal;
+        boolean ambientOcclusion;
         boolean lit;
     }
 }

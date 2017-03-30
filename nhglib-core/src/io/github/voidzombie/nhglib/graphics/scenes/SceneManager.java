@@ -134,6 +134,8 @@ public class SceneManager {
             allAssets.add(mat.albedoAsset);
             allAssets.add(mat.metalnessAsset);
             allAssets.add(mat.roughnessAsset);
+            allAssets.add(mat.normalAsset);
+            allAssets.add(mat.ambientOcclusionAsset);
         }
 
         // Start loading them
@@ -172,18 +174,18 @@ public class SceneManager {
 
     private void processMaterialAsset(ModelComponent modelComponent, Asset asset) {
         Texture texture = Nhg.assets.get(asset);
+        PbrMaterialJson pbrMat = modelComponent.pbrMaterials.first();
 
-        for (PbrMaterialJson mat : modelComponent.pbrMaterials) {
-            if (asset.is(mat.albedoAsset.alias)) {
-                modelComponent.model.materials.get(0)
-                        .set(PbrTextureAttribute.createAlbedo(texture));
-            } else if (asset.is(mat.metalnessAsset.alias)) {
-                modelComponent.model.materials.get(0)
-                        .set(PbrTextureAttribute.createMetalness(texture));
-            } else if (asset.is(mat.roughnessAsset.alias)) {
-                modelComponent.model.materials.get(0)
-                        .set(PbrTextureAttribute.createRoughness(texture));
-            }
+        if (asset.is(pbrMat.albedoAsset.alias)) {
+            modelComponent.model.materials.first().set(PbrTextureAttribute.createAlbedo(texture));
+        } else if (asset.is(pbrMat.metalnessAsset.alias)) {
+            modelComponent.model.materials.first().set(PbrTextureAttribute.createMetalness(texture));
+        } else if (asset.is(pbrMat.roughnessAsset.alias)) {
+            modelComponent.model.materials.first().set(PbrTextureAttribute.createRoughness(texture));
+        } else if (asset.is(pbrMat.normalAsset.alias)) {
+            modelComponent.model.materials.first().set(PbrTextureAttribute.createNormal(texture));
+        } else if (asset.is(pbrMat.ambientOcclusionAsset.alias)) {
+            modelComponent.model.materials.first().set(PbrTextureAttribute.createAmbientOcclusion(texture));
         }
     }
 }

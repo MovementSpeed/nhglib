@@ -35,9 +35,19 @@ uniform int u_graphicsHeight;
     uniform sampler2D u_roughness;
 #endif
 
+#ifdef defNormal
+    uniform sampler2D u_normal;
+#endif
+
+#ifdef defAmbientOcclusion
+    uniform sampler2D u_ambientOcclusion;
+#endif
+
 varying vec2 v_texCoord;
 varying vec3 v_position;
 varying vec3 v_normal;
+varying vec3 v_binormal;
+varying vec3 v_tangent;
 
 vec3 fresnelSchlick(float cosTheta, vec3 F0) {
     return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
@@ -93,9 +103,27 @@ void main() {
         float roughness = 0.5;
     #endif
 
-    float ambientOcclusion = 0.03;
+    #ifdef defAmbientOcclusion
+        float ambientOcclusion = texture2D(u_ambientOcclusion, v_texCoord).r;
+    #else
+        float ambientOcclusion = 0.03;
+    #endif
 
-    vec3 N = normalize(v_normal);
+    #ifdef defNormal
+        vec3 normalMap = texture2D(u_normal, v_texCoord).rgb;
+
+        vec3 N = normalize(v_normal);
+        vec3 tangent = normalize(v_tangent);
+        vec3 bitangent = cross(tangent, N);
+
+        tangent = normalize(tangent - dot(tangent, N) * N);
+        mat3 TBN = mat3(tangent, bitangent, N);
+
+        N = normalize(TBN * (normalMap * 2.0 - 1.0));
+    #else
+        vec3 N = normalize(v_normal);
+    #endif
+
     vec3 V = normalize(-v_position);
 
     vec3 Lo = vec3(0.0);

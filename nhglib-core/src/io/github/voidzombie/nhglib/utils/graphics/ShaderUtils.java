@@ -158,6 +158,28 @@ public class ShaderUtils {
         return res;
     }
 
+    public static boolean hasPbrNormal(Renderable renderable) {
+        boolean res = false;
+        PbrTextureAttribute attribute = (PbrTextureAttribute) renderable.material.get(PbrTextureAttribute.Normal);
+
+        if (attribute != null && attribute.textureDescription.texture != null) {
+            res = true;
+        }
+
+        return res;
+    }
+
+    public static boolean hasAmbientOcclusion(Renderable renderable) {
+        boolean res = false;
+        PbrTextureAttribute attribute = (PbrTextureAttribute) renderable.material.get(PbrTextureAttribute.AmbientOcclusion);
+
+        if (attribute != null && attribute.textureDescription.texture != null) {
+            res = true;
+        }
+
+        return res;
+    }
+
     public static boolean useBones(Renderable renderable) {
         return renderable.bones != null && renderable.bones.length > 0;
     }

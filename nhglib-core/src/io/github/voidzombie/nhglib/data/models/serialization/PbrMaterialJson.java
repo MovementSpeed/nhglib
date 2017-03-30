@@ -15,6 +15,8 @@ public class PbrMaterialJson implements JsonParseable<PbrMaterialJson> {
     public Asset albedoAsset;
     public Asset metalnessAsset;
     public Asset roughnessAsset;
+    public Asset normalAsset;
+    public Asset ambientOcclusionAsset;
 
     @Override
     public void parse(JsonValue jsonValue) {
@@ -23,6 +25,8 @@ public class PbrMaterialJson implements JsonParseable<PbrMaterialJson> {
         JsonValue albedoJson = jsonValue.get("albedo");
         JsonValue metalnessJson = jsonValue.get("metalness");
         JsonValue roughnessJson = jsonValue.get("roughness");
+        JsonValue ambientOcclusionJson = jsonValue.get("ambientOcclusion");
+        JsonValue normalJson = jsonValue.get("normal");
 
         TextureLoader.TextureParameter params = new TextureLoader.TextureParameter();
         params.minFilter = Texture.TextureFilter.MipMap;
@@ -43,6 +47,16 @@ public class PbrMaterialJson implements JsonParseable<PbrMaterialJson> {
         roughnessAssetJson.parse(roughnessJson.get("asset"));
         roughnessAsset = roughnessAssetJson.get();
         roughnessAsset.parameters = params;
+
+        AssetJson normalAssetJson = new AssetJson();
+        normalAssetJson.parse(normalJson.get("asset"));
+        normalAsset = normalAssetJson.get();
+        normalAsset.parameters = params;
+
+        AssetJson ambientOcclusionAssetJson = new AssetJson();
+        ambientOcclusionAssetJson.parse(ambientOcclusionJson.get("asset"));
+        ambientOcclusionAsset = ambientOcclusionAssetJson.get();
+        ambientOcclusionAsset.parameters = params;
     }
 
     @Override

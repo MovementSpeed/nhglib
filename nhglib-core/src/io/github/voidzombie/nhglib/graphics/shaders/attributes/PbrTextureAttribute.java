@@ -15,14 +15,16 @@ public class PbrTextureAttribute extends Attribute {
     public final static String AlbedoAlias = "albedoTexture";
     public final static String MetalnessAlias = "metalnessTexture";
     public final static String RoughnessAlias = "roughnessTexture";
+    public final static String NormalAlias = "normalTexture";
     public final static String AmbientOcclusionAlias = "ambientOcclusionTexture";
 
     public final static long Albedo = register(AlbedoAlias);
     public final static long Metalness = register(MetalnessAlias);
     public final static long Roughness = register(RoughnessAlias);
+    public final static long Normal = register(NormalAlias);
     public final static long AmbientOcclusion = register(AmbientOcclusionAlias);
 
-    protected static long Mask = Albedo | Metalness | Roughness | AmbientOcclusion;
+    protected static long Mask = Albedo | Metalness | Roughness | Normal | AmbientOcclusion;
 
     public final static boolean is(final long mask) {
         return (mask & Mask) != 0;
@@ -50,6 +52,14 @@ public class PbrTextureAttribute extends Attribute {
 
     public static PbrTextureAttribute createRoughness(final TextureRegion region) {
         return new PbrTextureAttribute(Roughness, region);
+    }
+
+    public static PbrTextureAttribute createNormal(final Texture texture) {
+        return new PbrTextureAttribute(Normal, texture);
+    }
+
+    public static PbrTextureAttribute createNormal(final TextureRegion region) {
+        return new PbrTextureAttribute(Normal, region);
     }
 
     public static PbrTextureAttribute createAmbientOcclusion(final Texture texture) {
