@@ -8,6 +8,14 @@ import io.github.voidzombie.nhglib.runtime.threading.Threading;
 import io.github.voidzombie.nhglib.utils.data.Strings;
 import io.github.voidzombie.nhglib.utils.debug.Logger;
 
+// TODO :
+// TODO : Implement saturation post-processing filter
+// TODO : Implement real time shadow maps
+// TODO : Implement image based lighting
+// TODO : Implements physics and easy collision system
+// TODO : Re-implement lights parsing from JSON and fix LightSystem
+// TODO : Create PbrMaterial class and use that instead of using PbrMaterialJson directly
+
 /**
  * Created by Fausto Napoli on 17/10/2016.
  * Entry point for Nhg, where the various parts of the engine will be exposed.
