@@ -131,11 +131,25 @@ public class SceneManager {
         final Asset modelAsset = modelComponent.asset;
 
         for (PbrMaterialJson mat : modelComponent.pbrMaterials) {
-            allAssets.add(mat.albedoAsset);
-            allAssets.add(mat.metalnessAsset);
-            allAssets.add(mat.roughnessAsset);
-            allAssets.add(mat.normalAsset);
-            allAssets.add(mat.ambientOcclusionAsset);
+            if (mat.albedoAsset != null) {
+                allAssets.add(mat.albedoAsset);
+            }
+
+            if (mat.metalnessAsset != null) {
+                allAssets.add(mat.metalnessAsset);
+            }
+
+            if (mat.roughnessAsset != null) {
+                allAssets.add(mat.roughnessAsset);
+            }
+
+            if (mat.normalAsset != null) {
+                allAssets.add(mat.normalAsset);
+            }
+
+            if (mat.ambientOcclusionAsset != null) {
+                allAssets.add(mat.ambientOcclusionAsset);
+            }
         }
 
         // Start loading them

@@ -1,4 +1,4 @@
-package io.github.voidzombie.nhglib.graphics.shaders.tiled;
+package io.github.voidzombie.nhglib.graphics.shaders.tiledForward;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
@@ -15,8 +15,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.IntArray;
 import io.github.voidzombie.nhglib.Nhg;
-import io.github.voidzombie.nhglib.graphics.lights.tiled.NhgLight;
-import io.github.voidzombie.nhglib.graphics.lights.tiled.NhgLightsAttribute;
+import io.github.voidzombie.nhglib.graphics.lights.NhgLight;
+import io.github.voidzombie.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.voidzombie.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
 import io.github.voidzombie.nhglib.utils.data.VectorPool;
 import io.github.voidzombie.nhglib.utils.graphics.ShaderUtils;
@@ -224,12 +224,13 @@ public class TiledForwardShader extends BaseShader {
         boolean diffuse = ShaderUtils.hasAlbedo(instance) == params.albedo;
         boolean metalness = ShaderUtils.hasMetalness(instance) == params.metalness;
         boolean roughness = ShaderUtils.hasRoughness(renderable) == params.roughness;
-        boolean normal = ShaderUtils.hasPbrNormal(renderable) == params.roughness;
-        boolean ambientOcclusion = ShaderUtils.hasAmbientOcclusion(renderable) == params.roughness;
+        boolean normal = ShaderUtils.hasPbrNormal(renderable) == params.normal;
+        boolean ambientOcclusion = ShaderUtils.hasAmbientOcclusion(renderable) == params.ambientOcclusion;
         boolean bones = ShaderUtils.useBones(instance) == params.useBones;
         boolean lit = ShaderUtils.hasLights(instance.environment) == params.lit;
+        boolean gammaCorrection = ShaderUtils.useGammaCorrection(instance.environment) == params.gammaCorrection;
 
-        return diffuse && metalness && roughness && normal && ambientOcclusion && bones && lit;
+        return diffuse && metalness && roughness && normal && ambientOcclusion && bones && lit && gammaCorrection;
     }
 
     @Override
@@ -383,6 +384,10 @@ public class TiledForwardShader extends BaseShader {
             prefix += "#define defAmbientOcclusion\n";
         }
 
+        if (params.gammaCorrection) {
+            prefix += "#define defGammaCorrection\n";
+        }
+
         if (params.lit) {
             NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
             prefix += "#define lights " + lightsAttribute.lights.size + "\n";
@@ -407,5 +412,6 @@ public class TiledForwardShader extends BaseShader {
         boolean normal;
         boolean ambientOcclusion;
         boolean lit;
+        boolean gammaCorrection;
     }
 }

@@ -1,4 +1,4 @@
-package io.github.voidzombie.nhglib.graphics.shaders.tiled;
+package io.github.voidzombie.nhglib.graphics.shaders.tiledForward;
 
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Renderable;
@@ -28,6 +28,7 @@ public class TiledForwardShaderProvider extends BaseShaderProvider {
         params.ambientOcclusion = ShaderUtils.hasAmbientOcclusion(renderable);
         params.useBones = ShaderUtils.useBones(renderable);
         params.lit = ShaderUtils.hasLights(environment);
+        params.gammaCorrection = ShaderUtils.useGammaCorrection(environment);
 
         return new TiledForwardShader(renderable, environment, params);
     }

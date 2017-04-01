@@ -30,7 +30,7 @@
         "components":
         [
           {
-            "type":"graphics",
+            "type":"model",
             "graphicsType":"dynamic",
             "asset":
             {
@@ -38,7 +38,11 @@
               "source":"models/corridors.g3db",
               "dependenciesPath":"textures/",
               "classAlias":"model"
-            }
+            },
+            "materials":
+            [
+              
+            ]
           },
           {
             "type":"message",
@@ -76,14 +80,17 @@
             "components":
             [
               {
-                "type":"graphics",
+                "type":"model",
                 "graphicsType":"dynamic",
                 "asset":
                 {
                   "alias":"weapon1",
                   "source":"models/weapon.g3db",
                   "classAlias":"model"
-                }
+                },
+                "materials":
+                [
+                ]
               },
               {
                 "type":"message",
@@ -157,14 +164,17 @@
                 "components":
                 [
                   {
-                    "type":"graphics",
+                    "type":"model",
                     "graphicsType":"dynamic",
                     "asset":
                     {
                       "alias":"weapon2",
                       "source":"models/weapon.g3db",
                       "classAlias":"model"
-                    }
+                    },
+                    "materials":
+                    [
+                    ]
                   },
                   {
                     "type":"message",

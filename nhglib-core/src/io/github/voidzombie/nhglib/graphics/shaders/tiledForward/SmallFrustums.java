@@ -1,4 +1,4 @@
-package io.github.voidzombie.nhglib.graphics.shaders.tiled;
+package io.github.voidzombie.nhglib.graphics.shaders.tiledForward;
 
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Frustum;

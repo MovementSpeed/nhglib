@@ -9,7 +9,8 @@ import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
 import com.badlogic.gdx.utils.Array;
-import io.github.voidzombie.nhglib.graphics.lights.tiled.NhgLightsAttribute;
+import io.github.voidzombie.nhglib.graphics.lights.NhgLightsAttribute;
+import io.github.voidzombie.nhglib.graphics.shaders.attributes.GammaCorrectionAttribute;
 import io.github.voidzombie.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
 
 /**
@@ -187,5 +188,10 @@ public class ShaderUtils {
     public static boolean hasLights(Environment environment) {
         NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
         return lightsAttribute != null && lightsAttribute.lights.size > 0;
+    }
+
+    public static boolean useGammaCorrection(Environment environment) {
+        GammaCorrectionAttribute gammaCorrectionAttribute = (GammaCorrectionAttribute) environment.get(GammaCorrectionAttribute.Type);
+        return gammaCorrectionAttribute == null || gammaCorrectionAttribute.gammaCorrection;
     }
 }

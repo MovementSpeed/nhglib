@@ -1,4 +1,4 @@
-package io.github.voidzombie.nhglib.graphics.lights.tiled;
+package io.github.voidzombie.nhglib.graphics.lights;
 
 import com.badlogic.gdx.graphics.g3d.Attribute;
 import com.badlogic.gdx.utils.Array;

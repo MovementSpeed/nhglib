@@ -4,8 +4,6 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
 import com.badlogic.gdx.math.Vector3;
-import io.github.voidzombie.nhglib.graphics.lights.forward.NhgDirectionalLight;
-import io.github.voidzombie.nhglib.graphics.lights.forward.NhgPointLight;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.LightComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.base.ThreadedIteratingSystem;
@@ -28,8 +26,8 @@ public class LightSystem extends ThreadedIteratingSystem {
 
         switch (light.type) {
             case POINT_LIGHT:
-                NhgPointLight pointLight = (NhgPointLight) light.light;
-                pointLight.position.set(node.getTranslation());
+                /*NhgPointLight pointLight = (NhgPointLight) light.light;
+                pointLight.position.set(node.getTranslation());*/
                 break;
 
             case SPOT_LIGHT:
@@ -39,8 +37,8 @@ public class LightSystem extends ThreadedIteratingSystem {
                 break;
 
             case DIRECTIONAL_LIGHT:
-                NhgDirectionalLight directionalLight = (NhgDirectionalLight) light.light;
-                directionalLight.direction.set(Vector3.Z).rot(node.getTransform());
+                /*NhgDirectionalLight directionalLight = (NhgDirectionalLight) light.light;
+                directionalLight.direction.set(Vector3.Z).rot(node.getTransform());*/
                 break;
         }
     }

@@ -178,8 +178,10 @@ void main() {
     vec3 ambient = vec3(0.03) * albedo;
     vec3 color = ambient + Lo;
 
-    color = color / (color + vec3(1.0));
-    color = pow(color, vec3(1.0 / 2.2));
+    #ifdef defGammaCorrection
+        color = color / (color + vec3(1.0));
+        color = pow(color, vec3(1.0 / 2.2));
+    #endif
 
     gl_FragColor = vec4(color, 1.0);
 }

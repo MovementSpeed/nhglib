@@ -25,38 +25,48 @@ public class PbrMaterialJson implements JsonParseable<PbrMaterialJson> {
         JsonValue albedoJson = jsonValue.get("albedo");
         JsonValue metalnessJson = jsonValue.get("metalness");
         JsonValue roughnessJson = jsonValue.get("roughness");
-        JsonValue ambientOcclusionJson = jsonValue.get("ambientOcclusion");
         JsonValue normalJson = jsonValue.get("normal");
+        JsonValue ambientOcclusionJson = jsonValue.get("ambientOcclusion");
 
         TextureLoader.TextureParameter params = new TextureLoader.TextureParameter();
         params.minFilter = Texture.TextureFilter.MipMap;
         params.magFilter = Texture.TextureFilter.Linear;
         params.genMipMaps = true;
 
-        AssetJson albedoAssetJson = new AssetJson();
-        albedoAssetJson.parse(albedoJson.get("asset"));
-        albedoAsset = albedoAssetJson.get();
-        albedoAsset.parameters = params;
+        if (albedoJson != null) {
+            AssetJson albedoAssetJson = new AssetJson();
+            albedoAssetJson.parse(albedoJson.get("asset"));
+            albedoAsset = albedoAssetJson.get();
+            albedoAsset.parameters = params;
+        }
 
-        AssetJson metalnessAssetJson = new AssetJson();
-        metalnessAssetJson.parse(metalnessJson.get("asset"));
-        metalnessAsset = metalnessAssetJson.get();
-        metalnessAsset.parameters = params;
+        if (metalnessJson != null) {
+            AssetJson metalnessAssetJson = new AssetJson();
+            metalnessAssetJson.parse(metalnessJson.get("asset"));
+            metalnessAsset = metalnessAssetJson.get();
+            metalnessAsset.parameters = params;
+        }
 
-        AssetJson roughnessAssetJson = new AssetJson();
-        roughnessAssetJson.parse(roughnessJson.get("asset"));
-        roughnessAsset = roughnessAssetJson.get();
-        roughnessAsset.parameters = params;
+        if (roughnessJson != null) {
+            AssetJson roughnessAssetJson = new AssetJson();
+            roughnessAssetJson.parse(roughnessJson.get("asset"));
+            roughnessAsset = roughnessAssetJson.get();
+            roughnessAsset.parameters = params;
+        }
 
-        AssetJson normalAssetJson = new AssetJson();
-        normalAssetJson.parse(normalJson.get("asset"));
-        normalAsset = normalAssetJson.get();
-        normalAsset.parameters = params;
+        if (normalJson != null) {
+            AssetJson normalAssetJson = new AssetJson();
+            normalAssetJson.parse(normalJson.get("asset"));
+            normalAsset = normalAssetJson.get();
+            normalAsset.parameters = params;
+        }
 
-        AssetJson ambientOcclusionAssetJson = new AssetJson();
-        ambientOcclusionAssetJson.parse(ambientOcclusionJson.get("asset"));
-        ambientOcclusionAsset = ambientOcclusionAssetJson.get();
-        ambientOcclusionAsset.parameters = params;
+        if (ambientOcclusionJson != null) {
+            AssetJson ambientOcclusionAssetJson = new AssetJson();
+            ambientOcclusionAssetJson.parse(ambientOcclusionJson.get("asset"));
+            ambientOcclusionAsset = ambientOcclusionAssetJson.get();
+            ambientOcclusionAsset.parameters = params;
+        }
     }
 
     @Override

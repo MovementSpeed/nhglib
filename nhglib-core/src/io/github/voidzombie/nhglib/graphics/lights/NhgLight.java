@@ -1,4 +1,4 @@
-package io.github.voidzombie.nhglib.graphics.lights.tiled;
+package io.github.voidzombie.nhglib.graphics.lights;
 
 import com.badlogic.gdx.graphics.g3d.environment.BaseLight;
 import com.badlogic.gdx.math.Vector3;
