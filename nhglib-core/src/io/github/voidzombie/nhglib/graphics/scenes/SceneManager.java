@@ -4,13 +4,15 @@ import com.artemis.ComponentMapper;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.model.Node;
+import com.badlogic.gdx.graphics.g3d.model.NodePart;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
-import io.github.voidzombie.nhglib.data.models.serialization.PbrMaterialJson;
 import io.github.voidzombie.nhglib.data.models.serialization.components.*;
 import io.github.voidzombie.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
+import io.github.voidzombie.nhglib.graphics.utils.PbrMaterial;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.ModelComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
@@ -32,25 +34,30 @@ public class SceneManager {
     private ComponentMapper<ModelComponent> modelMapper;
     private ComponentMapper<NodeComponent> nodeMapper;
 
-    private Subject<Integer> sizeSubject;
+    private Subject<Bundle> sizeSubject;
     private Array<Asset> assetsToLoad;
+    private Array<Asset> temporaryLoadedAssets;
 
     public SceneManager() {
         sizeSubject = PublishSubject.create();
-        sizeSubject.subscribe(new Consumer<Integer>() {
+        sizeSubject.subscribe(new Consumer<Bundle>() {
             @Override
-            public void accept(Integer integer) throws Exception {
-                if (integer == 0) {
-                    Bundle bundle = new Bundle();
-                    bundle.put(Nhg.strings.defaults.sceneKey, currentScene);
+            public void accept(Bundle bundle) throws Exception {
+                if (bundle.getInteger("size") == 0) {
+                    ModelComponent modelComponent = (ModelComponent) bundle.get("modelComponent");
+                    processMaterialAssets(modelComponent);
 
-                    Message message = new Message(Nhg.strings.events.sceneLoaded, bundle);
+                    Bundle sceneBundle = new Bundle();
+                    sceneBundle.put(Nhg.strings.defaults.sceneKey, currentScene);
+
+                    Message message = new Message(Nhg.strings.events.sceneLoaded, sceneBundle);
                     Nhg.messaging.send(message);
                 }
             }
         });
 
         assetsToLoad = new Array<>();
+        temporaryLoadedAssets = new Array<>();
 
         modelMapper = Nhg.entitySystem.getMapper(ModelComponent.class);
         nodeMapper = Nhg.entitySystem.getMapper(NodeComponent.class);
@@ -130,7 +137,7 @@ public class SceneManager {
         final Array<Asset> allAssets = new Array<>();
         final Asset modelAsset = modelComponent.asset;
 
-        for (PbrMaterialJson mat : modelComponent.pbrMaterials) {
+        for (PbrMaterial mat : modelComponent.pbrMaterials) {
             if (mat.albedoAsset != null) {
                 allAssets.add(mat.albedoAsset);
             }
@@ -175,10 +182,14 @@ public class SceneManager {
                                 Nhg.assets.queueAssets(allAssets);
                             } else {
                                 if (allAssets.contains(asset, false)) {
-                                    processMaterialAsset(modelComponent, asset);
-
+                                    temporaryLoadedAssets.add(asset);
                                     allAssets.removeValue(asset, false);
-                                    sizeSubject.onNext(allAssets.size);
+
+                                    Bundle bundle = new Bundle();
+                                    bundle.put("size", allAssets.size);
+                                    bundle.put("modelComponent", modelComponent);
+
+                                    sizeSubject.onNext(bundle);
                                 }
                             }
                         }
@@ -186,20 +197,31 @@ public class SceneManager {
                 });
     }
 
-    private void processMaterialAsset(ModelComponent modelComponent, Asset asset) {
-        Texture texture = Nhg.assets.get(asset);
-        PbrMaterialJson pbrMat = modelComponent.pbrMaterials.first();
+    private void processMaterialAssets(ModelComponent modelComponent) {
+        for (Asset asset : temporaryLoadedAssets) {
+            Texture texture = Nhg.assets.get(asset);
 
-        if (asset.is(pbrMat.albedoAsset.alias)) {
-            modelComponent.model.materials.first().set(PbrTextureAttribute.createAlbedo(texture));
-        } else if (asset.is(pbrMat.metalnessAsset.alias)) {
-            modelComponent.model.materials.first().set(PbrTextureAttribute.createMetalness(texture));
-        } else if (asset.is(pbrMat.roughnessAsset.alias)) {
-            modelComponent.model.materials.first().set(PbrTextureAttribute.createRoughness(texture));
-        } else if (asset.is(pbrMat.normalAsset.alias)) {
-            modelComponent.model.materials.first().set(PbrTextureAttribute.createNormal(texture));
-        } else if (asset.is(pbrMat.ambientOcclusionAsset.alias)) {
-            modelComponent.model.materials.first().set(PbrTextureAttribute.createAmbientOcclusion(texture));
+            for (PbrMaterial pbrMat : modelComponent.pbrMaterials) {
+                if (asset.is(pbrMat.albedoAsset.alias)) {
+                    pbrMat.set(PbrTextureAttribute.createAlbedo(texture));
+                } else if (asset.is(pbrMat.metalnessAsset.alias)) {
+                    pbrMat.set(PbrTextureAttribute.createMetalness(texture));
+                } else if (asset.is(pbrMat.roughnessAsset.alias)) {
+                    pbrMat.set(PbrTextureAttribute.createRoughness(texture));
+                } else if (asset.is(pbrMat.normalAsset.alias)) {
+                    pbrMat.set(PbrTextureAttribute.createNormal(texture));
+                } else if (asset.is(pbrMat.ambientOcclusionAsset.alias)) {
+                    pbrMat.set(PbrTextureAttribute.createAmbientOcclusion(texture));
+                }
+            }
+        }
+
+        for (PbrMaterial pbrMat : modelComponent.pbrMaterials) {
+            Node targetNode = modelComponent.model.getNode(pbrMat.targetNode);
+
+            for (NodePart nodePart : targetNode.parts) {
+                nodePart.material = pbrMat;
+            }
         }
     }
 }

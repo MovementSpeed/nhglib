@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.assets.Asset;
-import io.github.voidzombie.nhglib.data.models.serialization.PbrMaterialJson;
+import io.github.voidzombie.nhglib.graphics.utils.PbrMaterial;
 
 /**
  * Created by Fausto Napoli on 28/03/2017.
@@ -17,7 +17,7 @@ public class ModelComponent extends Component {
 
     public ModelInstance model;
     public AnimationController animationController;
-    public Array<PbrMaterialJson> pbrMaterials;
+    public Array<PbrMaterial> pbrMaterials;
 
     public ModelComponent() {
         pbrMaterials = new Array<>();

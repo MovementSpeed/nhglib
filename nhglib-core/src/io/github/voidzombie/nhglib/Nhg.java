@@ -8,13 +8,15 @@ import io.github.voidzombie.nhglib.runtime.threading.Threading;
 import io.github.voidzombie.nhglib.utils.data.Strings;
 import io.github.voidzombie.nhglib.utils.debug.Logger;
 
+// FIXME :
+// FIXME : assets that are not stored inside folders don't get loaded
+
 // TODO :
 // TODO : Implement saturation post-processing filter
 // TODO : Implement real time shadow maps
 // TODO : Implement image based lighting
 // TODO : Implements physics and easy collision system
 // TODO : Re-implement lights parsing from JSON and fix LightSystem
-// TODO : Create PbrMaterial class and use that instead of using PbrMaterialJson directly
 
 /**
  * Created by Fausto Napoli on 17/10/2016.

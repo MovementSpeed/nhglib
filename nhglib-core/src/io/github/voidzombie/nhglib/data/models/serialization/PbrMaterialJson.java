@@ -3,24 +3,19 @@ package io.github.voidzombie.nhglib.data.models.serialization;
 import com.badlogic.gdx.assets.loaders.TextureLoader;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.JsonValue;
-import io.github.voidzombie.nhglib.assets.Asset;
+import io.github.voidzombie.nhglib.graphics.utils.PbrMaterial;
 import io.github.voidzombie.nhglib.interfaces.JsonParseable;
 
 /**
  * Created by Fausto Napoli on 28/03/2017.
  */
-public class PbrMaterialJson implements JsonParseable<PbrMaterialJson> {
-    public String targetNode;
-
-    public Asset albedoAsset;
-    public Asset metalnessAsset;
-    public Asset roughnessAsset;
-    public Asset normalAsset;
-    public Asset ambientOcclusionAsset;
+public class PbrMaterialJson implements JsonParseable<PbrMaterial> {
+    private PbrMaterial pbrMaterial;
 
     @Override
     public void parse(JsonValue jsonValue) {
-        targetNode = jsonValue.getString("targetNode");
+        pbrMaterial = new PbrMaterial();
+        pbrMaterial.targetNode = jsonValue.getString("targetNode");
 
         JsonValue albedoJson = jsonValue.get("albedo");
         JsonValue metalnessJson = jsonValue.get("metalness");
@@ -36,41 +31,46 @@ public class PbrMaterialJson implements JsonParseable<PbrMaterialJson> {
         if (albedoJson != null) {
             AssetJson albedoAssetJson = new AssetJson();
             albedoAssetJson.parse(albedoJson.get("asset"));
-            albedoAsset = albedoAssetJson.get();
-            albedoAsset.parameters = params;
+
+            pbrMaterial.albedoAsset = albedoAssetJson.get();
+            pbrMaterial.albedoAsset.parameters = params;
         }
 
         if (metalnessJson != null) {
             AssetJson metalnessAssetJson = new AssetJson();
             metalnessAssetJson.parse(metalnessJson.get("asset"));
-            metalnessAsset = metalnessAssetJson.get();
-            metalnessAsset.parameters = params;
+
+            pbrMaterial.metalnessAsset = metalnessAssetJson.get();
+            pbrMaterial.metalnessAsset.parameters = params;
         }
 
         if (roughnessJson != null) {
             AssetJson roughnessAssetJson = new AssetJson();
             roughnessAssetJson.parse(roughnessJson.get("asset"));
-            roughnessAsset = roughnessAssetJson.get();
-            roughnessAsset.parameters = params;
+
+            pbrMaterial.roughnessAsset = roughnessAssetJson.get();
+            pbrMaterial.roughnessAsset.parameters = params;
         }
 
         if (normalJson != null) {
             AssetJson normalAssetJson = new AssetJson();
             normalAssetJson.parse(normalJson.get("asset"));
-            normalAsset = normalAssetJson.get();
-            normalAsset.parameters = params;
+
+            pbrMaterial.normalAsset = normalAssetJson.get();
+            pbrMaterial.normalAsset.parameters = params;
         }
 
         if (ambientOcclusionJson != null) {
             AssetJson ambientOcclusionAssetJson = new AssetJson();
             ambientOcclusionAssetJson.parse(ambientOcclusionJson.get("asset"));
-            ambientOcclusionAsset = ambientOcclusionAssetJson.get();
-            ambientOcclusionAsset.parameters = params;
+
+            pbrMaterial.ambientOcclusionAsset = ambientOcclusionAssetJson.get();
+            pbrMaterial.ambientOcclusionAsset.parameters = params;
         }
     }
 
     @Override
-    public PbrMaterialJson get() {
-        return this;
+    public PbrMaterial get() {
+        return pbrMaterial;
     }
 }

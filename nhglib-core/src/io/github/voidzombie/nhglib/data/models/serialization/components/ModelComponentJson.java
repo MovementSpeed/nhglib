@@ -29,7 +29,7 @@ public class ModelComponentJson extends ComponentJson {
                 PbrMaterialJson pbrMaterialJson = new PbrMaterialJson();
                 pbrMaterialJson.parse(mat);
 
-                modelComponent.pbrMaterials.add(pbrMaterialJson);
+                modelComponent.pbrMaterials.add(pbrMaterialJson.get());
             }
         }
 
