@@ -12,6 +12,8 @@ import io.github.voidzombie.nhglib.utils.debug.Logger;
 // FIXME : assets that are not stored inside folders don't get loaded
 
 // TODO :
+// TODO : Implement asset loading from URL
+// TODO : Implement chromatic abberration post-processing filter
 // TODO : Implement saturation post-processing filter
 // TODO : Implement real time shadow maps
 // TODO : Implement image based lighting
