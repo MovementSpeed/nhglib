@@ -99,7 +99,10 @@ public abstract class NhgModelLoader<P extends NhgModelLoader.ModelParameters> e
             if (modelMaterial.textures != null) {
                 for (final ModelTexture modelTexture : modelMaterial.textures) {
                     String fName = modelTexture.fileName;
-                    fName = fName.substring(fName.lastIndexOf("/") + 1);
+
+                    if (fName.contains("/")) {
+                        fName = fName.substring(fName.lastIndexOf("/") + 1);
+                    }
 
                     deps.add(new AssetDescriptor(currentAsset.dependenciesPath + fName, Texture.class, textureParameter));
                 }

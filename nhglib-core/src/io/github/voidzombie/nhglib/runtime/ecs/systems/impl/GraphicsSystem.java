@@ -25,6 +25,7 @@ import io.reactivex.functions.Consumer;
  * Created by Fausto Napoli on 08/12/2016.
  */
 public class GraphicsSystem extends NhgIteratingSystem {
+    private Color clearColor;
     private ShaderProvider shaderProvider;
     private CameraSystem cameraSystem;
     private Environment environment;
@@ -40,6 +41,7 @@ public class GraphicsSystem extends NhgIteratingSystem {
     public GraphicsSystem() {
         super(Aspect.all(NodeComponent.class, ModelComponent.class));
 
+        clearColor = Color.BLACK;
         environment = new Environment();
         shaderProvider = new TiledForwardShaderProvider(environment);
 
@@ -102,7 +104,7 @@ public class GraphicsSystem extends NhgIteratingSystem {
 
             dynamicCache.end();
 
-            GLUtils.clearScreen(Color.BLACK);
+            GLUtils.clearScreen(clearColor);
 
             modelBatch.begin(camera);
             modelBatch.render(staticCache, environment);
@@ -129,6 +131,12 @@ public class GraphicsSystem extends NhgIteratingSystem {
                         }
                     }
                 });
+    }
+
+    public void setClearColor(Color clearColor) {
+        if (clearColor != null) {
+            this.clearColor = clearColor;
+        }
     }
 
     public Environment getEnvironment() {

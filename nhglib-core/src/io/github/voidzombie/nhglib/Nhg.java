@@ -9,9 +9,10 @@ import io.github.voidzombie.nhglib.utils.data.Strings;
 import io.github.voidzombie.nhglib.utils.debug.Logger;
 
 // FIXME :
-// FIXME : assets that are not stored inside folders don't get loaded
+// FIXME : model assets that are not stored inside folders don't get loaded
 
 // TODO :
+// TODO : Implement projective textures
 // TODO : Implement asset loading from URL
 // TODO : Implement chromatic abberration post-processing filter
 // TODO : Implement saturation post-processing filter
