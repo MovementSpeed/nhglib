@@ -27,6 +27,11 @@ public class NhgEntry extends BaseGame {
     }
 
     @Override
+    public void enginePaused() {
+        super.enginePaused();
+    }
+
+    @Override
     public void engineClosing() {
         super.engineClosing();
     }

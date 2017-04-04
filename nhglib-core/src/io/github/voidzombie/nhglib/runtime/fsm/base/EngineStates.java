@@ -14,6 +14,7 @@ public enum EngineStates implements State<NhgEntry> {
     NOT_INITIALIZED(new EngineStateNotInitialized()),
     INITIALIZED(new EngineStateInitialized()),
     RUNNING(new EngineStateRunning()),
+    PAUSED(new EngineStatePaused()),
     CLOSING(new EngineStateClosing());
 
     private State<NhgEntry> state;

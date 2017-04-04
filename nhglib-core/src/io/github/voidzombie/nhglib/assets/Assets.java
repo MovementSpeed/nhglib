@@ -6,6 +6,7 @@ import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetErrorListener;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
@@ -26,7 +27,7 @@ import io.github.voidzombie.nhglib.utils.data.Bundle;
  */
 public class Assets implements Updatable, AssetErrorListener {
     public final DefaultStateMachine<Assets, AssetsStates> fsm;
-    public final AssetManager assetManager;
+    public AssetManager assetManager;
 
     private ArrayMap<String, Asset> assetCache;
     private Array<Asset> assetQueue;
@@ -45,6 +46,8 @@ public class Assets implements Updatable, AssetErrorListener {
 
         assetQueue = new Array<>();
         assetCache = new ArrayMap<>();
+
+        Texture.setAssetManager(assetManager);
     }
 
     // Updatable
@@ -154,5 +157,12 @@ public class Assets implements Updatable, AssetErrorListener {
 
     public void clearQueue() {
         assetQueue.clear();
+    }
+
+    public void dispose() {
+        if (assetManager != null) {
+            assetManager.dispose();
+            assetManager = null;
+        }
     }
 }

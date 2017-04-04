@@ -4,9 +4,11 @@ import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
+import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.runtime.fsm.base.EngineStates;
 import io.github.voidzombie.nhglib.runtime.fsm.interfaces.EngineConfigurationListener;
 import io.github.voidzombie.nhglib.runtime.fsm.interfaces.EngineStateListener;
+import io.github.voidzombie.nhglib.runtime.messaging.Message;
 
 /**
  * Created by Fausto Napoli on 02/11/2016.
@@ -18,7 +20,9 @@ abstract class BaseGame implements
     private DefaultStateMachine<NhgEntry, EngineStates> fsm;
 
     @Override
-    public final void create() {}
+    public final void create() {
+
+    }
 
     @Override
     public final void resize(int width, int height) {}
@@ -29,13 +33,19 @@ abstract class BaseGame implements
     }
 
     @Override
-    public final void pause() {}
+    public final void pause() {
+        fsm.changeState(EngineStates.PAUSED);
+    }
 
     @Override
-    public final void resume() {}
+    public final void resume() {
+        fsm.changeState(EngineStates.RUNNING);
+    }
 
     @Override
-    public final void dispose() {}
+    public final void dispose() {
+        Nhg.messaging.send(new Message(Nhg.strings.events.engineDestroy));
+    }
 
     @Override
     public void engineStarted() {
@@ -50,6 +60,11 @@ abstract class BaseGame implements
     }
 
     @Override
+    public void enginePaused() {
+
+    }
+
+    @Override
     public void engineClosing() {
     }
 
@@ -58,7 +73,7 @@ abstract class BaseGame implements
     }
 
     void init(NhgEntry nhgEntry) {
-        fsm = new DefaultStateMachine<NhgEntry, EngineStates>(nhgEntry, EngineStates.START);
+        fsm = new DefaultStateMachine<>(nhgEntry, EngineStates.START);
     }
 
     public final StateMachine<NhgEntry, EngineStates> getFsm() {
