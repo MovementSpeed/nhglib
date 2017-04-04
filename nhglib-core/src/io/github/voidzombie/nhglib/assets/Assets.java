@@ -6,7 +6,6 @@ import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetErrorListener;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
@@ -46,8 +45,6 @@ public class Assets implements Updatable, AssetErrorListener {
 
         assetQueue = new Array<>();
         assetCache = new ArrayMap<>();
-
-        Texture.setAssetManager(assetManager);
     }
 
     // Updatable
