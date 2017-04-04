@@ -7,7 +7,7 @@ import io.github.voidzombie.nhglib.runtime.messaging.Messaging;
 import io.github.voidzombie.nhglib.runtime.threading.Threading;
 
 // FIXME :
-// FIXME : model assets that are not stored inside folders don't get loaded
+// FIXME : Normal mapping has issues when camera rotates certain angles
 
 // TODO :
 // TODO : Implement projective textures

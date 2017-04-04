@@ -2,7 +2,6 @@ package io.github.voidzombie.nhglib.runtime.ecs.systems.impl;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
-import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
 import com.badlogic.gdx.math.Vector3;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.LightComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
@@ -25,21 +24,12 @@ public class LightSystem extends ThreadedIteratingSystem {
         NodeComponent node = nodeMapper.get(entityId);
         LightComponent light = lightMapper.get(entityId);
 
+        light.light.position.set(node.getTranslation());
+
         switch (light.type) {
-            case POINT_LIGHT:
-                /*NhgPointLight pointLight = (NhgPointLight) light.light;
-                pointLight.position.set(node.getTranslation());*/
-                break;
-
             case SPOT_LIGHT:
-                SpotLight spotLight = (SpotLight) light.light;
-                spotLight.position.set(node.getTranslation());
-                spotLight.direction.set(Vector3.Z).rot(node.getTransform());
-                break;
-
             case DIRECTIONAL_LIGHT:
-                /*NhgDirectionalLight directionalLight = (NhgDirectionalLight) light.light;
-                directionalLight.direction.set(Vector3.Z).rot(node.getTransform());*/
+                light.light.direction.set(Vector3.Z).rot(node.getTransform());
                 break;
         }
     }

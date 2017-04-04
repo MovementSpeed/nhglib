@@ -40,6 +40,12 @@ public class AssetJson implements JsonParseable<Asset> {
     }
 
     private String getDefaultDependenciesPath(String sourcePath) {
-        return sourcePath.substring(0, sourcePath.lastIndexOf("/"));
+        String res = sourcePath;
+
+        if (sourcePath.contains("/")) {
+            res = sourcePath.substring(0, sourcePath.lastIndexOf("/"));
+        }
+
+        return res;
     }
 }

@@ -1,63 +1,74 @@
 package io.github.voidzombie.nhglib.data.models.serialization.components;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g3d.environment.BaseLight;
-import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
+import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.voidzombie.nhglib.data.models.serialization.ComponentJson;
 import io.github.voidzombie.nhglib.enums.LightType;
+import io.github.voidzombie.nhglib.graphics.lights.NhgLight;
+import io.github.voidzombie.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.LightComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.GraphicsSystem;
-import io.github.voidzombie.nhglib.runtime.ecs.utils.Entities;
+import io.github.voidzombie.nhglib.utils.data.VectorPool;
 
 /**
  * Created by Fausto Napoli on 19/12/2016.
  */
 public class LightComponentJson extends ComponentJson {
-    private Entities entities;
-
-    public LightComponentJson(Entities entities) {
-        this.entities = entities;
-    }
-
     @Override
     public void parse(JsonValue jsonValue) {
         GraphicsSystem graphicsSystem = entities.getEntitySystem(GraphicsSystem.class);
 
         LightComponent lightComponent = entities.createComponent(entity, LightComponent.class);
 
-        BaseLight light = null;
-        LightType lightType = LightType.fromString(jsonValue.getString("lightType"));
+        NhgLight light = new NhgLight();
 
+        LightType lightType = LightType.fromString(jsonValue.getString("lightType"));
+        float radius = jsonValue.getFloat("radius");
         float intensity = jsonValue.getFloat("intensity");
+        float innerAngle = jsonValue.getFloat("innerAngle");
+        float outerAngle = jsonValue.getFloat("outerAngle");
 
         JsonValue colorJson = jsonValue.get("color");
         Color color = new Color(colorJson.getFloat("r"), colorJson.getFloat("g"), colorJson.getFloat("b"), colorJson.getFloat("a"));
 
-        switch (lightType) {
-            case AMBIENT_LIGHT:
-                break;
+        JsonValue directionJson = jsonValue.get("direction");
+        Vector3 direction = VectorPool.getVector3().set(
+                directionJson.getFloat("x"),
+                directionJson.getFloat("y"),
+                directionJson.getFloat("z")
+        );
 
+        light.color.set(color);
+        light.intensity = intensity;
+
+        switch (lightType) {
             case DIRECTIONAL_LIGHT:
-                //light = new NhgDirectionalLight().set(color, Vector3.Z, intensity);
+                light.direction.set(direction);
                 break;
 
             case POINT_LIGHT:
-                /*Float radius = jsonValue.getFloat("radius");
-                light = new NhgPointLight().set(color, Vector3.Zero, intensity, radius);*/
+                light.radius = radius;
                 break;
 
             case SPOT_LIGHT:
-                Float cutoffAngle = jsonValue.getFloat("cutoffAngle");
-                Float exponent = jsonValue.getFloat("exponent");
-                light = new SpotLight().set(color, Vector3.Zero, Vector3.Z, intensity, cutoffAngle, exponent);
+                light.innerAngle = innerAngle;
+                light.outerAngle = outerAngle;
+                light.direction.set(direction);
                 break;
         }
 
-        if (light != null) {
-            graphicsSystem.getEnvironment().add(light);
+        Environment environment = graphicsSystem.getEnvironment();
+        NhgLightsAttribute attribute = (NhgLightsAttribute) environment
+                .get(NhgLightsAttribute.Type);
+
+        if (attribute == null) {
+            attribute = new NhgLightsAttribute();
+            environment.set(attribute);
         }
+
+        attribute.lights.add(light);
 
         lightComponent.light = light;
         lightComponent.type = lightType;

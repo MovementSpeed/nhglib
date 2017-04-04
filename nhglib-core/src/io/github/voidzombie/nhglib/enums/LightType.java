@@ -5,7 +5,6 @@ package io.github.voidzombie.nhglib.enums;
  */
 public enum LightType {
     DIRECTIONAL_LIGHT,
-    AMBIENT_LIGHT,
     POINT_LIGHT,
     SPOT_LIGHT;
 
@@ -15,10 +14,6 @@ public enum LightType {
         switch (value) {
             case "directionalLight":
                 res = DIRECTIONAL_LIGHT;
-                break;
-
-            case "ambientLight":
-                res = AMBIENT_LIGHT;
                 break;
 
             case "pointLight":

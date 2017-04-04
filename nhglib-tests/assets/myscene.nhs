@@ -22,9 +22,9 @@
           },
           "scale":
           {
-            "x":1.0,
-            "y":1.0,
-            "z":1.0,
+            "x":0.1,
+            "y":0.1,
+            "z":0.1,
           }
         },
         "components":
@@ -35,13 +35,60 @@
             "asset":
             {
               "alias":"corridors",
-              "source":"models/corridors.g3db",
+              "source":"models/corridors_tb.g3db",
               "dependenciesPath":"textures/",
               "classAlias":"model"
             },
             "materials":
             [
-              
+              {
+                  "targetNode":"Cube",
+                  "albedo":
+                  {
+                    "asset":
+                    {
+                      "alias":"albedoAsset",
+                      "source":"textures/dun-albedo.jpg",
+                      "classAlias":"texture"
+                    }
+                  },
+                  "metalness":
+                  {
+                    "asset":
+                    {
+                      "alias":"metalnessAsset",
+                      "source":"textures/dun-metalness.jpg",
+                      "classAlias":"texture"
+                    }
+                  },
+                  "roughness":
+                  {
+                    "asset":
+                    {
+                      "alias":"roughnessAsset",
+                      "source":"textures/dun-roughness.jpg",
+                      "classAlias":"texture"
+                    }
+                  },
+                  "normal":
+                  {
+                    "asset":
+                    {
+                      "alias":"normalAsset",
+                      "source":"textures/dun-normal.jpg",
+                      "classAlias":"texture"
+                    }
+                  },
+                  "ambientOcclusion":
+                  {
+                    "asset":
+                    {
+                      "alias":"ambientOcclusionAsset",
+                      "source":"textures/dun-ao.jpg",
+                      "classAlias":"texture"
+                    }
+                  }
+              }
             ]
           },
           {
@@ -102,42 +149,7 @@
             ],
             "entities":
             [
-              {
-                "id":"camera",
-                "transform":
-                {
-                  "position":
-                  {
-                    "x":0.0,
-                    "y":0.0,
-                    "z":1.0,
-                  },
-                  "rotation":
-                  {
-                    "x":0.0,
-                    "y":0.0,
-                    "z":0.0,
-                  },
-                  "scale":
-                  {
-                    "x":1.0,
-                    "y":1.0,
-                    "z":1.0,
-                  }
-                },
-                "components":
-                [
-                  {
-                    "type":"camera",
-                    "cameraType":"perspective",
-                    "fieldOfView":67,
-                    "nearPlane":0.01,
-                    "farPlane":100
-                  }
-                ],
-                "entities":
-                []
-              },
+
               {
                 "id":"weaponEntity2",
                 "transform":
@@ -189,7 +201,64 @@
             ]
           }
         ]
-      }
+      },
+      {
+          "id":"camera",
+          "transform":
+          {
+            "position":
+            {
+              "x":0.0,
+              "y":0.0,
+              "z":1.0,
+            },
+            "rotation":
+            {
+              "x":0.0,
+              "y":0.0,
+              "z":0.0,
+            },
+            "scale":
+            {
+              "x":1.0,
+              "y":1.0,
+              "z":1.0,
+            }
+          },
+          "components":
+          [
+            {
+              "type":"camera",
+              "cameraType":"perspective",
+              "fieldOfView":67,
+              "nearPlane":0.01,
+              "farPlane":100
+            },
+            {
+              "type":"light",
+              "lightType":"pointLight",
+              "intensity":0.1,
+              "radius":1.0,
+              "innerAngle":30.0,
+              "outerAngle":40.0,
+              "color":
+              {
+                "r":0.48,
+                "g":0.67,
+                "b":0.24,
+                "a":1.0,
+              },
+              "direction":
+              {
+                "x":0.0,
+                "y":0.0,
+                "z":0.0
+              }
+            }
+          ],
+          "entities":
+          []
+        }
     ]
   }
 }

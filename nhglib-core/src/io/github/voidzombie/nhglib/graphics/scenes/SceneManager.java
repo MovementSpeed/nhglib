@@ -214,15 +214,15 @@ public class SceneManager {
             Texture texture = assets.get(asset);
 
             for (PbrMaterial pbrMat : modelComponent.pbrMaterials) {
-                if (asset.is(pbrMat.albedoAsset.alias)) {
+                if (asset.is(pbrMat.albedoAsset)) {
                     pbrMat.set(PbrTextureAttribute.createAlbedo(texture));
-                } else if (asset.is(pbrMat.metalnessAsset.alias)) {
+                } else if (asset.is(pbrMat.metalnessAsset)) {
                     pbrMat.set(PbrTextureAttribute.createMetalness(texture));
-                } else if (asset.is(pbrMat.roughnessAsset.alias)) {
+                } else if (asset.is(pbrMat.roughnessAsset)) {
                     pbrMat.set(PbrTextureAttribute.createRoughness(texture));
-                } else if (asset.is(pbrMat.normalAsset.alias)) {
+                } else if (asset.is(pbrMat.normalAsset)) {
                     pbrMat.set(PbrTextureAttribute.createNormal(texture));
-                } else if (asset.is(pbrMat.ambientOcclusionAsset.alias)) {
+                } else if (asset.is(pbrMat.ambientOcclusionAsset)) {
                     pbrMat.set(PbrTextureAttribute.createAmbientOcclusion(texture));
                 }
             }

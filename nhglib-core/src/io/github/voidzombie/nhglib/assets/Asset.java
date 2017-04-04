@@ -67,6 +67,10 @@ public class Asset {
         return alias != null && this.alias.contentEquals(alias);
     }
 
+    public boolean is(Asset asset) {
+        return asset != null && this.alias.contentEquals(asset.alias);
+    }
+
     public boolean isType(Class assetClass) {
         return assetClass != null && this.assetClass == assetClass;
     }

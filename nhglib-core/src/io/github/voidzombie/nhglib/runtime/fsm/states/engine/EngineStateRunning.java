@@ -23,7 +23,9 @@ public class EngineStateRunning implements State<NhgEntry> {
                     @Override
                     public void accept(Message message) throws Exception {
                         if (message.is(Strings.Events.engineDestroy)) {
-                            nhgEntry.getFsm().changeState(EngineStates.CLOSING);
+                            if (!nhgEntry.getFsm().isInState(EngineStates.CLOSING)) {
+                                nhgEntry.getFsm().changeState(EngineStates.CLOSING);
+                            }
                         }
                     }
                 });
