@@ -3,8 +3,8 @@ package io.github.voidzombie.nhglib.runtime.fsm.states.engine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
-import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.runtime.entry.NhgEntry;
+import io.github.voidzombie.nhglib.utils.debug.Logger;
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
@@ -12,11 +12,11 @@ import io.github.voidzombie.nhglib.runtime.entry.NhgEntry;
 public class EngineStateClosing implements State<NhgEntry> {
     @Override
     public void enter(NhgEntry nhgEntry) {
-        Nhg.logger.log(this, "Engine is closing.");
+        Logger.log(this, "Engine is closing.");
         nhgEntry.engineClosing();
 
-        Nhg.assets.dispose();
-        Nhg.threading.terminate();
+        nhgEntry.nhg.assets.dispose();
+        nhgEntry.nhg.threading.terminate();
         Gdx.app.exit();
     }
 

@@ -1,10 +1,10 @@
 package io.github.voidzombie.nhglib.data.models.serialization;
 
 import com.badlogic.gdx.utils.JsonValue;
-import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.graphics.scenes.SceneGraph;
 import io.github.voidzombie.nhglib.interfaces.JsonParseable;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
+import io.github.voidzombie.nhglib.runtime.ecs.utils.Entities;
 import io.github.voidzombie.nhglib.utils.scenes.SceneUtils;
 
 /**
@@ -13,7 +13,13 @@ import io.github.voidzombie.nhglib.utils.scenes.SceneUtils;
 public class EntityJson implements JsonParseable<Integer> {
     private Integer parentEntity;
     private Integer output;
+
+    private Entities entities;
     private SceneGraph sceneGraphRef;
+
+    public EntityJson(Entities entities) {
+        this.entities = entities;
+    }
 
     @Override
     public void parse(JsonValue jsonValue) {
@@ -24,10 +30,11 @@ public class EntityJson implements JsonParseable<Integer> {
 
         for (JsonValue componentJsonValue : componentsJson) {
             String type = componentJsonValue.getString("type");
-            ComponentJson componentJson = SceneUtils.get().componentJsonFromType(type);
+            ComponentJson componentJson = SceneUtils.componentJsonFromType(type);
 
             if (componentJson != null) {
                 componentJson.entity = entity;
+                componentJson.entities = entities;
                 componentJson.parse(componentJsonValue);
             }
         }
@@ -35,7 +42,7 @@ public class EntityJson implements JsonParseable<Integer> {
         JsonValue entitiesJson = jsonValue.get("entities");
 
         for (JsonValue entityJsonValue : entitiesJson) {
-            EntityJson entityJson = new EntityJson();
+            EntityJson entityJson = new EntityJson(entities);
             entityJson.sceneGraphRef = sceneGraphRef;
             entityJson.parentEntity = entity;
             entityJson.parse(entityJsonValue);
@@ -44,7 +51,7 @@ public class EntityJson implements JsonParseable<Integer> {
         TransformJson transformJson = new TransformJson();
         transformJson.parse(jsonValue.get("transform"));
 
-        NodeComponent nodeComponent = Nhg.entitySystem.getComponent(entity, NodeComponent.class);
+        NodeComponent nodeComponent = entities.getComponent(entity, NodeComponent.class);
 
         nodeComponent.setTranslation(transformJson.position);
         nodeComponent.setRotation(transformJson.rotation);

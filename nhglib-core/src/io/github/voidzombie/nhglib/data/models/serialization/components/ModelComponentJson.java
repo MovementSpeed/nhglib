@@ -1,7 +1,6 @@
 package io.github.voidzombie.nhglib.data.models.serialization.components;
 
 import com.badlogic.gdx.utils.JsonValue;
-import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.data.models.serialization.AssetJson;
 import io.github.voidzombie.nhglib.data.models.serialization.ComponentJson;
 import io.github.voidzombie.nhglib.data.models.serialization.PbrMaterialJson;
@@ -14,7 +13,7 @@ public class ModelComponentJson extends ComponentJson {
     @Override
     public void parse(JsonValue jsonValue) {
         ModelComponent modelComponent =
-                Nhg.entitySystem.createComponent(entity, ModelComponent.class);
+                entities.createComponent(entity, ModelComponent.class);
 
         String type = jsonValue.getString("graphicsType");
         JsonValue asset = jsonValue.get("asset");

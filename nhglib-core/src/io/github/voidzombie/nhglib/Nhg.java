@@ -2,11 +2,9 @@ package io.github.voidzombie.nhglib;
 
 import io.github.voidzombie.nhglib.assets.Assets;
 import io.github.voidzombie.nhglib.input.handler.InputHandler;
-import io.github.voidzombie.nhglib.runtime.ecs.utils.EntitySystem;
+import io.github.voidzombie.nhglib.runtime.ecs.utils.Entities;
 import io.github.voidzombie.nhglib.runtime.messaging.Messaging;
 import io.github.voidzombie.nhglib.runtime.threading.Threading;
-import io.github.voidzombie.nhglib.utils.data.Strings;
-import io.github.voidzombie.nhglib.utils.debug.Logger;
 
 // FIXME :
 // FIXME : model assets that are not stored inside folders don't get loaded
@@ -26,23 +24,19 @@ import io.github.voidzombie.nhglib.utils.debug.Logger;
  * Entry point for Nhg, where the various parts of the engine will be exposed.
  */
 public class Nhg {
-    public final static Strings strings;
-    public final static Assets assets;
-    public final static Logger logger;
-    public final static Messaging messaging;
-    public final static InputHandler input;
-    public final static Threading threading;
-    public final static EntitySystem entitySystem;
+    public Assets assets;
+    public Messaging messaging;
+    public InputHandler input;
+    public Threading threading;
+    public Entities entities;
 
     public static Boolean debugLogs = false;
 
-    static {
-        strings = new Strings();
-        assets = new Assets();
-        logger = new Logger();
+    public Nhg() {
         messaging = new Messaging();
+        entities = new Entities();
+        assets = new Assets(messaging, entities);
         input = new InputHandler();
         threading = new Threading();
-        entitySystem = new EntitySystem();
     }
 }

@@ -12,15 +12,18 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.UBJsonReader;
-import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.loaders.JsonLoader;
 import io.github.voidzombie.nhglib.assets.loaders.NhgG3dModelLoader;
 import io.github.voidzombie.nhglib.assets.loaders.SceneLoader;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 import io.github.voidzombie.nhglib.interfaces.Updatable;
+import io.github.voidzombie.nhglib.runtime.ecs.utils.Entities;
 import io.github.voidzombie.nhglib.runtime.fsm.base.AssetsStates;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
+import io.github.voidzombie.nhglib.runtime.messaging.Messaging;
 import io.github.voidzombie.nhglib.utils.data.Bundle;
+import io.github.voidzombie.nhglib.utils.data.Strings;
+import io.github.voidzombie.nhglib.utils.debug.Logger;
 
 /**
  * Created by Fausto Napoli on 19/10/2016.
@@ -29,17 +32,19 @@ public class Assets implements Updatable, AssetErrorListener {
     public final DefaultStateMachine<Assets, AssetsStates> fsm;
     public AssetManager assetManager;
 
+    private Messaging messaging;
     private ArrayMap<String, Asset> assetCache;
     private Array<Asset> assetQueue;
 
-    public Assets() {
+    public Assets(Messaging messaging, Entities entities) {
+        this.messaging = messaging;
         fsm = new DefaultStateMachine<>(this, AssetsStates.IDLE);
 
         assetManager = new AssetManager();
-        assetManager.setLoader(Scene.class, new SceneLoader(assetManager.getFileHandleResolver()));
+        assetManager.setLoader(Scene.class, new SceneLoader(entities, assetManager.getFileHandleResolver()));
         assetManager.setLoader(JsonValue.class, new JsonLoader(assetManager.getFileHandleResolver()));
 
-        assetManager.setLoader(Model.class, ".g3db", new NhgG3dModelLoader(
+        assetManager.setLoader(Model.class, ".g3db", new NhgG3dModelLoader(this,
                 new UBJsonReader(), assetManager.getFileHandleResolver()));
 
         assetManager.setErrorListener(this);
@@ -63,21 +68,21 @@ public class Assets implements Updatable, AssetErrorListener {
     }
 
     public void assetLoadingFinished() {
-        Nhg.messaging.send(new Message(Nhg.strings.events.assetLoadingFinished));
+        messaging.send(new Message(Strings.Events.assetLoadingFinished));
     }
 
     public void assetLoaded(Asset asset) {
         Bundle bundle = new Bundle();
-        bundle.put(Nhg.strings.defaults.assetKey, asset);
+        bundle.put(Strings.Defaults.assetKey, asset);
 
-        Nhg.messaging.send(new Message(Nhg.strings.events.assetLoaded, bundle));
+        messaging.send(new Message(Strings.Events.assetLoaded, bundle));
     }
 
     public void assetUnloaded(Asset asset) {
         Bundle bundle = new Bundle();
-        bundle.put(Nhg.strings.defaults.assetKey, asset);
+        bundle.put(Strings.Defaults.assetKey, asset);
 
-        Nhg.messaging.send(new Message(Nhg.strings.events.assetUnloaded, bundle));
+        messaging.send(new Message(Strings.Events.assetUnloaded, bundle));
     }
 
     public Array<Asset> getAssetQueue() {
@@ -117,7 +122,7 @@ public class Assets implements Updatable, AssetErrorListener {
 
                 assetQueue.add(asset);
             } else {
-                Nhg.logger.log(this, Nhg.strings.messages.cannotQueueAssetFileNotFound, asset.source);
+                Logger.log(this, Strings.Messages.cannotQueueAssetFileNotFound, asset.source);
             }
         } else {
             assetLoaded(asset);
@@ -149,7 +154,7 @@ public class Assets implements Updatable, AssetErrorListener {
         for (int i = 0; i < assetQueue.size; i++) {
             Asset asset = assetQueue.get(i);
 
-            if (Nhg.assets.assetManager.isLoaded(asset.source)) {
+            if (assetManager.isLoaded(asset.source)) {
                 assetQueue.removeValue(asset, true);
             }
         }

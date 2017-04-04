@@ -1,11 +1,13 @@
 package io.github.voidzombie.nhglib.graphics.worlds;
 
 import com.badlogic.gdx.utils.ArrayMap;
-import io.github.voidzombie.nhglib.Nhg;
+import io.github.voidzombie.nhglib.assets.Assets;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 import io.github.voidzombie.nhglib.graphics.scenes.SceneManager;
 import io.github.voidzombie.nhglib.graphics.worlds.strategies.base.WorldStrategy;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
+import io.github.voidzombie.nhglib.runtime.ecs.utils.Entities;
+import io.github.voidzombie.nhglib.runtime.messaging.Messaging;
 import io.github.voidzombie.nhglib.utils.data.Bounds;
 
 /**
@@ -13,6 +15,7 @@ import io.github.voidzombie.nhglib.utils.data.Bounds;
  * Manages how the engine should handle the game world\space.
  */
 public class NhgWorld {
+    private Entities entities;
     private Bounds bounds;
     private SceneManager sceneManager;
     private WorldStrategy worldStrategy;
@@ -20,15 +23,16 @@ public class NhgWorld {
 
     private ArrayMap<String, Scene> scenes;
 
-    public NhgWorld(WorldStrategy strategy) {
-        this(strategy, new Bounds(1f, 1f, 1f));
+    public NhgWorld(Messaging messaging, Entities entities, Assets assets, WorldStrategy strategy) {
+        this(messaging, entities, assets, strategy, new Bounds(1f, 1f, 1f));
     }
 
-    public NhgWorld(WorldStrategy strategy, Bounds bounds) {
+    public NhgWorld(Messaging messaging, Entities entities, Assets assets, WorldStrategy strategy, Bounds bounds) {
+        this.entities = entities;
         this.worldStrategy = strategy;
         this.bounds = bounds;
 
-        sceneManager = new SceneManager();
+        sceneManager = new SceneManager(messaging, entities, assets);
         scenes = new ArrayMap<>();
     }
 
@@ -61,7 +65,7 @@ public class NhgWorld {
                     sceneManager.getCurrentScene().sceneGraph.getSceneEntity(entityName);
 
             referenceNodeComponent =
-                    Nhg.entitySystem.getComponent(referenceEntity, NodeComponent.class);
+                    entities.getComponent(referenceEntity, NodeComponent.class);
         }
     }
 

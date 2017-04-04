@@ -11,6 +11,9 @@ import io.github.voidzombie.nhglib.utils.scenes.SceneUtils;
 public class AssetJson implements JsonParseable<Asset> {
     private Asset output;
 
+    public AssetJson() {
+    }
+
     @Override
     public void parse(JsonValue jsonValue) {
         String alias = jsonValue.getString("alias");
@@ -25,7 +28,7 @@ public class AssetJson implements JsonParseable<Asset> {
             dependenciesPath += "/";
         }
 
-        Class assetClass = SceneUtils.get().assetClassFromClassAlias(classString);
+        Class assetClass = SceneUtils.assetClassFromClassAlias(classString);
 
         output = new Asset(alias, source, assetClass);
         output.dependenciesPath = dependenciesPath;

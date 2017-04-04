@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector3;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.LightComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.base.ThreadedIteratingSystem;
+import io.github.voidzombie.nhglib.runtime.threading.Threading;
 
 /**
  * Created by Fausto Napoli on 14/03/2017.
@@ -15,8 +16,8 @@ public class LightSystem extends ThreadedIteratingSystem {
     private ComponentMapper<NodeComponent> nodeMapper;
     private ComponentMapper<LightComponent> lightMapper;
 
-    public LightSystem() {
-        super(Aspect.all(NodeComponent.class, LightComponent.class));
+    public LightSystem(Threading threading) {
+        super(Aspect.all(NodeComponent.class, LightComponent.class), threading);
     }
 
     @Override

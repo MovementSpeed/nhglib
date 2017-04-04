@@ -5,22 +5,27 @@ import com.badlogic.gdx.graphics.g3d.environment.BaseLight;
 import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.JsonValue;
-import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.data.models.serialization.ComponentJson;
 import io.github.voidzombie.nhglib.enums.LightType;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.LightComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.GraphicsSystem;
+import io.github.voidzombie.nhglib.runtime.ecs.utils.Entities;
 
 /**
  * Created by Fausto Napoli on 19/12/2016.
  */
 public class LightComponentJson extends ComponentJson {
+    private Entities entities;
+
+    public LightComponentJson(Entities entities) {
+        this.entities = entities;
+    }
+
     @Override
     public void parse(JsonValue jsonValue) {
-        GraphicsSystem graphicsSystem = Nhg.entitySystem.getEntitySystem(GraphicsSystem.class);
+        GraphicsSystem graphicsSystem = entities.getEntitySystem(GraphicsSystem.class);
 
-        LightComponent lightComponent =
-                Nhg.entitySystem.createComponent(entity, LightComponent.class);
+        LightComponent lightComponent = entities.createComponent(entity, LightComponent.class);
 
         BaseLight light = null;
         LightType lightType = LightType.fromString(jsonValue.getString("lightType"));

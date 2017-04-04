@@ -8,37 +8,22 @@ import java.util.HashMap;
  * Created by Fausto Napoli on 20/12/2016.
  */
 public class SceneUtils {
-    private static SceneUtils instance;
+    private static HashMap<String, Class<?>> assetClassesMapping = new HashMap<>();
+    private static HashMap<String, Class<? extends ComponentJson>> componentJsonClassesMapping = new HashMap<>();
 
-    private HashMap<String, Class<?>> assetClassesMapping;
-    private HashMap<String, Class<? extends ComponentJson>> componentJsonClassesMapping;
-
-    public SceneUtils() {
-        assetClassesMapping = new HashMap<>();
-        componentJsonClassesMapping = new HashMap<>();
-    }
-
-    public static SceneUtils get() {
-        if (instance == null) {
-            instance = new SceneUtils();
-        }
-
-        return instance;
-    }
-
-    public void addAssetClassMapping(String type, Class<?> componentClass) {
+    public static void addAssetClassMapping(String type, Class<?> componentClass) {
         assetClassesMapping.put(type, componentClass);
     }
 
-    public void addComponentJsonMapping(String type, Class<? extends ComponentJson> componentClass) {
+    public static void addComponentJsonMapping(String type, Class<? extends ComponentJson> componentClass) {
         componentJsonClassesMapping.put(type, componentClass);
     }
 
-    public Class assetClassFromClassAlias(String alias) {
+    public static Class assetClassFromClassAlias(String alias) {
         return assetClassesMapping.get(alias);
     }
 
-    public ComponentJson componentJsonFromType(String type) {
+    public static ComponentJson componentJsonFromType(String type) {
         ComponentJson componentJson = null;
 
         try {
@@ -51,7 +36,7 @@ public class SceneUtils {
         return componentJson;
     }
 
-    private Class<? extends ComponentJson> componentJsonClassFromType(String type) {
+    private static Class<? extends ComponentJson> componentJsonClassFromType(String type) {
         return componentJsonClassesMapping.get(type);
     }
 }

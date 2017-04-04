@@ -5,7 +5,7 @@ import com.artemis.*;
 /**
  * Created by Fausto Napoli on 07/12/2016.
  */
-public class EntitySystem {
+public class Entities {
     private World entityWorld;
 
     public void update(float delta) {

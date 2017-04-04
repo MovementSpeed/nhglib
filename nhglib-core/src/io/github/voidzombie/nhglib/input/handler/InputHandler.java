@@ -13,7 +13,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.JsonValue;
-import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.data.models.serialization.InputConfigurationsJson;
 import io.github.voidzombie.nhglib.data.models.serialization.InputJson;
 import io.github.voidzombie.nhglib.input.configuration.InputConfigurations;
@@ -27,7 +26,9 @@ import io.github.voidzombie.nhglib.input.controllers.StickConfiguration;
 import io.github.voidzombie.nhglib.input.enums.InputAction;
 import io.github.voidzombie.nhglib.input.interfaces.InputListener;
 import io.github.voidzombie.nhglib.input.models.*;
+import io.github.voidzombie.nhglib.utils.data.Strings;
 import io.github.voidzombie.nhglib.utils.data.VectorPool;
+import io.github.voidzombie.nhglib.utils.debug.Logger;
 
 /**
  * Created by Fausto Napoli on 08/01/2017.
@@ -69,13 +70,13 @@ public class InputHandler implements ControllerListener, InputProcessor {
 
     @Override
     public void connected(Controller controller) {
-        Nhg.logger.log(this, Nhg.strings.messages.controllerConnected, controller.getName());
+        Logger.log(this, Strings.Messages.controllerConnected, controller.getName());
         mapStickInputs();
     }
 
     @Override
     public void disconnected(Controller controller) {
-        Nhg.logger.log(this, Nhg.strings.messages.controllerDisconnected, controller.getName());
+        Logger.log(this, Strings.Messages.controllerDisconnected, controller.getName());
         mapStickInputs();
     }
 

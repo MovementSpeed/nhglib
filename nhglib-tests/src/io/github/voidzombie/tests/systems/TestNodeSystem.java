@@ -3,11 +3,11 @@ package io.github.voidzombie.tests.systems;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.badlogic.gdx.utils.Array;
-import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.runtime.ecs.components.common.MessageComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.base.NhgIteratingSystem;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
+import io.github.voidzombie.nhglib.utils.debug.Logger;
 
 /**
  * Created by Fausto Napoli on 13/12/2016.
@@ -29,7 +29,7 @@ public class TestNodeSystem extends NhgIteratingSystem {
 
         for (Message message : messages) {
             if (message.is("printNode")) {
-                Nhg.logger.log(this, "id: %d, x: %f, y: %f, z: %f",
+                Logger.log(this, "id: %d, x: %f, y: %f, z: %f",
                         nodeComponent.id,
                         nodeComponent.getX(),
                         nodeComponent.getY(),

@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.JsonReader;
 import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.data.models.serialization.SceneJson;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
+import io.github.voidzombie.nhglib.runtime.ecs.utils.Entities;
 
 import java.io.UnsupportedEncodingException;
 
@@ -18,8 +19,11 @@ import java.io.UnsupportedEncodingException;
  * Created by Fausto Napoli on 19/12/2016.
  */
 public class SceneLoader extends AsynchronousAssetLoader<Scene, SceneLoader.SceneParameter> {
-    public SceneLoader(FileHandleResolver resolver) {
+    private Entities entities;
+
+    public SceneLoader(Entities entities, FileHandleResolver resolver) {
         super(resolver);
+        this.entities = entities;
     }
 
     @Override
@@ -45,7 +49,7 @@ public class SceneLoader extends AsynchronousAssetLoader<Scene, SceneLoader.Scen
         try {
             String json = new String(bytes, "UTF-8");
 
-            SceneJson sceneJson = new SceneJson();
+            SceneJson sceneJson = new SceneJson(entities);
             sceneJson.parse(new JsonReader().parse(json).get("scene"));
 
             scene = sceneJson.get();

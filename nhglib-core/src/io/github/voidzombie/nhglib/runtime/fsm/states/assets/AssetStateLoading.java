@@ -3,10 +3,11 @@ package io.github.voidzombie.nhglib.runtime.fsm.states.assets;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.utils.Array;
-import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.assets.Assets;
 import io.github.voidzombie.nhglib.runtime.fsm.base.AssetsStates;
+import io.github.voidzombie.nhglib.utils.data.Strings;
+import io.github.voidzombie.nhglib.utils.debug.Logger;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Predicate;
@@ -17,7 +18,7 @@ import io.reactivex.functions.Predicate;
 public class AssetStateLoading implements State<Assets> {
     @Override
     public void enter(Assets assets) {
-        Nhg.logger.log(this, "Asset manager is loading.");
+        Logger.log(this, "Asset manager is loading.");
     }
 
     @Override
@@ -32,7 +33,7 @@ public class AssetStateLoading implements State<Assets> {
 
     @Override
     public void exit(Assets assets) {
-        Nhg.logger.log(this, "Asset manager has finished loading.");
+        Logger.log(this, "Asset manager has finished loading.");
     }
 
     @Override
@@ -53,9 +54,9 @@ public class AssetStateLoading implements State<Assets> {
                 .subscribe(new Consumer<Asset>() {
                     @Override
                     public void accept(Asset asset) throws Exception {
-                        Nhg.logger.log(
+                        Logger.log(
                                 this,
-                                Nhg.strings.messages.assetLoaded,
+                                Strings.Messages.assetLoaded,
                                 asset.source);
 
                         assets.assetLoaded(asset);

@@ -14,7 +14,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.IntArray;
-import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.graphics.lights.NhgLight;
 import io.github.voidzombie.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.voidzombie.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
@@ -67,10 +66,6 @@ public class TiledForwardShader extends BaseShader {
 
         if (!shaderProgram.isCompiled()) {
             throw new GdxRuntimeException(shaderLog);
-        }
-
-        if (!shaderLog.isEmpty()) {
-            Nhg.logger.log(this, shaderLog);
         }
 
         register("u_mvpMatrix", new GlobalSetter() {

@@ -9,6 +9,7 @@ import io.github.voidzombie.nhglib.runtime.fsm.base.EngineStates;
 import io.github.voidzombie.nhglib.runtime.fsm.interfaces.EngineConfigurationListener;
 import io.github.voidzombie.nhglib.runtime.fsm.interfaces.EngineStateListener;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
+import io.github.voidzombie.nhglib.utils.data.Strings;
 
 /**
  * Created by Fausto Napoli on 02/11/2016.
@@ -17,11 +18,13 @@ abstract class BaseGame implements
         ApplicationListener,
         EngineStateListener,
         EngineConfigurationListener {
+
+    public Nhg nhg;
     private DefaultStateMachine<NhgEntry, EngineStates> fsm;
 
     @Override
     public final void create() {
-
+        nhg = new Nhg();
     }
 
     @Override
@@ -44,7 +47,7 @@ abstract class BaseGame implements
 
     @Override
     public final void dispose() {
-        Nhg.messaging.send(new Message(Nhg.strings.events.engineDestroy));
+        nhg.messaging.send(new Message(Strings.Events.engineDestroy));
     }
 
     @Override

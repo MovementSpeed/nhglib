@@ -25,6 +25,7 @@ import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.GraphicsSystem;
 import io.github.voidzombie.nhglib.runtime.entry.NhgEntry;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.nhglib.utils.data.Bounds;
+import io.github.voidzombie.nhglib.utils.data.Strings;
 import io.github.voidzombie.tests.systems.TestNodeSystem;
 import io.reactivex.functions.Consumer;
 
@@ -38,33 +39,29 @@ public class Main extends NhgEntry implements InputListener {
     private ImmediateModeRenderer20 renderer20;
     private NodeComponent cameraNode;
 
-    private Texture albedo;
-    private Texture metallic;
-    private Texture roughness;
-
     @Override
     public void engineStarted() {
         super.engineStarted();
         Nhg.debugLogs = true;
 
-        world = new NhgWorld(
-                new LargeWorldStrategy(),
+        world = new NhgWorld(nhg.messaging, nhg.entities, nhg.assets,
+                new LargeWorldStrategy(nhg.entities),
                 new Bounds(2f, 2f, 2f));
 
         fpsLogger = new FPSLogger();
         renderer20 = new ImmediateModeRenderer20(false, true, 0);
 
-        Nhg.input.addListener(this);
+        nhg.input.addListener(this);
 
         TextureLoader.TextureParameter param = new TextureLoader.TextureParameter();
         param.minFilter = Texture.TextureFilter.MipMap;
         param.magFilter = Texture.TextureFilter.Linear;
         param.genMipMaps = true;
 
-        Nhg.assets.queueAsset(new Asset("scene", "myscene1.nhs", Scene.class));
-        Nhg.assets.queueAsset(new Asset("inputMap", "input.nhc", JsonValue.class));
+        nhg.assets.queueAsset(new Asset("scene", "myscene1.nhs", Scene.class));
+        nhg.assets.queueAsset(new Asset("inputMap", "input.nhc", JsonValue.class));
 
-        Environment environment = Nhg.entitySystem.getEntitySystem(GraphicsSystem.class).getEnvironment();
+        Environment environment = nhg.entities.getEntitySystem(GraphicsSystem.class).getEnvironment();
 
         NhgLight light = new NhgLight();
         light.position.set(0f, 0f, 0f);
@@ -89,26 +86,26 @@ public class Main extends NhgEntry implements InputListener {
         environment.set(gammaCorrectionAttribute);
 
         // Subscribe to asset events
-        Nhg.messaging.get(Nhg.strings.events.assetLoaded, Nhg.strings.events.assetLoadingFinished)
+        nhg.messaging.get(Strings.Events.assetLoaded, Strings.Events.assetLoadingFinished)
                 .subscribe(new Consumer<Message>() {
                     @Override
                     public void accept(Message message) throws Exception {
-                        if (message.is(Nhg.strings.events.assetLoaded)) {
-                            Asset asset = (Asset) message.data.get(Nhg.strings.defaults.assetKey);
+                        if (message.is(Strings.Events.assetLoaded)) {
+                            Asset asset = (Asset) message.data.get(Strings.Defaults.assetKey);
 
                             if (asset.is("scene")) {
-                                scene = Nhg.assets.get(asset);
+                                scene = nhg.assets.get(asset);
 
                                 world.loadScene(scene);
                                 world.setReferenceEntity("weaponEntity1");
 
                                 Integer cameraEntity = scene.sceneGraph.getSceneEntity("camera");
-                                cameraNode = Nhg.entitySystem.getComponent(
+                                cameraNode = nhg.entities.getComponent(
                                         cameraEntity, NodeComponent.class);
                             } else if (asset.is("inputMap")) {
-                                Nhg.input.fromJson((JsonValue) Nhg.assets.get(asset));
-                                Nhg.input.setActiveContext("game", true);
-                                Nhg.input.setActiveContext("global", true);
+                                nhg.input.fromJson((JsonValue) nhg.assets.get(asset));
+                                nhg.input.setActiveContext("game", true);
+                                nhg.input.setActiveContext("global", true);
                             }
                         }
                     }
@@ -127,7 +124,7 @@ public class Main extends NhgEntry implements InputListener {
 
         /*if (scene != null) {
             int entity = scene.sceneGraph.getSceneEntity("weaponEntity1");
-            NodeComponent nodeComponent = Nhg.entitySystem.getComponent(
+            NodeComponent nodeComponent = Nhg.entities.getComponent(
                     entity, NodeComponent.class);
             nodeComponent.rotate(0, -0.1f, 0);
             nodeComponent.translate(0.002f * Gdx.graphics.getDeltaTime(), 0, 0, true);
@@ -144,7 +141,7 @@ public class Main extends NhgEntry implements InputListener {
     public void onKeyInput(NhgInput input) {
         if (scene != null) {
             int entity = scene.sceneGraph.getSceneEntity("weaponEntity1");
-            NodeComponent nodeComponent = Nhg.entitySystem.getComponent(
+            NodeComponent nodeComponent = nhg.entities.getComponent(
                     entity, NodeComponent.class);
 
             switch (input.getName()) {
@@ -173,7 +170,7 @@ public class Main extends NhgEntry implements InputListener {
                     break;
 
                 case "exit":
-                    Nhg.messaging.send(new Message(Nhg.strings.events.engineDestroy));
+                    nhg.messaging.send(new Message(Strings.Events.engineDestroy));
                     break;
             }
 
@@ -185,7 +182,7 @@ public class Main extends NhgEntry implements InputListener {
     public void onStickInput(NhgInput input) {
         if (scene != null) {
             int entity = scene.sceneGraph.getSceneEntity("weaponEntity1");
-            NodeComponent nodeComponent = Nhg.entitySystem.getComponent(
+            NodeComponent nodeComponent = nhg.entities.getComponent(
                     entity, NodeComponent.class);
 
             Vector2 stickVector = (Vector2) input.getInputSource().getValue();

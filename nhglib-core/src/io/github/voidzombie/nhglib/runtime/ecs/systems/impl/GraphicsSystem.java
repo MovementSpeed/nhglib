@@ -11,13 +11,15 @@ import com.badlogic.gdx.graphics.g3d.ModelCache;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ShaderProvider;
 import com.badlogic.gdx.utils.Array;
-import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.graphics.shaders.tiledForward.TiledForwardShaderProvider;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.ModelComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.base.NhgIteratingSystem;
+import io.github.voidzombie.nhglib.runtime.ecs.utils.Entities;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
+import io.github.voidzombie.nhglib.runtime.messaging.Messaging;
+import io.github.voidzombie.nhglib.utils.data.Strings;
 import io.github.voidzombie.nhglib.utils.graphics.GLUtils;
 import io.reactivex.functions.Consumer;
 
@@ -29,6 +31,8 @@ public class GraphicsSystem extends NhgIteratingSystem {
     private ShaderProvider shaderProvider;
     private CameraSystem cameraSystem;
     private Environment environment;
+    private Entities entities;
+    private Messaging messaging;
 
     private Array<Camera> cameras;
     private Array<ModelBatch> modelBatches;
@@ -38,8 +42,10 @@ public class GraphicsSystem extends NhgIteratingSystem {
     private ComponentMapper<NodeComponent> nodeMapper;
     private ComponentMapper<ModelComponent> modelMapper;
 
-    public GraphicsSystem() {
+    public GraphicsSystem(Entities entities, Messaging messaging) {
         super(Aspect.all(NodeComponent.class, ModelComponent.class));
+        this.entities = entities;
+        this.messaging = messaging;
 
         clearColor = Color.BLACK;
         environment = new Environment();
@@ -55,7 +61,7 @@ public class GraphicsSystem extends NhgIteratingSystem {
         super.begin();
 
         if (cameraSystem == null) {
-            cameraSystem = Nhg.entitySystem.getEntitySystem(CameraSystem.class);
+            cameraSystem = entities.getEntitySystem(CameraSystem.class);
         }
 
         cameras = cameraSystem.cameras;
@@ -118,12 +124,12 @@ public class GraphicsSystem extends NhgIteratingSystem {
         super.inserted(entityId);
         final ModelComponent modelComponent = modelMapper.get(entityId);
 
-        Nhg.messaging.get(Nhg.strings.events.assetLoaded)
+        messaging.get(Strings.Events.assetLoaded)
                 .subscribe(new Consumer<Message>() {
                     @Override
                     public void accept(Message message) throws Exception {
                         if (modelComponent.type == ModelComponent.Type.STATIC) {
-                            Asset asset = (Asset) message.data.get(Nhg.strings.defaults.assetKey);
+                            Asset asset = (Asset) message.data.get(Strings.Defaults.assetKey);
 
                             if (asset.is(modelComponent.asset.alias)) {
                                 rebuildCache(modelComponent.model);

@@ -3,10 +3,11 @@ package io.github.voidzombie.nhglib.runtime.fsm.states.engine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
-import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.runtime.entry.NhgEntry;
 import io.github.voidzombie.nhglib.runtime.fsm.base.EngineStates;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
+import io.github.voidzombie.nhglib.utils.data.Strings;
+import io.github.voidzombie.nhglib.utils.debug.Logger;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -15,13 +16,13 @@ import io.reactivex.functions.Consumer;
 public class EngineStateRunning implements State<NhgEntry> {
     @Override
     public void enter(final NhgEntry nhgEntry) {
-        Nhg.logger.log(this, "Engine is running.");
+        Logger.log(this, "Engine is running.");
 
-        Nhg.messaging.get(Nhg.strings.events.engineDestroy)
+        nhgEntry.nhg.messaging.get(Strings.Events.engineDestroy)
                 .subscribe(new Consumer<Message>() {
                     @Override
                     public void accept(Message message) throws Exception {
-                        if (message.is(Nhg.strings.events.engineDestroy)) {
+                        if (message.is(Strings.Events.engineDestroy)) {
                             nhgEntry.getFsm().changeState(EngineStates.CLOSING);
                         }
                     }
@@ -32,9 +33,9 @@ public class EngineStateRunning implements State<NhgEntry> {
     public void update(NhgEntry nhgEntry) {
         float delta = Gdx.graphics.getDeltaTime();
 
-        Nhg.input.update();
-        Nhg.assets.update();
-        Nhg.entitySystem.update(delta);
+        nhgEntry.nhg.input.update();
+        nhgEntry.nhg.assets.update();
+        nhgEntry.nhg.entities.update(delta);
 
         nhgEntry.engineUpdate(delta);
     }

@@ -8,15 +8,21 @@ import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.model.NodePart;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.utils.Array;
-import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
-import io.github.voidzombie.nhglib.data.models.serialization.components.*;
+import io.github.voidzombie.nhglib.assets.Assets;
+import io.github.voidzombie.nhglib.data.models.serialization.components.CameraComponentJson;
+import io.github.voidzombie.nhglib.data.models.serialization.components.LightComponentJson;
+import io.github.voidzombie.nhglib.data.models.serialization.components.MessageComponentJson;
+import io.github.voidzombie.nhglib.data.models.serialization.components.ModelComponentJson;
 import io.github.voidzombie.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
 import io.github.voidzombie.nhglib.graphics.utils.PbrMaterial;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.ModelComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
+import io.github.voidzombie.nhglib.runtime.ecs.utils.Entities;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
+import io.github.voidzombie.nhglib.runtime.messaging.Messaging;
 import io.github.voidzombie.nhglib.utils.data.Bundle;
+import io.github.voidzombie.nhglib.utils.data.Strings;
 import io.github.voidzombie.nhglib.utils.scenes.SceneUtils;
 import io.reactivex.Observable;
 import io.reactivex.functions.Action;
@@ -30,6 +36,9 @@ import io.reactivex.subjects.Subject;
  */
 public class SceneManager {
     private Scene currentScene;
+    private Messaging messaging;
+    private Entities entities;
+    private Assets assets;
 
     private ComponentMapper<ModelComponent> modelMapper;
     private ComponentMapper<NodeComponent> nodeMapper;
@@ -38,7 +47,11 @@ public class SceneManager {
     private Array<Asset> assetsToLoad;
     private Array<Asset> temporaryLoadedAssets;
 
-    public SceneManager() {
+    public SceneManager(Messaging messaging, Entities entities, Assets assets) {
+        this.messaging = messaging;
+        this.entities = entities;
+        this.assets = assets;
+
         sizeSubject = PublishSubject.create();
         sizeSubject.subscribe(new Consumer<Bundle>() {
             @Override
@@ -48,10 +61,10 @@ public class SceneManager {
                     processMaterialAssets(modelComponent);
 
                     Bundle sceneBundle = new Bundle();
-                    sceneBundle.put(Nhg.strings.defaults.sceneKey, currentScene);
+                    sceneBundle.put(Strings.Defaults.sceneKey, currentScene);
 
-                    Message message = new Message(Nhg.strings.events.sceneLoaded, sceneBundle);
-                    Nhg.messaging.send(message);
+                    Message message = new Message(Strings.Events.sceneLoaded, sceneBundle);
+                    SceneManager.this.messaging.send(message);
                 }
             }
         });
@@ -59,17 +72,16 @@ public class SceneManager {
         assetsToLoad = new Array<>();
         temporaryLoadedAssets = new Array<>();
 
-        modelMapper = Nhg.entitySystem.getMapper(ModelComponent.class);
-        nodeMapper = Nhg.entitySystem.getMapper(NodeComponent.class);
+        modelMapper = entities.getMapper(ModelComponent.class);
+        nodeMapper = entities.getMapper(NodeComponent.class);
 
-        SceneUtils.get().addComponentJsonMapping("graphics", GraphicsComponentJson.class);
-        SceneUtils.get().addComponentJsonMapping("message", MessageComponentJson.class);
-        SceneUtils.get().addComponentJsonMapping("camera", CameraComponentJson.class);
-        SceneUtils.get().addComponentJsonMapping("light", LightComponentJson.class);
-        SceneUtils.get().addComponentJsonMapping("model", ModelComponentJson.class);
+        SceneUtils.addComponentJsonMapping("message", MessageComponentJson.class);
+        SceneUtils.addComponentJsonMapping("camera", CameraComponentJson.class);
+        SceneUtils.addComponentJsonMapping("light", LightComponentJson.class);
+        SceneUtils.addComponentJsonMapping("model", ModelComponentJson.class);
 
-        SceneUtils.get().addAssetClassMapping("model", Model.class);
-        SceneUtils.get().addAssetClassMapping("texture", Texture.class);
+        SceneUtils.addAssetClassMapping("model", Model.class);
+        SceneUtils.addAssetClassMapping("texture", Texture.class);
     }
 
     public void loadScene(Scene scene) {
@@ -80,7 +92,7 @@ public class SceneManager {
                 .doFinally(new Action() {
                     @Override
                     public void run() throws Exception {
-                        Nhg.assets.queueAssets(assetsToLoad);
+                        assets.queueAssets(assetsToLoad);
                     }
                 })
                 .subscribe(new Consumer<Integer>() {
@@ -117,7 +129,7 @@ public class SceneManager {
                     @Override
                     public void accept(Integer integer) throws Exception {
                         ModelComponent modelComponent = modelMapper.get(integer);
-                        Nhg.assets.unloadAsset(modelComponent.asset);
+                        assets.unloadAsset(modelComponent.asset);
                     }
                 });
     }
@@ -160,18 +172,18 @@ public class SceneManager {
         }
 
         // Start loading them
-        Nhg.assets.queueAsset(modelAsset);
+        assets.queueAsset(modelAsset);
 
         // Wait for them
-        Nhg.messaging.get(Nhg.strings.events.assetLoaded)
+        messaging.get(Strings.Events.assetLoaded)
                 .subscribe(new Consumer<Message>() {
                     @Override
                     public void accept(Message message) throws Exception {
-                        Asset asset = (Asset) message.data.get(Nhg.strings.defaults.assetKey);
+                        Asset asset = (Asset) message.data.get(Strings.Defaults.assetKey);
 
                         if (asset != null) {
                             if (asset.is(modelAsset.alias)) {
-                                Model model = Nhg.assets.get(asset);
+                                Model model = assets.get(asset);
                                 modelComponent.model = new ModelInstance(model);
 
                                 if (modelComponent.model.animations.size > 0) {
@@ -179,7 +191,7 @@ public class SceneManager {
                                             new AnimationController(modelComponent.model);
                                 }
 
-                                Nhg.assets.queueAssets(allAssets);
+                                assets.queueAssets(allAssets);
                             } else {
                                 if (allAssets.contains(asset, false)) {
                                     temporaryLoadedAssets.add(asset);
@@ -199,7 +211,7 @@ public class SceneManager {
 
     private void processMaterialAssets(ModelComponent modelComponent) {
         for (Asset asset : temporaryLoadedAssets) {
-            Texture texture = Nhg.assets.get(asset);
+            Texture texture = assets.get(asset);
 
             for (PbrMaterial pbrMat : modelComponent.pbrMaterials) {
                 if (asset.is(pbrMat.albedoAsset.alias)) {

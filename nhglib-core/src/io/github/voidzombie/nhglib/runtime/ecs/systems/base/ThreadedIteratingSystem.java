@@ -3,7 +3,6 @@ package io.github.voidzombie.nhglib.runtime.ecs.systems.base;
 import com.artemis.Aspect;
 import com.artemis.utils.IntBag;
 import com.badlogic.gdx.math.MathUtils;
-import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.runtime.threading.Threading;
 import io.github.voidzombie.nhglib.runtime.threading.Work;
 
@@ -16,12 +15,16 @@ public abstract class ThreadedIteratingSystem extends NhgBaseEntitySystem {
     private int split;
     private int rows;
     private int latchId;
+    private Threading threading;
+
     private int[][] splitEntities;
 
-    public ThreadedIteratingSystem(Aspect.Builder aspect) {
+    public ThreadedIteratingSystem(Aspect.Builder aspect, Threading threading) {
         super(aspect);
+        this.threading = threading;
+
         latchId = 2165;
-        Nhg.threading.createLatch(latchId, Threading.cores);
+        threading.createLatch(latchId, Threading.cores);
     }
 
     @Override
@@ -41,7 +44,7 @@ public abstract class ThreadedIteratingSystem extends NhgBaseEntitySystem {
             }
 
             if (previousRows != rows) {
-                Nhg.threading.setLatchCount(latchId, rows);
+                threading.setLatchCount(latchId, rows);
             }
 
             if (previousRows != rows || previousSplit != split) {
@@ -68,10 +71,10 @@ public abstract class ThreadedIteratingSystem extends NhgBaseEntitySystem {
             }
 
             for (int i = 0; i < rows; i++) {
-                Nhg.threading.execute(new ProcessWork(splitEntities[i]));
+                threading.execute(new ProcessWork(splitEntities[i]));
             }
 
-            Nhg.threading.awaitLatch(latchId);
+            threading.awaitLatch(latchId);
         }
     }
 
@@ -104,7 +107,7 @@ public abstract class ThreadedIteratingSystem extends NhgBaseEntitySystem {
                 }
             }
 
-            Nhg.threading.countDownLatch(latchId);
+            threading.countDownLatch(latchId);
         }
     }
 }

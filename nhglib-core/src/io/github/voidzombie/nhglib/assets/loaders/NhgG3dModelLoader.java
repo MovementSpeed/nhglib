@@ -11,20 +11,23 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.*;
-import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
+import io.github.voidzombie.nhglib.assets.Assets;
 
 public class NhgG3dModelLoader extends NhgModelLoader<NhgModelLoader.ModelParameters> {
     public static final short VERSION_HI = 0;
     public static final short VERSION_LO = 1;
     protected final BaseJsonReader reader;
 
-    public NhgG3dModelLoader(final BaseJsonReader reader) {
-        this(reader, null);
+    private Assets assets;
+
+    public NhgG3dModelLoader(Assets assets, final BaseJsonReader reader) {
+        this(assets, reader, null);
     }
 
-    public NhgG3dModelLoader(BaseJsonReader reader, FileHandleResolver resolver) {
+    public NhgG3dModelLoader(Assets assets, BaseJsonReader reader, FileHandleResolver resolver) {
         super(resolver);
+        this.assets = assets;
         this.reader = reader;
     }
 
@@ -43,7 +46,7 @@ public class NhgG3dModelLoader extends NhgModelLoader<NhgModelLoader.ModelParame
             throw new GdxRuntimeException("Model version not supported");
 
         // Get the current asset
-        ArrayMap.Values<Asset> cachedAssets = Nhg.assets.getCachedAssets();
+        ArrayMap.Values<Asset> cachedAssets = assets.getCachedAssets();
         for (Asset asset : cachedAssets) {
             if (asset.source.contentEquals(handle.path())) {
                 currentAsset = asset;

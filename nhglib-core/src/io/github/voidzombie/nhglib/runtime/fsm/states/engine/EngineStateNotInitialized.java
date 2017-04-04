@@ -4,12 +4,12 @@ import com.artemis.World;
 import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
-import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.CameraSystem;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.GraphicsSystem;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.LightSystem;
 import io.github.voidzombie.nhglib.runtime.entry.NhgEntry;
 import io.github.voidzombie.nhglib.runtime.fsm.base.EngineStates;
+import io.github.voidzombie.nhglib.utils.debug.Logger;
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
@@ -17,17 +17,17 @@ import io.github.voidzombie.nhglib.runtime.fsm.base.EngineStates;
 public class EngineStateNotInitialized implements State<NhgEntry> {
     @Override
     public void enter(NhgEntry nhgEntry) {
-        Nhg.logger.log(this, "Engine is not initialized.");
+        Logger.log(this, "Engine is not initialized.");
 
         // Setup the ECS' world.
         WorldConfigurationBuilder configurationBuilder = new WorldConfigurationBuilder();
         configurationBuilder.with(new CameraSystem());
-        configurationBuilder.with(new GraphicsSystem());
-        configurationBuilder.with(new LightSystem());
+        configurationBuilder.with(new GraphicsSystem(nhgEntry.nhg.entities, nhgEntry.nhg.messaging));
+        configurationBuilder.with(new LightSystem(nhgEntry.nhg.threading));
 
         nhgEntry.onConfigureEntitySystems(configurationBuilder);
 
-        Nhg.entitySystem.setEntityWorld(new World(configurationBuilder.build()));
+        nhgEntry.nhg.entities.setEntityWorld(new World(configurationBuilder.build()));
         nhgEntry.engineStarted();
 
         nhgEntry.getFsm().changeState(EngineStates.INITIALIZED);

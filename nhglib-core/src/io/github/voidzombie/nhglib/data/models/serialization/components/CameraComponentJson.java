@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.utils.JsonValue;
-import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.data.models.serialization.ComponentJson;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.CameraComponent;
 
@@ -16,7 +15,7 @@ public class CameraComponentJson extends ComponentJson {
     @Override
     public void parse(JsonValue jsonValue) {
         CameraComponent cameraComponent =
-                Nhg.entitySystem.createComponent(entity, CameraComponent.class);
+                entities.createComponent(entity, CameraComponent.class);
 
         Camera camera;
 

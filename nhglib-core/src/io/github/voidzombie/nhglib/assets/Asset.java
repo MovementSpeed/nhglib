@@ -2,7 +2,7 @@ package io.github.voidzombie.nhglib.assets;
 
 import com.badlogic.gdx.assets.AssetLoaderParameters;
 import com.google.common.base.Objects;
-import io.github.voidzombie.nhglib.Nhg;
+import io.github.voidzombie.nhglib.utils.data.Strings;
 
 /**
  * Created by Fausto Napoli on 25/10/2016.
@@ -25,7 +25,7 @@ public class Asset {
         } else if (source != null) {
             this.alias = source;
         } else {
-            throw new NullPointerException(Nhg.strings.messages.nullAssetSource);
+            throw new NullPointerException(Strings.Messages.nullAssetSource);
         }
 
         this.source = source;
@@ -38,7 +38,7 @@ public class Asset {
         } else if (source != null) {
             this.alias = source;
         } else {
-            throw new NullPointerException(Nhg.strings.messages.nullAssetSource);
+            throw new NullPointerException(Strings.Messages.nullAssetSource);
         }
 
         this.source = source;
