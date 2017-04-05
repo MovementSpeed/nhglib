@@ -10,14 +10,16 @@ import io.github.voidzombie.nhglib.runtime.threading.Threading;
 // FIXME : Normal mapping has issues when camera rotates certain angles
 
 // TODO :
+// TODO : Manage global configuration files
+// TODO : Implement support for transparent textures
 // TODO : Implement projective textures
 // TODO : Implement asset loading from URL
 // TODO : Implement chromatic abberration post-processing filter
 // TODO : Implement saturation post-processing filter
 // TODO : Implement real time shadow maps
 // TODO : Implement image based lighting
-// TODO : Implements physics and easy collision system
-// TODO : Re-implement lights parsing from JSON and fix LightSystem
+// TODO : Implement physics and easy collision system
+// TODO : Implement all light types
 
 /**
  * Created by Fausto Napoli on 17/10/2016.

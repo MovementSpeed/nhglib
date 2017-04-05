@@ -24,10 +24,10 @@ import io.github.voidzombie.nhglib.utils.graphics.ShaderUtils;
  * Created by Fausto Napoli on 18/03/2017.
  */
 public class TiledForwardShader extends BaseShader {
+    public static float lightRenderDistance = 15f;
+
     private float bones[];
 
-    private Vector3 vector;
-    private Matrix4 matrix;
     private Matrix4 idtMatrix;
 
     private Color color;
@@ -191,8 +191,6 @@ public class TiledForwardShader extends BaseShader {
         }
 
         color = new Color();
-        matrix = new Matrix4();
-        vector = VectorPool.getVector3();
 
         lightTexture = new Texture(64, 128, Pixmap.Format.RGBA8888);
         lightTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
@@ -237,7 +235,7 @@ public class TiledForwardShader extends BaseShader {
         if (lights != null) {
             for (NhgLight light : lights) {
                 if (camera.frustum.sphereInFrustum(light.position, light.radius) &&
-                        camera.position.dst(light.position) < 15f) {
+                        camera.position.dst(light.position) < lightRenderDistance) {
                     lightsToRender.add(light);
                 }
             }
