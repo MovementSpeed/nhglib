@@ -58,15 +58,18 @@ public class Main extends NhgEntry implements InputListener {
         param.magFilter = Texture.TextureFilter.Linear;
         param.genMipMaps = true;
 
-        nhg.assets.queueAsset(new Asset("scene", "myscene.nhs", Scene.class));
+        nhg.assets.queueAsset(new Asset("scene", "myscene1.nhs", Scene.class));
         nhg.assets.queueAsset(new Asset("inputMap", "input.nhc", JsonValue.class));
 
-        Environment environment = nhg.entities.getEntitySystem(GraphicsSystem.class).getEnvironment();
+        GraphicsSystem graphicsSystem = nhg.entities.getEntitySystem(GraphicsSystem.class);
+        graphicsSystem.setClearColor(Color.RED);
+
+        Environment environment = graphicsSystem.getEnvironment();
 
         NhgLight light = new NhgLight();
         light.position.set(0f, 0f, 0f);
         light.color.set(Color.WHITE);
-        light.intensity = 0.5f;
+        light.intensity = 0.01f;
         light.radius = 1f;
 
         /*NhgLight light2 = new NhgLight();

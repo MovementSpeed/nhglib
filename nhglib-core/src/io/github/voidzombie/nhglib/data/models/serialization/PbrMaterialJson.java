@@ -15,7 +15,7 @@ public class PbrMaterialJson implements JsonParseable<PbrMaterial> {
     @Override
     public void parse(JsonValue jsonValue) {
         pbrMaterial = new PbrMaterial();
-        pbrMaterial.targetNode = jsonValue.getString("targetNode");
+        pbrMaterial.targetNode = jsonValue.getString("targetNode", "");
 
         JsonValue albedoJson = jsonValue.get("albedo");
         JsonValue metalnessJson = jsonValue.get("metalness");

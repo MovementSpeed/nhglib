@@ -229,10 +229,14 @@ public class SceneManager {
         }
 
         for (PbrMaterial pbrMat : modelComponent.pbrMaterials) {
-            Node targetNode = modelComponent.model.getNode(pbrMat.targetNode);
+            if (pbrMat.targetNode != null && !pbrMat.targetNode.isEmpty()) {
+                Node targetNode = modelComponent.model.getNode(pbrMat.targetNode);
 
-            for (NodePart nodePart : targetNode.parts) {
-                nodePart.material = pbrMat;
+                for (NodePart nodePart : targetNode.parts) {
+                    nodePart.material = pbrMat;
+                }
+            } else {
+                modelComponent.model.materials.first().set(pbrMat);
             }
         }
     }
