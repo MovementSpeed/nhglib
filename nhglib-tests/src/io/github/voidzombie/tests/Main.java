@@ -12,8 +12,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
-import io.github.voidzombie.nhglib.graphics.lights.NhgLight;
-import io.github.voidzombie.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 import io.github.voidzombie.nhglib.graphics.shaders.attributes.GammaCorrectionAttribute;
 import io.github.voidzombie.nhglib.graphics.worlds.NhgWorld;
@@ -58,34 +56,18 @@ public class Main extends NhgEntry implements InputListener {
         param.magFilter = Texture.TextureFilter.Linear;
         param.genMipMaps = true;
 
-        nhg.assets.queueAsset(new Asset("scene", "myscene1.nhs", Scene.class));
+        nhg.assets.queueAsset(new Asset("scene", "myscene.nhs", Scene.class));
         nhg.assets.queueAsset(new Asset("inputMap", "input.nhc", JsonValue.class));
 
         GraphicsSystem graphicsSystem = nhg.entities.getEntitySystem(GraphicsSystem.class);
-        graphicsSystem.setClearColor(Color.RED);
+        graphicsSystem.setClearColor(Color.BLACK);
 
         Environment environment = graphicsSystem.getEnvironment();
 
-        NhgLight light = new NhgLight();
-        light.position.set(0f, 0f, 0f);
-        light.color.set(Color.WHITE);
-        light.intensity = 0.01f;
-        light.radius = 1f;
-
-        /*NhgLight light2 = new NhgLight();
-        light2.position.set(0.05f, 0f, -0.05f);
-        light2.color.set(Color.RED);
-        light2.intensity = 0.25f;
-        light2.radius = 1.0f;*/
-
-        NhgLightsAttribute lightsAttribute = new NhgLightsAttribute();
-        lightsAttribute.lights.add(light);
-        //lightsAttribute.lights.add(light2);
-
         GammaCorrectionAttribute gammaCorrectionAttribute = new GammaCorrectionAttribute();
-        gammaCorrectionAttribute.gammaCorrection = false;
+        gammaCorrectionAttribute.gammaCorrection = true;
 
-        environment.set(lightsAttribute);
+        //environment.set(lightsAttribute);
         environment.set(gammaCorrectionAttribute);
 
         // Subscribe to asset events
@@ -100,7 +82,7 @@ public class Main extends NhgEntry implements InputListener {
                                 scene = nhg.assets.get(asset);
 
                                 world.loadScene(scene);
-                                world.setReferenceEntity("weaponEntity1");
+                                world.setReferenceEntity("camera");
 
                                 Integer cameraEntity = scene.sceneGraph.getSceneEntity("camera");
                                 cameraNode = nhg.entities.getComponent(
@@ -124,14 +106,6 @@ public class Main extends NhgEntry implements InputListener {
     public void engineUpdate(float delta) {
         super.engineUpdate(delta);
         world.update();
-
-        /*if (scene != null) {
-            int entity = scene.sceneGraph.getSceneEntity("weaponEntity1");
-            NodeComponent nodeComponent = Nhg.entities.getComponent(
-                    entity, NodeComponent.class);
-            nodeComponent.rotate(0, -0.1f, 0);
-            nodeComponent.translate(0.002f * Gdx.graphics.getDeltaTime(), 0, 0, true);
-        }*/
     }
 
     @Override
@@ -143,9 +117,7 @@ public class Main extends NhgEntry implements InputListener {
     @Override
     public void onKeyInput(NhgInput input) {
         if (scene != null) {
-            //int entity = scene.sceneGraph.getSceneEntity("camera");
-            NodeComponent nodeComponent = cameraNode/*nhg.entities.getComponent(
-                    entity, NodeComponent.class)*/;
+            NodeComponent nodeComponent = cameraNode;
 
             switch (input.getName()) {
                 case "strafeRight":

@@ -19,7 +19,7 @@ import io.github.voidzombie.nhglib.runtime.threading.Threading;
 // TODO : Implement real time shadow maps
 // TODO : Implement image based lighting
 // TODO : Implement physics and easy collision system
-// TODO : Implement all light types
+// TODO : Implement all light types (missing: directional)
 
 /**
  * Created by Fausto Napoli on 17/10/2016.

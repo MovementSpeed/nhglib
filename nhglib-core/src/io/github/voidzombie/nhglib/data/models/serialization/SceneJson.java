@@ -27,11 +27,13 @@ public class SceneJson implements JsonParseable<Scene> {
 
         int rootEntity = output.sceneGraph.getRootEntity();
 
-        for (JsonValue entity : entitiesJson) {
-            EntityJson entityJson = new EntityJson(entities);
-            entityJson.setSceneGraph(output.sceneGraph);
-            entityJson.setParentEntity(rootEntity);
-            entityJson.parse(entity);
+        if (entitiesJson != null) {
+            for (JsonValue entity : entitiesJson) {
+                EntityJson entityJson = new EntityJson(entities);
+                entityJson.setSceneGraph(output.sceneGraph);
+                entityJson.setParentEntity(rootEntity);
+                entityJson.parse(entity);
+            }
         }
 
         NodeComponent nodeComponent = entities.getComponent(rootEntity, NodeComponent.class);

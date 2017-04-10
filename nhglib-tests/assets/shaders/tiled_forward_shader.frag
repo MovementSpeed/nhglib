@@ -6,10 +6,12 @@ precision mediump float;
 
 uniform int u_graphicsWidth;
 uniform int u_graphicsHeight;
+uniform mat4 u_viewMatrix;
 
 #ifdef lights
     #if lights > 0
         struct Light {
+            int type;
             vec3 position;
             vec3 direction;
             float intensity;
@@ -143,12 +145,14 @@ void main() {
             vec4 tempPixel = texture2D(u_lights, vec2((float(i) + 1.5) / 64.0, textureRow));
             int lightId = int(clamp(ceil(tempPixel.r * 255.0), 0.0, 255.0));
 
+            Light light = u_lightsList[lightId];
+
             vec4 lightInfo = texture2D(u_lightInfo, vec2(0.5, float(lightId) / 128.0));
 
             float lightRadius = lightInfo.a * 255.0;
             lightInfo.a = 1.0;
 
-            vec3 lightDirection = u_lightsList[lightId].position - v_position;
+            vec3 lightDirection = light.position - v_position;
             float lightDistance = length(lightDirection);
 
             vec3 L = normalize(lightDirection);
@@ -156,6 +160,16 @@ void main() {
 
             float lightAttenuation = 1.0 / (lightDistance * lightDistance);
             vec3 radiance = lightInfo.rgb * lightAttenuation;
+
+            if (light.type == 2) {
+                float currentAngle = dot(-normalize(lightDirection), normalize(light.direction));
+                float innerConeAngle = cos(radians(light.innerAngle));
+                float outerConeAngle = cos(radians(light.outerAngle));
+                float conesAngleDiff = abs(innerConeAngle - outerConeAngle);
+
+                float spotEffect = clamp((currentAngle - outerConeAngle) / conesAngleDiff, 0.0, 1.0);
+                radiance *= spotEffect;
+            }
 
             vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
             float NDF = DistributionGGX(N, H, roughness);
@@ -170,7 +184,7 @@ void main() {
 
             kD *= 1.0 - metalness;
 
-            float NdotL = max(dot(N, L), 0.0) * u_lightsList[lightId].intensity;
+            float NdotL = max(dot(N, L), 0.0) * light.intensity;
             Lo += (kD * albedo / M_PI + brdf) * radiance * NdotL;
         }
     #endif

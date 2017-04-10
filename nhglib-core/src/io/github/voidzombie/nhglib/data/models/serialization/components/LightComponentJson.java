@@ -34,29 +34,24 @@ public class LightComponentJson extends ComponentJson {
         Color color = new Color(colorJson.getFloat("r"), colorJson.getFloat("g"), colorJson.getFloat("b"), colorJson.getFloat("a"));
 
         JsonValue directionJson = jsonValue.get("direction");
-        Vector3 direction = VectorPool.getVector3().set(
-                directionJson.getFloat("x"),
-                directionJson.getFloat("y"),
-                directionJson.getFloat("z")
-        );
+        Vector3 direction = VectorPool.getVector3();
+
+        if (directionJson != null) {
+            direction.set(
+                    directionJson.getFloat("x"),
+                    directionJson.getFloat("y"),
+                    directionJson.getFloat("z"));
+        }
 
         light.color.set(color);
+        light.direction.set(direction);
+        light.radius = radius;
         light.intensity = intensity;
+        light.type = lightType.ordinal();
 
-        switch (lightType) {
-            case DIRECTIONAL_LIGHT:
-                light.direction.set(direction);
-                break;
-
-            case POINT_LIGHT:
-                light.radius = radius;
-                break;
-
-            case SPOT_LIGHT:
-                light.innerAngle = innerAngle;
-                light.outerAngle = outerAngle;
-                light.direction.set(direction);
-                break;
+        if (lightType == LightType.SPOT_LIGHT) {
+            light.innerAngle = innerAngle;
+            light.outerAngle = outerAngle;
         }
 
         Environment environment = graphicsSystem.getEnvironment();

@@ -5,6 +5,51 @@
     "entities":
     [
       {
+        "id":"light",
+        "transform":
+        {
+          "position":
+          {
+            "x":0.0,
+            "y":0.0,
+            "z":0.0,
+          },
+          "rotation":
+          {
+            "x":45.0,
+            "y":0.0,
+            "z":0.0,
+          },
+          "scale":
+          {
+            "x":1.0,
+            "y":1.0,
+            "z":1.0,
+          }
+        },
+        "components":
+        [
+          {
+            "type":"light",
+            "lightType":"spotLight",
+            "intensity":0.1,
+            "radius":1.0,
+            "innerAngle":20,
+            "outerAngle":39,
+            "color":
+            {
+              "r":1.0,
+              "g":1.0,
+              "b":1.0,
+              "a":1.0,
+            }
+          }
+        ],
+        "entities":
+        [
+        ]
+      },
+      {
         "id":"corridors",
         "transform":
         {
@@ -42,164 +87,58 @@
             "materials":
             [
               {
-                  "targetNode":"Cube",
-                  "albedo":
+                "targetNode":"Cube",
+                "albedo":
+                {
+                  "asset":
                   {
-                    "asset":
-                    {
-                      "alias":"albedoAsset",
-                      "source":"textures/dun-albedo.jpg",
-                      "classAlias":"texture"
-                    }
-                  },
-                  "metalness":
-                  {
-                    "asset":
-                    {
-                      "alias":"metalnessAsset",
-                      "source":"textures/dun-metalness.jpg",
-                      "classAlias":"texture"
-                    }
-                  },
-                  "roughness":
-                  {
-                    "asset":
-                    {
-                      "alias":"roughnessAsset",
-                      "source":"textures/dun-roughness.jpg",
-                      "classAlias":"texture"
-                    }
-                  },
-                  "normal":
-                  {
-                    "asset":
-                    {
-                      "alias":"normalAsset",
-                      "source":"textures/dun-normal.jpg",
-                      "classAlias":"texture"
-                    }
-                  },
-                  "ambientOcclusion":
-                  {
-                    "asset":
-                    {
-                      "alias":"ambientOcclusionAsset",
-                      "source":"textures/dun-ao.jpg",
-                      "classAlias":"texture"
-                    }
+                    "alias":"albedoAsset",
+                    "source":"textures/dun-albedo.jpg",
+                    "classAlias":"texture"
                   }
+                },
+                "metalness":
+                {
+                  "asset":
+                  {
+                    "alias":"metalnessAsset",
+                    "source":"textures/dun-metalness.jpg",
+                    "classAlias":"texture"
+                  }
+                },
+                "roughness":
+                {
+                  "asset":
+                  {
+                    "alias":"roughnessAsset",
+                    "source":"textures/dun-roughness.jpg",
+                    "classAlias":"texture"
+                  }
+                },
+                "normal":
+                {
+                  "asset":
+                  {
+                    "alias":"normalAsset",
+                    "source":"textures/dun-normal.jpg",
+                    "classAlias":"texture"
+                  }
+                },
+                "ambientOcclusion":
+                {
+                  "asset":
+                  {
+                    "alias":"ambientOcclusionAsset",
+                    "source":"textures/dun-ao.jpg",
+                    "classAlias":"texture"
+                  }
+                }
               }
-            ]
-          },
-          {
-            "type":"message",
-            "filters":
-            [
-              "example"
             ]
           }
         ],
         "entities":
         [
-          {
-            "id":"weaponEntity1",
-            "transform":
-            {
-              "position":
-              {
-                "x":0.0,
-                "y":0.0,
-                "z":0.0,
-              },
-              "rotation":
-              {
-                "x":0.0,
-                "y":0.0,
-                "z":0.0,
-              },
-              "scale":
-              {
-                "x":1.0,
-                "y":1.0,
-                "z":1.0,
-              }
-            },
-            "components":
-            [
-              {
-                "type":"model",
-                "graphicsType":"dynamic",
-                "asset":
-                {
-                  "alias":"weapon1",
-                  "source":"models/weapon.g3db",
-                  "classAlias":"model"
-                },
-                "materials":
-                [
-                ]
-              },
-              {
-                "type":"message",
-                "filters":
-                [
-                  "destroy"
-                ]
-              }
-            ],
-            "entities":
-            [
-
-              {
-                "id":"weaponEntity2",
-                "transform":
-                {
-                  "position":
-                  {
-                    "x":0.0,
-                    "y":0.05,
-                    "z":0.0,
-                  },
-                  "rotation":
-                  {
-                    "x":0.0,
-                    "y":0.0,
-                    "z":0.0,
-                  },
-                  "scale":
-                  {
-                    "x":1.0,
-                    "y":1.0,
-                    "z":1.0,
-                  }
-                },
-                "components":
-                [
-                  {
-                    "type":"model",
-                    "graphicsType":"dynamic",
-                    "asset":
-                    {
-                      "alias":"weapon2",
-                      "source":"models/weapon.g3db",
-                      "classAlias":"model"
-                    },
-                    "materials":
-                    [
-                    ]
-                  },
-                  {
-                    "type":"message",
-                    "filters":
-                    [
-                      "destroy"
-                    ]
-                  }
-                ],
-                "entities": []
-              }
-            ]
-          }
         ]
       },
       {
@@ -233,27 +172,6 @@
               "fieldOfView":67,
               "nearPlane":0.01,
               "farPlane":100
-            },
-            {
-              "type":"light",
-              "lightType":"pointLight",
-              "intensity":0.1,
-              "radius":1.0,
-              "innerAngle":30.0,
-              "outerAngle":40.0,
-              "color":
-              {
-                "r":0.48,
-                "g":0.67,
-                "b":0.24,
-                "a":1.0,
-              },
-              "direction":
-              {
-                "x":0.0,
-                "y":0.0,
-                "z":0.0
-              }
             }
           ],
           "entities":

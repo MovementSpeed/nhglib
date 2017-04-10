@@ -254,8 +254,9 @@ public class TiledForwardShader extends BaseShader {
             NhgLight nhgLight = lightsToRender.get(light);
             String lightUniform = "u_lightsList[" + light + "].";
 
+            shaderProgram.setUniformi(lightUniform + "type", nhgLight.type);
             shaderProgram.setUniformf(lightUniform + "position", getViewSpacePosition(nhgLight));
-            shaderProgram.setUniformf(lightUniform + "direction", nhgLight.direction);
+            shaderProgram.setUniformf(lightUniform + "direction", getViewSpaceDirection(nhgLight));
             shaderProgram.setUniformf(lightUniform + "intensity", nhgLight.intensity);
             shaderProgram.setUniformf(lightUniform + "innerAngle", nhgLight.innerAngle);
             shaderProgram.setUniformf(lightUniform + "outerAngle", nhgLight.outerAngle);
@@ -395,6 +396,14 @@ public class TiledForwardShader extends BaseShader {
                 .mul(camera.view);
 
         return position;
+    }
+
+    private Vector3 getViewSpaceDirection(NhgLight light) {
+        Vector3 direction = VectorPool.getVector3();
+        direction.set(light.direction)
+                .rot(camera.view);
+
+        return direction;
     }
 
     public static class Params {

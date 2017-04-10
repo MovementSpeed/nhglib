@@ -41,11 +41,13 @@ public class EntityJson implements JsonParseable<Integer> {
 
         JsonValue entitiesJson = jsonValue.get("entities");
 
-        for (JsonValue entityJsonValue : entitiesJson) {
-            EntityJson entityJson = new EntityJson(entities);
-            entityJson.sceneGraphRef = sceneGraphRef;
-            entityJson.parentEntity = entity;
-            entityJson.parse(entityJsonValue);
+        if (entitiesJson != null) {
+            for (JsonValue entityJsonValue : entitiesJson) {
+                EntityJson entityJson = new EntityJson(entities);
+                entityJson.sceneGraphRef = sceneGraphRef;
+                entityJson.parentEntity = entity;
+                entityJson.parse(entityJsonValue);
+            }
         }
 
         TransformJson transformJson = new TransformJson();
