@@ -25,10 +25,10 @@ public class LightComponentJson extends ComponentJson {
         NhgLight light = new NhgLight();
 
         LightType lightType = LightType.fromString(jsonValue.getString("lightType"));
-        float radius = jsonValue.getFloat("radius");
-        float intensity = jsonValue.getFloat("intensity");
-        float innerAngle = jsonValue.getFloat("innerAngle");
-        float outerAngle = jsonValue.getFloat("outerAngle");
+        float radius = jsonValue.getFloat("radius", 1f);
+        float intensity = jsonValue.getFloat("intensity", 1f);
+        float innerAngle = jsonValue.getFloat("innerAngle", 0f);
+        float outerAngle = jsonValue.getFloat("outerAngle", 0f);
 
         JsonValue colorJson = jsonValue.get("color");
         Color color = new Color(colorJson.getFloat("r"), colorJson.getFloat("g"), colorJson.getFloat("b"), colorJson.getFloat("a"));

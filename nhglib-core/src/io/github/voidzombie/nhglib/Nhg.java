@@ -10,6 +10,7 @@ import io.github.voidzombie.nhglib.runtime.threading.Threading;
 // FIXME : Normal mapping has issues when camera rotates certain angles
 
 // TODO :
+// TODO : Implement video playback on iOS and Android
 // TODO : Manage global configuration files
 // TODO : Implement support for transparent textures
 // TODO : Implement projective textures
@@ -19,7 +20,7 @@ import io.github.voidzombie.nhglib.runtime.threading.Threading;
 // TODO : Implement real time shadow maps
 // TODO : Implement image based lighting
 // TODO : Implement physics and easy collision system
-// TODO : Implement all light types (missing: directional)
+// TODO : Create utility objects NhgPointLight, NhgDirectionalLight, NhgSpotLight
 
 /**
  * Created by Fausto Napoli on 17/10/2016.

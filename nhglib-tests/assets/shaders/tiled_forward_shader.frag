@@ -152,7 +152,14 @@ void main() {
             float lightRadius = lightInfo.a * 255.0;
             lightInfo.a = 1.0;
 
-            vec3 lightDirection = light.position - v_position;
+            vec3 lightDirection;
+
+            if (light.type == 0) {
+                lightDirection = normalize(-light.direction);
+            } else {
+                lightDirection = light.position - v_position;
+            }
+
             float lightDistance = length(lightDirection);
 
             vec3 L = normalize(lightDirection);
