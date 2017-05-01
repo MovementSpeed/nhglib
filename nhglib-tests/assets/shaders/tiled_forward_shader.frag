@@ -3,6 +3,8 @@ precision mediump float;
 #endif
 
 #define M_PI 3.14159265359
+#define MIN_ATTENUATION 0.0001
+#define ATTENUATION_THRESHOLD 0.01
 
 uniform int u_graphicsWidth;
 uniform int u_graphicsHeight;
@@ -90,19 +92,19 @@ void main() {
     #ifdef defAlbedo
         vec3 albedo = texture2D(u_albedo, v_texCoord).rgb;
     #else
-        vec3 albedo = vec3(1.0);
+        vec3 albedo = vec3(0.5);
     #endif
 
     #ifdef defMetalness
         float metalness = texture2D(u_metalness, v_texCoord).r;
     #else
-        float metalness = 0.5;
+        float metalness = 0.0;
     #endif
 
     #ifdef defRoughness
         float roughness = texture2D(u_roughness, v_texCoord).r;
     #else
-        float roughness = 0.5;
+        float roughness = 1.0;
     #endif
 
     #ifdef defAmbientOcclusion
@@ -143,30 +145,30 @@ void main() {
 
         for (int i = 0; i < pixelCeil; i++) {
             vec4 tempPixel = texture2D(u_lights, vec2((float(i) + 1.5) / 64.0, textureRow));
-            int lightId = int(clamp(ceil(tempPixel.r * 255.0), 0.0, 255.0));
 
+            int lightId = int(clamp(ceil(tempPixel.r * 255.0), 0.0, 255.0));
             Light light = u_lightsList[lightId];
 
             vec4 lightInfo = texture2D(u_lightInfo, vec2(0.5, float(lightId) / 128.0));
-
             float lightRadius = lightInfo.a * 255.0;
             lightInfo.a = 1.0;
 
-            vec3 lightDirection;
+            vec3 lightDirection = light.position - v_position;
+            float lightDistance = length(lightDirection);
+
+            float lightAttenuation = clamp(1.0 - (lightDistance / lightRadius), 0.0, 1.0);
+            lightAttenuation *= lightAttenuation;
 
             if (light.type == 0) {
                 lightDirection = normalize(-light.direction);
-            } else {
-                lightDirection = light.position - v_position;
+                lightDistance = length(lightDirection);
+                lightAttenuation = 1.0;
             }
-
-            float lightDistance = length(lightDirection);
 
             vec3 L = normalize(lightDirection);
             vec3 H = normalize(V + L);
 
-            float lightAttenuation = 1.0 / (lightDistance * lightDistance);
-            vec3 radiance = lightInfo.rgb * lightAttenuation;
+            vec3 radiance = lightInfo.rgb;
 
             if (light.type == 2) {
                 float currentAngle = dot(-normalize(lightDirection), normalize(light.direction));
@@ -192,7 +194,7 @@ void main() {
             kD *= 1.0 - metalness;
 
             float NdotL = max(dot(N, L), 0.0) * light.intensity;
-            Lo += (kD * albedo / M_PI + brdf) * radiance * NdotL;
+            Lo += (kD * albedo / M_PI + brdf) * radiance * NdotL * lightAttenuation;
         }
     #endif
 
@@ -204,5 +206,5 @@ void main() {
         color = pow(color, vec3(1.0 / 2.2));
     #endif
 
-    gl_FragColor = vec4(color, 1.0);
+    gl_FragColor = vec4(color, 0.8);
 }

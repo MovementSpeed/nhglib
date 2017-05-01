@@ -8,7 +8,9 @@ import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.Shader;
 import com.badlogic.gdx.graphics.g3d.shaders.BaseShader;
 import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
+import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -17,6 +19,7 @@ import com.badlogic.gdx.utils.IntArray;
 import io.github.voidzombie.nhglib.graphics.lights.NhgLight;
 import io.github.voidzombie.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.voidzombie.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
+import io.github.voidzombie.nhglib.utils.data.MatrixPool;
 import io.github.voidzombie.nhglib.utils.data.VectorPool;
 import io.github.voidzombie.nhglib.utils.graphics.ShaderUtils;
 
@@ -48,6 +51,9 @@ public class TiledForwardShader extends BaseShader {
     private Array<IntArray> lightsFrustum;
     private Array<NhgLight> lights;
     private Array<NhgLight> lightsToRender;
+
+    private ShapeRenderer shapeRenderer = new ShapeRenderer();
+    private ImmediateModeRenderer20 renderer20 = new ImmediateModeRenderer20(false, true, 0);
 
     public TiledForwardShader(Renderable renderable, Environment environment, Params params) {
         this.renderable = renderable;
@@ -229,23 +235,15 @@ public class TiledForwardShader extends BaseShader {
     @Override
     public void begin(Camera camera, RenderContext context) {
         this.camera = camera;
-
         frustums.setFrustums(((PerspectiveCamera) camera));
 
-        if (lights != null) {
-            for (NhgLight light : lights) {
-                if (camera.frustum.sphereInFrustum(light.position, light.radius) &&
-                        camera.position.dst(light.position) < lightRenderDistance) {
-                    lightsToRender.add(light);
-                }
-            }
-        }
-
+        cullLights();
         createLightTexture();
 
         super.begin(camera, context);
         Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
         Gdx.gl.glEnable(GL20.GL_CULL_FACE);
+        context.setBlending(true, GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
     }
 
     @Override
@@ -254,12 +252,17 @@ public class TiledForwardShader extends BaseShader {
             NhgLight nhgLight = lightsToRender.get(light);
             String lightUniform = "u_lightsList[" + light + "].";
 
-            shaderProgram.setUniformi(lightUniform + "type", nhgLight.type);
-            shaderProgram.setUniformf(lightUniform + "position", getViewSpacePosition(nhgLight));
-            shaderProgram.setUniformf(lightUniform + "direction", getViewSpaceDirection(nhgLight));
+            Vector3 viewSpacePosition = getViewSpacePosition(nhgLight);
+            Vector3 viewSpaceDirection = getViewSpaceDirection(nhgLight);
+
+            shaderProgram.setUniformi(lightUniform + "type", nhgLight.type.ordinal());
+            shaderProgram.setUniformf(lightUniform + "position", viewSpacePosition);
+            shaderProgram.setUniformf(lightUniform + "direction", viewSpaceDirection);
             shaderProgram.setUniformf(lightUniform + "intensity", nhgLight.intensity);
             shaderProgram.setUniformf(lightUniform + "innerAngle", nhgLight.innerAngle);
             shaderProgram.setUniformf(lightUniform + "outerAngle", nhgLight.outerAngle);
+
+            VectorPool.freeVector3(viewSpacePosition, viewSpaceDirection);
         }
 
         updateBones(renderable);
@@ -292,9 +295,8 @@ public class TiledForwardShader extends BaseShader {
             NhgLight light = lightsToRender.get(i);
 
             frustums.checkFrustums(light.position, light.radius, lightsFrustum, i);
-
             color.set(light.color);
-            color.a = light.radius / 255.0f;
+            color.a = light.radius / 255f;
 
             lightInfoPixmap.setColor(color);
             lightInfoPixmap.drawPixel(0, i);
@@ -339,6 +341,58 @@ public class TiledForwardShader extends BaseShader {
             }
 
             shaderProgram.setUniformMatrix4fv("u_bones", bones, 0, bones.length);
+        }
+    }
+
+    private void cullPointLight(NhgLight light) {
+        if (camera.frustum.sphereInFrustum(light.position, light.radius) &&
+                camera.position.dst(light.position) < lightRenderDistance) {
+            lightsToRender.add(light);
+        }
+    }
+
+    private void cullSpotLight(NhgLight light) {
+        Matrix4 a = MatrixPool.getMatrix4();
+        a.setToTranslation(light.position);
+
+        Matrix4 b = MatrixPool.getMatrix4();
+        b.set(a).translate(new Vector3(light.direction).scl(light.radius));
+
+        Vector3 p1 = VectorPool.getVector3();
+        Vector3 p2 = VectorPool.getVector3();
+        Vector3 m = VectorPool.getVector3();
+
+        a.getTranslation(p1);
+        b.getTranslation(p2);
+        m.set(p1).add(p2).scl(0.5f);
+
+        float radius = p1.dst(p2) * 0.5f;
+
+        if (camera.frustum.sphereInFrustum(m, radius)) {
+            lightsToRender.add(light);
+        }
+
+        VectorPool.freeVector3(p1, p2, m);
+        MatrixPool.freeMatrix4(a, b);
+    }
+
+    private void cullLights() {
+        if (lights != null) {
+            for (NhgLight light : lights) {
+                switch (light.type) {
+                    case POINT_LIGHT:
+                        cullPointLight(light);
+                        break;
+
+                    case SPOT_LIGHT:
+                        cullSpotLight(light);
+                        break;
+
+                    case DIRECTIONAL_LIGHT:
+                        lightsToRender.add(light);
+                        break;
+                }
+            }
         }
     }
 

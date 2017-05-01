@@ -11,11 +11,11 @@ import io.github.voidzombie.nhglib.utils.scenes.SceneUtils;
  * Created by Fausto Napoli on 19/12/2016.
  */
 public class EntityJson implements JsonParseable<Integer> {
-    private Integer parentEntity;
-    private Integer output;
+    public Integer parentEntity;
 
+    private Integer output;
     private Entities entities;
-    private SceneGraph sceneGraphRef;
+    private SceneGraph sceneGraph;
 
     public EntityJson(Entities entities) {
         this.entities = entities;
@@ -24,7 +24,7 @@ public class EntityJson implements JsonParseable<Integer> {
     @Override
     public void parse(JsonValue jsonValue) {
         String id = jsonValue.getString("id");
-        int entity = sceneGraphRef.addSceneEntity(id, parentEntity);
+        int entity = sceneGraph.addSceneEntity(id, parentEntity);
 
         JsonValue componentsJson = jsonValue.get("components");
 
@@ -44,7 +44,7 @@ public class EntityJson implements JsonParseable<Integer> {
         if (entitiesJson != null) {
             for (JsonValue entityJsonValue : entitiesJson) {
                 EntityJson entityJson = new EntityJson(entities);
-                entityJson.sceneGraphRef = sceneGraphRef;
+                entityJson.sceneGraph = sceneGraph;
                 entityJson.parentEntity = entity;
                 entityJson.parse(entityJsonValue);
             }
@@ -54,10 +54,10 @@ public class EntityJson implements JsonParseable<Integer> {
         transformJson.parse(jsonValue.get("transform"));
 
         NodeComponent nodeComponent = entities.getComponent(entity, NodeComponent.class);
-
-        nodeComponent.setTranslation(transformJson.position);
-        nodeComponent.setRotation(transformJson.rotation);
-        nodeComponent.setScale(transformJson.scale);
+        nodeComponent.setTransform(
+                transformJson.position,
+                transformJson.rotation,
+                transformJson.scale);
 
         output = entity;
     }
@@ -67,7 +67,7 @@ public class EntityJson implements JsonParseable<Integer> {
     }
 
     public void setSceneGraph(SceneGraph sceneGraph) {
-        this.sceneGraphRef = sceneGraph;
+        this.sceneGraph = sceneGraph;
     }
 
     @Override

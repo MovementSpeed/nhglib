@@ -28,8 +28,7 @@ public class SceneGraph {
         sceneEntityArchetype = entities.createArchetype(NodeComponent.class);
 
         rootEntity = createSceneEntity(rootId);
-        rootNodeComponent = entities.getComponent(
-                rootEntity, NodeComponent.class);
+        rootNodeComponent = entities.getComponent(rootEntity, NodeComponent.class);
         rootNodeComponent.id = rootEntity;
 
         this.entitiesArray.add(rootEntity);
@@ -39,25 +38,14 @@ public class SceneGraph {
         return rootEntity;
     }
 
-    /**
-     * Adds an entity to the root node.
-     * @return the created entity.
-     */
-    public int addSceneEntity(String id) {
-        int entity = createSceneEntity(id);
+    public int createSceneEntity(String id) {
+        int entity = entities.createEntity(sceneEntityArchetype);
+        entityIds.put(id, entity);
 
-        NodeComponent nodeComponent = entities.getComponent(
-                entity, NodeComponent.class);
-        nodeComponent.id = entity;
-
-        rootNodeComponent.node.addChild(nodeComponent.node);
-        entitiesArray.add(entity);
         return entity;
     }
 
-    public int addSceneEntity(String id, int parentEntity) {
-        int entity = createSceneEntity(id);
-
+    public int addSceneEntity(int entity, int parentEntity) {
         NodeComponent nodeComponent = entities
                 .getComponent(entity, NodeComponent.class);
         nodeComponent.id = entity;
@@ -70,18 +58,24 @@ public class SceneGraph {
         return entity;
     }
 
+    public int addSceneEntity(int entity) {
+        return addSceneEntity(entity, rootEntity);
+    }
+
+    public int addSceneEntity(String id) {
+        return addSceneEntity(id, rootEntity);
+    }
+
+    public int addSceneEntity(String id, int parentEntity) {
+        int entity = createSceneEntity(id);
+        return addSceneEntity(entity, parentEntity);
+    }
+
     public int getSceneEntity(String id) {
         return entityIds.get(id);
     }
 
     public Array<Integer> getEntities() {
         return entitiesArray;
-    }
-
-    private int createSceneEntity(String id) {
-        int entity = entities.createEntity(sceneEntityArchetype);
-        entityIds.put(id, entity);
-
-        return entity;
     }
 }

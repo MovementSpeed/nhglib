@@ -18,6 +18,8 @@ public class ModelComponentJson extends ComponentJson {
         String type = jsonValue.getString("graphicsType");
         JsonValue asset = jsonValue.get("asset");
 
+        boolean enabled = jsonValue.getBoolean("enabled");
+
         AssetJson assetJson = new AssetJson();
         assetJson.parse(asset);
 
@@ -34,6 +36,7 @@ public class ModelComponentJson extends ComponentJson {
 
         modelComponent.type = ModelComponent.Type.fromString(type);
         modelComponent.asset = assetJson.get();
+        modelComponent.enabled = enabled;
         output = modelComponent;
     }
 }

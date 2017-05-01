@@ -16,7 +16,7 @@
           },
           "rotation":
           {
-            "x":45.0,
+            "x":90.0,
             "y":0.0,
             "z":0.0,
           },
@@ -32,10 +32,10 @@
           {
             "type":"light",
             "lightType":"spotLight",
-            "intensity":0.1,
-            "radius":1.0,
-            "innerAngle":20,
-            "outerAngle":39,
+            "intensity":10.0,
+            "range":2.0,
+            "innerAngle":40,
+            "outerAngle":45,
             "color":
             {
               "r":1.0,
@@ -44,9 +44,6 @@
               "a":1.0,
             }
           }
-        ],
-        "entities":
-        [
         ]
       },
       {
@@ -76,6 +73,7 @@
         [
           {
             "type":"model",
+            "enabled":"false",
             "graphicsType":"dynamic",
             "asset":
             {
@@ -87,52 +85,7 @@
             "materials":
             [
               {
-                "targetNode":"Cube",
-                "albedo":
-                {
-                  "asset":
-                  {
-                    "alias":"albedoAsset",
-                    "source":"textures/dun-albedo.jpg",
-                    "classAlias":"texture"
-                  }
-                },
-                "metalness":
-                {
-                  "asset":
-                  {
-                    "alias":"metalnessAsset",
-                    "source":"textures/dun-metalness.jpg",
-                    "classAlias":"texture"
-                  }
-                },
-                "roughness":
-                {
-                  "asset":
-                  {
-                    "alias":"roughnessAsset",
-                    "source":"textures/dun-roughness.jpg",
-                    "classAlias":"texture"
-                  }
-                },
-                "normal":
-                {
-                  "asset":
-                  {
-                    "alias":"normalAsset",
-                    "source":"textures/dun-normal.jpg",
-                    "classAlias":"texture"
-                  }
-                },
-                "ambientOcclusion":
-                {
-                  "asset":
-                  {
-                    "alias":"ambientOcclusionAsset",
-                    "source":"textures/dun-ao.jpg",
-                    "classAlias":"texture"
-                  }
-                }
+                "targetNode":"Cube"
               }
             ]
           }
@@ -142,83 +95,72 @@
         ]
       },
       {
-          "id":"camera",
-          "transform":
-          {
-            "position":
-            {
-              "x":0.0,
-              "y":0.0,
-              "z":1.0,
-            },
-            "rotation":
-            {
-              "x":0.0,
-              "y":0.0,
-              "z":0.0,
-            },
-            "scale":
-            {
-              "x":1.0,
-              "y":1.0,
-              "z":1.0,
-            }
-          },
-          "components":
-          [
-            {
-              "type":"camera",
-              "cameraType":"perspective",
-              "fieldOfView":67,
-              "nearPlane":0.01,
-              "farPlane":100
-            }
-          ],
-          "entities":
-          []
-        },
+        "id":"camera",
+        "transform":
         {
-          "id":"light",
-          "transform":
+          "position":
           {
-            "position":
-            {
-              "x":0.0,
-              "y":0.0,
-              "z":0.0,
-            },
-            "rotation":
-            {
-              "x":200.0,
-              "y":25.0,
-              "z":0.0,
-            },
-            "scale":
-            {
-              "x":1.0,
-              "y":1.0,
-              "z":1.0,
-            }
+            "x":1.5,
+            "y":0.5,
+            "z":0.0,
           },
-          "components":
-          [
-            {
-              "type":"light",
-              "lightType":"directionalLight",
-              "intensity":0.3,
-              "color":
-              {
-                "r":1.0,
-                "g":1.0,
-                "b":1.0,
-                "a":1.0,
-              }
-            }
-          ],
-          "entities":
-          [
-          ]
-        }
+          "rotation":
+          {
+            "x":0.0,
+            "y":270.0,
+            "z":0.0,
+          },
+          "scale":
+          {
+            "x":1.0,
+            "y":1.0,
+            "z":1.0,
+          }
+        },
+        "components":
+        [
+          {
+            "type":"camera",
+            "cameraType":"perspective",
+            "fieldOfView":67,
+            "nearPlane":0.01,
+            "farPlane":100
+          }
+        ],
+        "entities":
+        []
+      },
+      {
+        "id":"light",
+        "transform":
+        {
+          "position":
+          {
+            "x":0.0,
+            "y":0.0,
+            "z":0.0,
+          },
+          "rotation":
+          {
+            "x":200.0,
+            "y":25.0,
+            "z":0.0,
+          },
+          "scale":
+          {
+            "x":1.0,
+            "y":1.0,
+            "z":1.0,
+          }
+        },
+        "components":
+        [
+
+        ],
+        "entities":
+        [
+        ]
+      }
     ]
   }
 }

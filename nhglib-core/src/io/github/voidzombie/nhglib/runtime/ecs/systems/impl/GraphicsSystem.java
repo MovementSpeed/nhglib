@@ -85,15 +85,17 @@ public class GraphicsSystem extends NhgIteratingSystem {
         ModelComponent modelComponent = modelMapper.get(entityId);
         NodeComponent nodeComponent = nodeMapper.get(entityId);
 
-        if (modelComponent.animationController != null) {
-            modelComponent.animationController.update(Gdx.graphics.getDeltaTime());
-        }
+        if (modelComponent.enabled) {
+            if (modelComponent.animationController != null) {
+                modelComponent.animationController.update(Gdx.graphics.getDeltaTime());
+            }
 
-        if (modelComponent.type == ModelComponent.Type.DYNAMIC && modelComponent.model != null) {
-            modelComponent.model.transform.set(nodeComponent.getTransform());
+            if (modelComponent.type == ModelComponent.Type.DYNAMIC && modelComponent.model != null) {
+                modelComponent.model.transform.set(nodeComponent.getTransform());
 
-            for (ModelCache modelCache : dynamicCaches) {
-                modelCache.add(modelComponent.model);
+                for (ModelCache modelCache : dynamicCaches) {
+                    modelCache.add(modelComponent.model);
+                }
             }
         }
     }

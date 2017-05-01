@@ -48,15 +48,33 @@ public class VectorPool {
         }
     };
 
-    public static Vector2 getVector2() {
+    public synchronized static void freeVector2(Vector2... vec) {
+        for (Vector2 vec2 : vec) {
+            vector2Pool.free(vec2);
+        }
+    }
+
+    public synchronized static void freeVector3(Vector3... vec) {
+        for (Vector3 vec3 : vec) {
+            vector3Pool.free(vec3);
+        }
+    }
+
+    public synchronized static void freeVector4(Vector4... vec) {
+        for (Vector4 vec4 : vec) {
+            vector4Pool.free(vec4);
+        }
+    }
+
+    public synchronized static Vector2 getVector2() {
         return vector2Pool.obtain();
     }
 
-    public static Vector3 getVector3() {
+    public synchronized static Vector3 getVector3() {
         return vector3Pool.obtain();
     }
 
-    public static Vector4 getVector4() {
+    public synchronized static Vector4 getVector4() {
         return vector4Pool.obtain();
     }
 }

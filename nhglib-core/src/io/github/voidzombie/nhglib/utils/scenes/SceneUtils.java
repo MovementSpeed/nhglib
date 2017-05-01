@@ -19,7 +19,7 @@ public class SceneUtils {
         componentJsonClassesMapping.put(type, componentClass);
     }
 
-    public static Class assetClassFromClassAlias(String alias) {
+    public static Class assetClassFromAlias(String alias) {
         return assetClassesMapping.get(alias);
     }
 

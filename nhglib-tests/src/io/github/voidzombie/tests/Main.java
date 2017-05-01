@@ -2,11 +2,13 @@ package io.github.voidzombie.tests;
 
 import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.loaders.TextureLoader;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.FPSLogger;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonValue;
@@ -18,6 +20,7 @@ import io.github.voidzombie.nhglib.graphics.worlds.NhgWorld;
 import io.github.voidzombie.nhglib.graphics.worlds.strategies.impl.LargeWorldStrategy;
 import io.github.voidzombie.nhglib.input.interfaces.InputListener;
 import io.github.voidzombie.nhglib.input.models.NhgInput;
+import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.ModelComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.GraphicsSystem;
 import io.github.voidzombie.nhglib.runtime.entry.NhgEntry;
@@ -42,6 +45,8 @@ public class Main extends NhgEntry implements InputListener {
         super.engineStarted();
         Nhg.debugLogs = true;
 
+        Gdx.input.setCursorCatched(true);
+
         world = new NhgWorld(nhg.messaging, nhg.entities, nhg.assets,
                 new LargeWorldStrategy(nhg.entities),
                 new Bounds(2f, 2f, 2f));
@@ -51,23 +56,17 @@ public class Main extends NhgEntry implements InputListener {
 
         nhg.input.addListener(this);
 
-        TextureLoader.TextureParameter param = new TextureLoader.TextureParameter();
-        param.minFilter = Texture.TextureFilter.MipMap;
-        param.magFilter = Texture.TextureFilter.Linear;
-        param.genMipMaps = true;
-
         nhg.assets.queueAsset(new Asset("scene", "myscene.nhs", Scene.class));
         nhg.assets.queueAsset(new Asset("inputMap", "input.nhc", JsonValue.class));
 
         GraphicsSystem graphicsSystem = nhg.entities.getEntitySystem(GraphicsSystem.class);
-        graphicsSystem.setClearColor(Color.BLACK);
+        graphicsSystem.setClearColor(Color.GRAY);
 
         Environment environment = graphicsSystem.getEnvironment();
 
         GammaCorrectionAttribute gammaCorrectionAttribute = new GammaCorrectionAttribute();
         gammaCorrectionAttribute.gammaCorrection = true;
 
-        //environment.set(lightsAttribute);
         environment.set(gammaCorrectionAttribute);
 
         // Subscribe to asset events
@@ -83,6 +82,18 @@ public class Main extends NhgEntry implements InputListener {
 
                                 world.loadScene(scene);
                                 world.setReferenceEntity("camera");
+
+                                ModelBuilder mb = new ModelBuilder();
+                                Model planeModel = mb.createBox(2f, 0.01f, 20f, new Material(), VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);
+
+                                int plane = scene.sceneGraph.createSceneEntity("plane");
+                                scene.sceneGraph.addSceneEntity(plane);
+
+                                ModelComponent modelComponent = nhg.entities.createComponent(plane, ModelComponent.class);
+                                modelComponent.initWithModel(planeModel);
+
+                                NodeComponent nodeComponent = nhg.entities.getComponent(plane, NodeComponent.class);
+                                nodeComponent.setTranslation(0, -0.15f, 0, true);
 
                                 Integer cameraEntity = scene.sceneGraph.getSceneEntity("camera");
                                 cameraNode = nhg.entities.getComponent(
@@ -156,9 +167,7 @@ public class Main extends NhgEntry implements InputListener {
     @Override
     public void onStickInput(NhgInput input) {
         if (scene != null) {
-            int entity = scene.sceneGraph.getSceneEntity("weaponEntity1");
-            NodeComponent nodeComponent = nhg.entities.getComponent(
-                    entity, NodeComponent.class);
+            NodeComponent nodeComponent = cameraNode;
 
             Vector2 stickVector = (Vector2) input.getInputSource().getValue();
 

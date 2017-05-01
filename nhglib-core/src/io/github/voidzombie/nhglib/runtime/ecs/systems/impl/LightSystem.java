@@ -8,6 +8,7 @@ import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.LightComponen
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.base.ThreadedIteratingSystem;
 import io.github.voidzombie.nhglib.runtime.threading.Threading;
+import io.github.voidzombie.nhglib.utils.data.MatrixPool;
 import io.github.voidzombie.nhglib.utils.data.VectorPool;
 
 /**
@@ -27,18 +28,25 @@ public class LightSystem extends ThreadedIteratingSystem {
         LightComponent light = lightMapper.get(entityId);
 
         light.light.position.set(node.getTranslation());
+        light.light.setTransform(node.getTransform());
 
         switch (light.type) {
             case SPOT_LIGHT:
             case DIRECTIONAL_LIGHT:
-                Matrix4 tempMatrix = new Matrix4(node.getTransform());
-                tempMatrix.translate(0f, 0f, 1f);
+                Matrix4 tempMatrix = MatrixPool.getMatrix4();
+                tempMatrix.set(node.getTransform());
+                tempMatrix.translate(0f, 1f, 0f);
 
                 Vector3 direction = VectorPool.getVector3();
+                Vector3 tempVec = VectorPool.getVector3();
+
                 direction.set(light.light.position)
-                        .sub(tempMatrix.getTranslation(VectorPool.getVector3()));
+                        .sub(tempMatrix.getTranslation(tempVec));
 
                 light.light.direction.set(direction);
+
+                MatrixPool.freeMatrix4(tempMatrix);
+                VectorPool.freeVector3(direction, tempVec);
                 break;
         }
     }

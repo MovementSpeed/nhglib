@@ -20,8 +20,6 @@ import io.github.voidzombie.nhglib.runtime.threading.Threading;
 // TODO : Implement real time shadow maps
 // TODO : Implement image based lighting
 // TODO : Implement physics and easy collision system
-// TODO : Create utility objects NhgPointLight, NhgDirectionalLight, NhgSpotLight
-
 /**
  * Created by Fausto Napoli on 17/10/2016.
  * Entry point for Nhg, where the various parts of the engine will be exposed.

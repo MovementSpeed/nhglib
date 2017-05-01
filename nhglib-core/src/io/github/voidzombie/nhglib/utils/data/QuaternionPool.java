@@ -20,6 +20,12 @@ public class QuaternionPool {
         }
     };
 
+    public static void freeQuaternion(Quaternion... quaternions) {
+        for (Quaternion q : quaternions) {
+            quaternionPool.free(q);
+        }
+    }
+
     public static Quaternion getQuaternion() {
         return quaternionPool.obtain();
     }
