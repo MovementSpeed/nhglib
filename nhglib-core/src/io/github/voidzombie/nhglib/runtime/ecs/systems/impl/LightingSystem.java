@@ -14,11 +14,11 @@ import io.github.voidzombie.nhglib.utils.data.VectorPool;
 /**
  * Created by Fausto Napoli on 14/03/2017.
  */
-public class LightSystem extends ThreadedIteratingSystem {
+public class LightingSystem extends ThreadedIteratingSystem {
     private ComponentMapper<NodeComponent> nodeMapper;
     private ComponentMapper<LightComponent> lightMapper;
 
-    public LightSystem(Threading threading) {
+    public LightingSystem(Threading threading) {
         super(Aspect.all(NodeComponent.class, LightComponent.class), threading);
     }
 

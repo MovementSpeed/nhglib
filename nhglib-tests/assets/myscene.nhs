@@ -43,6 +43,15 @@
               "b":1.0,
               "a":1.0,
             }
+          },
+          {
+            "type":"rigidBody",
+            "mass":1.0,
+            "shape":
+            {
+              "type":"sphere",
+              "radius":1.0
+            }
           }
         ]
       },

@@ -10,10 +10,7 @@ import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.assets.Assets;
-import io.github.voidzombie.nhglib.data.models.serialization.components.CameraComponentJson;
-import io.github.voidzombie.nhglib.data.models.serialization.components.LightComponentJson;
-import io.github.voidzombie.nhglib.data.models.serialization.components.MessageComponentJson;
-import io.github.voidzombie.nhglib.data.models.serialization.components.ModelComponentJson;
+import io.github.voidzombie.nhglib.data.models.serialization.components.*;
 import io.github.voidzombie.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
 import io.github.voidzombie.nhglib.graphics.utils.PbrMaterial;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.ModelComponent;
@@ -79,6 +76,7 @@ public class SceneManager {
         SceneUtils.addComponentJsonMapping("camera", CameraComponentJson.class);
         SceneUtils.addComponentJsonMapping("light", LightComponentJson.class);
         SceneUtils.addComponentJsonMapping("model", ModelComponentJson.class);
+        SceneUtils.addComponentJsonMapping("rigidBody", RigidBodyComponentJson.class);
 
         SceneUtils.addAssetClassMapping("model", Model.class);
         SceneUtils.addAssetClassMapping("texture", Texture.class);

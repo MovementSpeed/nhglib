@@ -165,6 +165,15 @@ public class NodeComponent extends PooledComponent {
         }
     }
 
+    public void setRotation(Quaternion rotation) {
+        rotationDelta.set(
+                rotation.x - rotation.getPitch(),
+                rotation.y - rotation.getYaw(),
+                rotation.z - rotation.getRoll());
+
+        node.rotation.set(rotation);
+    }
+
     public void rotate(Quaternion quaternion) {
         rotate(quaternion, false);
     }
@@ -277,6 +286,23 @@ public class NodeComponent extends PooledComponent {
         if (apply) {
             applyTransforms();
         }
+    }
+
+    public void setTransform(Matrix4 transform) {
+        Vector3 translation = VectorPool.getVector3();
+        Vector3 scale = VectorPool.getVector3();
+        Quaternion rotation = QuaternionPool.getQuaternion();
+
+        transform.getTranslation(translation);
+        transform.getRotation(rotation);
+        transform.getScale(scale);
+
+        setTranslation(translation);
+        setRotation(rotation);
+        setScale(scale);
+
+        VectorPool.freeVector3(translation, scale);
+        QuaternionPool.freeQuaternion(rotation);
     }
 
     public void setTransform(Vector3 translation, Vector3 rotation, Vector3 scale) {
