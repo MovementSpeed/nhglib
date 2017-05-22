@@ -58,7 +58,6 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
             Matrix4 initialTransform = nodeComponent.getTransform();
             bodyComponent.addToWorld(dynamicsWorld, initialTransform);
         } else {
-            bodyComponent.getBody().applyTorque(new Vector3(0.001f, 0.001f, 0.001f));
             nodeComponent.setTransform(bodyComponent.getTransform());
             nodeComponent.applyTransforms();
         }
