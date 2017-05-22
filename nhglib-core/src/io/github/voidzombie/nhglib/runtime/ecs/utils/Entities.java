@@ -1,6 +1,7 @@
 package io.github.voidzombie.nhglib.runtime.ecs.utils;
 
 import com.artemis.*;
+import com.artemis.utils.ImmutableBag;
 
 /**
  * Created by Fausto Napoli on 07/12/2016.
@@ -49,5 +50,9 @@ public class Entities {
 
     public <T extends Component> ComponentMapper<T> getMapper(Class<T> type) {
         return entityWorld.getMapper(type);
+    }
+
+    public ImmutableBag<BaseSystem> getEntitySystems() {
+        return entityWorld.getSystems();
     }
 }

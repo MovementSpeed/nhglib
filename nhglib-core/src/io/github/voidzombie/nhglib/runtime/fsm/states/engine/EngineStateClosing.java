@@ -1,8 +1,11 @@
 package io.github.voidzombie.nhglib.runtime.fsm.states.engine;
 
+import com.artemis.BaseSystem;
+import com.artemis.utils.ImmutableBag;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.utils.Disposable;
 import io.github.voidzombie.nhglib.runtime.entry.NhgEntry;
 import io.github.voidzombie.nhglib.utils.debug.Logger;
 
@@ -14,6 +17,13 @@ public class EngineStateClosing implements State<NhgEntry> {
     public void enter(NhgEntry nhgEntry) {
         Logger.log(this, "Engine is closing.");
         nhgEntry.engineClosing();
+
+        ImmutableBag<BaseSystem> systems = nhgEntry.nhg.entities.getEntitySystems();
+        for (BaseSystem bs : systems) {
+            if (bs instanceof Disposable) {
+                ((Disposable) bs).dispose();
+            }
+        }
 
         nhgEntry.nhg.assets.dispose();
         nhgEntry.nhg.threading.terminate();

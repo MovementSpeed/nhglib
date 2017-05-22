@@ -1,26 +1,31 @@
 package io.github.voidzombie.nhglib.runtime.ecs.components.physics;
 
-import com.artemis.PooledComponent;
+import com.artemis.Component;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.Collision;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
+import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
+import com.badlogic.gdx.utils.Disposable;
 import io.github.voidzombie.nhglib.physics.MotionState;
 
 /**
  * Created by Fausto Napoli on 03/05/2017.
  */
-public class RigidBodyComponent extends PooledComponent {
+public class RigidBodyComponent extends Component implements Disposable {
+    private boolean added;
     private btRigidBody body;
     private MotionState motionState;
+    private btCollisionShape collisionShape;
+    private btRigidBody.btRigidBodyConstructionInfo constructionInfo;
 
     @Override
-    protected void reset() {
+    public void dispose() {
         body.dispose();
-        body = null;
-
         motionState.dispose();
+        collisionShape.dispose();
+        constructionInfo.dispose();
     }
 
     public void build(btCollisionShape collisionShape, float mass) {
@@ -28,12 +33,34 @@ public class RigidBodyComponent extends PooledComponent {
     }
 
     public void build(btCollisionShape collisionShape, int activationState, float mass) {
-        btRigidBody.btRigidBodyConstructionInfo constructionInfo = getConstructionInfo(collisionShape, mass);
+        this.collisionShape = collisionShape;
+        constructionInfo = getConstructionInfo(collisionShape, mass);
 
         motionState = new MotionState();
         body = new btRigidBody(constructionInfo);
-        body.setMotionState(motionState);
-        body.setActivationState(activationState);
+        //body.setActivationState(Collision.DISABLE_DEACTIVATION);
+        body.setSleepingThresholds(1f / 1000f, 1f / 1000f);
+    }
+
+    public void addToWorld(btDynamicsWorld world, Matrix4 transform) {
+        if (!added) {
+            setTransform(transform);
+            body.setMotionState(motionState);
+            world.addRigidBody(body);
+            added = true;
+        }
+    }
+
+    public void setTransform(Matrix4 transform) {
+        motionState.transform.set(transform);
+    }
+
+    public boolean isAdded() {
+        return added;
+    }
+
+    public btRigidBody getBody() {
+        return body;
     }
 
     public Matrix4 getTransform() {

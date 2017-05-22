@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelCache;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ShaderProvider;
+import com.badlogic.gdx.physics.bullet.DebugDrawer;
+import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
 import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.graphics.shaders.tiledForward.TiledForwardShaderProvider;
@@ -27,12 +29,14 @@ import io.reactivex.functions.Consumer;
  * Created by Fausto Napoli on 08/12/2016.
  */
 public class GraphicsSystem extends NhgIteratingSystem {
-    private Color clearColor;
     private ShaderProvider shaderProvider;
+    private PhysicsSystem physicsSystem;
     private CameraSystem cameraSystem;
     private Environment environment;
-    private Entities entities;
+    private DebugDrawer debugDrawer;
     private Messaging messaging;
+    private Entities entities;
+    private Color clearColor;
 
     private Array<Camera> cameras;
     private Array<ModelBatch> modelBatches;
@@ -47,6 +51,9 @@ public class GraphicsSystem extends NhgIteratingSystem {
         this.entities = entities;
         this.messaging = messaging;
 
+        debugDrawer = new DebugDrawer();
+        debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_MAX_DEBUG_DRAW_MODE);
+
         clearColor = Color.BLACK;
         environment = new Environment();
         shaderProvider = new TiledForwardShaderProvider(environment);
@@ -60,10 +67,15 @@ public class GraphicsSystem extends NhgIteratingSystem {
     protected void begin() {
         super.begin();
 
+        if (physicsSystem == null) {
+            physicsSystem = entities.getEntitySystem(PhysicsSystem.class);
+        }
+
         if (cameraSystem == null) {
             cameraSystem = entities.getEntitySystem(CameraSystem.class);
         }
 
+        physicsSystem.setDebugDrawer(debugDrawer);
         cameras = cameraSystem.cameras;
 
         for (int i = 0; i < cameras.size - modelBatches.size; i++) {
@@ -118,6 +130,10 @@ public class GraphicsSystem extends NhgIteratingSystem {
             modelBatch.render(staticCache, environment);
             modelBatch.render(dynamicCache, environment);
             modelBatch.end();
+
+            debugDrawer.begin(camera);
+            physicsSystem.debugDraw();
+            debugDrawer.end();
         }
     }
 

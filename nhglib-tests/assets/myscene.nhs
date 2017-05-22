@@ -11,12 +11,12 @@
           "position":
           {
             "x":0.0,
-            "y":0.0,
+            "y":10.0,
             "z":0.0,
           },
           "rotation":
           {
-            "x":90.0,
+            "x":0.0,
             "y":0.0,
             "z":0.0,
           },
@@ -50,7 +50,7 @@
             "shape":
             {
               "type":"sphere",
-              "radius":1.0
+              "radius":0.1
             }
           }
         ]
@@ -109,8 +109,8 @@
         {
           "position":
           {
-            "x":1.5,
-            "y":0.5,
+            "x":1.0,
+            "y":1.0,
             "z":0.0,
           },
           "rotation":
@@ -151,8 +151,8 @@
           },
           "rotation":
           {
-            "x":200.0,
-            "y":25.0,
+            "x":0.0,
+            "y":0.0,
             "z":0.0,
           },
           "scale":
@@ -164,7 +164,17 @@
         },
         "components":
         [
-
+          {
+            "type":"rigidBody",
+            "mass":0.0,
+            "shape":
+            {
+              "type":"box",
+              "width":2.0,
+              "height":0.01,
+              "depth":20.0
+            }
+          }
         ],
         "entities":
         [

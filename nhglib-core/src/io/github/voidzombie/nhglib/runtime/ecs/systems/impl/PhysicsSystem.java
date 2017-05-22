@@ -2,10 +2,13 @@ package io.github.voidzombie.nhglib.runtime.ecs.systems.impl;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
+import com.artemis.systems.IteratingSystem;
+import com.artemis.utils.IntBag;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
+import com.badlogic.gdx.physics.bullet.DebugDrawer;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionDispatcher;
 import com.badlogic.gdx.physics.bullet.collision.btDbvtBroadphase;
 import com.badlogic.gdx.physics.bullet.collision.btDefaultCollisionConfiguration;
@@ -13,15 +16,15 @@ import com.badlogic.gdx.physics.bullet.dynamics.btConstraintSolver;
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
+import com.badlogic.gdx.utils.Disposable;
 import io.github.voidzombie.nhglib.runtime.ecs.components.physics.RigidBodyComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
-import io.github.voidzombie.nhglib.runtime.ecs.systems.base.ThreadedIteratingSystem;
 import io.github.voidzombie.nhglib.runtime.threading.Threading;
 
 /**
- * Created by worse on 04/05/2017.
+ * Created by Fausto Napoli on 04/05/2017.
  */
-public class PhysicsSystem extends ThreadedIteratingSystem {
+public class PhysicsSystem extends IteratingSystem implements Disposable {
     private final static float TIME_STEP = 1f / 60f;
 
     private btDynamicsWorld dynamicsWorld;
@@ -34,7 +37,7 @@ public class PhysicsSystem extends ThreadedIteratingSystem {
     private ComponentMapper<RigidBodyComponent> rigidBodyMapper;
 
     public PhysicsSystem(Threading threading) {
-        super(Aspect.all(RigidBodyComponent.class, NodeComponent.class), threading);
+        super(Aspect.all(RigidBodyComponent.class, NodeComponent.class));
         initPhysics();
     }
 
@@ -51,12 +54,44 @@ public class PhysicsSystem extends ThreadedIteratingSystem {
         NodeComponent nodeComponent = nodeMapper.get(entityId);
         RigidBodyComponent bodyComponent = rigidBodyMapper.get(entityId);
 
-        Matrix4 bodyTransform = bodyComponent.getTransform();
-        nodeComponent.setTransform(bodyTransform);
+        if (!bodyComponent.isAdded()) {
+            Matrix4 initialTransform = nodeComponent.getTransform();
+            bodyComponent.addToWorld(dynamicsWorld, initialTransform);
+        } else {
+            bodyComponent.getBody().applyTorque(new Vector3(0.001f, 0.001f, 0.001f));
+            nodeComponent.setTransform(bodyComponent.getTransform());
+            nodeComponent.applyTransforms();
+        }
+    }
+
+    @Override
+    public void dispose() {
+        IntBag entityIds = getEntityIds();
+        for (int entity : entityIds.getData()) {
+            RigidBodyComponent bodyComponent = rigidBodyMapper.get(entity);
+
+            if (bodyComponent != null) {
+                bodyComponent.dispose();
+            }
+        }
+
+        dynamicsWorld.dispose();
+        constraintSolver.dispose();
+        collisionConfiguration.dispose();
+        collisionDispatcher.dispose();
+        dbvtBroadphase.dispose();
     }
 
     public void setGravity(Vector3 gravity) {
         dynamicsWorld.setGravity(gravity);
+    }
+
+    public void setDebugDrawer(DebugDrawer debugDrawer) {
+        dynamicsWorld.setDebugDrawer(debugDrawer);
+    }
+
+    public void debugDraw() {
+        dynamicsWorld.debugDrawWorld();
     }
 
     private void initPhysics() {

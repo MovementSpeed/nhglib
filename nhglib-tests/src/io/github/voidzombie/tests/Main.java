@@ -93,7 +93,7 @@ public class Main extends NhgEntry implements InputListener {
                                 modelComponent.initWithModel(planeModel);
 
                                 NodeComponent nodeComponent = nhg.entities.getComponent(plane, NodeComponent.class);
-                                nodeComponent.setTranslation(0, -0.15f, 0, true);
+                                nodeComponent.setTranslation(0, 0, 0, true);
 
                                 Integer cameraEntity = scene.sceneGraph.getSceneEntity("camera");
                                 cameraNode = nhg.entities.getComponent(
