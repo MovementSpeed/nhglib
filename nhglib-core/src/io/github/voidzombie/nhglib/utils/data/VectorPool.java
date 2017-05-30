@@ -1,5 +1,6 @@
 package io.github.voidzombie.nhglib.utils.data;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Pool;
@@ -70,11 +71,41 @@ public class VectorPool {
         return vector2Pool.obtain();
     }
 
+    public synchronized static Vector2 getRandomVector2(float min, float max) {
+        Vector2 vector = vector2Pool.obtain();
+        vector.set(
+                MathUtils.random(min, max),
+                MathUtils.random(min, max));
+
+        return vector;
+    }
+
     public synchronized static Vector3 getVector3() {
         return vector3Pool.obtain();
     }
 
+    public synchronized static Vector3 getRandomVector3(float min, float max) {
+        Vector3 vector = vector3Pool.obtain();
+        vector.set(
+                MathUtils.random(min, max),
+                MathUtils.random(min, max),
+                MathUtils.random(min, max));
+
+        return vector;
+    }
+
     public synchronized static Vector4 getVector4() {
         return vector4Pool.obtain();
+    }
+
+    public synchronized static Vector4 getRandomVector4(float min, float max) {
+        Vector4 vector = vector4Pool.obtain();
+        vector.set(
+                MathUtils.random(min, max),
+                MathUtils.random(min, max),
+                MathUtils.random(min, max),
+                MathUtils.random(min, max));
+
+        return vector;
     }
 }

@@ -23,7 +23,7 @@ public class EngineStateNotInitialized implements State<NhgEntry> {
         // Setup the ECS world.
         WorldConfigurationBuilder configurationBuilder = new WorldConfigurationBuilder();
         configurationBuilder
-                .with(new PhysicsSystem(nhgEntry.nhg.threading))
+                .with(new PhysicsSystem())
                 .with(new CameraSystem())
                 .with(new GraphicsSystem(nhgEntry.nhg.entities, nhgEntry.nhg.messaging))
                 .with(new LightingSystem(nhgEntry.nhg.threading));

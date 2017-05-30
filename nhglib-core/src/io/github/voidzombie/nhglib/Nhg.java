@@ -19,10 +19,10 @@ import io.github.voidzombie.nhglib.runtime.threading.Threading;
 // TODO : Implement saturation post-processing filter
 // TODO : Implement real time shadow maps
 // TODO : Implement image based lighting
-// TODO : Implement physics and easy collision system
+// TODO : Implement Bullet based occlusion culling (https://github.com/libgdx/libgdx/blob/master/tests/gdx-tests/src/com/badlogic/gdx/tests/bullet/OcclusionCullingTest.java)
 /**
  * Created by Fausto Napoli on 17/10/2016.
- * Entry point for Nhg, where the various parts of the engine will be exposed.
+ * Entry point for Nhg, where various parts of the engine will be exposed.
  */
 public class Nhg {
     public Assets assets;

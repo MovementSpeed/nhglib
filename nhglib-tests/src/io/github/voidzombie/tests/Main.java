@@ -17,7 +17,7 @@ import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 import io.github.voidzombie.nhglib.graphics.shaders.attributes.GammaCorrectionAttribute;
 import io.github.voidzombie.nhglib.graphics.worlds.NhgWorld;
-import io.github.voidzombie.nhglib.graphics.worlds.strategies.impl.LargeWorldStrategy;
+import io.github.voidzombie.nhglib.graphics.worlds.strategies.impl.DefaultWorldStrategy;
 import io.github.voidzombie.nhglib.input.interfaces.InputListener;
 import io.github.voidzombie.nhglib.input.models.NhgInput;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.ModelComponent;
@@ -48,7 +48,7 @@ public class Main extends NhgEntry implements InputListener {
         Gdx.input.setCursorCatched(true);
 
         world = new NhgWorld(nhg.messaging, nhg.entities, nhg.assets,
-                new LargeWorldStrategy(nhg.entities),
+                new DefaultWorldStrategy(),
                 new Bounds(2f, 2f, 2f));
 
         fpsLogger = new FPSLogger();

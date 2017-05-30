@@ -19,7 +19,6 @@ import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSol
 import com.badlogic.gdx.utils.Disposable;
 import io.github.voidzombie.nhglib.runtime.ecs.components.physics.RigidBodyComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
-import io.github.voidzombie.nhglib.runtime.threading.Threading;
 
 /**
  * Created by Fausto Napoli on 04/05/2017.
@@ -36,7 +35,7 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
     private ComponentMapper<NodeComponent> nodeMapper;
     private ComponentMapper<RigidBodyComponent> rigidBodyMapper;
 
-    public PhysicsSystem(Threading threading) {
+    public PhysicsSystem() {
         super(Aspect.all(RigidBodyComponent.class, NodeComponent.class));
         initPhysics();
     }
