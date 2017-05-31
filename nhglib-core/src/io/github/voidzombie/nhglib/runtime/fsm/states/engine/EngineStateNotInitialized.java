@@ -22,13 +22,18 @@ public class EngineStateNotInitialized implements State<NhgEntry> {
 
         // Setup the ECS world.
         WorldConfigurationBuilder configurationBuilder = new WorldConfigurationBuilder();
+
+        // Configure user entity systems
+        nhgEntry.onConfigureEntitySystems(configurationBuilder);
+
+        // Configure the most important systems last, especially GraphicsSystem which
+        // should be the last because it renders all the changes happened in all other
+        // systems.
         configurationBuilder
                 .with(new PhysicsSystem())
-                .with(new GraphicsSystem(nhgEntry.nhg.entities, nhgEntry.nhg.messaging))
+                .with(new CameraSystem())
                 .with(new LightingSystem(nhgEntry.nhg.threading))
-                .with(new CameraSystem());
-
-        nhgEntry.onConfigureEntitySystems(configurationBuilder);
+                .with(new GraphicsSystem(nhgEntry.nhg.entities, nhgEntry.nhg.messaging));
 
         nhgEntry.nhg.entities.setEntityWorld(new World(configurationBuilder.build()));
         nhgEntry.engineStarted();
