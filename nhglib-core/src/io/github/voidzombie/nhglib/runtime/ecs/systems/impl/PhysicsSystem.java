@@ -6,6 +6,7 @@ import com.artemis.systems.IteratingSystem;
 import com.artemis.utils.IntBag;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.DebugDrawer;
@@ -19,7 +20,6 @@ import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSol
 import com.badlogic.gdx.utils.Disposable;
 import io.github.voidzombie.nhglib.runtime.ecs.components.physics.RigidBodyComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
-import io.github.voidzombie.nhglib.utils.data.MatrixPool;
 
 /**
  * Created by Fausto Napoli on 04/05/2017.
@@ -55,20 +55,23 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
         RigidBodyComponent bodyComponent = rigidBodyMapper.get(entityId);
 
         if (!bodyComponent.isAdded()) {
-            Matrix4 initialTransform = MatrixPool.getMatrix4();
-            initialTransform.set(
-                    nodeComponent.getTranslation(),
-                    nodeComponent.getRotationQuaternion(),
-                    new Vector3(1, 1, 1));
+            Matrix4 initialTransform = new Matrix4();
+
+            Vector3 trn = nodeComponent.getTranslation();
+            Vector3 scl = new Vector3(1, 1, 1);
+            Quaternion rtn = nodeComponent.getRotationQuaternion();
+
+            initialTransform.set(trn, rtn, scl);
 
             bodyComponent.addToWorld(dynamicsWorld, initialTransform);
-            MatrixPool.freeMatrix4(initialTransform);
         } else {
-            Matrix4 finalTransform = MatrixPool.getMatrix4();
-            finalTransform.set(
-                    bodyComponent.getTranslation(),
-                    bodyComponent.getRotation(),
-                    nodeComponent.getScale());
+            Matrix4 finalTransform = new Matrix4();
+
+            Vector3 trn = bodyComponent.getTranslation();
+            Vector3 scl = nodeComponent.getScale();
+            Quaternion rtn = bodyComponent.getRotation();
+
+            finalTransform.set(trn, rtn, scl);
 
             nodeComponent.setTransform(finalTransform);
             nodeComponent.applyTransforms();
