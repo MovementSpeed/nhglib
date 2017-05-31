@@ -64,7 +64,13 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
             bodyComponent.addToWorld(dynamicsWorld, initialTransform);
             MatrixPool.freeMatrix4(initialTransform);
         } else {
-            nodeComponent.setTransform(bodyComponent.getTransform());
+            Matrix4 finalTransform = MatrixPool.getMatrix4();
+            finalTransform.set(
+                    bodyComponent.getTranslation(),
+                    bodyComponent.getRotation(),
+                    nodeComponent.getScale());
+
+            nodeComponent.setTransform(finalTransform);
             nodeComponent.applyTransforms();
         }
     }

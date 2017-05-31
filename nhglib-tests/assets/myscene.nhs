@@ -133,7 +133,7 @@
         [
           {
             "type":"model",
-            "enabled":"false",
+            "enabled":false,
             "graphicsType":"dynamic",
             "asset":
             {
@@ -208,9 +208,9 @@
           },
           "scale":
           {
-            "x":1.5,
-            "y":1.2,
-            "z":5.0,
+            "x":1.0,
+            "y":1.0,
+            "z":1.0,
           }
         },
         "components":

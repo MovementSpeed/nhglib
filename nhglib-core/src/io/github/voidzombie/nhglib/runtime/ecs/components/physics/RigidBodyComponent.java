@@ -2,6 +2,7 @@ package io.github.voidzombie.nhglib.runtime.ecs.components.physics;
 
 import com.artemis.Component;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.Collision;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
@@ -65,6 +66,18 @@ public class RigidBodyComponent extends Component implements Disposable {
 
     public Matrix4 getTransform() {
         return motionState.transform;
+    }
+
+    public Vector3 getTranslation() {
+        return motionState.transform.getTranslation(new Vector3());
+    }
+
+    public Quaternion getRotation() {
+        return motionState.transform.getRotation(new Quaternion());
+    }
+
+    public Vector3 getScale() {
+        return motionState.transform.getScale(new Vector3());
     }
 
     private btRigidBody.btRigidBodyConstructionInfo getConstructionInfo(btCollisionShape shape, float mass) {
