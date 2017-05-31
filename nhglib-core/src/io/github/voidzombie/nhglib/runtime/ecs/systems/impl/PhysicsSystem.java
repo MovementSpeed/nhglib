@@ -42,14 +42,6 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
     }
 
     @Override
-    protected void begin() {
-        super.begin();
-        dynamicsWorld.stepSimulation(Gdx.graphics.getDeltaTime(),
-                5,
-                TIME_STEP);
-    }
-
-    @Override
     protected void process(int entityId) {
         NodeComponent nodeComponent = nodeMapper.get(entityId);
         RigidBodyComponent bodyComponent = rigidBodyMapper.get(entityId);
@@ -69,6 +61,14 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
             nodeComponent.setRotation(bodyComponent.getRotation());
             nodeComponent.applyTransforms();
         }
+    }
+
+    @Override
+    protected void end() {
+        super.end();
+        dynamicsWorld.stepSimulation(Gdx.graphics.getDeltaTime(),
+                5,
+                TIME_STEP);
     }
 
     @Override
