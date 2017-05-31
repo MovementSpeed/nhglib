@@ -19,6 +19,7 @@ import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSol
 import com.badlogic.gdx.utils.Disposable;
 import io.github.voidzombie.nhglib.runtime.ecs.components.physics.RigidBodyComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
+import io.github.voidzombie.nhglib.utils.data.MatrixPool;
 
 /**
  * Created by Fausto Napoli on 04/05/2017.
@@ -54,8 +55,14 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
         RigidBodyComponent bodyComponent = rigidBodyMapper.get(entityId);
 
         if (!bodyComponent.isAdded()) {
-            Matrix4 initialTransform = nodeComponent.getTransform();
+            Matrix4 initialTransform = MatrixPool.getMatrix4();
+            initialTransform.set(
+                    nodeComponent.getTranslation(),
+                    nodeComponent.getRotationQuaternion(),
+                    new Vector3(1, 1, 1));
+
             bodyComponent.addToWorld(dynamicsWorld, initialTransform);
+            MatrixPool.freeMatrix4(initialTransform);
         } else {
             nodeComponent.setTransform(bodyComponent.getTransform());
             nodeComponent.applyTransforms();
