@@ -43,7 +43,7 @@ public class RigidBodyComponent extends Component implements Disposable {
         motionState = new MotionState();
 
         body = new btRigidBody(constructionInfo);
-        body.setActivationState(activationState);
+        //body.setActivationState(activationState);
         body.setSleepingThresholds(1f / 1000f, 1f / 1000f);
         body.setFriction(friction);
         body.setRestitution(restitution);
