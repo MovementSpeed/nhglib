@@ -7,9 +7,10 @@ import io.github.voidzombie.nhglib.runtime.messaging.Messaging;
 import io.github.voidzombie.nhglib.runtime.threading.Threading;
 
 // FIXME :
-// FIXME : Normal mapping has issues when camera rotates certain angles
+// FIXME : Normal mapping has rendering issues when camera rotates certain angles, they kind of "flip".
 
 // TODO :
+// TODO : Implement physics material system
 // TODO : Implement video playback on iOS and Android
 // TODO : Manage global configuration files
 // TODO : Implement support for transparent textures
@@ -20,7 +21,6 @@ import io.github.voidzombie.nhglib.runtime.threading.Threading;
 // TODO : Implement real time shadow maps
 // TODO : Implement image based lighting
 // TODO : Implement Bullet based occlusion culling (https://github.com/libgdx/libgdx/blob/master/tests/gdx-tests/src/com/badlogic/gdx/tests/bullet/OcclusionCullingTest.java)
-
 /**
  * Created by Fausto Napoli on 17/10/2016.
  * Entry point for Nhg, where various parts of the engine will be exposed.

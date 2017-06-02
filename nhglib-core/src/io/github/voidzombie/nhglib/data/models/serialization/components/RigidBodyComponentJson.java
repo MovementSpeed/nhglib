@@ -24,8 +24,10 @@ public class RigidBodyComponentJson extends ComponentJson {
         btCollisionShape collisionShape = getCollisionShape(shapeJson);
         int activationState = activationStateJson.state;
         float mass = jsonValue.getFloat("mass", 1.0f);
+        float friction = jsonValue.getFloat("friction", 0.5f);
+        float restitution = jsonValue.getFloat("restitution", 0f);
 
-        rigidBodyComponent.build(collisionShape, activationState, mass);
+        rigidBodyComponent.build(collisionShape, activationState, mass, friction, restitution);
         output = rigidBodyComponent;
     }
 

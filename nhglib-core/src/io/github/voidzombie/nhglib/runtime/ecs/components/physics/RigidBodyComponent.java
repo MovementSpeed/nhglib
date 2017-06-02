@@ -34,13 +34,19 @@ public class RigidBodyComponent extends Component implements Disposable {
     }
 
     public void build(btCollisionShape collisionShape, int activationState, float mass) {
+        build(collisionShape, activationState, mass, 0.5f, 0f);
+    }
+
+    public void build(btCollisionShape collisionShape, int activationState, float mass, float friction, float restitution) {
         this.collisionShape = collisionShape;
         constructionInfo = getConstructionInfo(collisionShape, mass);
-
         motionState = new MotionState();
+
         body = new btRigidBody(constructionInfo);
-        //body.setActivationState(Collision.DISABLE_DEACTIVATION);
+        body.setActivationState(activationState);
         body.setSleepingThresholds(1f / 1000f, 1f / 1000f);
+        body.setFriction(friction);
+        body.setRestitution(restitution);
     }
 
     public void addToWorld(btDynamicsWorld world, Matrix4 transform) {
@@ -72,12 +78,12 @@ public class RigidBodyComponent extends Component implements Disposable {
         return motionState.transform.getTranslation(new Vector3());
     }
 
-    public Quaternion getRotation() {
-        return motionState.transform.getRotation(new Quaternion());
-    }
-
     public Vector3 getScale() {
         return motionState.transform.getScale(new Vector3());
+    }
+
+    public Quaternion getRotation() {
+        return motionState.transform.getRotation(new Quaternion());
     }
 
     private btRigidBody.btRigidBodyConstructionInfo getConstructionInfo(btCollisionShape shape, float mass) {
