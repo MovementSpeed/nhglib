@@ -7,5 +7,6 @@ import com.badlogic.gdx.utils.JsonValue;
  */
 public interface JsonParseable<T> {
     void parse(JsonValue jsonValue);
+
     T get();
 }

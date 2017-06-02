@@ -28,7 +28,8 @@ abstract class BaseGame implements
     }
 
     @Override
-    public final void resize(int width, int height) {}
+    public final void resize(int width, int height) {
+    }
 
     @Override
     public final void render() {

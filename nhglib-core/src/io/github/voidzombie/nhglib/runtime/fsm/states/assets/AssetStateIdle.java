@@ -23,7 +23,8 @@ public class AssetStateIdle implements State<Assets> {
     }
 
     @Override
-    public void exit(Assets entity) {}
+    public void exit(Assets entity) {
+    }
 
     @Override
     public boolean onMessage(Assets entity, Telegram telegram) {

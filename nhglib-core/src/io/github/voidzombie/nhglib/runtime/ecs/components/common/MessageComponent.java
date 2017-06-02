@@ -22,7 +22,7 @@ public class MessageComponent extends PooledComponent {
         filters.clear();
     }
 
-    public void subscribe(String ... filters) {
+    public void subscribe(String... filters) {
         /*Nhg.messaging.get(filters)
                 .subscribe(new Consumer<Message>() {
                     @Override

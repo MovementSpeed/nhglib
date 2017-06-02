@@ -116,6 +116,7 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
 
     private void initPhysics() {
         Bullet.init();
+
         collisionConfiguration = new btDefaultCollisionConfiguration();
         collisionDispatcher = new btCollisionDispatcher(collisionConfiguration);
         dbvtBroadphase = new btDbvtBroadphase();

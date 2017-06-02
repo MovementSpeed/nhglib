@@ -14,10 +14,14 @@ import io.github.voidzombie.nhglib.utils.data.VectorPool;
  * Should only be created by the SceneGraph together with an entity.
  */
 public class NodeComponent extends PooledComponent {
-    /** Unique NodeComponent ID, corresponds with entity itself */
+    /**
+     * Unique NodeComponent ID, corresponds with entity itself
+     */
     public Integer id;
 
-    /** Node */
+    /**
+     * Node
+     */
     public Node node;
 
     private Vector3 temp;
@@ -113,11 +117,12 @@ public class NodeComponent extends PooledComponent {
 
     /**
      * Translates the node.
-     * @param x translation.
-     * @param y translation.
-     * @param z translation.
+     *
+     * @param x     translation.
+     * @param y     translation.
+     * @param z     translation.
      * @param apply if true, transforms will be calculated immediately. It's not recommended, instead use
-     * {@link #applyTransforms() applyTransforms()} after you've completed all transforms on the node.
+     *              {@link #applyTransforms() applyTransforms()} after you've completed all transforms on the node.
      */
     public void translate(float x, float y, float z, boolean apply) {
         translationDelta.set(
@@ -180,9 +185,10 @@ public class NodeComponent extends PooledComponent {
 
     /**
      * Rotates the node.
+     *
      * @param rotation the rotation quaternion added to the node's rotation.
-     * @param apply if true, transforms will be calculated immediately. It's not recommended, instead use
-     * {@link #applyTransforms() applyTransforms()} after you've completed all transforms on the node.
+     * @param apply    if true, transforms will be calculated immediately. It's not recommended, instead use
+     *                 {@link #applyTransforms() applyTransforms()} after you've completed all transforms on the node.
      */
     public void rotate(Quaternion rotation, boolean apply) {
         node.rotation.add(rotation);
@@ -206,11 +212,12 @@ public class NodeComponent extends PooledComponent {
 
     /**
      * Rotates the node.
-     * @param x rotation, also known as pitch.
-     * @param y rotation, also known as yaw.
-     * @param z rotation, also known as roll.
+     *
+     * @param x     rotation, also known as pitch.
+     * @param y     rotation, also known as yaw.
+     * @param z     rotation, also known as roll.
      * @param apply if true, transforms will be calculated immediately. It's not recommended, instead use
-     * {@link #applyTransforms() applyTransforms()} after you've completed all transforms on the node.
+     *              {@link #applyTransforms() applyTransforms()} after you've completed all transforms on the node.
      */
     public void rotate(float x, float y, float z, boolean apply) {
         rotationDelta.set(
@@ -269,11 +276,12 @@ public class NodeComponent extends PooledComponent {
 
     /**
      * Scales the node.
-     * @param x scale.
-     * @param y scale.
-     * @param z scale.
+     *
+     * @param x     scale.
+     * @param y     scale.
+     * @param z     scale.
      * @param apply if true, transforms will be calculated immediately. It's not recommended, instead use
-     * {@link #applyTransforms() applyTransforms()} after you've completed all transforms on the node.
+     *              {@link #applyTransforms() applyTransforms()} after you've completed all transforms on the node.
      */
     public void scale(float x, float y, float z, boolean apply) {
         scaleDelta.set(

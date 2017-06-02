@@ -20,6 +20,7 @@ import io.github.voidzombie.nhglib.runtime.threading.Threading;
 // TODO : Implement real time shadow maps
 // TODO : Implement image based lighting
 // TODO : Implement Bullet based occlusion culling (https://github.com/libgdx/libgdx/blob/master/tests/gdx-tests/src/com/badlogic/gdx/tests/bullet/OcclusionCullingTest.java)
+
 /**
  * Created by Fausto Napoli on 17/10/2016.
  * Entry point for Nhg, where various parts of the engine will be exposed.
@@ -32,6 +33,7 @@ public class Nhg {
     public Entities entities;
 
     public static Boolean debugLogs = false;
+    public static Boolean debugDrawPhysics = false;
 
     public Nhg() {
         messaging = new Messaging();

@@ -30,7 +30,7 @@ public class Entities {
         return entityWorld.create(archetype);
     }
 
-    public Archetype createArchetype(Class<? extends Component> ... components) {
+    public Archetype createArchetype(Class<? extends Component>... components) {
         return new ArchetypeBuilder()
                 .add(components)
                 .build(entityWorld);

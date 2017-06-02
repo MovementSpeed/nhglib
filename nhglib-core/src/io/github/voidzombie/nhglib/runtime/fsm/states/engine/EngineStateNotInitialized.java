@@ -30,10 +30,10 @@ public class EngineStateNotInitialized implements State<NhgEntry> {
         // should be the last because it renders all the changes happened in all other
         // systems.
         configurationBuilder
+                .with(new PhysicsSystem())
                 .with(new CameraSystem())
                 .with(new LightingSystem(nhgEntry.nhg.threading))
-                .with(new GraphicsSystem(nhgEntry.nhg.entities, nhgEntry.nhg.messaging))
-                .with(new PhysicsSystem());
+                .with(new GraphicsSystem(nhgEntry.nhg.entities, nhgEntry.nhg.messaging));
 
         nhgEntry.nhg.entities.setEntityWorld(new World(configurationBuilder.build()));
         nhgEntry.engineStarted();

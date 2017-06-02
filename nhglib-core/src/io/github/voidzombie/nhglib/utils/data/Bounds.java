@@ -10,7 +10,7 @@ public class Bounds {
     private Float halfWidth;
     private Float halfHeight;
     private Float halfDepth;
-    
+
     private Float width;
     private Float height;
     private Float depth;
@@ -62,7 +62,7 @@ public class Bounds {
     public Float getDepth() {
         return depth;
     }
-    
+
     public Boolean inBounds(Vector3 point) {
         Boolean res = true;
 
@@ -76,7 +76,7 @@ public class Bounds {
 
         return res;
     }
-    
+
     public Info boundsInfo(Vector3 point) {
         Info info = new Info();
         info.inBounds = inBounds(point);
@@ -100,7 +100,7 @@ public class Bounds {
                 info.depthSide = -1;
             }
         }
-        
+
         return info;
     }
 

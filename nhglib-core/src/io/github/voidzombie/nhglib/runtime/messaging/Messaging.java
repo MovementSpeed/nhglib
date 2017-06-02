@@ -18,7 +18,7 @@ public class Messaging {
         messagePublisher.onNext(message);
     }
 
-    public Observable<Message> get(final String ... filters) {
+    public Observable<Message> get(final String... filters) {
         return messagePublisher.filter(new Predicate<Message>() {
             @Override
             public boolean test(Message message) throws Exception {

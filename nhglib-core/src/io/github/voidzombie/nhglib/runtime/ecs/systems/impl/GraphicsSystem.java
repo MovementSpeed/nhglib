@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g3d.utils.ShaderProvider;
 import com.badlogic.gdx.physics.bullet.DebugDrawer;
 import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
 import com.badlogic.gdx.utils.Array;
+import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.graphics.shaders.tiledForward.TiledForwardShaderProvider;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.ModelComponent;
@@ -136,7 +137,7 @@ public class GraphicsSystem extends NhgIteratingSystem {
             modelBatch.render(dynamicCache, environment);
             modelBatch.end();
 
-            if (debugDrawer != null) {
+            if (Nhg.debugDrawPhysics && debugDrawer != null) {
                 debugDrawer.begin(camera);
                 physicsSystem.debugDraw();
                 debugDrawer.end();
@@ -174,7 +175,7 @@ public class GraphicsSystem extends NhgIteratingSystem {
         return environment;
     }
 
-    private void rebuildCache(RenderableProvider ... renderableProviders) {
+    private void rebuildCache(RenderableProvider... renderableProviders) {
         Array<ModelCache> previousModelCaches = new Array<>(staticCaches);
 
         for (int i = 0; i < cameras.size; i++) {
