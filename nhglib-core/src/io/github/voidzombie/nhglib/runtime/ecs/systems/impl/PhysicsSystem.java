@@ -45,7 +45,8 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
     protected void begin() {
         super.begin();
 
-        dynamicsWorld.stepSimulation(Gdx.graphics.getDeltaTime(),
+        dynamicsWorld.stepSimulation(
+                Gdx.graphics.getDeltaTime(),
                 5,
                 TIME_STEP);
     }
