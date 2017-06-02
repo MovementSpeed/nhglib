@@ -27,6 +27,8 @@ import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 public class PhysicsSystem extends IteratingSystem implements Disposable {
     private final static float TIME_STEP = 1f / 60f;
 
+    private boolean physicsInitialized;
+
     private btDynamicsWorld dynamicsWorld;
     private btConstraintSolver constraintSolver;
     private btDefaultCollisionConfiguration collisionConfiguration;
@@ -108,6 +110,10 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
         dynamicsWorld.debugDrawWorld();
     }
 
+    public boolean isPhysicsInitialized() {
+        return physicsInitialized;
+    }
+
     private void initPhysics() {
         Bullet.init();
         collisionConfiguration = new btDefaultCollisionConfiguration();
@@ -117,5 +123,7 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
 
         dynamicsWorld = new btDiscreteDynamicsWorld(collisionDispatcher, dbvtBroadphase, constraintSolver, collisionConfiguration);
         dynamicsWorld.setGravity(new Vector3(0f, -1f, 0f));
+
+        physicsInitialized = true;
     }
 }

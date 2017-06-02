@@ -51,9 +51,6 @@ public class GraphicsSystem extends NhgIteratingSystem {
         this.entities = entities;
         this.messaging = messaging;
 
-        debugDrawer = new DebugDrawer();
-        debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_MAX_DEBUG_DRAW_MODE);
-
         clearColor = Color.BLACK;
         environment = new Environment();
         shaderProvider = new TiledForwardShaderProvider(environment);
@@ -75,7 +72,15 @@ public class GraphicsSystem extends NhgIteratingSystem {
             cameraSystem = entities.getEntitySystem(CameraSystem.class);
         }
 
-        physicsSystem.setDebugDrawer(debugDrawer);
+        if (physicsSystem.isPhysicsInitialized()) {
+            if (debugDrawer == null) {
+                debugDrawer = new DebugDrawer();
+                debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_MAX_DEBUG_DRAW_MODE);
+            }
+
+            physicsSystem.setDebugDrawer(debugDrawer);
+        }
+
         cameras = cameraSystem.cameras;
 
         for (int i = 0; i < cameras.size - modelBatches.size; i++) {
@@ -131,9 +136,11 @@ public class GraphicsSystem extends NhgIteratingSystem {
             modelBatch.render(dynamicCache, environment);
             modelBatch.end();
 
-            debugDrawer.begin(camera);
-            physicsSystem.debugDraw();
-            debugDrawer.end();
+            if (debugDrawer != null) {
+                debugDrawer.begin(camera);
+                physicsSystem.debugDraw();
+                debugDrawer.end();
+            }
         }
     }
 
