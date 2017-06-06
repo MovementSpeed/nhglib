@@ -202,8 +202,8 @@ public class Main extends NhgEntry implements InputListener {
 
                 case "throttleForward":
                     if (input.getInputAction() == InputAction.DOWN) {
-                        vehicle.applyEngineForce(0.5f, 0);
-                        vehicle.applyEngineForce(0.5f, 1);
+                        vehicle.applyEngineForce(1f, 0);
+                        vehicle.applyEngineForce(1f, 1);
                     } else {
                         vehicle.applyEngineForce(0, 0);
                         vehicle.applyEngineForce(0, 1);
@@ -220,10 +220,20 @@ public class Main extends NhgEntry implements InputListener {
                     }
                     break;
 
+                case "brake":
+                    if (input.getInputAction() == InputAction.DOWN) {
+                        vehicle.setBrake(0.01f, 0);
+                        vehicle.setBrake(0.01f, 1);
+                    } else {
+                        vehicle.setBrake(0, 0);
+                        vehicle.setBrake(0, 1);
+                    }
+                    break;
+
                 case "steerLeft":
                     if (input.getInputAction() == InputAction.DOWN) {
-                        vehicle.setSteeringValue(25 * MathUtils.degreesToRadians, 0);
-                        vehicle.setSteeringValue(25 * MathUtils.degreesToRadians, 1);
+                        vehicle.setSteeringValue(30 * MathUtils.degreesToRadians, 0);
+                        vehicle.setSteeringValue(30 * MathUtils.degreesToRadians, 1);
                     } else {
                         vehicle.setSteeringValue(0, 0);
                         vehicle.setSteeringValue(0, 1);
@@ -232,8 +242,8 @@ public class Main extends NhgEntry implements InputListener {
 
                 case "steerRight":
                     if (input.getInputAction() == InputAction.DOWN) {
-                        vehicle.setSteeringValue(-25 * MathUtils.degreesToRadians, 0);
-                        vehicle.setSteeringValue(-25 * MathUtils.degreesToRadians, 1);
+                        vehicle.setSteeringValue(-30 * MathUtils.degreesToRadians, 0);
+                        vehicle.setSteeringValue(-30 * MathUtils.degreesToRadians, 1);
                     } else {
                         vehicle.setSteeringValue(0, 0);
                         vehicle.setSteeringValue(0, 1);
@@ -377,15 +387,15 @@ public class Main extends NhgEntry implements InputListener {
                 false);
 
         WheelComponent wheelComponent0 = nhg.entities.createComponent(wheels[0], WheelComponent.class);
-        wheelComponent0.build(wheelInfo0, vehicle, 0);
+        wheelComponent0.build(vehicle, 0);
 
         WheelComponent wheelComponent1 = nhg.entities.createComponent(wheels[1], WheelComponent.class);
-        wheelComponent1.build(wheelInfo1, vehicle, 1);
+        wheelComponent1.build(vehicle, 1);
 
         WheelComponent wheelComponent2 = nhg.entities.createComponent(wheels[2], WheelComponent.class);
-        wheelComponent2.build(wheelInfo2, vehicle, 2);
+        wheelComponent2.build(vehicle, 2);
 
         WheelComponent wheelComponent3 = nhg.entities.createComponent(wheels[3], WheelComponent.class);
-        wheelComponent3.build(wheelInfo3, vehicle, 3);
+        wheelComponent3.build(vehicle, 3);
     }
 }

@@ -92,6 +92,10 @@
         {
           "name":"steerRight",
           "type":"key"
+        },
+        {
+          "name":"brake",
+          "type":"key"
         }
       ]
     },
@@ -178,6 +182,11 @@
       {
         "name":"steerRight",
         "keyCode":40,
+        "inputMode":"repeat"
+      },
+      {
+        "name":"brake",
+        "keyCode":129,
         "inputMode":"repeat"
       }
     ],
