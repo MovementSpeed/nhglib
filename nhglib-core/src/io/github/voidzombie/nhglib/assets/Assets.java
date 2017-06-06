@@ -105,22 +105,44 @@ public class Assets implements Updatable, AssetErrorListener {
         return assetCache.values();
     }
 
-    @SuppressWarnings("unchecked")
+    /**
+     * Loads an asset in an asynchronous way.
+     *
+     * @param asset
+     */
     public void queueAsset(Asset asset) {
+        queueAsset(asset, true);
+    }
+
+    /**
+     * Loads an asset in a synchronized way.
+     *
+     * @param asset the asset.
+     */
+    public void loadAsset(Asset asset) {
+        queueAsset(asset, false);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void queueAsset(Asset asset, boolean async) {
         assetCache.put(asset.alias, asset);
 
         if (!assetManager.isLoaded(asset.source)) {
             FileHandle fileHandle = Gdx.files.internal(asset.source);
 
             if (fileHandle.exists()) {
-
                 if (asset.parameters == null) {
                     assetManager.load(asset.source, asset.assetClass);
                 } else {
                     assetManager.load(asset.source, asset.assetClass, asset.parameters);
                 }
 
-                assetQueue.add(asset);
+                if (async) {
+                    assetQueue.add(asset);
+                } else {
+                    assetManager.finishLoadingAsset(asset.source);
+                    assetLoaded(asset);
+                }
             } else {
                 Logger.log(this, Strings.Messages.cannotQueueAssetFileNotFound, asset.source);
             }

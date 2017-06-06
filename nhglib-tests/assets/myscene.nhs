@@ -43,15 +43,6 @@
               "b":1.0,
               "a":1.0,
             }
-          },
-          {
-            "type":"rigidBody",
-            "mass":1.0,
-            "shape":
-            {
-              "type":"sphere",
-              "radius":0.1
-            }
           }
         ]
       },
@@ -93,15 +84,6 @@
               "g":1.0,
               "b":1.0,
               "a":1.0,
-            }
-          },
-          {
-            "type":"rigidBody",
-            "mass":1.0,
-            "shape":
-            {
-              "type":"sphere",
-              "radius":0.1
             }
           }
         ]
@@ -160,8 +142,8 @@
         {
           "position":
           {
-            "x":1.0,
-            "y":1.0,
+            "x":2,
+            "y":2,
             "z":0.0,
           },
           "rotation":
@@ -191,13 +173,13 @@
         []
       },
       {
-        "id":"light",
+        "id":"floor",
         "transform":
         {
           "position":
           {
             "x":0.0,
-            "y":0.0,
+            "y":-1.0,
             "z":0.0,
           },
           "rotation":
@@ -221,9 +203,9 @@
             "shape":
             {
               "type":"box",
-              "width":2.0,
-              "height":0.01,
-              "depth":20.0
+              "width":40.0,
+              "height":0.1,
+              "depth":40.0
             }
           }
         ],

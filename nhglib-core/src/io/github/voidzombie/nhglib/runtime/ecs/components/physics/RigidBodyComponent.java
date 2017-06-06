@@ -16,6 +16,7 @@ import io.github.voidzombie.nhglib.physics.MotionState;
  */
 public class RigidBodyComponent extends Component implements Disposable {
     private boolean added;
+
     private btRigidBody body;
     private MotionState motionState;
     private btCollisionShape collisionShape;
@@ -23,10 +24,21 @@ public class RigidBodyComponent extends Component implements Disposable {
 
     @Override
     public void dispose() {
-        body.dispose();
-        motionState.dispose();
-        collisionShape.dispose();
-        constructionInfo.dispose();
+        if (body != null) {
+            body.dispose();
+        }
+
+        if (motionState != null) {
+            motionState.dispose();
+        }
+
+        if (collisionShape != null) {
+            collisionShape.dispose();
+        }
+
+        if (constructionInfo != null) {
+            constructionInfo.dispose();
+        }
     }
 
     public void build(btCollisionShape collisionShape, float mass) {
@@ -40,17 +52,20 @@ public class RigidBodyComponent extends Component implements Disposable {
     public void build(btCollisionShape collisionShape, int activationState, float mass, float friction, float restitution) {
         this.collisionShape = collisionShape;
         constructionInfo = getConstructionInfo(collisionShape, mass);
-        motionState = new MotionState();
 
-        body = new btRigidBody(constructionInfo);
-        //body.setActivationState(activationState);
-        body.setSleepingThresholds(1f / 1000f, 1f / 1000f);
-        body.setFriction(friction);
-        body.setRestitution(restitution);
+        if (constructionInfo != null) {
+            motionState = new MotionState();
+
+            body = new btRigidBody(constructionInfo);
+            //body.setActivationState(activationState);
+            body.setSleepingThresholds(1f / 1000f, 1f / 1000f);
+            body.setFriction(friction);
+            body.setRestitution(restitution);
+        }
     }
 
     public void addToWorld(btDynamicsWorld world, Matrix4 transform) {
-        if (!added) {
+        if (body != null && !body.isInWorld()) {
             setTransform(transform);
             body.setMotionState(motionState);
             world.addRigidBody(body);
@@ -87,14 +102,20 @@ public class RigidBodyComponent extends Component implements Disposable {
     }
 
     private btRigidBody.btRigidBodyConstructionInfo getConstructionInfo(btCollisionShape shape, float mass) {
-        Vector3 localInertia = new Vector3();
+        btRigidBody.btRigidBodyConstructionInfo info = null;
 
-        if (mass > 0f) {
-            shape.calculateLocalInertia(mass, localInertia);
-        } else {
-            localInertia.set(Vector3.Zero);
+        if (shape != null && mass >= 0) {
+            Vector3 localInertia = new Vector3();
+
+            if (mass > 0f) {
+                shape.calculateLocalInertia(mass, localInertia);
+            } else {
+                localInertia.set(Vector3.Zero);
+            }
+
+            info = new btRigidBody.btRigidBodyConstructionInfo(mass, null, shape, localInertia);
         }
 
-        return new btRigidBody.btRigidBodyConstructionInfo(mass, null, shape, localInertia);
+        return info;
     }
 }

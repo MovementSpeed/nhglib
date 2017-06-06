@@ -10,7 +10,16 @@ import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.physics.bullet.collision.Collision;
+import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
+import com.badlogic.gdx.physics.bullet.dynamics.btDefaultVehicleRaycaster;
+import com.badlogic.gdx.physics.bullet.dynamics.btRaycastVehicle;
+import com.badlogic.gdx.physics.bullet.dynamics.btVehicleRaycaster;
+import com.badlogic.gdx.physics.bullet.dynamics.btWheelInfo;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
@@ -18,11 +27,16 @@ import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 import io.github.voidzombie.nhglib.graphics.shaders.attributes.GammaCorrectionAttribute;
 import io.github.voidzombie.nhglib.graphics.worlds.NhgWorld;
 import io.github.voidzombie.nhglib.graphics.worlds.strategies.impl.DefaultWorldStrategy;
+import io.github.voidzombie.nhglib.input.enums.InputAction;
 import io.github.voidzombie.nhglib.input.interfaces.InputListener;
 import io.github.voidzombie.nhglib.input.models.NhgInput;
+import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.CameraComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.ModelComponent;
+import io.github.voidzombie.nhglib.runtime.ecs.components.physics.RigidBodyComponent;
+import io.github.voidzombie.nhglib.runtime.ecs.components.physics.WheelComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.GraphicsSystem;
+import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.PhysicsSystem;
 import io.github.voidzombie.nhglib.runtime.entry.NhgEntry;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.nhglib.utils.data.Bounds;
@@ -39,11 +53,28 @@ public class Main extends NhgEntry implements InputListener {
     private FPSLogger fpsLogger;
     private ImmediateModeRenderer20 renderer20;
     private NodeComponent cameraNode;
+    private CameraComponent cameraComponent;
+
+    // vehicle
+    btRaycastVehicle.btVehicleTuning vehicleTuning;
+    btVehicleRaycaster vehicleRaycaster;
+    btRaycastVehicle vehicle;
+
+    int vehicleChassis;
+    int wheels[];
+
+    float maxForce = 100f;
+    float currentForce = 0f;
+    float acceleration = 50f;
+    float maxAngle = 60f;
+    float currentAngle = 0f;
+    float steerSpeed = 45f;
 
     @Override
     public void engineStarted() {
         super.engineStarted();
         Nhg.debugLogs = true;
+        Nhg.debugDrawPhysics = true;
 
         Gdx.input.setCursorCatched(true);
 
@@ -93,11 +124,15 @@ public class Main extends NhgEntry implements InputListener {
                                 modelComponent.initWithModel(planeModel);
 
                                 NodeComponent nodeComponent = nhg.entities.getComponent(plane, NodeComponent.class);
-                                nodeComponent.setTranslation(0, 0, 0, true);
+                                nodeComponent.setTranslation(0, -1f, 0, true);
 
                                 Integer cameraEntity = scene.sceneGraph.getSceneEntity("camera");
                                 cameraNode = nhg.entities.getComponent(
                                         cameraEntity, NodeComponent.class);
+
+                                cameraComponent = nhg.entities.getComponent(cameraEntity, CameraComponent.class);
+
+                                buildVehicle();
                             } else if (asset.is("inputMap")) {
                                 nhg.input.fromJson((JsonValue) nhg.assets.get(asset));
                                 nhg.input.setActiveContext("game", true);
@@ -117,6 +152,12 @@ public class Main extends NhgEntry implements InputListener {
     public void engineUpdate(float delta) {
         super.engineUpdate(delta);
         world.update();
+
+        if (vehicle != null) {
+            for (int i = 0; i < 4; i++) {
+                //vehicle.updateWheelTransform(i);
+            }
+        }
     }
 
     @Override
@@ -157,6 +198,46 @@ public class Main extends NhgEntry implements InputListener {
 
                 case "exit":
                     nhg.messaging.send(new Message(Strings.Events.engineDestroy));
+                    break;
+
+                case "throttleForward":
+                    if (input.getInputAction() == InputAction.DOWN) {
+                        vehicle.applyEngineForce(0.5f, 0);
+                        vehicle.applyEngineForce(0.5f, 1);
+                    } else {
+                        vehicle.applyEngineForce(0, 0);
+                        vehicle.applyEngineForce(0, 1);
+                    }
+                    break;
+
+                case "throttleBackward":
+                    if (input.getInputAction() == InputAction.DOWN) {
+                        vehicle.applyEngineForce(-0.5f, 0);
+                        vehicle.applyEngineForce(-0.5f, 1);
+                    } else {
+                        vehicle.applyEngineForce(0, 0);
+                        vehicle.applyEngineForce(0, 1);
+                    }
+                    break;
+
+                case "steerLeft":
+                    if (input.getInputAction() == InputAction.DOWN) {
+                        vehicle.setSteeringValue(25 * MathUtils.degreesToRadians, 0);
+                        vehicle.setSteeringValue(25 * MathUtils.degreesToRadians, 1);
+                    } else {
+                        vehicle.setSteeringValue(0, 0);
+                        vehicle.setSteeringValue(0, 1);
+                    }
+                    break;
+
+                case "steerRight":
+                    if (input.getInputAction() == InputAction.DOWN) {
+                        vehicle.setSteeringValue(-25 * MathUtils.degreesToRadians, 0);
+                        vehicle.setSteeringValue(-25 * MathUtils.degreesToRadians, 1);
+                    } else {
+                        vehicle.setSteeringValue(0, 0);
+                        vehicle.setSteeringValue(0, 1);
+                    }
                     break;
             }
 
@@ -224,66 +305,87 @@ public class Main extends NhgEntry implements InputListener {
         }
     }
 
-    public void line(float x1, float y1, float z1,
-                     float x2, float y2, float z2,
-                     float r, float g, float b, float a) {
-        renderer20.color(r, g, b, a);
-        renderer20.vertex(x1, y1, z1);
-        renderer20.color(r, g, b, a);
-        renderer20.vertex(x2, y2, z2);
-    }
+    private void buildVehicle() {
+        wheels = new int[4];
+        PhysicsSystem physicsSystem = nhg.entities.getEntitySystem(PhysicsSystem.class);
 
-    public void cube(float x, float y, float z, float width, float height, float depth, float r, float g, float b, float a) {
-        // top face
-        line(x + width / 2, y + height / 2, z - depth / 2,
-                x - width / 2, y + height / 2, z - depth / 2,
-                r, g, b, a);
+        // Create the car chassis entity
+        vehicleChassis = scene.sceneGraph.createSceneEntity("vehicle_chassis");
+        scene.sceneGraph.addSceneEntity(vehicleChassis);
 
-        line(x + width / 2, y + height / 2, z + depth / 2,
-                x - width / 2, y + height / 2, z + depth / 2,
-                r, g, b, a);
+        // Create entities for all the wheels
+        for (int i = 0; i < 4; i++) {
+            wheels[i] = scene.sceneGraph.createSceneEntity("vehicle_wheel_" + i);
+            scene.sceneGraph.addSceneEntity(wheels[i]);
+        }
 
-        // bottom face
-        line(x + width / 2, y - height / 2, z - depth / 2,
-                x - width / 2, y - height / 2, z - depth / 2,
-                r, g, b, a);
+        // Create a model component for the chassis
+        nhg.assets.loadAsset(new Asset("car", "models/car.obj", Model.class));
+        Model car = nhg.assets.get("car");
 
-        line(x + width / 2, y - height / 2, z + depth / 2,
-                x - width / 2, y - height / 2, z + depth / 2,
-                r, g, b, a);
+        ModelComponent modelComponent = nhg.entities.createComponent(vehicleChassis, ModelComponent.class);
+        modelComponent.initWithModel(car);
 
-        // left face
-        line(x - width / 2, y - height / 2, z - depth / 2,
-                x - width / 2, y - height / 2, z + depth / 2,
-                r, g, b, a);
+        // Create a model component for the chassis
+        nhg.assets.loadAsset(new Asset("wheel", "models/wheel.obj", Model.class));
+        Model wheel = nhg.assets.get("wheel");
 
-        line(x - width / 2, y + height / 2, z - depth / 2,
-                x - width / 2, y + height / 2, z + depth / 2,
-                r, g, b, a);
+        // Create a rigid body component for the chassis
+        RigidBodyComponent chassisBody = nhg.entities.createComponent(vehicleChassis, RigidBodyComponent.class);
 
-        line(x - width / 2, y - height / 2, z - depth / 2,
-                x - width / 2, y + height / 2, z - depth / 2,
-                r, g, b, a);
+        BoundingBox boundingBox = new BoundingBox();
+        Vector3 chassisHalfExtents = car.calculateBoundingBox(boundingBox).getDimensions(new Vector3()).scl(0.5f);
+        Vector3 wheelHalfExtents = wheel.calculateBoundingBox(boundingBox).getDimensions(new Vector3()).scl(0.5f);
 
-        line(x - width / 2, y - height / 2, z + depth / 2,
-                x - width / 2, y + height / 2, z + depth / 2,
-                r, g, b, a);
+        btBoxShape boxShape = new btBoxShape(chassisHalfExtents);
+        chassisBody.build(boxShape, 0, 1f, 0.1f, 0f);
 
-        // right face
-        line(x + width / 2, y - height / 2, z - depth / 2,
-                x + width / 2, y - height / 2, z + depth / 2,
-                r, g, b, a);
+        // Create a rigid body component for every wheel
+        for (int i = 0; i < 4; i++) {
+            ModelComponent wheelModel = nhg.entities.createComponent(wheels[i], ModelComponent.class);
+            wheelModel.initWithModel(wheel);
+        }
 
-        line(x + width / 2, y + height / 2, z - depth / 2,
-                x + width / 2, y + height / 2, z + depth / 2,
-                r, g, b, a);
+        // Create the physics vehicle
+        vehicleRaycaster = new btDefaultVehicleRaycaster(physicsSystem.getBulletWorld());
+        vehicleTuning = new btRaycastVehicle.btVehicleTuning();
+        vehicle = new btRaycastVehicle(vehicleTuning, chassisBody.getBody(), vehicleRaycaster);
 
-        line(x + width / 2, y - height / 2, z - depth / 2,
-                x + width / 2, y + height / 2, z - depth / 2,
-                r, g, b, a);
+        chassisBody.getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
+        physicsSystem.getBulletWorld().addVehicle(vehicle);
 
-        line(x + width / 2, y - height / 2, z + depth / 2,
-                x + width / 2, y + height / 2, z + depth / 2,
-                r, g, b, a);
+        vehicle.setCoordinateSystem(0, 1, 2);
+
+        Vector3 point = new Vector3();
+        Vector3 direction = new Vector3(0, -1, 0);
+        Vector3 axis = new Vector3(-1, 0, 0);
+
+        btWheelInfo wheelInfo0 = vehicle.addWheel(point.set(chassisHalfExtents).scl(0.9f, -0.8f, 0.7f),
+                direction, axis, wheelHalfExtents.z * 0.3f, wheelHalfExtents.z, vehicleTuning,
+                true);
+
+        btWheelInfo wheelInfo1 = vehicle.addWheel(point.set(chassisHalfExtents).scl(-0.9f, -0.8f, 0.7f),
+                direction, axis, wheelHalfExtents.z * 0.3f, wheelHalfExtents.z, vehicleTuning,
+                true);
+
+        btWheelInfo wheelInfo2 = vehicle.addWheel(point.set(chassisHalfExtents).scl(0.9f, -0.8f, -0.5f),
+                direction, axis, wheelHalfExtents.z * 0.3f, wheelHalfExtents.z, vehicleTuning,
+                false);
+
+        btWheelInfo wheelInfo3 = vehicle.addWheel(point.set(chassisHalfExtents).scl(-0.9f, -0.8f, -0.5f),
+                direction, axis, wheelHalfExtents.z * 0.3f, wheelHalfExtents.z, vehicleTuning,
+                false);
+
+        WheelComponent wheelComponent0 = nhg.entities.createComponent(wheels[0], WheelComponent.class);
+        wheelComponent0.build(wheelInfo0, vehicle, 0);
+
+        WheelComponent wheelComponent1 = nhg.entities.createComponent(wheels[1], WheelComponent.class);
+        wheelComponent1.build(wheelInfo1, vehicle, 1);
+
+        WheelComponent wheelComponent2 = nhg.entities.createComponent(wheels[2], WheelComponent.class);
+        wheelComponent2.build(wheelInfo2, vehicle, 2);
+
+        WheelComponent wheelComponent3 = nhg.entities.createComponent(wheels[3], WheelComponent.class);
+        wheelComponent3.build(wheelInfo3, vehicle, 3);
     }
 }

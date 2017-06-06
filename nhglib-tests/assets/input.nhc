@@ -76,6 +76,22 @@
         {
           "name":"aim",
           "type":"mouse"
+        },
+        {
+          "name":"throttleForward",
+          "type":"key"
+        },
+        {
+          "name":"throttleBackward",
+          "type":"key"
+        },
+        {
+          "name":"steerLeft",
+          "type":"key"
+        },
+        {
+          "name":"steerRight",
+          "type":"key"
         }
       ]
     },
@@ -142,6 +158,26 @@
       {
         "name":"sprint",
         "keyCode":59,
+        "inputMode":"repeat"
+      },
+      {
+        "name":"throttleForward",
+        "keyCode":37,
+        "inputMode":"repeat"
+      },
+      {
+        "name":"throttleBackward",
+        "keyCode":39,
+        "inputMode":"repeat"
+      },
+      {
+        "name":"steerLeft",
+        "keyCode":38,
+        "inputMode":"repeat"
+      },
+      {
+        "name":"steerRight",
+        "keyCode":40,
         "inputMode":"repeat"
       }
     ],

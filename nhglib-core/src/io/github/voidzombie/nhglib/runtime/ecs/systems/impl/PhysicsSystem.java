@@ -19,6 +19,7 @@ import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
 import com.badlogic.gdx.utils.Disposable;
 import io.github.voidzombie.nhglib.runtime.ecs.components.physics.RigidBodyComponent;
+import io.github.voidzombie.nhglib.runtime.ecs.components.physics.WheelComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 
 /**
@@ -37,9 +38,13 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
 
     private ComponentMapper<NodeComponent> nodeMapper;
     private ComponentMapper<RigidBodyComponent> rigidBodyMapper;
+    private ComponentMapper<WheelComponent> wheelMapper;
 
     public PhysicsSystem() {
-        super(Aspect.all(RigidBodyComponent.class, NodeComponent.class));
+        super(Aspect
+                .all(NodeComponent.class)
+                .one(RigidBodyComponent.class, WheelComponent.class));
+
         initPhysics();
     }
 
@@ -55,23 +60,21 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
 
     @Override
     protected void process(int entityId) {
+        RigidBodyComponent bodyComponent = null;
+        WheelComponent wheelComponent = null;
+
         NodeComponent nodeComponent = nodeMapper.get(entityId);
-        RigidBodyComponent bodyComponent = rigidBodyMapper.get(entityId);
 
-        if (!bodyComponent.isAdded()) {
-            Matrix4 initialTransform = new Matrix4();
+        if (rigidBodyMapper.has(entityId)) {
+            bodyComponent = rigidBodyMapper.get(entityId);
+        } else if (wheelMapper.has(entityId)) {
+            wheelComponent = wheelMapper.get(entityId);
+        }
 
-            Vector3 trn = nodeComponent.getTranslation();
-            Vector3 scl = new Vector3(1, 1, 1);
-            Quaternion rtn = nodeComponent.getRotationQuaternion();
-
-            initialTransform.set(trn, rtn, scl);
-
-            bodyComponent.addToWorld(dynamicsWorld, initialTransform);
-        } else {
-            nodeComponent.setTranslation(bodyComponent.getTranslation());
-            nodeComponent.setRotation(bodyComponent.getRotation());
-            nodeComponent.applyTransforms();
+        if (bodyComponent != null) {
+            processBodyComponent(bodyComponent, nodeComponent);
+        } else if (wheelComponent != null) {
+            processWheelComponent(wheelComponent, nodeComponent);
         }
     }
 
@@ -114,6 +117,10 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
         return physicsInitialized;
     }
 
+    public btDynamicsWorld getBulletWorld() {
+        return dynamicsWorld;
+    }
+
     private void initPhysics() {
         Bullet.init();
 
@@ -126,5 +133,32 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
         dynamicsWorld.setGravity(new Vector3(0f, -1f, 0f));
 
         physicsInitialized = true;
+    }
+
+    private void processBodyComponent(RigidBodyComponent bodyComponent, NodeComponent nodeComponent) {
+        if (!bodyComponent.isAdded()) {
+            Matrix4 initialTransform = new Matrix4();
+
+            Vector3 trn = nodeComponent.getTranslation();
+            Vector3 scl = new Vector3(1, 1, 1);
+            Quaternion rtn = nodeComponent.getRotationQuaternion();
+
+            initialTransform.set(trn, rtn, scl);
+
+            bodyComponent.addToWorld(dynamicsWorld, initialTransform);
+        } else {
+            nodeComponent.setTranslation(bodyComponent.getTranslation());
+            nodeComponent.setRotation(bodyComponent.getRotation());
+            nodeComponent.applyTransforms();
+        }
+    }
+
+    private void processWheelComponent(WheelComponent wheelComponent, NodeComponent nodeComponent) {
+        Vector3 translation = wheelComponent.getTranslation();
+        Quaternion rotation = wheelComponent.getRotation();
+
+        nodeComponent.setTranslation(translation);
+        nodeComponent.setRotation(rotation);
+        nodeComponent.applyTransforms();
     }
 }
