@@ -119,8 +119,9 @@ public class Assets implements Updatable, AssetErrorListener {
      *
      * @param asset the asset.
      */
-    public void loadAsset(Asset asset) {
+    public <T> T loadAsset(Asset asset) {
         queueAsset(asset, false);
+        return get(asset);
     }
 
     @SuppressWarnings("unchecked")

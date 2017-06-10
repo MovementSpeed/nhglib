@@ -19,6 +19,11 @@ public class Asset {
         this(asset.alias, asset.source, asset.assetClass);
     }
 
+    public Asset(String alias, String source, Class assetClass, AssetLoaderParameters parameters) {
+        this(alias, source, assetClass);
+        this.parameters = parameters;
+    }
+
     public Asset(String alias, String source, Class assetClass) {
         if (alias != null) {
             this.alias = alias;
@@ -30,20 +35,10 @@ public class Asset {
 
         this.source = source;
         this.assetClass = assetClass;
-    }
 
-    public Asset(String alias, String source, Class assetClass, AssetLoaderParameters parameters) {
-        if (alias != null) {
-            this.alias = alias;
-        } else if (source != null) {
-            this.alias = source;
-        } else {
-            throw new NullPointerException(Strings.Messages.nullAssetSource);
+        if (source.contains("/")) {
+            this.dependenciesPath = source.substring(0, source.lastIndexOf("/") + 1);
         }
-
-        this.source = source;
-        this.assetClass = assetClass;
-        this.parameters = parameters;
     }
 
     @Override

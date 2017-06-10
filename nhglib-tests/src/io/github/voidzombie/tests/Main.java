@@ -19,7 +19,6 @@ import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btDefaultVehicleRaycaster;
 import com.badlogic.gdx.physics.bullet.dynamics.btRaycastVehicle;
 import com.badlogic.gdx.physics.bullet.dynamics.btVehicleRaycaster;
-import com.badlogic.gdx.physics.bullet.dynamics.btWheelInfo;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
@@ -152,12 +151,6 @@ public class Main extends NhgEntry implements InputListener {
     public void engineUpdate(float delta) {
         super.engineUpdate(delta);
         world.update();
-
-        if (vehicle != null) {
-            for (int i = 0; i < 4; i++) {
-                //vehicle.updateWheelTransform(i);
-            }
-        }
     }
 
     @Override
@@ -202,28 +195,28 @@ public class Main extends NhgEntry implements InputListener {
 
                 case "throttleForward":
                     if (input.getInputAction() == InputAction.DOWN) {
-                        vehicle.applyEngineForce(1f, 0);
-                        vehicle.applyEngineForce(1f, 1);
+                        vehicle.applyEngineForce(24, 2);
+                        vehicle.applyEngineForce(24, 3);
                     } else {
-                        vehicle.applyEngineForce(0, 0);
-                        vehicle.applyEngineForce(0, 1);
+                        vehicle.applyEngineForce(0, 2);
+                        vehicle.applyEngineForce(0, 3);
                     }
                     break;
 
                 case "throttleBackward":
                     if (input.getInputAction() == InputAction.DOWN) {
-                        vehicle.applyEngineForce(-0.5f, 0);
-                        vehicle.applyEngineForce(-0.5f, 1);
+                        vehicle.applyEngineForce(-24, 2);
+                        vehicle.applyEngineForce(-24, 3);
                     } else {
-                        vehicle.applyEngineForce(0, 0);
-                        vehicle.applyEngineForce(0, 1);
+                        vehicle.applyEngineForce(0, 2);
+                        vehicle.applyEngineForce(0, 3);
                     }
                     break;
 
                 case "brake":
                     if (input.getInputAction() == InputAction.DOWN) {
-                        vehicle.setBrake(0.01f, 0);
-                        vehicle.setBrake(0.01f, 1);
+                        vehicle.setBrake(0.03f, 0);
+                        vehicle.setBrake(0.03f, 1);
                     } else {
                         vehicle.setBrake(0, 0);
                         vehicle.setBrake(0, 1);
@@ -330,25 +323,23 @@ public class Main extends NhgEntry implements InputListener {
         }
 
         // Create a model component for the chassis
-        nhg.assets.loadAsset(new Asset("car", "models/car.obj", Model.class));
-        Model car = nhg.assets.get("car");
+        Model car = nhg.assets.loadAsset(new Asset("car", "models/gk_chassis.g3db", Model.class));
 
         ModelComponent modelComponent = nhg.entities.createComponent(vehicleChassis, ModelComponent.class);
         modelComponent.initWithModel(car);
 
         // Create a model component for the chassis
-        nhg.assets.loadAsset(new Asset("wheel", "models/wheel.obj", Model.class));
-        Model wheel = nhg.assets.get("wheel");
+        Model wheel = nhg.assets.loadAsset(new Asset("wheel", "models/gk_wheel.g3db", Model.class));
 
         // Create a rigid body component for the chassis
         RigidBodyComponent chassisBody = nhg.entities.createComponent(vehicleChassis, RigidBodyComponent.class);
 
         BoundingBox boundingBox = new BoundingBox();
-        Vector3 chassisHalfExtents = car.calculateBoundingBox(boundingBox).getDimensions(new Vector3()).scl(0.5f);
+        Vector3 chassisHalfExtents = new Vector3(0.876f, 0.267f, 1.219f).scl(0.5f);
         Vector3 wheelHalfExtents = wheel.calculateBoundingBox(boundingBox).getDimensions(new Vector3()).scl(0.5f);
 
         btBoxShape boxShape = new btBoxShape(chassisHalfExtents);
-        chassisBody.build(boxShape, 0, 1f, 0.1f, 0f);
+        chassisBody.build(boxShape, 0, 5f, 0.1f, 0f);
 
         // Create a rigid body component for every wheel
         for (int i = 0; i < 4; i++) {
@@ -359,6 +350,7 @@ public class Main extends NhgEntry implements InputListener {
         // Create the physics vehicle
         vehicleRaycaster = new btDefaultVehicleRaycaster(physicsSystem.getBulletWorld());
         vehicleTuning = new btRaycastVehicle.btVehicleTuning();
+        //vehicleTuning.setFrictionSlip(5);
         vehicle = new btRaycastVehicle(vehicleTuning, chassisBody.getBody(), vehicleRaycaster);
 
         chassisBody.getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
@@ -370,21 +362,21 @@ public class Main extends NhgEntry implements InputListener {
         Vector3 direction = new Vector3(0, -1, 0);
         Vector3 axis = new Vector3(-1, 0, 0);
 
-        btWheelInfo wheelInfo0 = vehicle.addWheel(point.set(chassisHalfExtents).scl(0.9f, -0.8f, 0.7f),
+        vehicle.addWheel(point.set(0.313f, 0, 0.334f),
                 direction, axis, wheelHalfExtents.z * 0.3f, wheelHalfExtents.z, vehicleTuning,
-                true);
+                true).setFrictionSlip(20);
 
-        btWheelInfo wheelInfo1 = vehicle.addWheel(point.set(chassisHalfExtents).scl(-0.9f, -0.8f, 0.7f),
+        vehicle.addWheel(point.set(-0.313f, 0, 0.334f),
                 direction, axis, wheelHalfExtents.z * 0.3f, wheelHalfExtents.z, vehicleTuning,
-                true);
+                true).setFrictionSlip(20);
 
-        btWheelInfo wheelInfo2 = vehicle.addWheel(point.set(chassisHalfExtents).scl(0.9f, -0.8f, -0.5f),
+        vehicle.addWheel(point.set(0.313f, 0, -0.386f),
                 direction, axis, wheelHalfExtents.z * 0.3f, wheelHalfExtents.z, vehicleTuning,
-                false);
+                false).setFrictionSlip(15);
 
-        btWheelInfo wheelInfo3 = vehicle.addWheel(point.set(chassisHalfExtents).scl(-0.9f, -0.8f, -0.5f),
+        vehicle.addWheel(point.set(-0.313f, 0, -0.386f),
                 direction, axis, wheelHalfExtents.z * 0.3f, wheelHalfExtents.z, vehicleTuning,
-                false);
+                false).setFrictionSlip(15);
 
         WheelComponent wheelComponent0 = nhg.entities.createComponent(wheels[0], WheelComponent.class);
         wheelComponent0.build(vehicle, 0);
