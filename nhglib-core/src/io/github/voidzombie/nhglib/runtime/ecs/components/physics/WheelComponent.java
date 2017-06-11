@@ -11,20 +11,26 @@ import com.badlogic.gdx.physics.bullet.dynamics.btRaycastVehicle;
  */
 public class WheelComponent extends Component {
     private int wheelIndex;
+
+    private Vector3 translation;
+    private Quaternion rotation;
     private btRaycastVehicle vehicle;
 
     public void build(btRaycastVehicle vehicle, int wheelIndex) {
         this.vehicle = vehicle;
         this.wheelIndex = wheelIndex;
+
+        translation = new Vector3();
+        rotation = new Quaternion();
     }
 
     public Vector3 getTranslation() {
         Matrix4 mat = vehicle.getWheelTransformWS(wheelIndex);
-        return mat.getTranslation(new Vector3());
+        return mat.getTranslation(translation);
     }
 
     public Quaternion getRotation() {
         Matrix4 mat = vehicle.getWheelTransformWS(wheelIndex);
-        return mat.getRotation(new Quaternion());
+        return mat.getRotation(rotation);
     }
 }

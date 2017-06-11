@@ -77,6 +77,8 @@ public class SceneManager {
         SceneUtils.addComponentJsonMapping("light", LightComponentJson.class);
         SceneUtils.addComponentJsonMapping("model", ModelComponentJson.class);
         SceneUtils.addComponentJsonMapping("rigidBody", RigidBodyComponentJson.class);
+        SceneUtils.addComponentJsonMapping("vehicle", VehicleComponentJson.class);
+        SceneUtils.addComponentJsonMapping("wheel", WheelComponentJson.class);
 
         SceneUtils.addAssetClassMapping("model", Model.class);
         SceneUtils.addAssetClassMapping("texture", Texture.class);

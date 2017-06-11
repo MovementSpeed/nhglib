@@ -24,7 +24,15 @@ public class EntityJson implements JsonParseable<Integer> {
     @Override
     public void parse(JsonValue jsonValue) {
         String id = jsonValue.getString("id");
-        int entity = sceneGraph.addSceneEntity(id, parentEntity);
+        boolean attachToParent = jsonValue.getBoolean("attachToParent", true);
+
+        int entity;
+
+        if (attachToParent) {
+            entity = sceneGraph.addSceneEntity(id, parentEntity);
+        } else {
+            entity = sceneGraph.addSceneEntity(id);
+        }
 
         JsonValue componentsJson = jsonValue.get("components");
 
@@ -33,8 +41,10 @@ public class EntityJson implements JsonParseable<Integer> {
             ComponentJson componentJson = SceneUtils.componentJsonFromType(type);
 
             if (componentJson != null) {
+                componentJson.parentEntity = parentEntity;
                 componentJson.entity = entity;
                 componentJson.entities = entities;
+                componentJson.sceneGraph = sceneGraph;
                 componentJson.parse(componentJsonValue);
             }
         }
@@ -51,13 +61,16 @@ public class EntityJson implements JsonParseable<Integer> {
         }
 
         TransformJson transformJson = new TransformJson();
-        transformJson.parse(jsonValue.get("transform"));
 
-        NodeComponent nodeComponent = entities.getComponent(entity, NodeComponent.class);
-        nodeComponent.setTransform(
-                transformJson.position,
-                transformJson.rotation,
-                transformJson.scale);
+        if (jsonValue.has("transform")) {
+            transformJson.parse(jsonValue.get("transform"));
+
+            NodeComponent nodeComponent = entities.getComponent(entity, NodeComponent.class);
+            nodeComponent.setTransform(
+                    transformJson.position,
+                    transformJson.rotation,
+                    transformJson.scale);
+        }
 
         output = entity;
     }

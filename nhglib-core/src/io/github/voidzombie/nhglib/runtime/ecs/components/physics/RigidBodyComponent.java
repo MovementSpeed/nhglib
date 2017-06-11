@@ -4,7 +4,6 @@ import com.artemis.Component;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.bullet.collision.Collision;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
@@ -42,14 +41,10 @@ public class RigidBodyComponent extends Component implements Disposable {
     }
 
     public void build(btCollisionShape collisionShape, float mass) {
-        build(collisionShape, Collision.WANTS_DEACTIVATION, mass);
+        build(collisionShape, mass, 0.5f, 0f);
     }
 
-    public void build(btCollisionShape collisionShape, int activationState, float mass) {
-        build(collisionShape, activationState, mass, 0.5f, 0f);
-    }
-
-    public void build(btCollisionShape collisionShape, int activationState, float mass, float friction, float restitution) {
+    public void build(btCollisionShape collisionShape, float mass, float friction, float restitution) {
         this.collisionShape = collisionShape;
         constructionInfo = getConstructionInfo(collisionShape, mass);
 
@@ -57,7 +52,6 @@ public class RigidBodyComponent extends Component implements Disposable {
             motionState = new MotionState();
 
             body = new btRigidBody(constructionInfo);
-            //body.setActivationState(activationState);
             body.setSleepingThresholds(1f / 1000f, 1f / 1000f);
             body.setFriction(friction);
             body.setRestitution(restitution);

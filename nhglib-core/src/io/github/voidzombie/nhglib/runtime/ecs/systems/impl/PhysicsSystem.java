@@ -19,6 +19,7 @@ import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
 import com.badlogic.gdx.utils.Disposable;
 import io.github.voidzombie.nhglib.runtime.ecs.components.physics.RigidBodyComponent;
+import io.github.voidzombie.nhglib.runtime.ecs.components.physics.VehicleComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.physics.WheelComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 
@@ -38,12 +39,13 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
 
     private ComponentMapper<NodeComponent> nodeMapper;
     private ComponentMapper<RigidBodyComponent> rigidBodyMapper;
+    private ComponentMapper<VehicleComponent> vehicleMapper;
     private ComponentMapper<WheelComponent> wheelMapper;
 
     public PhysicsSystem() {
         super(Aspect
                 .all(NodeComponent.class)
-                .one(RigidBodyComponent.class, WheelComponent.class));
+                .one(RigidBodyComponent.class, VehicleComponent.class, WheelComponent.class));
 
         initPhysics();
     }
@@ -61,6 +63,7 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
     @Override
     protected void process(int entityId) {
         RigidBodyComponent bodyComponent = null;
+        VehicleComponent vehicleComponent = null;
         WheelComponent wheelComponent = null;
 
         NodeComponent nodeComponent = nodeMapper.get(entityId);
@@ -69,12 +72,16 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
             bodyComponent = rigidBodyMapper.get(entityId);
         } else if (wheelMapper.has(entityId)) {
             wheelComponent = wheelMapper.get(entityId);
+        } else if (vehicleMapper.has(entityId)) {
+            vehicleComponent = vehicleMapper.get(entityId);
         }
 
         if (bodyComponent != null) {
             processBodyComponent(bodyComponent, nodeComponent);
         } else if (wheelComponent != null) {
             processWheelComponent(wheelComponent, nodeComponent);
+        } else if (vehicleComponent != null) {
+            processVehicleComponent(vehicleComponent, nodeComponent);
         }
     }
 
@@ -149,6 +156,24 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
         } else {
             nodeComponent.setTranslation(bodyComponent.getTranslation());
             nodeComponent.setRotation(bodyComponent.getRotation());
+            nodeComponent.applyTransforms();
+        }
+    }
+
+    private void processVehicleComponent(VehicleComponent vehicleComponent, NodeComponent nodeComponent) {
+        if (!vehicleComponent.isAdded()) {
+            Matrix4 initialTransform = new Matrix4();
+
+            Vector3 trn = nodeComponent.getTranslation();
+            Vector3 scl = new Vector3(1, 1, 1);
+            Quaternion rtn = nodeComponent.getRotationQuaternion();
+
+            initialTransform.set(trn, rtn, scl);
+
+            vehicleComponent.addToWorld(dynamicsWorld, initialTransform);
+        } else {
+            nodeComponent.setTranslation(vehicleComponent.getTranslation());
+            nodeComponent.setRotation(vehicleComponent.getRotation());
             nodeComponent.applyTransforms();
         }
     }
