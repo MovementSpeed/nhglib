@@ -179,11 +179,8 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
     }
 
     private void processWheelComponent(WheelComponent wheelComponent, NodeComponent nodeComponent) {
-        Vector3 translation = wheelComponent.getTranslation();
-        Quaternion rotation = wheelComponent.getRotation();
-
-        nodeComponent.setTranslation(translation);
-        nodeComponent.setRotation(rotation);
+        nodeComponent.setTranslation(wheelComponent.getTranslation());
+        nodeComponent.setRotation(wheelComponent.getRotationQuaternion());
         nodeComponent.applyTransforms();
     }
 }

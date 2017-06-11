@@ -322,7 +322,11 @@ public class NodeComponent extends PooledComponent {
     }
 
     public void applyTransforms() {
-        node.calculateTransforms(true);
+        applyTransforms(true);
+    }
+
+    public void applyTransforms(boolean recursive) {
+        node.calculateTransforms(recursive);
     }
 
     public Float getX() {

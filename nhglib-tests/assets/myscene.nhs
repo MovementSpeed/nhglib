@@ -268,7 +268,27 @@
         [
           {
             "id":"wheel0",
-            "attachToParent":false,
+            "transform":
+            {
+              "position":
+              {
+                "x":0.313,
+                "y":0,
+                "z":0.38,
+              },
+              "rotation":
+              {
+                "x":0.0,
+                "y":0.0,
+                "z":0.0,
+              },
+              "scale":
+              {
+                "x":1.0,
+                "y":1.0,
+                "z":1.0,
+              }
+            },
             "components":
             [
               {
@@ -277,7 +297,7 @@
                 {
                   "x":0.313,
                   "y":0,
-                  "z":0.334
+                  "z":0.38
                 },
                 "direction":
                 {
@@ -311,7 +331,27 @@
           },
           {
             "id":"wheel1",
-            "attachToParent":false,
+            "transform":
+            {
+              "position":
+              {
+                "x":-0.313,
+                "y":0,
+                "z":0.38,
+              },
+              "rotation":
+              {
+                "x":0.0,
+                "y":0.0,
+                "z":0.0,
+              },
+              "scale":
+              {
+                "x":1.0,
+                "y":1.0,
+                "z":1.0,
+              }
+            },
             "components":
             [
               {
@@ -320,7 +360,7 @@
                 {
                   "x":-0.313,
                   "y":0,
-                  "z":0.334
+                  "z":0.38
                 },
                 "direction":
                 {
@@ -354,7 +394,27 @@
           },
           {
             "id":"wheel2",
-            "attachToParent":false,
+            "transform":
+            {
+              "position":
+              {
+                "x":0.313,
+                "y":0,
+                "z":-0.33,
+              },
+              "rotation":
+              {
+                "x":0.0,
+                "y":0.0,
+                "z":0.0,
+              },
+              "scale":
+              {
+                "x":1.0,
+                "y":1.0,
+                "z":1.0,
+              }
+            },
             "components":
             [
               {
@@ -363,7 +423,7 @@
                 {
                   "x":0.313,
                   "y":0,
-                  "z":-0.386
+                  "z":-0.33
                 },
                 "direction":
                 {
@@ -380,7 +440,7 @@
                 "radius":0.112,
                 "suspensionRestLength":0.0336,
                 "friction":15,
-                "frontWheel":true
+                "frontWheel":false
               },
               {
                 "type":"model",
@@ -397,7 +457,27 @@
           },
           {
             "id":"wheel3",
-            "attachToParent":false,
+            "transform":
+            {
+              "position":
+              {
+                "x":-0.313,
+                "y":0,
+                "z":-0.33,
+              },
+              "rotation":
+              {
+                "x":0.0,
+                "y":0.0,
+                "z":0.0,
+              },
+              "scale":
+              {
+                "x":1.0,
+                "y":1.0,
+                "z":1.0,
+              }
+            },
             "components":
             [
               {
@@ -406,7 +486,7 @@
                 {
                   "x":-0.313,
                   "y":0,
-                  "z":-0.386
+                  "z":-0.33
                 },
                 "direction":
                 {
@@ -423,7 +503,7 @@
                 "radius":0.112,
                 "suspensionRestLength":0.0336,
                 "friction":15,
-                "frontWheel":true
+                "frontWheel":false
               },
               {
                 "type":"model",

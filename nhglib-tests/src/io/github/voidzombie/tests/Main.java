@@ -65,7 +65,7 @@ public class Main extends NhgEntry implements InputListener {
         Nhg.debugLogs = true;
         Nhg.debugDrawPhysics = true;
 
-        Gdx.input.setCursorCatched(true);
+        //Gdx.input.setCursorCatched(true);
 
         world = new NhgWorld(nhg.messaging, nhg.entities, nhg.assets,
                 new DefaultWorldStrategy(),

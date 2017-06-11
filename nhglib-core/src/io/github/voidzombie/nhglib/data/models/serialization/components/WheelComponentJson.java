@@ -5,6 +5,7 @@ import io.github.voidzombie.nhglib.data.models.serialization.ComponentJson;
 import io.github.voidzombie.nhglib.data.models.serialization.Vector3Json;
 import io.github.voidzombie.nhglib.runtime.ecs.components.physics.VehicleComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.physics.WheelComponent;
+import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 
 /**
  * Created by Fausto Napoli on 11/06/2017.
@@ -34,5 +35,8 @@ public class WheelComponentJson extends ComponentJson {
 
         WheelComponent wheelComponent = entities.createComponent(entity, WheelComponent.class);
         wheelComponent.build(vehicleComponent.getVehicle(), vehicleComponent.getWheelNumber() - 1);
+
+        NodeComponent nodeComponent = entities.getComponent(entity, NodeComponent.class);
+        nodeComponent.node.inheritTransform = false;
     }
 }

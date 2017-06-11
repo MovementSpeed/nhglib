@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.dynamics.btRaycastVehicle;
+import com.badlogic.gdx.physics.bullet.dynamics.btWheelInfo;
 
 /**
  * Created by Fausto Napoli on 05/06/2017.
@@ -29,8 +30,22 @@ public class WheelComponent extends Component {
         return mat.getTranslation(translation);
     }
 
-    public Quaternion getRotation() {
+    public Quaternion getRotationQuaternion() {
         Matrix4 mat = vehicle.getWheelTransformWS(wheelIndex);
         return mat.getRotation(rotation);
+    }
+
+    public float getRotation() {
+        btWheelInfo info = vehicle.getWheelInfo(wheelIndex);
+        return info.getRotation();
+    }
+
+    public float getSteering() {
+        btWheelInfo info = vehicle.getWheelInfo(wheelIndex);
+        return info.getSteering();
+    }
+
+    public btRaycastVehicle getVehicle() {
+        return vehicle;
     }
 }
