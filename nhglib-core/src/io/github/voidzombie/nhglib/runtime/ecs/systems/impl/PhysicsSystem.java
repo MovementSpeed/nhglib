@@ -5,6 +5,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.systems.IteratingSystem;
 import com.artemis.utils.IntBag;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
@@ -179,8 +180,10 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
     }
 
     private void processWheelComponent(WheelComponent wheelComponent, NodeComponent nodeComponent) {
-        nodeComponent.setTranslation(wheelComponent.getTranslation());
-        nodeComponent.setRotation(wheelComponent.getRotationQuaternion());
+        float rotation = wheelComponent.getRotation() % 360f;
+        float steering = wheelComponent.getSteering() * MathUtils.radiansToDegrees;
+
+        nodeComponent.setRotation(rotation, steering, 0);
         nodeComponent.applyTransforms();
     }
 }
