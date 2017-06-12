@@ -23,6 +23,7 @@ import io.github.voidzombie.nhglib.runtime.ecs.components.physics.RigidBodyCompo
 import io.github.voidzombie.nhglib.runtime.ecs.components.physics.VehicleComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.physics.WheelComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
+import io.github.voidzombie.nhglib.utils.debug.Logger;
 
 /**
  * Created by Fausto Napoli on 04/05/2017.
@@ -180,8 +181,11 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
     }
 
     private void processWheelComponent(WheelComponent wheelComponent, NodeComponent nodeComponent) {
-        float rotation = wheelComponent.getRotation() % 360f;
+        float rotation = (wheelComponent.getRotation() * MathUtils.radiansToDegrees) % 360;
         float steering = wheelComponent.getSteering() * MathUtils.radiansToDegrees;
+
+        if (nodeComponent.id == 7)
+            Logger.log(this, rotation + "");
 
         nodeComponent.setRotation(rotation, steering, 0);
         nodeComponent.applyTransforms();

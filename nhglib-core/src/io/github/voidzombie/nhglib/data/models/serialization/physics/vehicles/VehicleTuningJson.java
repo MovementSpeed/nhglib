@@ -14,8 +14,8 @@ public class VehicleTuningJson implements JsonParseable<btRaycastVehicle.btVehic
     public void parse(JsonValue jsonValue) {
         vehicleTuning = new btRaycastVehicle.btVehicleTuning();
 
-        if (jsonValue.has("suspensionDumping")) {
-            float value = jsonValue.getFloat("suspensionDumping");
+        if (jsonValue.has("suspensionDamping")) {
+            float value = jsonValue.getFloat("suspensionDamping");
             vehicleTuning.setSuspensionDamping(value);
         }
 
