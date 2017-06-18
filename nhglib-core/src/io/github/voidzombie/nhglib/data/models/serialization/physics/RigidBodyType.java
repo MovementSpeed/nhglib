@@ -21,27 +21,27 @@ public enum RigidBodyType {
                 break;
 
             case "cone":
-                res = BOX;
+                res = CONE;
                 break;
 
             case "sphere":
-                res = BOX;
+                res = SPHERE;
                 break;
 
             case "capsule":
-                res = BOX;
+                res = CAPSULE;
                 break;
 
             case "cylinder":
-                res = BOX;
+                res = CYLINDER;
                 break;
 
             case "convexHull":
-                res = BOX;
+                res = CONVEX_HULL;
                 break;
 
             case "bvhTriangleMesh":
-                res = BOX;
+                res = BVH_TRIANGLE_MESH;
                 break;
         }
 
