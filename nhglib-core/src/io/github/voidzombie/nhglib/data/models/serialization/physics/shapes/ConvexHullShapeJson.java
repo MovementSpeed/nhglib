@@ -36,6 +36,8 @@ public class ConvexHullShapeJson extends ShapeJson {
         if (optimize) {
             shape.optimizeConvexHull();
         }
+
+        model.dispose();
     }
 
     @Override
