@@ -15,13 +15,14 @@ public class VehicleComponentJson extends ComponentJson {
 
     @Override
     public void parse(JsonValue jsonValue) {
-        VehicleComponent vehicleComponent = entities.createComponent(entity, VehicleComponent.class);
+        VehicleComponent vehicleComponent = nhg.entities.createComponent(entity, VehicleComponent.class);
 
-        PhysicsSystem physicsSystem = entities.getEntitySystem(PhysicsSystem.class);
+        PhysicsSystem physicsSystem = nhg.entities.getEntitySystem(PhysicsSystem.class);
         btDynamicsWorld world = physicsSystem.getBulletWorld();
 
         // Shape
         ShapeJson shapeJson = new ShapeJson();
+        shapeJson.nhg = nhg;
 
         if (jsonValue.has("shape")) {
             shapeJson.parse(jsonValue.get("shape"));

@@ -25,6 +25,7 @@ abstract class BaseGame implements
     @Override
     public final void create() {
         nhg = new Nhg();
+        nhg.init();
     }
 
     @Override

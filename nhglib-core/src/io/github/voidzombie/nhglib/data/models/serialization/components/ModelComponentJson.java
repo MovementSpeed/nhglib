@@ -13,7 +13,7 @@ public class ModelComponentJson extends ComponentJson {
     @Override
     public void parse(JsonValue jsonValue) {
         ModelComponent modelComponent =
-                entities.createComponent(entity, ModelComponent.class);
+                nhg.entities.createComponent(entity, ModelComponent.class);
 
         String type = jsonValue.getString("graphicsType");
         JsonValue asset = jsonValue.get("asset");

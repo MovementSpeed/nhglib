@@ -11,7 +11,7 @@ public class MessageComponentJson extends ComponentJson {
     @Override
     public void parse(JsonValue jsonValue) {
         MessageComponent messageComponent =
-                entities.createComponent(entity, MessageComponent.class);
+                nhg.entities.createComponent(entity, MessageComponent.class);
 
         JsonValue filters = jsonValue.get("filters");
         messageComponent.subscribe(filters.asStringArray());

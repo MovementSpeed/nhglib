@@ -4,6 +4,7 @@ package io.github.voidzombie.nhglib.data.models.serialization.physics;
  * Created by Fausto Napoli on 16/05/2017.
  */
 public enum RigidBodyType {
+    CONVEX_HULL,
     CYLINDER,
     CAPSULE,
     SPHERE,

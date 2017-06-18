@@ -13,9 +13,10 @@ import io.github.voidzombie.nhglib.runtime.ecs.components.physics.RigidBodyCompo
 public class RigidBodyComponentJson extends ComponentJson {
     @Override
     public void parse(JsonValue jsonValue) {
-        RigidBodyComponent rigidBodyComponent = entities.createComponent(entity, RigidBodyComponent.class);
+        RigidBodyComponent rigidBodyComponent = nhg.entities.createComponent(entity, RigidBodyComponent.class);
 
         ShapeJson shapeJson = new ShapeJson();
+        shapeJson.nhg = nhg;
         shapeJson.parse(jsonValue.get("shape"));
 
         String activationStateString = jsonValue.getString("activationState", "wantsDeactivation");

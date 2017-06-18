@@ -152,6 +152,10 @@ public abstract class NhgModelLoader<P extends NhgModelLoader.ModelParameters> e
         return result;
     }
 
+    public void setCurrentAsset(Asset asset) {
+        this.currentAsset = asset;
+    }
+
     static public class ModelParameters extends AssetLoaderParameters<Model> {
         public TextureLoader.TextureParameter textureParameter;
 

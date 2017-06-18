@@ -16,8 +16,8 @@ import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.GraphicsSystem;
 public class LightComponentJson extends ComponentJson {
     @Override
     public void parse(JsonValue jsonValue) {
-        GraphicsSystem graphicsSystem = entities.getEntitySystem(GraphicsSystem.class);
-        LightComponent lightComponent = entities.createComponent(entity, LightComponent.class);
+        GraphicsSystem graphicsSystem = nhg.entities.getEntitySystem(GraphicsSystem.class);
+        LightComponent lightComponent = nhg.entities.createComponent(entity, LightComponent.class);
 
         LightType lightType = LightType.fromString(jsonValue.getString("lightType"));
         float range = jsonValue.getFloat("range", 1f);

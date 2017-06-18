@@ -15,7 +15,7 @@ public class CameraComponentJson extends ComponentJson {
     @Override
     public void parse(JsonValue jsonValue) {
         CameraComponent cameraComponent =
-                entities.createComponent(entity, CameraComponent.class);
+                nhg.entities.createComponent(entity, CameraComponent.class);
 
         Camera camera;
 

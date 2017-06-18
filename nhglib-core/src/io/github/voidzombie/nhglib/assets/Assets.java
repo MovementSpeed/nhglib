@@ -12,15 +12,14 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.UBJsonReader;
+import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.loaders.JsonLoader;
 import io.github.voidzombie.nhglib.assets.loaders.NhgG3dModelLoader;
 import io.github.voidzombie.nhglib.assets.loaders.SceneLoader;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 import io.github.voidzombie.nhglib.interfaces.Updatable;
-import io.github.voidzombie.nhglib.runtime.ecs.utils.Entities;
 import io.github.voidzombie.nhglib.runtime.fsm.base.AssetsStates;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
-import io.github.voidzombie.nhglib.runtime.messaging.Messaging;
 import io.github.voidzombie.nhglib.utils.data.Bundle;
 import io.github.voidzombie.nhglib.utils.data.Strings;
 import io.github.voidzombie.nhglib.utils.debug.Logger;
@@ -29,19 +28,20 @@ import io.github.voidzombie.nhglib.utils.debug.Logger;
  * Created by Fausto Napoli on 19/10/2016.
  */
 public class Assets implements Updatable, AssetErrorListener {
-    public final DefaultStateMachine<Assets, AssetsStates> fsm;
+    public DefaultStateMachine<Assets, AssetsStates> fsm;
     public AssetManager assetManager;
 
-    private Messaging messaging;
-    private ArrayMap<String, Asset> assetCache;
-    private Array<Asset> assetQueue;
+    private Nhg nhg;
 
-    public Assets(Messaging messaging, Entities entities) {
-        this.messaging = messaging;
+    private Array<Asset> assetQueue;
+    private ArrayMap<String, Asset> assetCache;
+
+    public void init(Nhg nhg) {
+        this.nhg = nhg;
         fsm = new DefaultStateMachine<>(this, AssetsStates.IDLE);
 
         assetManager = new AssetManager();
-        assetManager.setLoader(Scene.class, new SceneLoader(entities, assetManager.getFileHandleResolver()));
+        assetManager.setLoader(Scene.class, new SceneLoader(nhg, assetManager.getFileHandleResolver()));
         assetManager.setLoader(JsonValue.class, new JsonLoader(assetManager.getFileHandleResolver()));
 
         assetManager.setLoader(Model.class, ".g3db", new NhgG3dModelLoader(this,
@@ -68,21 +68,21 @@ public class Assets implements Updatable, AssetErrorListener {
     }
 
     public void assetLoadingFinished() {
-        messaging.send(new Message(Strings.Events.assetLoadingFinished));
+        nhg.messaging.send(new Message(Strings.Events.assetLoadingFinished));
     }
 
     public void assetLoaded(Asset asset) {
         Bundle bundle = new Bundle();
         bundle.put(Strings.Defaults.assetKey, asset);
 
-        messaging.send(new Message(Strings.Events.assetLoaded, bundle));
+        nhg.messaging.send(new Message(Strings.Events.assetLoaded, bundle));
     }
 
     public void assetUnloaded(Asset asset) {
         Bundle bundle = new Bundle();
         bundle.put(Strings.Defaults.assetKey, asset);
 
-        messaging.send(new Message(Strings.Events.assetUnloaded, bundle));
+        nhg.messaging.send(new Message(Strings.Events.assetUnloaded, bundle));
     }
 
     public Array<Asset> getAssetQueue() {
@@ -106,26 +106,36 @@ public class Assets implements Updatable, AssetErrorListener {
     }
 
     /**
-     * Loads an asset in an asynchronous way.
-     *
-     * @param asset
-     */
-    public void queueAsset(Asset asset) {
-        queueAsset(asset, true);
-    }
-
-    /**
      * Loads an asset in a synchronized way.
-     *
      * @param asset the asset.
      */
     public <T> T loadAsset(Asset asset) {
-        queueAsset(asset, false);
+        if (!assetManager.isLoaded(asset.source)) {
+            FileHandle fileHandle = Gdx.files.internal(asset.source);
+
+            if (fileHandle.exists()) {
+                if (asset.parameters == null) {
+                    assetManager.load(asset.source, asset.assetClass);
+                } else {
+                    assetManager.load(asset.source, asset.assetClass, asset.parameters);
+                }
+
+                assetManager.finishLoadingAsset(asset.source);
+            } else {
+                Logger.log(this, Strings.Messages.cannotQueueAssetFileNotFound, asset.source);
+            }
+        }
+
         return get(asset);
     }
 
+    /**
+     * Loads an asset in an asynchronous way.
+     *
+     * @param asset the asset.
+     */
     @SuppressWarnings("unchecked")
-    private void queueAsset(Asset asset, boolean async) {
+    public void queueAsset(Asset asset) {
         assetCache.put(asset.alias, asset);
 
         if (!assetManager.isLoaded(asset.source)) {
@@ -138,12 +148,7 @@ public class Assets implements Updatable, AssetErrorListener {
                     assetManager.load(asset.source, asset.assetClass, asset.parameters);
                 }
 
-                if (async) {
-                    assetQueue.add(asset);
-                } else {
-                    assetManager.finishLoadingAsset(asset.source);
-                    assetLoaded(asset);
-                }
+                assetQueue.add(asset);
             } else {
                 Logger.log(this, Strings.Messages.cannotQueueAssetFileNotFound, asset.source);
             }

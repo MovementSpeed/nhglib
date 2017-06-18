@@ -38,8 +38,12 @@ public class Nhg {
     public Nhg() {
         messaging = new Messaging();
         entities = new Entities();
-        assets = new Assets(messaging, entities);
+        assets = new Assets();
         input = new InputHandler();
         threading = new Threading();
+    }
+
+    public void init() {
+        assets.init(this);
     }
 }

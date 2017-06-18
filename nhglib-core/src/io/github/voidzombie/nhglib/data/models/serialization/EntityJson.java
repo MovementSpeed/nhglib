@@ -1,10 +1,10 @@
 package io.github.voidzombie.nhglib.data.models.serialization;
 
 import com.badlogic.gdx.utils.JsonValue;
+import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.graphics.scenes.SceneGraph;
 import io.github.voidzombie.nhglib.interfaces.JsonParseable;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
-import io.github.voidzombie.nhglib.runtime.ecs.utils.Entities;
 import io.github.voidzombie.nhglib.utils.scenes.SceneUtils;
 
 /**
@@ -14,11 +14,12 @@ public class EntityJson implements JsonParseable<Integer> {
     public Integer parentEntity;
 
     private Integer output;
-    private Entities entities;
+
+    private Nhg nhg;
     private SceneGraph sceneGraph;
 
-    public EntityJson(Entities entities) {
-        this.entities = entities;
+    public EntityJson(Nhg nhg) {
+        this.nhg = nhg;
     }
 
     @Override
@@ -43,7 +44,7 @@ public class EntityJson implements JsonParseable<Integer> {
             if (componentJson != null) {
                 componentJson.parentEntity = parentEntity;
                 componentJson.entity = entity;
-                componentJson.entities = entities;
+                componentJson.nhg = nhg;
                 componentJson.sceneGraph = sceneGraph;
                 componentJson.parse(componentJsonValue);
             }
@@ -53,7 +54,7 @@ public class EntityJson implements JsonParseable<Integer> {
 
         if (entitiesJson != null) {
             for (JsonValue entityJsonValue : entitiesJson) {
-                EntityJson entityJson = new EntityJson(entities);
+                EntityJson entityJson = new EntityJson(nhg);
                 entityJson.sceneGraph = sceneGraph;
                 entityJson.parentEntity = entity;
                 entityJson.parse(entityJsonValue);
@@ -65,7 +66,7 @@ public class EntityJson implements JsonParseable<Integer> {
         if (jsonValue.has("transform")) {
             transformJson.parse(jsonValue.get("transform"));
 
-            NodeComponent nodeComponent = entities.getComponent(entity, NodeComponent.class);
+            NodeComponent nodeComponent = nhg.entities.getComponent(entity, NodeComponent.class);
             nodeComponent.setTransform(
                     transformJson.position,
                     transformJson.rotation,
