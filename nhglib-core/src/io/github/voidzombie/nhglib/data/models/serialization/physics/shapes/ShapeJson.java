@@ -59,6 +59,13 @@ public class ShapeJson implements JsonParseable<btCollisionShape> {
                 convexHullShapeJson.parse(shapeJson);
                 shape = convexHullShapeJson.get();
                 break;
+
+            case BVH_TRIANGLE_MESH:
+                BvhTriangleMeshShapeJson bvhTriangleMeshShapeJson = new BvhTriangleMeshShapeJson();
+                bvhTriangleMeshShapeJson.nhg = nhg;
+                bvhTriangleMeshShapeJson.parse(shapeJson);
+                shape = bvhTriangleMeshShapeJson.get();
+                break;
         }
     }
 
