@@ -2,7 +2,8 @@ package io.github.voidzombie.nhglib.data.models.serialization.physics.shapes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
+import com.badlogic.gdx.physics.bullet.Bullet;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.UBJsonReader;
 import io.github.voidzombie.nhglib.assets.Asset;
@@ -13,7 +14,7 @@ import io.github.voidzombie.nhglib.data.models.serialization.AssetJson;
  * Created by Fausto Napoli on 15/06/2017.
  */
 public class BvhTriangleMeshShapeJson extends ShapeJson {
-    private btBvhTriangleMeshShape shape;
+    private btCollisionShape shape;
 
     @Override
     public void parse(JsonValue jsonValue) {
@@ -26,18 +27,19 @@ public class BvhTriangleMeshShapeJson extends ShapeJson {
         modelLoader.setCurrentAsset(asset);
 
         Model model = modelLoader.loadModel(Gdx.files.internal(asset.source));
+        shape = Bullet.obtainStaticNodeShape(model.nodes);
 
-        shape = new btBvhTriangleMeshShape(model.meshParts);
+        //shape = new btBvhTriangleMeshShape(model.meshParts);
 
-        boolean optimize = jsonValue.getBoolean("optimize", false);
+        /*boolean optimize = jsonValue.getBoolean("optimize", false);
 
         if (optimize) {
             shape.buildOptimizedBvh();
-        }
+        }*/
     }
 
     @Override
-    public btBvhTriangleMeshShape get() {
+    public btCollisionShape get() {
         return shape;
     }
 }
