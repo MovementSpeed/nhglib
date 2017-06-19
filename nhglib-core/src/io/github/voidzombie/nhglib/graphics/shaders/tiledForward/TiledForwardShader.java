@@ -8,9 +8,7 @@ import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.Shader;
 import com.badlogic.gdx.graphics.g3d.shaders.BaseShader;
 import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
-import com.badlogic.gdx.graphics.glutils.ImmediateModeRenderer20;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -51,9 +49,6 @@ public class TiledForwardShader extends BaseShader {
     private Array<IntArray> lightsFrustum;
     private Array<NhgLight> lights;
     private Array<NhgLight> lightsToRender;
-
-    private ShapeRenderer shapeRenderer = new ShapeRenderer();
-    private ImmediateModeRenderer20 renderer20 = new ImmediateModeRenderer20(false, true, 0);
 
     public TiledForwardShader(Renderable renderable, Environment environment, Params params) {
         this.renderable = renderable;
