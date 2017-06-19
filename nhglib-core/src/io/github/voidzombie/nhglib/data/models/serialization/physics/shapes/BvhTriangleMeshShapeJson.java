@@ -34,8 +34,6 @@ public class BvhTriangleMeshShapeJson extends ShapeJson {
         if (optimize) {
             shape.buildOptimizedBvh();
         }
-
-        model.dispose();
     }
 
     @Override

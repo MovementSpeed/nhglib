@@ -5,138 +5,6 @@
     "entities":
     [
       {
-        "id":"light",
-        "transform":
-        {
-          "position":
-          {
-            "x":0.0,
-            "y":10.0,
-            "z":0.0,
-          },
-          "rotation":
-          {
-            "x":0.0,
-            "y":0.0,
-            "z":0.0,
-          },
-          "scale":
-          {
-            "x":1.0,
-            "y":1.0,
-            "z":1.0,
-          }
-        },
-        "components":
-        [
-          {
-            "type":"light",
-            "lightType":"spotLight",
-            "intensity":10.0,
-            "range":2.0,
-            "innerAngle":20,
-            "outerAngle":45,
-            "color":
-            {
-              "r":1.0,
-              "g":1.0,
-              "b":1.0,
-              "a":1.0,
-            }
-          }
-        ]
-      },
-      {
-        "id":"light2",
-        "transform":
-        {
-          "position":
-          {
-            "x":0.0,
-            "y":11.0,
-            "z":1.0,
-          },
-          "rotation":
-          {
-            "x":0.0,
-            "y":0.0,
-            "z":0.0,
-          },
-          "scale":
-          {
-            "x":1.0,
-            "y":1.0,
-            "z":1.0,
-          }
-        },
-        "components":
-        [
-          {
-            "type":"light",
-            "lightType":"spotLight",
-            "intensity":10.0,
-            "range":4.0,
-            "innerAngle":20,
-            "outerAngle":45,
-            "color":
-            {
-              "r":1.0,
-              "g":1.0,
-              "b":1.0,
-              "a":1.0,
-            }
-          }
-        ]
-      },
-      {
-        "id":"corridors",
-        "transform":
-        {
-          "position":
-          {
-            "x":0.0,
-            "y":0.0,
-            "z":0.0,
-          },
-          "rotation":
-          {
-            "x":0.0,
-            "y":0.0,
-            "z":0.0,
-          },
-          "scale":
-          {
-            "x":0.1,
-            "y":0.1,
-            "z":0.1,
-          }
-        },
-        "components":
-        [
-          {
-            "type":"model",
-            "enabled":false,
-            "graphicsType":"dynamic",
-            "asset":
-            {
-              "alias":"corridors",
-              "source":"models/corridors_tb.g3db",
-              "dependenciesPath":"textures/",
-              "classAlias":"model"
-            },
-            "materials":
-            [
-              {
-                "targetNode":"Cube"
-              }
-            ]
-          }
-        ],
-        "entities":
-        [
-        ]
-      },
-      {
         "id":"camera",
         "transform":
         {
@@ -178,8 +46,8 @@
         {
           "position":
           {
-            "x":0.0,
-            "y":-1.0,
+            "x":9.0,
+            "y":0.0,
             "z":0.0,
           },
           "rotation":
@@ -202,10 +70,24 @@
             "mass":0.0,
             "shape":
             {
-              "type":"box",
-              "width":40.0,
-              "height":0.1,
-              "depth":40.0
+              "type":"bvhTriangleMesh",
+              "asset":
+              {
+                "alias":"trackAsset",
+                "source":"models/vsr_track.g3db",
+                "classAlias":"model"
+              }
+            }
+          },
+          {
+            "type":"model",
+            "enabled":true,
+            "graphicsType":"dynamic",
+            "asset":
+            {
+              "alias":"trackAsset",
+              "source":"models/vsr_track.g3db",
+              "classAlias":"model"
             }
           }
         ],
