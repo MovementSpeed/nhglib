@@ -159,8 +159,14 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
             float yawRad = rotationQuaternion.getYawRad();
             float rollRad = rotationQuaternion.getRollRad();
 
-            initialTransform.set(translation, rotationQuaternion, scale);
-            bodyComponent.addToWorld(dynamicsWorld, initialTransform);
+            Matrix4 nodeTransform = new Matrix4(nodeComponent.getTransform());
+            Vector3 nodeScale = nodeTransform.getScale(new Vector3());
+            nodeScale.scl(-1);
+
+            nodeTransform.scl(nodeScale);
+
+            //initialTransform.set(translation, rotationQuaternion, scale);
+            bodyComponent.addToWorld(dynamicsWorld, nodeTransform);
         } else {
             nodeComponent.setTranslation(bodyComponent.getTranslation());
             nodeComponent.setRotation(bodyComponent.getRotation());
