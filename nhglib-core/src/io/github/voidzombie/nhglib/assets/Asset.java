@@ -58,6 +58,12 @@ public class Asset {
         return Objects.hashCode(alias, source, dependenciesPath);
     }
 
+    public void setDependenciesPath(String dependenciesPath) {
+        if (dependenciesPath != null && !dependenciesPath.isEmpty()) {
+            this.dependenciesPath = dependenciesPath;
+        }
+    }
+
     public boolean is(String alias) {
         return alias != null && this.alias.contentEquals(alias);
     }
