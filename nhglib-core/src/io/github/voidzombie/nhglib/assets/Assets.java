@@ -109,23 +109,10 @@ public class Assets implements Updatable, AssetErrorListener {
     /**
      * Loads an asset in a synchronized way.
      * @param asset the asset.
+     * @param listener a listener for the asset loading.
      */
     public void loadAsset(final Asset asset, final AssetListener listener) {
-        assetCache.put(asset.alias, asset);
-
-        if (!assetManager.isLoaded(asset.source)) {
-            FileHandle fileHandle = Gdx.files.internal(asset.source);
-
-            if (fileHandle.exists()) {
-                if (asset.parameters == null) {
-                    assetManager.load(asset.source, asset.assetClass);
-                } else {
-                    assetManager.load(asset.source, asset.assetClass, asset.parameters);
-                }
-            } else {
-                Logger.log(this, Strings.Messages.cannotQueueAssetFileNotFound, asset.source);
-            }
-        }
+        queueAsset(asset);
 
         nhg.messaging.get(Strings.Events.assetLoaded)
                 .subscribe(new Consumer<Message>() {
