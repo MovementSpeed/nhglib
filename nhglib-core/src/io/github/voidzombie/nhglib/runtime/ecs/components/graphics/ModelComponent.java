@@ -34,6 +34,11 @@ public class ModelComponent extends Component {
         state = ModelComponent.State.READY;
     }
 
+    public void initWithAsset(Asset asset) {
+        this.asset = asset;
+        this.state = State.NOT_INITIALIZED;
+    }
+
     public enum State {
         NOT_INITIALIZED,
         LOADING,
