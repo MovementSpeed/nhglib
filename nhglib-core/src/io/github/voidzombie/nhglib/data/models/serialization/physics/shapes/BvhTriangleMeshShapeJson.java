@@ -29,13 +29,7 @@ public class BvhTriangleMeshShapeJson extends ShapeJson {
         Model model = modelLoader.loadModel(Gdx.files.internal(asset.source));
         shape = Bullet.obtainStaticNodeShape(model.nodes);
 
-        //shape = new btBvhTriangleMeshShape(model.meshParts);
 
-        /*boolean optimize = jsonValue.getBoolean("optimize", false);
-
-        if (optimize) {
-            shape.buildOptimizedBvh();
-        }*/
     }
 
     @Override

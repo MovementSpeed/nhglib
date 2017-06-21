@@ -24,17 +24,35 @@ public class TransformJson implements JsonParseable<TransformJson> {
         JsonValue rotationJson = jsonValue.get("rotation");
         JsonValue scaleJson = jsonValue.get("scale");
 
-        float xPosition = positionJson.getFloat("x");
-        float yPosition = positionJson.getFloat("y");
-        float zPosition = positionJson.getFloat("z");
+        float xPosition = 0;
+        float yPosition = 0;
+        float zPosition = 0;
 
-        float xRotation = rotationJson.getFloat("x");
-        float yRotation = rotationJson.getFloat("y");
-        float zRotation = rotationJson.getFloat("z");
+        float xRotation = 0;
+        float yRotation = 0;
+        float zRotation = 0;
 
-        float xScale = scaleJson.getFloat("x");
-        float yScale = scaleJson.getFloat("y");
-        float zScale = scaleJson.getFloat("z");
+        float xScale = 1;
+        float yScale = 1;
+        float zScale = 1;
+
+        if (positionJson != null) {
+            xPosition = positionJson.getFloat("x");
+            yPosition = positionJson.getFloat("y");
+            zPosition = positionJson.getFloat("z");
+        }
+
+        if (rotationJson != null) {
+            xRotation = rotationJson.getFloat("x");
+            yRotation = rotationJson.getFloat("y");
+            zRotation = rotationJson.getFloat("z");
+        }
+
+        if (scaleJson != null) {
+            xScale = scaleJson.getFloat("x");
+            yScale = scaleJson.getFloat("y");
+            zScale = scaleJson.getFloat("z");
+        }
 
         position.set(xPosition, yPosition, zPosition);
         rotation.set(xRotation, yRotation, zRotation);
