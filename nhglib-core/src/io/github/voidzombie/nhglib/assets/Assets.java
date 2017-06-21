@@ -20,6 +20,7 @@ import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 import io.github.voidzombie.nhglib.interfaces.Updatable;
 import io.github.voidzombie.nhglib.runtime.fsm.base.AssetsStates;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
+import io.github.voidzombie.nhglib.runtime.threading.Work;
 import io.github.voidzombie.nhglib.utils.data.Bundle;
 import io.github.voidzombie.nhglib.utils.data.Strings;
 import io.github.voidzombie.nhglib.utils.debug.Logger;
@@ -109,7 +110,7 @@ public class Assets implements Updatable, AssetErrorListener {
      * Loads an asset in a synchronized way.
      * @param asset the asset.
      */
-    public <T> T loadAsset(Asset asset) {
+    public void loadAsset(final Asset asset, final AssetListener listener) {
         if (!assetManager.isLoaded(asset.source)) {
             FileHandle fileHandle = Gdx.files.internal(asset.source);
 
@@ -119,14 +120,19 @@ public class Assets implements Updatable, AssetErrorListener {
                 } else {
                     assetManager.load(asset.source, asset.assetClass, asset.parameters);
                 }
-
-                assetManager.finishLoadingAsset(asset.source);
             } else {
                 Logger.log(this, Strings.Messages.cannotQueueAssetFileNotFound, asset.source);
             }
         }
 
-        return get(asset);
+        nhg.threading.execute(new Work() {
+            @Override
+            public void run() {
+                while (assetManager.isLoaded(asset.source)) {
+                    listener.onAssetLoaded(asset);
+                }
+            }
+        });
     }
 
     /**
@@ -197,5 +203,9 @@ public class Assets implements Updatable, AssetErrorListener {
             assetManager.dispose();
             assetManager = null;
         }
+    }
+
+    public interface AssetListener {
+        void onAssetLoaded(Asset asset);
     }
 }

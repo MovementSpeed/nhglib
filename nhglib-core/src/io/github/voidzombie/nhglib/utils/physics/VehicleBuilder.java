@@ -67,15 +67,23 @@ public class VehicleBuilder {
     }
 
     public VehicleBuilder setChassisAsset(Asset chassisAsset) {
-        Model model = assets.loadAsset(chassisAsset);
-        setChassisModel(model);
+        assets.loadAsset(chassisAsset, new Assets.AssetListener() {
+            @Override
+            public void onAssetLoaded(Asset asset) {
+                setChassisModel((Model) assets.get(asset));
+            }
+        });
 
         return this;
     }
 
     public VehicleBuilder setWheelAsset(Asset wheelAsset) {
-        Model model = assets.loadAsset(wheelAsset);
-        setWheelModel(model);
+        assets.loadAsset(wheelAsset, new Assets.AssetListener() {
+            @Override
+            public void onAssetLoaded(Asset asset) {
+                setWheelModel((Model) assets.get(asset));
+            }
+        });
 
         return this;
     }
