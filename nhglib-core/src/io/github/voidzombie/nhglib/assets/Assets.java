@@ -111,6 +111,8 @@ public class Assets implements Updatable, AssetErrorListener {
      * @param asset the asset.
      */
     public void loadAsset(final Asset asset, final AssetListener listener) {
+        assetCache.put(asset.alias, asset);
+
         if (!assetManager.isLoaded(asset.source)) {
             FileHandle fileHandle = Gdx.files.internal(asset.source);
 
