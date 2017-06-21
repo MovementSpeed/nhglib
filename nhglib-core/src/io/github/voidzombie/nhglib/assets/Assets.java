@@ -20,10 +20,10 @@ import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 import io.github.voidzombie.nhglib.interfaces.Updatable;
 import io.github.voidzombie.nhglib.runtime.fsm.base.AssetsStates;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
-import io.github.voidzombie.nhglib.runtime.threading.Work;
 import io.github.voidzombie.nhglib.utils.data.Bundle;
 import io.github.voidzombie.nhglib.utils.data.Strings;
 import io.github.voidzombie.nhglib.utils.debug.Logger;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by Fausto Napoli on 19/10/2016.
@@ -125,14 +125,17 @@ public class Assets implements Updatable, AssetErrorListener {
             }
         }
 
-        nhg.threading.execute(new Work() {
-            @Override
-            public void run() {
-                while (assetManager.isLoaded(asset.source)) {
-                    listener.onAssetLoaded(asset);
-                }
-            }
-        });
+        nhg.messaging.get(Strings.Events.assetLoaded)
+                .subscribe(new Consumer<Message>() {
+                    @Override
+                    public void accept(Message message) throws Exception {
+                        Asset loadedAsset = (Asset) message.data.get(Strings.Defaults.assetKey);
+
+                        if (loadedAsset.is(asset)) {
+                            listener.onAssetLoaded(asset);
+                        }
+                    }
+                });
     }
 
     /**
