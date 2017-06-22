@@ -171,6 +171,10 @@ public class GraphicsSystem extends NhgIteratingSystem {
         }
     }
 
+    public DebugDrawer getDebugDrawer() {
+        return debugDrawer;
+    }
+
     public Environment getEnvironment() {
         return environment;
     }

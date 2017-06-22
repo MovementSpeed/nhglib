@@ -151,14 +151,6 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
             Vector3 scale = new Vector3(1, 1, 1);
             Quaternion rotation = nodeComponent.node.rotation;
 
-            float pitch = rotation.getPitch();
-            float yaw = rotation.getYaw();
-            float roll = rotation.getRoll();
-
-            float pitchRad = rotation.getPitchRad();
-            float yawRad = rotation.getYawRad();
-            float rollRad = rotation.getRollRad();
-
             initialTransform.set(translation, rotation, scale);
             bodyComponent.addToWorld(dynamicsWorld, initialTransform);
         } else {
