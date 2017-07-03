@@ -3,7 +3,6 @@ package io.github.voidzombie.nhglib.graphics.scenes;
 import com.artemis.ComponentMapper;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.model.NodePart;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
@@ -184,7 +183,7 @@ public class SceneManager {
                         if (asset != null) {
                             if (asset.is(modelAsset.alias)) {
                                 Model model = assets.get(asset);
-                                modelComponent.model = new ModelInstance(model);
+                                modelComponent.initWithModel(model);
 
                                 if (modelComponent.model.animations.size > 0) {
                                     modelComponent.animationController =
