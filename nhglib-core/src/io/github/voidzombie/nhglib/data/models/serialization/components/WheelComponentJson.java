@@ -29,10 +29,12 @@ public class WheelComponentJson extends ComponentJson {
 
         VehicleComponent vehicleComponent = nhg.entities.getComponent(parentEntity, VehicleComponent.class);
 
-        vehicleComponent.addWheel(attachmentPointJson.get(), directionJson.get(), axisJson.get(), radius,
-                suspensionRestLength, wheelFriction, frontWheel);
+        if (vehicleComponent != null) {
+            vehicleComponent.addWheel(attachmentPointJson.get(), directionJson.get(), axisJson.get(), radius,
+                    suspensionRestLength, wheelFriction, frontWheel);
 
-        WheelComponent wheelComponent = nhg.entities.createComponent(entity, WheelComponent.class);
-        wheelComponent.build(vehicleComponent.getVehicle(), vehicleComponent.getWheelNumber() - 1);
+            WheelComponent wheelComponent = nhg.entities.createComponent(entity, WheelComponent.class);
+            wheelComponent.build(vehicleComponent.getVehicle(), vehicleComponent.getWheelNumber() - 1);
+        }
     }
 }

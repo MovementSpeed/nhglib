@@ -2,6 +2,7 @@ package io.github.voidzombie.nhglib.runtime.fsm.states.engine;
 
 import com.artemis.World;
 import com.artemis.WorldConfigurationBuilder;
+import com.artemis.WorldConfigurationException;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.CameraSystem;
@@ -29,11 +30,29 @@ public class EngineStateNotInitialized implements State<NhgEntry> {
         // Configure the most important systems last, especially GraphicsSystem which
         // should be the last because it renders all the changes happened in all other
         // systems.
-        configurationBuilder
-                .with(new PhysicsSystem())
-                .with(new CameraSystem())
-                .with(new LightingSystem(nhgEntry.nhg.threading))
-                .with(new GraphicsSystem(nhgEntry.nhg.entities, nhgEntry.nhg.messaging));
+        try {
+            configurationBuilder.with(new PhysicsSystem());
+        } catch (WorldConfigurationException e) {
+            Logger.log(e, "PhysicsSystem already registered, ignoring registration.");
+        }
+
+        try {
+            configurationBuilder.with(new CameraSystem());
+        } catch (WorldConfigurationException e) {
+            Logger.log(e, "CameraSystem already registered, ignoring registration.");
+        }
+
+        try {
+            configurationBuilder.with(new LightingSystem(nhgEntry.nhg.threading));
+        } catch (WorldConfigurationException e) {
+            Logger.log(e, "LightingSystem already registered, ignoring registration.");
+        }
+
+        try {
+            configurationBuilder.with(new GraphicsSystem(nhgEntry.nhg.entities, nhgEntry.nhg.messaging));
+        } catch (WorldConfigurationException e) {
+            Logger.log(e, "GraphicsSystem already registered, ignoring registration.");
+        }
 
         nhgEntry.nhg.entities.setEntityWorld(new World(configurationBuilder.build()));
         nhgEntry.engineStarted();

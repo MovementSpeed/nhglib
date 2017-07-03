@@ -25,16 +25,6 @@ public class WheelComponent extends Component {
         rotation = new Quaternion();
     }
 
-    public Vector3 getTranslation() {
-        Matrix4 mat = vehicle.getWheelTransformWS(wheelIndex);
-        return mat.getTranslation(translation);
-    }
-
-    public Quaternion getRotationQuaternion() {
-        Matrix4 mat = vehicle.getWheelTransformWS(wheelIndex);
-        return mat.getRotation(rotation);
-    }
-
     public float getRotation() {
         btWheelInfo info = vehicle.getWheelInfo(wheelIndex);
         return info.getRotation();
@@ -43,6 +33,16 @@ public class WheelComponent extends Component {
     public float getSteering() {
         btWheelInfo info = vehicle.getWheelInfo(wheelIndex);
         return info.getSteering();
+    }
+
+    public Vector3 getTranslation() {
+        Matrix4 mat = vehicle.getWheelTransformWS(wheelIndex);
+        return mat.getTranslation(translation);
+    }
+
+    public Quaternion getRotationQuaternion() {
+        Matrix4 mat = vehicle.getWheelTransformWS(wheelIndex);
+        return mat.getRotation(rotation);
     }
 
     public btRaycastVehicle getVehicle() {

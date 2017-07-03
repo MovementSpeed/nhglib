@@ -1,6 +1,7 @@
 package io.github.voidzombie.nhglib.graphics.scenes;
 
 import com.artemis.Archetype;
+import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import io.github.voidzombie.nhglib.Nhg;
@@ -45,6 +46,16 @@ public class SceneGraph {
         return entity;
     }
 
+    public int addSceneEntity(int entity, Node parentNode) {
+        NodeComponent nodeComponent = nhg.entities
+                .getComponent(entity, NodeComponent.class);
+        nodeComponent.id = entity;
+
+        parentNode.addChild(nodeComponent.node);
+        entitiesArray.add(entity);
+        return entity;
+    }
+
     public int addSceneEntity(int entity, int parentEntity) {
         NodeComponent nodeComponent = nhg.entities
                 .getComponent(entity, NodeComponent.class);
@@ -69,6 +80,11 @@ public class SceneGraph {
     public int addSceneEntity(String id, int parentEntity) {
         int entity = createSceneEntity(id);
         return addSceneEntity(entity, parentEntity);
+    }
+
+    public int addSceneEntity(String id, Node parentNode) {
+        int entity = createSceneEntity(id);
+        return addSceneEntity(entity, parentNode);
     }
 
     public int getSceneEntity(String id) {
