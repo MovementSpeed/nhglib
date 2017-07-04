@@ -13,6 +13,7 @@ import io.github.voidzombie.nhglib.graphics.utils.PbrMaterial;
  */
 public class ModelComponent extends Component {
     public boolean enabled;
+    public boolean nodeAdded;
 
     public Type type;
     public State state;
@@ -25,6 +26,7 @@ public class ModelComponent extends Component {
     public ModelComponent() {
         pbrMaterials = new Array<>();
         enabled = true;
+        nodeAdded = false;
         state = State.NOT_INITIALIZED;
         type = Type.DYNAMIC;
     }

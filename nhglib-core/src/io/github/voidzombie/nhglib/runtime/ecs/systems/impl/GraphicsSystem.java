@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelCache;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
+import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.utils.ShaderProvider;
 import com.badlogic.gdx.physics.bullet.DebugDrawer;
 import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
@@ -109,7 +110,28 @@ public class GraphicsSystem extends NhgIteratingSystem {
             }
 
             if (modelComponent.type == ModelComponent.Type.DYNAMIC && modelComponent.model != null) {
-                modelComponent.model.transform.set(nodeComponent.getTransform());
+                if (!modelComponent.nodeAdded) {
+                    modelComponent.nodeAdded = true;
+
+                    for (int i = 0; i < modelComponent.model.nodes.size; i++) {
+                        Node n = modelComponent.model.nodes.get(i);
+                        nodeComponent.node.addChild(n);
+                    }
+
+                    String parentInternalNodeId = nodeComponent.parentInternalNodeId;
+
+                    if (parentInternalNodeId != null && !parentInternalNodeId.isEmpty()) {
+                        NodeComponent parentNodeComponent = nodeComponent.parentNodeComponent;
+                        Node parentInternalNode = parentNodeComponent.node.getChild(parentInternalNodeId, true, false);
+
+                        if (parentInternalNode != null) {
+                            parentNodeComponent.node.removeChild(nodeComponent.node);
+                            parentInternalNode.addChild(nodeComponent.node);
+                        }
+                    }
+                }
+
+                modelComponent.model.calculateTransforms();
 
                 for (ModelCache modelCache : dynamicCaches) {
                     modelCache.add(modelComponent.model);

@@ -24,6 +24,13 @@ public class NodeComponent extends PooledComponent {
      */
     public Node node;
 
+    /**
+     * Parent NodeComponent, can be null.
+     */
+    public NodeComponent parentNodeComponent;
+
+    public String parentInternalNodeId;
+
     private Vector3 temp;
 
     private Vector3 translation;
@@ -61,6 +68,11 @@ public class NodeComponent extends PooledComponent {
         translationDelta.set(Vector3.Zero);
         rotationDelta.set(Vector3.Zero);
         scaleDelta.set(Vector3.Zero);
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+        node.id = "node_" + id;
     }
 
     public void setTranslation(Vector3 translation) {

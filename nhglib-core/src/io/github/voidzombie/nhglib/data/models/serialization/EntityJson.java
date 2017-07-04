@@ -61,12 +61,15 @@ public class EntityJson implements JsonParseable<Integer> {
             }
         }
 
+        String parentInternalNodeId = jsonValue.getString("parentInternalNodeId", null);
+
         TransformJson transformJson = new TransformJson();
 
         if (jsonValue.has("transform")) {
             transformJson.parse(jsonValue.get("transform"));
 
             NodeComponent nodeComponent = nhg.entities.getComponent(entity, NodeComponent.class);
+            nodeComponent.parentInternalNodeId = parentInternalNodeId;
             nodeComponent.setTransform(
                     transformJson.position,
                     transformJson.rotation,

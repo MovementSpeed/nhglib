@@ -1,7 +1,6 @@
 package io.github.voidzombie.nhglib.graphics.scenes;
 
 import com.artemis.Archetype;
-import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import io.github.voidzombie.nhglib.Nhg;
@@ -30,7 +29,7 @@ public class SceneGraph {
 
         rootEntity = createSceneEntity(rootId);
         rootNodeComponent = nhg.entities.getComponent(rootEntity, NodeComponent.class);
-        rootNodeComponent.id = rootEntity;
+        rootNodeComponent.setId(rootEntity);
 
         this.entitiesArray.add(rootEntity);
     }
@@ -46,25 +45,17 @@ public class SceneGraph {
         return entity;
     }
 
-    public int addSceneEntity(int entity, Node parentNode) {
-        NodeComponent nodeComponent = nhg.entities
-                .getComponent(entity, NodeComponent.class);
-        nodeComponent.id = entity;
-
-        parentNode.addChild(nodeComponent.node);
-        entitiesArray.add(entity);
-        return entity;
-    }
-
     public int addSceneEntity(int entity, int parentEntity) {
         NodeComponent nodeComponent = nhg.entities
                 .getComponent(entity, NodeComponent.class);
-        nodeComponent.id = entity;
+        nodeComponent.setId(entity);
 
         NodeComponent parentNodeComponent = nhg.entities
                 .getComponent(parentEntity, NodeComponent.class);
 
         parentNodeComponent.node.addChild(nodeComponent.node);
+        nodeComponent.parentNodeComponent = parentNodeComponent;
+
         entitiesArray.add(entity);
         return entity;
     }
@@ -80,11 +71,6 @@ public class SceneGraph {
     public int addSceneEntity(String id, int parentEntity) {
         int entity = createSceneEntity(id);
         return addSceneEntity(entity, parentEntity);
-    }
-
-    public int addSceneEntity(String id, Node parentNode) {
-        int entity = createSceneEntity(id);
-        return addSceneEntity(entity, parentNode);
     }
 
     public int getSceneEntity(String id) {
