@@ -4,6 +4,7 @@ package io.github.voidzombie.nhglib.data.models.serialization.physics;
  * Created by Fausto Napoli on 16/05/2017.
  */
 public enum RigidBodyType {
+    CONVEX_TRIANGLE_MESH,
     BVH_TRIANGLE_MESH,
     CONVEX_HULL,
     CYLINDER,
@@ -42,6 +43,10 @@ public enum RigidBodyType {
 
             case "bvhTriangleMesh":
                 res = BVH_TRIANGLE_MESH;
+                break;
+
+            case "convexTriangleMesh":
+                res = CONVEX_TRIANGLE_MESH;
                 break;
         }
 
