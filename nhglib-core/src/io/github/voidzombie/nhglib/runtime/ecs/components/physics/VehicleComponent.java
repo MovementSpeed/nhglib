@@ -62,7 +62,7 @@ public class VehicleComponent extends RigidBodyComponent implements Disposable {
                                   btRaycastVehicle.btVehicleTuning vehicleTuning, float mass, float friction, float restitution) {
         this.vehicleTuning = vehicleTuning;
 
-        build(chassisShape, mass, friction, restitution);
+        build(chassisShape, mass, friction, restitution, (short) -1, new short[]{});
         getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
 
         vehicleRaycaster = new btDefaultVehicleRaycaster(world);
