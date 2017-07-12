@@ -69,11 +69,14 @@ public class RigidBodyComponent extends Component implements Disposable {
             }
 
             if (masks.length > 0) {
-                this.mask = masks[0];
+                if (masks[0] != -1) {
+                    this.mask = (short) (1 << masks[0]);
+                } else {
+                    this.mask = 0;
+                }
 
                 for (int i = 1; i < masks.length; i++) {
-                    short mask = masks[i];
-                    this.mask |= mask;
+                    this.mask |= (short) (1 << masks[i]);
                 }
             } else {
                 collisionFiltering = false;
