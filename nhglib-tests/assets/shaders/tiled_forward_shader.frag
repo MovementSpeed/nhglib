@@ -3,13 +3,17 @@ precision mediump float;
 #endif
 
 #define M_PI 3.14159265359
+#define MIN_ATTENUATION 0.0001
+#define ATTENUATION_THRESHOLD 0.01
 
 uniform int u_graphicsWidth;
 uniform int u_graphicsHeight;
+uniform mat4 u_viewMatrix;
 
 #ifdef lights
     #if lights > 0
         struct Light {
+            int type;
             vec3 position;
             vec3 direction;
             float intensity;
@@ -35,9 +39,19 @@ uniform int u_graphicsHeight;
     uniform sampler2D u_roughness;
 #endif
 
+#ifdef defNormal
+    uniform sampler2D u_normal;
+#endif
+
+#ifdef defAmbientOcclusion
+    uniform sampler2D u_ambientOcclusion;
+#endif
+
 varying vec2 v_texCoord;
 varying vec3 v_position;
 varying vec3 v_normal;
+varying vec3 v_binormal;
+varying vec3 v_tangent;
 
 vec3 fresnelSchlick(float cosTheta, vec3 F0) {
     return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
@@ -50,8 +64,8 @@ float DistributionGGX(vec3 N, vec3 H, float rough) {
     float NdotH2 = NdotH*NdotH;
 
     float nom = a2;
-    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
 
+    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
     denom = M_PI * denom * denom;
     denom = max(0.0001, denom);
 
@@ -63,7 +77,9 @@ float GeometrySchlickGGX(float NdotV, float rough) {
     float k = (r*r) / 8.0;
 
     float nom = NdotV;
+
     float denom = NdotV * (1.0 - k) + k;
+    denom = max(0.0001, denom);
 
     return nom / denom;
 }
@@ -80,24 +96,42 @@ void main() {
     #ifdef defAlbedo
         vec3 albedo = texture2D(u_albedo, v_texCoord).rgb;
     #else
-        vec3 albedo = vec3(1.0);
+        vec3 albedo = vec3(0.5);
     #endif
 
     #ifdef defMetalness
         float metalness = texture2D(u_metalness, v_texCoord).r;
     #else
-        float metalness = 0.5;
+        float metalness = 0.0;
     #endif
 
     #ifdef defRoughness
         float roughness = texture2D(u_roughness, v_texCoord).r;
     #else
-        float roughness = 0.5;
+        float roughness = 1.0;
     #endif
 
-    float ambientOcclusion = 0.03;
+    #ifdef defAmbientOcclusion
+        float ambientOcclusion = texture2D(u_ambientOcclusion, v_texCoord).r;
+    #else
+        float ambientOcclusion = 0.03;
+    #endif
 
-    vec3 N = normalize(v_normal);
+    #ifdef defNormal
+        vec3 normalMap = texture2D(u_normal, v_texCoord).rgb;
+
+        vec3 N = normalize(v_normal);
+        vec3 tangent = normalize(v_tangent);
+        vec3 bitangent = cross(tangent, N);
+
+        tangent = normalize(tangent - dot(tangent, N) * N);
+        mat3 TBN = mat3(tangent, bitangent, N);
+
+        N = normalize(TBN * (normalMap * 2.0 - 1.0));
+    #else
+        vec3 N = normalize(v_normal);
+    #endif
+
     vec3 V = normalize(-v_position);
 
     vec3 Lo = vec3(0.0);
@@ -115,21 +149,40 @@ void main() {
 
         for (int i = 0; i < pixelCeil; i++) {
             vec4 tempPixel = texture2D(u_lights, vec2((float(i) + 1.5) / 64.0, textureRow));
+
             int lightId = int(clamp(ceil(tempPixel.r * 255.0), 0.0, 255.0));
+            Light light = u_lightsList[lightId];
 
             vec4 lightInfo = texture2D(u_lightInfo, vec2(0.5, float(lightId) / 128.0));
-
             float lightRadius = lightInfo.a * 255.0;
             lightInfo.a = 1.0;
 
-            vec3 lightDirection = u_lightsList[lightId].position - v_position;
+            vec3 lightDirection = light.position - v_position;
             float lightDistance = length(lightDirection);
+
+            float lightAttenuation = clamp(1.0 - (lightDistance / lightRadius), 0.0, 1.0);
+            lightAttenuation *= lightAttenuation;
+
+            if (light.type == 0) {
+                lightDirection = normalize(-light.direction);
+                lightDistance = length(lightDirection);
+                lightAttenuation = 1.0;
+            }
 
             vec3 L = normalize(lightDirection);
             vec3 H = normalize(V + L);
 
-            float lightAttenuation = 1.0 / (lightDistance * lightDistance);
-            vec3 radiance = lightInfo.rgb * lightAttenuation;
+            vec3 radiance = lightInfo.rgb;
+
+            if (light.type == 2) {
+                float currentAngle = dot(-normalize(lightDirection), normalize(light.direction));
+                float innerConeAngle = cos(radians(light.innerAngle));
+                float outerConeAngle = cos(radians(light.outerAngle));
+                float conesAngleDiff = abs(innerConeAngle - outerConeAngle);
+
+                float spotEffect = clamp((currentAngle - outerConeAngle) / conesAngleDiff, 0.0, 1.0);
+                radiance *= spotEffect;
+            }
 
             vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
             float NDF = DistributionGGX(N, H, roughness);
@@ -144,16 +197,18 @@ void main() {
 
             kD *= 1.0 - metalness;
 
-            float NdotL = max(dot(N, L), 0.0) * u_lightsList[lightId].intensity;
-            Lo += (kD * albedo / M_PI + brdf) * radiance * NdotL;
+            float NdotL = max(dot(N, L), 0.0) * light.intensity;
+            Lo += (kD * albedo / M_PI + brdf) * radiance * NdotL * lightAttenuation;
         }
     #endif
 
     vec3 ambient = vec3(0.03) * albedo;
     vec3 color = ambient + Lo;
 
-    color = color / (color + vec3(1.0));
-    color = pow(color, vec3(1.0 / 2.2));
+    #ifdef defGammaCorrection
+        color = color / (color + vec3(1.0));
+        color = pow(color, vec3(1.0 / 2.2));
+    #endif
 
-    gl_FragColor = vec4(color, 1.0);
+    gl_FragColor = vec4(color, 0.8);
 }
