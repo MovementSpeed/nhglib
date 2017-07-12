@@ -22,9 +22,20 @@ public class RigidBodyComponentJson extends ComponentJson {
         float friction = jsonValue.getFloat("friction", 0.5f);
         float restitution = jsonValue.getFloat("restitution", 0f);
 
+        short group = jsonValue.getShort("group", (short) -1);
+
+        JsonValue maskList = jsonValue.get("mask");
+        short[] masks;
+
+        if (maskList != null) {
+            masks = maskList.asShortArray();
+        } else {
+            masks = new short[]{};
+        }
+
         btCollisionShape collisionShape = shapeJson.get();
 
-        rigidBodyComponent.build(collisionShape, mass, friction, restitution);
+        rigidBodyComponent.build(collisionShape, mass, friction, restitution, group, masks);
         output = rigidBodyComponent;
     }
 }

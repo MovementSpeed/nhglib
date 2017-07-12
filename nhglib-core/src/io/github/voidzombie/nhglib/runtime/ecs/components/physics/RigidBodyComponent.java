@@ -15,6 +15,10 @@ import io.github.voidzombie.nhglib.physics.MotionState;
  */
 public class RigidBodyComponent extends Component implements Disposable {
     private boolean added;
+    private boolean collisionFiltering;
+
+    private short group;
+    private short mask;
 
     private btRigidBody body;
     private MotionState motionState;
@@ -41,10 +45,10 @@ public class RigidBodyComponent extends Component implements Disposable {
     }
 
     public void build(btCollisionShape collisionShape, float mass) {
-        build(collisionShape, mass, 0.5f, 0f);
+        build(collisionShape, mass, 0.5f, 0f, (short) -1, new short[]{});
     }
 
-    public void build(btCollisionShape collisionShape, float mass, float friction, float restitution) {
+    public void build(btCollisionShape collisionShape, float mass, float friction, float restitution, short group, short[] masks) {
         this.collisionShape = collisionShape;
         constructionInfo = getConstructionInfo(collisionShape, mass);
 
@@ -55,6 +59,25 @@ public class RigidBodyComponent extends Component implements Disposable {
             body.setSleepingThresholds(1f / 1000f, 1f / 1000f);
             body.setFriction(friction);
             body.setRestitution(restitution);
+
+            collisionFiltering = true;
+
+            if (group != -1) {
+                this.group = (short) (1 << group);
+            } else {
+                collisionFiltering = false;
+            }
+
+            if (masks.length > 0) {
+                this.mask = masks[0];
+
+                for (int i = 1; i < masks.length; i++) {
+                    short mask = masks[i];
+                    this.mask |= mask;
+                }
+            } else {
+                collisionFiltering = false;
+            }
         }
     }
 
@@ -62,7 +85,13 @@ public class RigidBodyComponent extends Component implements Disposable {
         if (body != null && !body.isInWorld()) {
             setTransform(transform);
             body.setMotionState(motionState);
-            world.addRigidBody(body);
+
+            if (collisionFiltering) {
+                world.addRigidBody(body, group, mask);
+            } else {
+                world.addRigidBody(body);
+            }
+
             added = true;
         }
     }
