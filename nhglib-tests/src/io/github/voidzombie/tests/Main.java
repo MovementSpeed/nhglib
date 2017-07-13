@@ -1,6 +1,6 @@
 package io.github.voidzombie.tests;
 
-import com.artemis.WorldConfigurationBuilder;
+import com.artemis.BaseEntitySystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.FPSLogger;
@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
@@ -146,9 +147,11 @@ public class Main extends NhgEntry implements InputListener {
     }
 
     @Override
-    public void onConfigureEntitySystems(WorldConfigurationBuilder configurationBuilder) {
-        super.onConfigureEntitySystems(configurationBuilder);
-        configurationBuilder.with(new TestNodeSystem());
+    public Array<BaseEntitySystem> onConfigureEntitySystems() {
+        Array<BaseEntitySystem> systems = new Array<>();
+        systems.add(new TestNodeSystem());
+
+        return systems;
     }
 
     @Override

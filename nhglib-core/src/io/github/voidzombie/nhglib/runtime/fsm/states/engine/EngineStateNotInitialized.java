@@ -37,19 +37,19 @@ public class EngineStateNotInitialized implements State<NhgEntry> {
             Logger.log(this, "PhysicsSystem already registered, ignoring registration.");
         }
 
-        if (hasSystemClass(CameraSystem.class, entitySystems)) {
+        if (!hasSystemClass(CameraSystem.class, entitySystems)) {
             entitySystems.add(new CameraSystem());
         } else {
             Logger.log(this, "CameraSystem already registered, ignoring registration.");
         }
 
-        if (hasSystemClass(LightingSystem.class, entitySystems)) {
+        if (!hasSystemClass(LightingSystem.class, entitySystems)) {
             entitySystems.add(new LightingSystem(nhgEntry.nhg.threading));
         } else {
             Logger.log(this, "LightingSystem already registered, ignoring registration.");
         }
 
-        if (hasSystemClass(GraphicsSystem.class, entitySystems)) {
+        if (!hasSystemClass(GraphicsSystem.class, entitySystems)) {
             entitySystems.add(new GraphicsSystem(nhgEntry.nhg.entities, nhgEntry.nhg.messaging));
         } else {
             Logger.log(this, "GraphicsSystem already registered, ignoring registration.");
