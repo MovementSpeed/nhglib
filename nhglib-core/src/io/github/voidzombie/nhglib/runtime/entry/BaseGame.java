@@ -1,9 +1,10 @@
 package io.github.voidzombie.nhglib.runtime.entry;
 
-import com.artemis.WorldConfigurationBuilder;
+import com.artemis.BaseEntitySystem;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
+import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.runtime.fsm.base.EngineStates;
 import io.github.voidzombie.nhglib.runtime.fsm.interfaces.EngineConfigurationListener;
@@ -74,7 +75,8 @@ abstract class BaseGame implements
     }
 
     @Override
-    public void onConfigureEntitySystems(WorldConfigurationBuilder configurationBuilder) {
+    public Array<BaseEntitySystem> onConfigureEntitySystems() {
+        return new Array<>();
     }
 
     void init(NhgEntry nhgEntry) {

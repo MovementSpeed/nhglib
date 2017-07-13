@@ -1,6 +1,7 @@
 package io.github.voidzombie.nhglib.runtime.entry;
 
-import com.artemis.WorldConfigurationBuilder;
+import com.artemis.BaseEntitySystem;
+import com.badlogic.gdx.utils.Array;
 
 /**
  * Created by Fausto Napoli on 26/11/2016.
@@ -37,7 +38,7 @@ public class NhgEntry extends BaseGame {
     }
 
     @Override
-    public void onConfigureEntitySystems(WorldConfigurationBuilder configurationBuilder) {
-        super.onConfigureEntitySystems(configurationBuilder);
+    public Array<BaseEntitySystem> onConfigureEntitySystems() {
+        return super.onConfigureEntitySystems();
     }
 }
