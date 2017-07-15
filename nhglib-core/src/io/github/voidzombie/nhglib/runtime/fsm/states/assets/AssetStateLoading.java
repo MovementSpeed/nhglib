@@ -7,7 +7,7 @@ import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.assets.Assets;
 import io.github.voidzombie.nhglib.runtime.fsm.base.AssetsStates;
 import io.github.voidzombie.nhglib.utils.data.Strings;
-import io.github.voidzombie.nhglib.utils.debug.Logger;
+import io.github.voidzombie.nhglib.utils.debug.NhgLogger;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Predicate;
@@ -18,7 +18,7 @@ import io.reactivex.functions.Predicate;
 public class AssetStateLoading implements State<Assets> {
     @Override
     public void enter(Assets assets) {
-        Logger.log(this, "Asset manager is loading.");
+        NhgLogger.log(this, "Asset manager is loading.");
     }
 
     @Override
@@ -33,7 +33,7 @@ public class AssetStateLoading implements State<Assets> {
 
     @Override
     public void exit(Assets assets) {
-        Logger.log(this, "Asset manager has finished loading.");
+        NhgLogger.log(this, "Asset manager has finished loading.");
     }
 
     @Override
@@ -54,7 +54,7 @@ public class AssetStateLoading implements State<Assets> {
                 .subscribe(new Consumer<Asset>() {
                     @Override
                     public void accept(Asset asset) throws Exception {
-                        Logger.log(
+                        NhgLogger.log(
                                 this,
                                 Strings.Messages.assetLoaded,
                                 asset.source);

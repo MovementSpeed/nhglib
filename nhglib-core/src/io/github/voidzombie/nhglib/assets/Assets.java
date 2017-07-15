@@ -22,7 +22,7 @@ import io.github.voidzombie.nhglib.runtime.fsm.base.AssetsStates;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.nhglib.utils.data.Bundle;
 import io.github.voidzombie.nhglib.utils.data.Strings;
-import io.github.voidzombie.nhglib.utils.debug.Logger;
+import io.github.voidzombie.nhglib.utils.debug.NhgLogger;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -148,7 +148,7 @@ public class Assets implements Updatable, AssetErrorListener {
 
                 assetQueue.add(asset);
             } else {
-                Logger.log(this, Strings.Messages.cannotQueueAssetFileNotFound, asset.source);
+                NhgLogger.log(this, Strings.Messages.cannotQueueAssetFileNotFound, asset.source);
             }
         } else {
             assetLoaded(asset);

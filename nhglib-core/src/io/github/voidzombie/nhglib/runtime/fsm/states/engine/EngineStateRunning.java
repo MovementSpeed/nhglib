@@ -7,7 +7,7 @@ import io.github.voidzombie.nhglib.runtime.entry.NhgEntry;
 import io.github.voidzombie.nhglib.runtime.fsm.base.EngineStates;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.nhglib.utils.data.Strings;
-import io.github.voidzombie.nhglib.utils.debug.Logger;
+import io.github.voidzombie.nhglib.utils.debug.NhgLogger;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -16,7 +16,7 @@ import io.reactivex.functions.Consumer;
 public class EngineStateRunning implements State<NhgEntry> {
     @Override
     public void enter(final NhgEntry nhgEntry) {
-        Logger.log(this, "Engine is running.");
+        NhgLogger.log(this, "Engine is running.");
 
         nhgEntry.nhg.messaging.get(Strings.Events.engineDestroy)
                 .subscribe(new Consumer<Message>() {

@@ -3,7 +3,7 @@ package io.github.voidzombie.nhglib.runtime.fsm.states.engine;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import io.github.voidzombie.nhglib.runtime.entry.NhgEntry;
-import io.github.voidzombie.nhglib.utils.debug.Logger;
+import io.github.voidzombie.nhglib.utils.debug.NhgLogger;
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
@@ -11,7 +11,7 @@ import io.github.voidzombie.nhglib.utils.debug.Logger;
 public class EngineStatePaused implements State<NhgEntry> {
     @Override
     public void enter(final NhgEntry nhgEntry) {
-        Logger.log(this, "Engine is paused.");
+        NhgLogger.log(this, "Engine is paused.");
         nhgEntry.enginePaused();
     }
 

@@ -7,7 +7,7 @@ import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.utils.Disposable;
 import io.github.voidzombie.nhglib.runtime.entry.NhgEntry;
-import io.github.voidzombie.nhglib.utils.debug.Logger;
+import io.github.voidzombie.nhglib.utils.debug.NhgLogger;
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
@@ -15,7 +15,7 @@ import io.github.voidzombie.nhglib.utils.debug.Logger;
 public class EngineStateClosing implements State<NhgEntry> {
     @Override
     public void enter(NhgEntry nhgEntry) {
-        Logger.log(this, "Engine is closing.");
+        NhgLogger.log(this, "Engine is closing.");
         nhgEntry.engineClosing();
 
         ImmutableBag<BaseSystem> systems = nhgEntry.nhg.entities.getEntitySystems();

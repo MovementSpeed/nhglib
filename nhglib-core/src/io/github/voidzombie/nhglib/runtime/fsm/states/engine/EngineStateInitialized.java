@@ -4,7 +4,7 @@ import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import io.github.voidzombie.nhglib.runtime.entry.NhgEntry;
 import io.github.voidzombie.nhglib.runtime.fsm.base.EngineStates;
-import io.github.voidzombie.nhglib.utils.debug.Logger;
+import io.github.voidzombie.nhglib.utils.debug.NhgLogger;
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
@@ -12,7 +12,7 @@ import io.github.voidzombie.nhglib.utils.debug.Logger;
 public class EngineStateInitialized implements State<NhgEntry> {
     @Override
     public void enter(NhgEntry nhgEntry) {
-        Logger.log(this, "Engine is initialized.");
+        NhgLogger.log(this, "Engine is initialized.");
 
         nhgEntry.engineInitialized();
         nhgEntry.getFsm().changeState(EngineStates.RUNNING);

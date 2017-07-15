@@ -12,7 +12,7 @@ import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.LightingSystem;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.PhysicsSystem;
 import io.github.voidzombie.nhglib.runtime.entry.NhgEntry;
 import io.github.voidzombie.nhglib.runtime.fsm.base.EngineStates;
-import io.github.voidzombie.nhglib.utils.debug.Logger;
+import io.github.voidzombie.nhglib.utils.debug.NhgLogger;
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
@@ -20,7 +20,7 @@ import io.github.voidzombie.nhglib.utils.debug.Logger;
 public class EngineStateNotInitialized implements State<NhgEntry> {
     @Override
     public void enter(NhgEntry nhgEntry) {
-        Logger.log(this, "Engine is not initialized.");
+        NhgLogger.log(this, "Engine is not initialized.");
 
         // Setup the ECS world.
         WorldConfigurationBuilder configurationBuilder = new WorldConfigurationBuilder();
@@ -34,25 +34,25 @@ public class EngineStateNotInitialized implements State<NhgEntry> {
         if (!hasSystemClass(PhysicsSystem.class, entitySystems)) {
             entitySystems.add(new PhysicsSystem());
         } else {
-            Logger.log(this, "PhysicsSystem already registered, ignoring registration.");
+            NhgLogger.log(this, "PhysicsSystem already registered, ignoring registration.");
         }
 
         if (!hasSystemClass(CameraSystem.class, entitySystems)) {
             entitySystems.add(new CameraSystem());
         } else {
-            Logger.log(this, "CameraSystem already registered, ignoring registration.");
+            NhgLogger.log(this, "CameraSystem already registered, ignoring registration.");
         }
 
         if (!hasSystemClass(LightingSystem.class, entitySystems)) {
             entitySystems.add(new LightingSystem(nhgEntry.nhg.threading));
         } else {
-            Logger.log(this, "LightingSystem already registered, ignoring registration.");
+            NhgLogger.log(this, "LightingSystem already registered, ignoring registration.");
         }
 
         if (!hasSystemClass(GraphicsSystem.class, entitySystems)) {
             entitySystems.add(new GraphicsSystem(nhgEntry.nhg.entities, nhgEntry.nhg.messaging));
         } else {
-            Logger.log(this, "GraphicsSystem already registered, ignoring registration.");
+            NhgLogger.log(this, "GraphicsSystem already registered, ignoring registration.");
         }
 
         for (BaseEntitySystem bes : entitySystems) {

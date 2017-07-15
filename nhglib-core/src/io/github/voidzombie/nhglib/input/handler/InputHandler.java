@@ -28,7 +28,7 @@ import io.github.voidzombie.nhglib.input.interfaces.InputListener;
 import io.github.voidzombie.nhglib.input.models.*;
 import io.github.voidzombie.nhglib.utils.data.Strings;
 import io.github.voidzombie.nhglib.utils.data.VectorPool;
-import io.github.voidzombie.nhglib.utils.debug.Logger;
+import io.github.voidzombie.nhglib.utils.debug.NhgLogger;
 
 /**
  * Created by Fausto Napoli on 08/01/2017.
@@ -70,13 +70,13 @@ public class InputHandler implements ControllerListener, InputProcessor {
 
     @Override
     public void connected(Controller controller) {
-        Logger.log(this, Strings.Messages.controllerConnected, controller.getName());
+        NhgLogger.log(this, Strings.Messages.controllerConnected, controller.getName());
         mapStickInputs();
     }
 
     @Override
     public void disconnected(Controller controller) {
-        Logger.log(this, Strings.Messages.controllerDisconnected, controller.getName());
+        NhgLogger.log(this, Strings.Messages.controllerDisconnected, controller.getName());
         mapStickInputs();
     }
 

@@ -7,7 +7,7 @@ import io.github.voidzombie.nhglib.runtime.ecs.components.common.MessageComponen
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.base.NhgIteratingSystem;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
-import io.github.voidzombie.nhglib.utils.debug.Logger;
+import io.github.voidzombie.nhglib.utils.debug.NhgLogger;
 
 /**
  * Created by Fausto Napoli on 13/12/2016.
@@ -29,7 +29,7 @@ public class TestNodeSystem extends NhgIteratingSystem {
 
         for (Message message : messages) {
             if (message.is("printNode")) {
-                Logger.log(this, "id: %d, x: %f, y: %f, z: %f",
+                NhgLogger.log(this, "id: %d, x: %f, y: %f, z: %f",
                         nodeComponent.id,
                         nodeComponent.getX(),
                         nodeComponent.getY(),
