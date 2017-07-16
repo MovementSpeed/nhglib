@@ -1,5 +1,6 @@
 package io.github.voidzombie.nhglib.data.models.serialization;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.voidzombie.nhglib.input.configuration.InputConfigurations;
 import io.github.voidzombie.nhglib.input.configuration.impls.KeyInputConfiguration;
@@ -34,8 +35,13 @@ public class InputConfigurationsJson implements JsonParseable<InputConfiguration
         // Keys
         for (JsonValue keyJson : keysJson) {
             String name = keyJson.getString("name");
-            Integer keyCode = keyJson.getInt("keyCode");
+            String keyName = keyJson.getString("keyName", "");
+            Integer keyCode = keyJson.getInt("keyCode", -1);
             InputMode inputMode = InputMode.fromString(keyJson.getString("inputMode"));
+
+            if (keyCode == -1) {
+                keyCode = Input.Keys.valueOf(keyName);
+            }
 
             KeyInputConfiguration keyInputConfiguration = new KeyInputConfiguration();
             keyInputConfiguration.setName(name);
