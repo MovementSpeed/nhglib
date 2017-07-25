@@ -27,7 +27,7 @@ public class BvhTriangleMeshShapeJson extends ShapeJson {
         modelLoader.setCurrentAsset(asset);
 
         Model model = modelLoader.loadModel(Gdx.files.internal(asset.source));
-        shape = new btBvhTriangleMeshShape(model.meshParts, true, true);
+        shape = new btBvhTriangleMeshShape(model.meshParts, false, true);
     }
 
     @Override
