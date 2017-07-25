@@ -10,6 +10,7 @@ import io.github.voidzombie.nhglib.runtime.threading.Threading;
 // FIXME : Normal mapping has rendering issues when camera rotates certain angles, they kind of "flip".
 
 // TODO :
+// TODO : Have a look at distance field fonts integrated with LibGDX
 // TODO : Implement physics material system
 // TODO : Implement video playback on iOS and Android
 // TODO : Manage global configuration files

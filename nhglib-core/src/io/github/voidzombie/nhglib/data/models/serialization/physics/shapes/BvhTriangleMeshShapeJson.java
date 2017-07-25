@@ -2,7 +2,7 @@ package io.github.voidzombie.nhglib.data.models.serialization.physics.shapes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.physics.bullet.Bullet;
+import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.UBJsonReader;
@@ -27,9 +27,7 @@ public class BvhTriangleMeshShapeJson extends ShapeJson {
         modelLoader.setCurrentAsset(asset);
 
         Model model = modelLoader.loadModel(Gdx.files.internal(asset.source));
-        shape = Bullet.obtainStaticNodeShape(model.nodes);
-
-
+        shape = new btBvhTriangleMeshShape(model.meshParts, true, true);
     }
 
     @Override
