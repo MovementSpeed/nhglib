@@ -21,13 +21,16 @@ public class BvhTriangleMeshShapeJson extends ShapeJson {
         AssetJson assetJson = new AssetJson();
         assetJson.parse(jsonValue.get("asset"));
 
+        boolean quantization = jsonValue.getBoolean("useQuantizedAabbCompression", true);
+        boolean buildBvh = jsonValue.getBoolean("buildBvh", true);
+
         Asset asset = assetJson.get();
 
         NhgG3dModelLoader modelLoader = new NhgG3dModelLoader(nhg.assets, new UBJsonReader());
         modelLoader.setCurrentAsset(asset);
 
         Model model = modelLoader.loadModel(Gdx.files.internal(asset.source));
-        shape = new btBvhTriangleMeshShape(model.meshParts, false, true);
+        shape = new btBvhTriangleMeshShape(model.meshParts, quantization, buildBvh);
     }
 
     @Override
