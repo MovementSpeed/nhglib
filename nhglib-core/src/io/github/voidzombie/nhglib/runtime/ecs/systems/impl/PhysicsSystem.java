@@ -28,7 +28,7 @@ import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
  * Created by Fausto Napoli on 04/05/2017.
  */
 public class PhysicsSystem extends IteratingSystem implements Disposable {
-    private final static float TIME_STEP = 1f / 60f;
+    public static float TIME_STEP = 1f / 60f;
 
     private boolean physicsInitialized;
 
