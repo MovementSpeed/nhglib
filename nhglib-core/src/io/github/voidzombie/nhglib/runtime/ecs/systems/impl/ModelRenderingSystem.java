@@ -4,60 +4,39 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelCache;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.graphics.g3d.model.Node;
-import com.badlogic.gdx.graphics.g3d.utils.ShaderProvider;
-import com.badlogic.gdx.physics.bullet.DebugDrawer;
-import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
 import com.badlogic.gdx.utils.Array;
-import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
-import io.github.voidzombie.nhglib.graphics.shaders.tiledForward.TiledForwardShaderProvider;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.ModelComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
-import io.github.voidzombie.nhglib.runtime.ecs.systems.base.NhgIteratingSystem;
+import io.github.voidzombie.nhglib.runtime.ecs.systems.base.BaseRenderingSystem;
 import io.github.voidzombie.nhglib.runtime.ecs.utils.Entities;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.nhglib.runtime.messaging.Messaging;
 import io.github.voidzombie.nhglib.utils.data.Strings;
-import io.github.voidzombie.nhglib.utils.graphics.GLUtils;
 import io.reactivex.functions.Consumer;
 
-/**
- * Created by Fausto Napoli on 08/12/2016.
- */
-public class GraphicsSystem extends NhgIteratingSystem {
-    private ShaderProvider shaderProvider;
-    private PhysicsSystem physicsSystem;
+public class ModelRenderingSystem extends BaseRenderingSystem {
     private CameraSystem cameraSystem;
-    private Environment environment;
-    private DebugDrawer debugDrawer;
-    private Messaging messaging;
-    private Entities entities;
-    private Color clearColor;
 
-    private Array<Camera> cameras;
-    private Array<ModelBatch> modelBatches;
-    private Array<ModelCache> dynamicCaches;
-    private Array<ModelCache> staticCaches;
+    private Entities entities;
+    private Messaging messaging;
 
     private ComponentMapper<NodeComponent> nodeMapper;
     private ComponentMapper<ModelComponent> modelMapper;
 
-    public GraphicsSystem(Entities entities, Messaging messaging) {
-        super(Aspect.all(NodeComponent.class, ModelComponent.class));
+    private Array<Camera> cameras;
+    private Array<ModelCache> dynamicCaches;
+    private Array<ModelCache> staticCaches;
+
+    public ModelRenderingSystem(Entities entities, Messaging messaging) {
+        super(Aspect.all(NodeComponent.class, ModelComponent.class), entities);
+
         this.entities = entities;
         this.messaging = messaging;
 
-        clearColor = Color.BLACK;
-        environment = new Environment();
-        shaderProvider = new TiledForwardShaderProvider(environment);
-
-        modelBatches = new Array<>();
         dynamicCaches = new Array<>();
         staticCaches = new Array<>();
     }
@@ -66,27 +45,13 @@ public class GraphicsSystem extends NhgIteratingSystem {
     protected void begin() {
         super.begin();
 
-        if (physicsSystem == null) {
-            physicsSystem = entities.getEntitySystem(PhysicsSystem.class);
-        }
-
         if (cameraSystem == null) {
             cameraSystem = entities.getEntitySystem(CameraSystem.class);
         }
 
-        if (physicsSystem.isPhysicsInitialized()) {
-            if (debugDrawer == null) {
-                debugDrawer = new DebugDrawer();
-                debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_MAX_DEBUG_DRAW_MODE);
-            }
-
-            physicsSystem.setDebugDrawer(debugDrawer);
-        }
-
         cameras = cameraSystem.cameras;
 
-        for (int i = 0; i < cameras.size - modelBatches.size; i++) {
-            modelBatches.add(new ModelBatch(shaderProvider));
+        for (int i = 0; i < cameras.size - dynamicCaches.size; i++) {
             dynamicCaches.add(new ModelCache());
             staticCaches.add(new ModelCache());
         }
@@ -143,27 +108,14 @@ public class GraphicsSystem extends NhgIteratingSystem {
     @Override
     protected void end() {
         super.end();
+        renderableProviders.clear();
 
         for (int i = 0; i < cameras.size; i++) {
-            Camera camera = cameras.get(i);
-            ModelBatch modelBatch = modelBatches.get(i);
             ModelCache dynamicCache = dynamicCaches.get(i);
             ModelCache staticCache = staticCaches.get(i);
 
             dynamicCache.end();
-
-            GLUtils.clearScreen(clearColor);
-
-            modelBatch.begin(camera);
-            modelBatch.render(staticCache, environment);
-            modelBatch.render(dynamicCache, environment);
-            modelBatch.end();
-
-            if (Nhg.debugDrawPhysics && debugDrawer != null) {
-                debugDrawer.begin(camera);
-                physicsSystem.debugDraw();
-                debugDrawer.end();
-            }
+            addRenderableProviders(dynamicCache, staticCache);
         }
     }
 
@@ -185,20 +137,6 @@ public class GraphicsSystem extends NhgIteratingSystem {
                         }
                     }
                 });
-    }
-
-    public void setClearColor(Color clearColor) {
-        if (clearColor != null) {
-            this.clearColor = clearColor;
-        }
-    }
-
-    public DebugDrawer getDebugDrawer() {
-        return debugDrawer;
-    }
-
-    public Environment getEnvironment() {
-        return environment;
     }
 
     private void rebuildCache(RenderableProvider... renderableProviders) {

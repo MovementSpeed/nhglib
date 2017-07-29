@@ -1,6 +1,6 @@
 package io.github.voidzombie.nhglib.runtime.entry;
 
-import com.artemis.BaseEntitySystem;
+import com.artemis.BaseSystem;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
@@ -75,7 +75,7 @@ abstract class BaseGame implements
     }
 
     @Override
-    public Array<BaseEntitySystem> onConfigureEntitySystems() {
+    public Array<BaseSystem> onConfigureEntitySystems() {
         return new Array<>();
     }
 

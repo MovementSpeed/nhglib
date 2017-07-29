@@ -1,15 +1,12 @@
 package io.github.voidzombie.nhglib.runtime.fsm.states.engine;
 
-import com.artemis.BaseEntitySystem;
+import com.artemis.BaseSystem;
 import com.artemis.World;
 import com.artemis.WorldConfigurationBuilder;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.utils.Array;
-import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.CameraSystem;
-import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.GraphicsSystem;
-import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.LightingSystem;
-import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.PhysicsSystem;
+import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.*;
 import io.github.voidzombie.nhglib.runtime.entry.NhgEntry;
 import io.github.voidzombie.nhglib.runtime.fsm.base.EngineStates;
 import io.github.voidzombie.nhglib.utils.debug.NhgLogger;
@@ -26,9 +23,9 @@ public class EngineStateNotInitialized implements State<NhgEntry> {
         WorldConfigurationBuilder configurationBuilder = new WorldConfigurationBuilder();
 
         // Configure user entity systems
-        Array<BaseEntitySystem> entitySystems = nhgEntry.onConfigureEntitySystems();
+        Array<BaseSystem> entitySystems = nhgEntry.onConfigureEntitySystems();
 
-        // Configure the most important systems last, especially GraphicsSystem which
+        // Configure the most important systems last, especially RenderingSystem which
         // should be the last because it renders all the changes happened in all other
         // systems.
         if (!hasSystemClass(PhysicsSystem.class, entitySystems)) {
@@ -49,13 +46,19 @@ public class EngineStateNotInitialized implements State<NhgEntry> {
             NhgLogger.log(this, "LightingSystem already registered, ignoring registration.");
         }
 
-        if (!hasSystemClass(GraphicsSystem.class, entitySystems)) {
-            entitySystems.add(new GraphicsSystem(nhgEntry.nhg.entities, nhgEntry.nhg.messaging));
+        if (!hasSystemClass(ModelRenderingSystem.class, entitySystems)) {
+            entitySystems.add(new ModelRenderingSystem(nhgEntry.nhg.entities, nhgEntry.nhg.messaging));
         } else {
-            NhgLogger.log(this, "GraphicsSystem already registered, ignoring registration.");
+            NhgLogger.log(this, "RenderingSystem already registered, ignoring registration.");
         }
 
-        for (BaseEntitySystem bes : entitySystems) {
+        if (!hasSystemClass(RenderingSystem.class, entitySystems)) {
+            entitySystems.add(new RenderingSystem(nhgEntry.nhg.entities));
+        } else {
+            NhgLogger.log(this, "RenderingSystem already registered, ignoring registration.");
+        }
+
+        for (BaseSystem bes : entitySystems) {
             configurationBuilder.with(bes);
         }
 
@@ -80,10 +83,10 @@ public class EngineStateNotInitialized implements State<NhgEntry> {
         return false;
     }
 
-    private boolean hasSystemClass(Class<? extends BaseEntitySystem> systemClass, Array<BaseEntitySystem> entitySystems) {
+    private boolean hasSystemClass(Class<? extends BaseSystem> systemClass, Array<BaseSystem> entitySystems) {
         boolean res = false;
 
-        for (BaseEntitySystem es : entitySystems) {
+        for (BaseSystem es : entitySystems) {
             if (systemClass.isInstance(es)) {
                 res = true;
             }

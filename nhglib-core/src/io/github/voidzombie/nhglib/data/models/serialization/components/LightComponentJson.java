@@ -8,7 +8,7 @@ import io.github.voidzombie.nhglib.enums.LightType;
 import io.github.voidzombie.nhglib.graphics.lights.NhgLight;
 import io.github.voidzombie.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.LightComponent;
-import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.GraphicsSystem;
+import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.RenderingSystem;
 
 /**
  * Created by Fausto Napoli on 19/12/2016.
@@ -16,7 +16,7 @@ import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.GraphicsSystem;
 public class LightComponentJson extends ComponentJson {
     @Override
     public void parse(JsonValue jsonValue) {
-        GraphicsSystem graphicsSystem = nhg.entities.getEntitySystem(GraphicsSystem.class);
+        RenderingSystem renderingSystem = nhg.entities.getEntitySystem(RenderingSystem.class);
         LightComponent lightComponent = nhg.entities.createComponent(entity, LightComponent.class);
 
         LightType lightType = LightType.fromString(jsonValue.getString("lightType"));
@@ -64,7 +64,7 @@ public class LightComponentJson extends ComponentJson {
 
         if (light == null) return;
 
-        Environment environment = graphicsSystem.getEnvironment();
+        Environment environment = renderingSystem.getEnvironment();
         NhgLightsAttribute attribute = (NhgLightsAttribute) environment
                 .get(NhgLightsAttribute.Type);
 

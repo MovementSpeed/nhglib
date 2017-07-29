@@ -36,7 +36,7 @@ public class Entities {
                 .build(entityWorld);
     }
 
-    public <T extends BaseEntitySystem> T getEntitySystem(Class<T> systemClass) {
+    public <T extends BaseSystem> T getEntitySystem(Class<T> systemClass) {
         return entityWorld.getSystem(systemClass);
     }
 

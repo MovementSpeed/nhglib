@@ -1,6 +1,6 @@
 package io.github.voidzombie.nhglib.runtime.entry;
 
-import com.artemis.BaseEntitySystem;
+import com.artemis.BaseSystem;
 import com.badlogic.gdx.utils.Array;
 
 /**
@@ -38,7 +38,7 @@ public class NhgEntry extends BaseGame {
     }
 
     @Override
-    public Array<BaseEntitySystem> onConfigureEntitySystems() {
+    public Array<BaseSystem> onConfigureEntitySystems() {
         return super.onConfigureEntitySystems();
     }
 }
