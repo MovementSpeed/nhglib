@@ -1,4 +1,4 @@
-package io.github.voidzombie.nhglib.data.models.serialization.physics;
+package io.github.voidzombie.nhglib.physics.enums;
 
 /**
  * Created by Fausto Napoli on 16/05/2017.

@@ -38,7 +38,7 @@ public class Main extends NhgEntry implements InputListener {
     public void engineStarted() {
         super.engineStarted();
         Nhg.debugLogs = true;
-        Nhg.debugDrawPhysics = false;
+        Nhg.debugDrawPhysics = true;
 
         world = new NhgWorld(nhg.messaging, nhg.entities, nhg.assets,
                 new DefaultWorldStrategy(),

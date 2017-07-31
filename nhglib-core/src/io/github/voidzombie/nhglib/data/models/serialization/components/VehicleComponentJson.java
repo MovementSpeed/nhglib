@@ -1,12 +1,10 @@
 package io.github.voidzombie.nhglib.data.models.serialization.components;
 
-import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.voidzombie.nhglib.data.models.serialization.ComponentJson;
 import io.github.voidzombie.nhglib.data.models.serialization.physics.shapes.ShapeJson;
 import io.github.voidzombie.nhglib.data.models.serialization.physics.vehicles.VehicleTuningJson;
 import io.github.voidzombie.nhglib.runtime.ecs.components.physics.VehicleComponent;
-import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.PhysicsSystem;
 
 /**
  * Created by Fausto Napoli on 11/06/2017.
@@ -17,12 +15,8 @@ public class VehicleComponentJson extends ComponentJson {
     public void parse(JsonValue jsonValue) {
         VehicleComponent vehicleComponent = nhg.entities.createComponent(entity, VehicleComponent.class);
 
-        PhysicsSystem physicsSystem = nhg.entities.getEntitySystem(PhysicsSystem.class);
-        btDynamicsWorld world = physicsSystem.getBulletWorld();
-
         // Shape
         ShapeJson shapeJson = new ShapeJson();
-        shapeJson.nhg = nhg;
 
         if (jsonValue.has("shape")) {
             shapeJson.parse(jsonValue.get("shape"));
@@ -50,7 +44,34 @@ public class VehicleComponentJson extends ComponentJson {
             masks = new short[]{};
         }
 
-        vehicleComponent.build(world, shapeJson.get(), vehicleTuningJson.get(), mass, friction, restitution, group, masks);
+        vehicleComponent.mass = mass;
+        vehicleComponent.friction = friction;
+        vehicleComponent.restitution = restitution;
+        vehicleComponent.collisionFiltering = true;
+        vehicleComponent.rigidBodyShape = shapeJson.get();
+
+        if (group != -1) {
+            vehicleComponent.group = (short) (1 << group);
+        } else {
+            vehicleComponent.collisionFiltering = false;
+        }
+
+        if (masks.length > 0) {
+            if (masks[0] != -1) {
+                vehicleComponent.mask = (short) (1 << masks[0]);
+            } else {
+                vehicleComponent.mask = 0;
+            }
+
+            for (int i = 1; i < masks.length; i++) {
+                vehicleComponent.mask |= (short) (1 << masks[i]);
+            }
+        } else {
+            vehicleComponent.collisionFiltering = false;
+        }
+
+        vehicleComponent.vehicleTuning = vehicleTuningJson.get();
+
         output = vehicleComponent;
     }
 }

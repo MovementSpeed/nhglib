@@ -89,12 +89,7 @@
             "shape":
             {
               "type":"bvhTriangleMesh",
-              "asset":
-              {
-                "alias":"trackAsset",
-                "source":"models/vsr_track.g3db",
-                "classAlias":"model"
-              }
+              "asset":"trackAsset"
             }
           },
           {
@@ -183,6 +178,7 @@
             [
               {
                 "type":"wheel",
+                "wheelIndex":0,
                 "attachmentPoint":
                 {
                   "x":0.313,
@@ -241,6 +237,7 @@
             [
               {
                 "type":"wheel",
+                "wheelIndex":1,
                 "attachmentPoint":
                 {
                   "x":-0.313,
@@ -299,6 +296,7 @@
             [
               {
                 "type":"wheel",
+                "wheelIndex":2,
                 "attachmentPoint":
                 {
                   "x":0.313,
@@ -357,6 +355,7 @@
             [
               {
                 "type":"wheel",
+                "wheelIndex":3,
                 "attachmentPoint":
                 {
                   "x":-0.313,

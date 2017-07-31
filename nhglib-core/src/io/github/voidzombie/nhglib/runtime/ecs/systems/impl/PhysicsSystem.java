@@ -144,45 +144,51 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
     }
 
     private void processBodyComponent(RigidBodyComponent bodyComponent, NodeComponent nodeComponent) {
-        if (!bodyComponent.isAdded()) {
-            Matrix4 initialTransform = new Matrix4();
+        if (bodyComponent.state == RigidBodyComponent.State.READY) {
+            if (!bodyComponent.isAdded()) {
+                Matrix4 initialTransform = new Matrix4();
 
-            Vector3 translation = nodeComponent.node.translation;
-            Vector3 scale = new Vector3(1, 1, 1);
-            Quaternion rotation = nodeComponent.node.rotation;
+                Vector3 translation = nodeComponent.node.translation;
+                Vector3 scale = new Vector3(1, 1, 1);
+                Quaternion rotation = nodeComponent.node.rotation;
 
-            initialTransform.set(translation, rotation, scale);
-            bodyComponent.addToWorld(dynamicsWorld, initialTransform);
-        } else {
-            nodeComponent.setTranslation(bodyComponent.getTranslation());
-            nodeComponent.setRotation(bodyComponent.getRotation());
-            nodeComponent.applyTransforms();
+                initialTransform.set(translation, rotation, scale);
+                bodyComponent.addToWorld(dynamicsWorld, initialTransform);
+            } else {
+                nodeComponent.setTranslation(bodyComponent.getTranslation());
+                nodeComponent.setRotation(bodyComponent.getRotation());
+                nodeComponent.applyTransforms();
+            }
         }
     }
 
     private void processVehicleComponent(VehicleComponent vehicleComponent, NodeComponent nodeComponent) {
-        if (!vehicleComponent.isAdded()) {
-            Matrix4 initialTransform = new Matrix4();
+        if (vehicleComponent.state == RigidBodyComponent.State.READY) {
+            if (!vehicleComponent.isAdded()) {
+                Matrix4 initialTransform = new Matrix4();
 
-            Vector3 trn = nodeComponent.getTranslation();
-            Vector3 scl = new Vector3(1, 1, 1);
-            Quaternion rtn = nodeComponent.getRotationQuaternion();
+                Vector3 trn = nodeComponent.getTranslation();
+                Vector3 scl = new Vector3(1, 1, 1);
+                Quaternion rtn = nodeComponent.getRotationQuaternion();
 
-            initialTransform.set(trn, rtn, scl);
+                initialTransform.set(trn, rtn, scl);
 
-            vehicleComponent.addToWorld(dynamicsWorld, initialTransform);
-        } else {
-            nodeComponent.setTranslation(vehicleComponent.getTranslation());
-            nodeComponent.setRotation(vehicleComponent.getRotation());
-            nodeComponent.applyTransforms();
+                vehicleComponent.addToWorld(dynamicsWorld, initialTransform);
+            } else {
+                nodeComponent.setTranslation(vehicleComponent.getTranslation());
+                nodeComponent.setRotation(vehicleComponent.getRotation());
+                nodeComponent.applyTransforms();
+            }
         }
     }
 
     private void processWheelComponent(WheelComponent wheelComponent, NodeComponent nodeComponent) {
-        float rotation = (wheelComponent.getRotation() * MathUtils.radiansToDegrees) % 360;
-        float steering = wheelComponent.getSteering() * MathUtils.radiansToDegrees;
+        if (wheelComponent.state == WheelComponent.State.READY) {
+            float rotation = (wheelComponent.getRotation() * MathUtils.radiansToDegrees) % 360;
+            float steering = wheelComponent.getSteering() * MathUtils.radiansToDegrees;
 
-        nodeComponent.setRotation(rotation, steering, 0);
-        nodeComponent.applyTransforms();
+            nodeComponent.setRotation(rotation, steering, 0);
+            nodeComponent.applyTransforms();
+        }
     }
 }

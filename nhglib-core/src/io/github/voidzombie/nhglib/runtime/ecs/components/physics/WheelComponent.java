@@ -11,11 +11,25 @@ import com.badlogic.gdx.physics.bullet.dynamics.btWheelInfo;
  * Created by Fausto Napoli on 05/06/2017.
  */
 public class WheelComponent extends Component {
-    private int wheelIndex;
+    public boolean frontWheel;
+    public int wheelIndex;
 
-    private Vector3 translation;
-    private Quaternion rotation;
-    private btRaycastVehicle vehicle;
+    public float radius;
+    public float suspensionRestLength;
+    public float wheelFriction;
+
+    public State state;
+
+    public Vector3 attachmentPoint;
+    public Vector3 direction;
+    public Vector3 axis;
+    public Vector3 translation;
+    public Quaternion rotation;
+    public btRaycastVehicle vehicle;
+
+    public WheelComponent() {
+        state = State.NOT_INITIALIZED;
+    }
 
     public void build(btRaycastVehicle vehicle, int wheelIndex) {
         this.vehicle = vehicle;
@@ -47,5 +61,10 @@ public class WheelComponent extends Component {
 
     public btRaycastVehicle getVehicle() {
         return vehicle;
+    }
+
+    public enum State {
+        NOT_INITIALIZED,
+        READY
     }
 }

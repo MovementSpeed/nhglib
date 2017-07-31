@@ -1,29 +1,44 @@
 package io.github.voidzombie.nhglib.runtime.ecs.components.physics;
 
 import com.artemis.Component;
+import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
+import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Disposable;
+import io.github.voidzombie.nhglib.assets.Assets;
 import io.github.voidzombie.nhglib.physics.MotionState;
+import io.github.voidzombie.nhglib.physics.models.*;
 
 /**
  * Created by Fausto Napoli on 03/05/2017.
  */
 public class RigidBodyComponent extends Component implements Disposable {
-    private boolean added;
-    private boolean collisionFiltering;
+    public boolean added;
+    public boolean collisionFiltering;
 
-    private short group;
-    private short mask;
+    public short group;
+    public short mask;
 
-    private btRigidBody body;
-    private MotionState motionState;
-    private btCollisionShape collisionShape;
-    private btRigidBody.btRigidBodyConstructionInfo constructionInfo;
+    public float mass;
+    public float friction;
+    public float restitution;
+
+    public State state;
+
+    public btRigidBody body;
+    public MotionState motionState;
+    public RigidBodyShape rigidBodyShape;
+    public btCollisionShape collisionShape;
+    public btRigidBody.btRigidBodyConstructionInfo constructionInfo;
+
+    public RigidBodyComponent() {
+        state = State.NOT_INITIALIZED;
+    }
 
     @Override
     public void dispose() {
@@ -59,28 +74,20 @@ public class RigidBodyComponent extends Component implements Disposable {
             body.setSleepingThresholds(1f / 1000f, 1f / 1000f);
             body.setFriction(friction);
             body.setRestitution(restitution);
+        }
+    }
 
-            collisionFiltering = true;
+    public void build(Assets assets) {
+        buildCollisionShape(assets);
+        constructionInfo = getConstructionInfo(collisionShape, mass);
 
-            if (group != -1) {
-                this.group = (short) (1 << group);
-            } else {
-                collisionFiltering = false;
-            }
+        if (constructionInfo != null) {
+            motionState = new MotionState();
 
-            if (masks.length > 0) {
-                if (masks[0] != -1) {
-                    this.mask = (short) (1 << masks[0]);
-                } else {
-                    this.mask = 0;
-                }
-
-                for (int i = 1; i < masks.length; i++) {
-                    this.mask |= (short) (1 << masks[i]);
-                }
-            } else {
-                collisionFiltering = false;
-            }
+            body = new btRigidBody(constructionInfo);
+            body.setSleepingThresholds(1f / 1000f, 1f / 1000f);
+            body.setFriction(friction);
+            body.setRestitution(restitution);
         }
     }
 
@@ -127,6 +134,60 @@ public class RigidBodyComponent extends Component implements Disposable {
         return motionState.transform.getRotation(new Quaternion());
     }
 
+    private void buildCollisionShape(Assets assets) {
+        switch (rigidBodyShape.type) {
+            case BOX:
+                BoxRigidBodyShape boxRigidBodyShape = (BoxRigidBodyShape) rigidBodyShape;
+                collisionShape = new btBoxShape(new Vector3(boxRigidBodyShape.width, boxRigidBodyShape.height, boxRigidBodyShape.depth));
+                break;
+
+            case CONE:
+                ConeRigidBodyShape coneRigidBodyShape = (ConeRigidBodyShape) rigidBodyShape;
+                collisionShape = new btConeShape(coneRigidBodyShape.radius, coneRigidBodyShape.height);
+                break;
+
+            case SPHERE:
+                SphereRigidBodyShape sphereRigidBodyShape = (SphereRigidBodyShape) rigidBodyShape;
+                collisionShape = new btSphereShape(sphereRigidBodyShape.radius);
+                break;
+
+            case CAPSULE:
+                CapsuleRigidBodyShape capsuleRigidBodyShape = (CapsuleRigidBodyShape) rigidBodyShape;
+                collisionShape = new btCapsuleShape(capsuleRigidBodyShape.radius, capsuleRigidBodyShape.height);
+                break;
+
+            case CYLINDER:
+                CylinderRigidBodyShape cylinderRigidBodyShape = (CylinderRigidBodyShape) rigidBodyShape;
+                collisionShape = new btCylinderShape(new Vector3(cylinderRigidBodyShape.width, cylinderRigidBodyShape.height, cylinderRigidBodyShape.depth));
+                break;
+
+            case CONVEX_HULL:
+                ConvexHullRigidBodyShape convexHullRigidBodyShape = (ConvexHullRigidBodyShape) rigidBodyShape;
+
+                Model convexHull = assets.get(convexHullRigidBodyShape.asset);
+                Mesh convexHullMesh = convexHull.meshes.first();
+
+                collisionShape = new btConvexHullShape(convexHullMesh.getVerticesBuffer(), convexHullMesh.getNumVertices(), convexHullMesh.getVertexSize());
+
+                if (convexHullRigidBodyShape.optimize) {
+                    ((btConvexHullShape) collisionShape).optimizeConvexHull();
+                }
+                break;
+
+            case BVH_TRIANGLE_MESH:
+                BvhTriangleMeshRigidBodyShape bvhTriangleMeshRigidBodyShape = (BvhTriangleMeshRigidBodyShape) rigidBodyShape;
+                Model bvhTriangleModel = assets.get(bvhTriangleMeshRigidBodyShape.asset);
+                collisionShape = new btBvhTriangleMeshShape(bvhTriangleModel.meshParts, bvhTriangleMeshRigidBodyShape.quantization, bvhTriangleMeshRigidBodyShape.buildBvh);
+                break;
+
+            case CONVEX_TRIANGLE_MESH:
+                ConvexTriangleMeshRigidBodyShape convexTriangleMeshRigidBodyShape = (ConvexTriangleMeshRigidBodyShape) rigidBodyShape;
+                Model convexTriangleModel = assets.get(convexTriangleMeshRigidBodyShape.asset);
+                collisionShape = new btConvexTriangleMeshShape(btTriangleIndexVertexArray.obtain(convexTriangleModel.meshParts), convexTriangleMeshRigidBodyShape.calcAabb);
+                break;
+        }
+    }
+
     private btRigidBody.btRigidBodyConstructionInfo getConstructionInfo(btCollisionShape shape, float mass) {
         btRigidBody.btRigidBodyConstructionInfo info = null;
 
@@ -143,5 +204,10 @@ public class RigidBodyComponent extends Component implements Disposable {
         }
 
         return info;
+    }
+
+    public enum State {
+        NOT_INITIALIZED,
+        READY
     }
 }

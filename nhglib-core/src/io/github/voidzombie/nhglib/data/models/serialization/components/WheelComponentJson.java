@@ -12,29 +12,37 @@ import io.github.voidzombie.nhglib.runtime.ecs.components.physics.WheelComponent
 public class WheelComponentJson extends ComponentJson {
     @Override
     public void parse(JsonValue wheelJson) {
-        Vector3Json attachmentPointJson = new Vector3Json();
-        attachmentPointJson.parse(wheelJson.get("attachmentPoint"));
-
-        Vector3Json directionJson = new Vector3Json();
-        directionJson.parse(wheelJson.get("direction"));
-
-        Vector3Json axisJson = new Vector3Json();
-        axisJson.parse(wheelJson.get("axis"));
-
-        float radius = wheelJson.getFloat("radius", 0.1f);
-        float suspensionRestLength = wheelJson.getFloat("suspensionRestLength", radius * 0.3f);
-        float wheelFriction = wheelJson.getFloat("friction", 5f);
-
-        boolean frontWheel = wheelJson.getBoolean("frontWheel", false);
-
+        WheelComponent wheelComponent = null;
         VehicleComponent vehicleComponent = nhg.entities.getComponent(parentEntity, VehicleComponent.class);
 
         if (vehicleComponent != null) {
-            vehicleComponent.addWheel(attachmentPointJson.get(), directionJson.get(), axisJson.get(), radius,
-                    suspensionRestLength, wheelFriction, frontWheel);
+            Vector3Json attachmentPointJson = new Vector3Json();
+            attachmentPointJson.parse(wheelJson.get("attachmentPoint"));
 
-            WheelComponent wheelComponent = nhg.entities.createComponent(entity, WheelComponent.class);
-            wheelComponent.build(vehicleComponent.getVehicle(), vehicleComponent.getWheelNumber() - 1);
+            Vector3Json directionJson = new Vector3Json();
+            directionJson.parse(wheelJson.get("direction"));
+
+            Vector3Json axisJson = new Vector3Json();
+            axisJson.parse(wheelJson.get("axis"));
+
+            int wheelIndex = wheelJson.getInt("wheelIndex");
+
+            float radius = wheelJson.getFloat("radius", 0.1f);
+            float suspensionRestLength = wheelJson.getFloat("suspensionRestLength", radius * 0.3f);
+            float wheelFriction = wheelJson.getFloat("friction", 5f);
+
+            boolean frontWheel = wheelJson.getBoolean("frontWheel", false);
+
+            wheelComponent = nhg.entities.createComponent(entity, WheelComponent.class);
+            wheelComponent.wheelIndex = wheelIndex;
+            wheelComponent.suspensionRestLength = suspensionRestLength;
+            wheelComponent.wheelFriction = wheelFriction;
+            wheelComponent.frontWheel = frontWheel;
+            wheelComponent.attachmentPoint = attachmentPointJson.get();
+            wheelComponent.direction = directionJson.get();
+            wheelComponent.axis = axisJson.get();
         }
+
+        output = wheelComponent;
     }
 }

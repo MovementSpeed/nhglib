@@ -16,9 +16,9 @@ import com.badlogic.gdx.utils.Disposable;
 public class VehicleComponent extends RigidBodyComponent implements Disposable {
     private int wheelNumber;
 
-    private btRaycastVehicle.btVehicleTuning vehicleTuning;
-    private btVehicleRaycaster vehicleRaycaster;
-    private btRaycastVehicle vehicle;
+    public btRaycastVehicle.btVehicleTuning vehicleTuning;
+    public btVehicleRaycaster vehicleRaycaster;
+    public btRaycastVehicle vehicle;
 
     @Override
     public void addToWorld(btDynamicsWorld world, Matrix4 transform) {

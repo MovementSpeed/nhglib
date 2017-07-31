@@ -1,4 +1,4 @@
-package io.github.voidzombie.nhglib.data.models.serialization.physics;
+package io.github.voidzombie.nhglib.physics.enums;
 
 import com.badlogic.gdx.physics.bullet.collision.Collision;
 

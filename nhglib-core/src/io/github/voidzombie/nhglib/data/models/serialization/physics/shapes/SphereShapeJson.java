@@ -1,22 +1,22 @@
 package io.github.voidzombie.nhglib.data.models.serialization.physics.shapes;
 
-import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
 import com.badlogic.gdx.utils.JsonValue;
+import io.github.voidzombie.nhglib.physics.models.SphereRigidBodyShape;
 
 /**
  * Created by Fausto Napoli on 16/05/2017.
  */
 public class SphereShapeJson extends ShapeJson {
-    private btSphereShape shape;
+    private SphereRigidBodyShape shape;
 
     @Override
     public void parse(JsonValue jsonValue) {
         float radius = jsonValue.getFloat("radius");
-        shape = new btSphereShape(radius);
+        shape = new SphereRigidBodyShape(radius);
     }
 
     @Override
-    public btSphereShape get() {
+    public SphereRigidBodyShape get() {
         return shape;
     }
 }

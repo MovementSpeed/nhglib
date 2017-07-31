@@ -46,7 +46,6 @@ public class ModelComponent extends Component {
 
     public enum State {
         NOT_INITIALIZED,
-        LOADING,
         READY
     }
 

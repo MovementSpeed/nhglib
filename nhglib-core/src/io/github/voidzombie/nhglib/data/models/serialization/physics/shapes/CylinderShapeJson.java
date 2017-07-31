@@ -1,14 +1,13 @@
 package io.github.voidzombie.nhglib.data.models.serialization.physics.shapes;
 
-import com.badlogic.gdx.physics.bullet.collision.btCylinderShape;
 import com.badlogic.gdx.utils.JsonValue;
-import io.github.voidzombie.nhglib.utils.data.VectorPool;
+import io.github.voidzombie.nhglib.physics.models.CylinderRigidBodyShape;
 
 /**
  * Created by Fausto Napoli on 16/05/2017.
  */
 public class CylinderShapeJson extends ShapeJson {
-    private btCylinderShape shape;
+    private CylinderRigidBodyShape shape;
 
     @Override
     public void parse(JsonValue jsonValue) {
@@ -16,11 +15,11 @@ public class CylinderShapeJson extends ShapeJson {
         float height = jsonValue.getFloat("height", 0.0f) * 0.5f;
         float depth = jsonValue.getFloat("depth", 0.0f) * 0.5f;
 
-        shape = new btCylinderShape(VectorPool.getVector3().set(width, height, depth));
+        shape = new CylinderRigidBodyShape(width, height, depth);
     }
 
     @Override
-    public btCylinderShape get() {
+    public CylinderRigidBodyShape get() {
         return shape;
     }
 }

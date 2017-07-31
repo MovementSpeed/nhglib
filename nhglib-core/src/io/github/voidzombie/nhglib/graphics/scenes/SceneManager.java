@@ -9,6 +9,10 @@ import io.github.voidzombie.nhglib.assets.Assets;
 import io.github.voidzombie.nhglib.data.models.serialization.components.*;
 import io.github.voidzombie.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
 import io.github.voidzombie.nhglib.graphics.utils.PbrMaterial;
+import io.github.voidzombie.nhglib.physics.models.BvhTriangleMeshRigidBodyShape;
+import io.github.voidzombie.nhglib.physics.models.ConvexHullRigidBodyShape;
+import io.github.voidzombie.nhglib.physics.models.ConvexTriangleMeshRigidBodyShape;
+import io.github.voidzombie.nhglib.physics.models.RigidBodyShape;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.ModelComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.physics.RigidBodyComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.utils.Entities;
@@ -151,9 +155,27 @@ public class SceneManager {
         RigidBodyComponent rigidBodyComponent = rigidBodyMapper.get(entity);
 
         if (load) {
-
+            rigidBodyComponent.build(assets);
+            rigidBodyComponent.state = RigidBodyComponent.State.READY;
         } else {
+            RigidBodyShape rigidBodyShape = rigidBodyComponent.rigidBodyShape;
 
+            switch (rigidBodyShape.type) {
+                case CONVEX_TRIANGLE_MESH:
+                    ConvexTriangleMeshRigidBodyShape convexTriangleMeshRigidBodyShape = (ConvexTriangleMeshRigidBodyShape) rigidBodyComponent.rigidBodyShape;
+                    assets.unloadAsset(convexTriangleMeshRigidBodyShape.asset);
+                    break;
+
+                case BVH_TRIANGLE_MESH:
+                    BvhTriangleMeshRigidBodyShape bvhTriangleMeshRigidBodyShape = (BvhTriangleMeshRigidBodyShape) rigidBodyComponent.rigidBodyShape;
+                    assets.unloadAsset(bvhTriangleMeshRigidBodyShape.asset);
+                    break;
+
+                case CONVEX_HULL:
+                    ConvexHullRigidBodyShape convexHullRigidBodyShape = (ConvexHullRigidBodyShape) rigidBodyComponent.rigidBodyShape;
+                    assets.unloadAsset(convexHullRigidBodyShape.asset);
+                    break;
+            }
         }
     }
 }
