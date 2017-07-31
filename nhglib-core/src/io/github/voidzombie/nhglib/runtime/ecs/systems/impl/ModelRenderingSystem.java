@@ -131,7 +131,7 @@ public class ModelRenderingSystem extends BaseRenderingSystem {
                         if (modelComponent.type == ModelComponent.Type.STATIC) {
                             Asset asset = (Asset) message.data.get(Strings.Defaults.assetKey);
 
-                            if (asset.is(modelComponent.asset.alias)) {
+                            if (asset.is(modelComponent.asset)) {
                                 rebuildCache(modelComponent.model);
                             }
                         }

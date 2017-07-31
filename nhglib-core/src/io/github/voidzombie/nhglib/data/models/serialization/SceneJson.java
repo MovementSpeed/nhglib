@@ -2,6 +2,7 @@ package io.github.voidzombie.nhglib.data.models.serialization;
 
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.voidzombie.nhglib.Nhg;
+import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 import io.github.voidzombie.nhglib.interfaces.JsonParseable;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
@@ -21,9 +22,18 @@ public class SceneJson implements JsonParseable<Scene> {
     public void parse(JsonValue jsonValue) {
         String name = jsonValue.getString("name");
         JsonValue entitiesJson = jsonValue.get("entities");
+        JsonValue assetsJson = jsonValue.get("assets");
 
         output = new Scene(nhg, "root");
         output.name = name;
+
+        for (JsonValue assetJson : assetsJson) {
+            AssetJson aj = new AssetJson();
+            aj.parse(assetJson);
+
+            Asset asset = aj.get();
+            output.assets.add(asset);
+        }
 
         int rootEntity = output.sceneGraph.getRootEntity();
 

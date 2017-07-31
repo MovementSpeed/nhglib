@@ -95,7 +95,13 @@ public class Assets implements Updatable, AssetErrorListener {
     }
 
     public <T> T get(Asset asset) {
-        return assetManager.get(asset.source);
+        T t = null;
+
+        if (assetManager.isLoaded(asset.source)) {
+            t = assetManager.get(asset.source);
+        }
+
+        return t;
     }
 
     public Asset getAsset(String alias) {
@@ -165,6 +171,10 @@ public class Assets implements Updatable, AssetErrorListener {
 
     public void dequeueAsset(Asset asset) {
         assetQueue.removeValue(asset, true);
+    }
+
+    public void unloadAsset(String alias) {
+        unloadAsset(getAsset(alias));
     }
 
     public void unloadAsset(Asset asset) {

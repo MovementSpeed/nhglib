@@ -241,9 +241,9 @@ public class TiledForwardShader extends BaseShader {
         createLightTexture();
 
         super.begin(camera, context);
-        Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
-        Gdx.gl.glEnable(GL20.GL_CULL_FACE);
-        context.setBlending(true, GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        context.setCullFace(GL20.GL_BACK);
+        context.setDepthTest(GL20.GL_LEQUAL);
+        context.setDepthMask(true);
     }
 
     @Override
@@ -271,11 +271,9 @@ public class TiledForwardShader extends BaseShader {
 
     @Override
     public void end() {
-        lightsToRender.clear();
         super.end();
 
-        Gdx.gl.glDisable(GL20.GL_BLEND);
-        Gdx.gl.glDisable(GL20.GL_CULL_FACE);
+        lightsToRender.clear();
     }
 
     @Override

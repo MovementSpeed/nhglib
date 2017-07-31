@@ -32,11 +32,6 @@ public class RenderingSystem extends BaseSystem {
     private Array<ModelBatch> modelBatches;
     private Array<RenderingSystemInterface> renderingInterfaces;
 
-    /*public AssetManager assets;
-    private ParticleEffect currentEffects;
-    private ParticleSystem particleSystem;
-    private PointSpriteParticleBatch pointSpriteBatch;*/
-
     public RenderingSystem(Entities entities) {
         this.entities = entities;
 
@@ -46,39 +41,12 @@ public class RenderingSystem extends BaseSystem {
 
         modelBatches = new Array<>();
         renderingInterfaces = new Array<>();
-
-        /*assets = new AssetManager();
-        particleSystem = new ParticleSystem();
-
-        pointSpriteBatch = new PointSpriteParticleBatch();
-
-        particleSystem = new ParticleSystem();
-        particleSystem.add(pointSpriteBatch);
-
-        ParticleEffectLoader.ParticleEffectLoadParameter loadParam = new ParticleEffectLoader.ParticleEffectLoadParameter(particleSystem.getBatches());
-        ParticleEffectLoader loader = new ParticleEffectLoader(new InternalFileHandleResolver());
-
-        assets.setLoader(ParticleEffect.class, loader);
-        assets.load("particles/wheel_smoke.nhfx", ParticleEffect.class, loadParam);
-
-        // halt the main thread until assets are loaded.
-        // this is bad for actual games, but okay for demonstration purposes.
-        assets.finishLoading();
-
-        currentEffects=assets.get("particles/wheel_smoke.nhfx",ParticleEffect.class).copy();
-        currentEffects.init();
-
-        particleSystem.add(currentEffects);*/
     }
 
     @Override
     protected void processSystem() {
-        if (physicsSystem == null) {
-            physicsSystem = entities.getEntitySystem(PhysicsSystem.class);
-        }
-
-        if (cameraSystem == null) {
-            cameraSystem = entities.getEntitySystem(CameraSystem.class);
+        if (cameras == null) {
+            cameras = cameraSystem.cameras;
         }
 
         if (physicsSystem.isPhysicsInitialized()) {
@@ -89,8 +57,6 @@ public class RenderingSystem extends BaseSystem {
 
             physicsSystem.setDebugDrawer(debugDrawer);
         }
-
-        cameras = cameraSystem.cameras;
 
         // Add as many ModelBatches as needed. If there are 5 cameras,
         // 5 model batches are added. Since there are 5 model batches,
@@ -111,14 +77,6 @@ public class RenderingSystem extends BaseSystem {
                 modelBatch.render(rsi.getRenderableProviders(), environment);
             }
             modelBatch.end();
-
-            //pointSpriteBatch.setCamera(camera);
-
-            /*particleSystem.update();
-            particleSystem.begin();
-            particleSystem.draw();
-            particleSystem.end();
-            modelBatch.render(particleSystem);*/
 
             if (Nhg.debugDrawPhysics && debugDrawer != null) {
                 debugDrawer.begin(camera);

@@ -2,6 +2,24 @@
   "scene":
   {
     "name":"scene0",
+    "assets":
+    [
+      {
+        "alias":"trackAsset",
+        "source":"models/vsr_track.g3db",
+        "classAlias":"model"
+      },
+      {
+        "alias":"chassisAsset",
+        "source":"models/gk_chassis.g3db",
+        "classAlias":"model"
+      },
+      {
+        "alias":"wheelAsset",
+        "source":"models/gk_wheel.g3db",
+        "classAlias":"model"
+      }
+    ],
     "entities":
     [
       {
@@ -83,12 +101,7 @@
             "type":"model",
             "enabled":true,
             "graphicsType":"dynamic",
-            "asset":
-            {
-              "alias":"trackAsset",
-              "source":"models/vsr_track.g3db",
-              "classAlias":"model"
-            }
+            "asset":"trackAsset"
           }
         ],
         "entities":
@@ -138,12 +151,7 @@
             "type":"model",
             "enabled":true,
             "graphicsType":"dynamic",
-            "asset":
-            {
-              "alias":"chassisAsset",
-              "source":"models/gk_chassis.g3db",
-              "classAlias":"model"
-            }
+            "asset":"chassisAsset"
           }
         ],
         "entities":
@@ -202,12 +210,7 @@
                 "type":"model",
                 "enabled":true,
                 "graphicsType":"dynamic",
-                "asset":
-                {
-                  "alias":"wheel0asset",
-                  "source":"models/gk_wheel.g3db",
-                  "classAlias":"model"
-                }
+                "asset":"wheelAsset"
               }
             ]
           },
@@ -265,12 +268,7 @@
                 "type":"model",
                 "enabled":true,
                 "graphicsType":"dynamic",
-                "asset":
-                {
-                  "alias":"wheel1asset",
-                  "source":"models/gk_wheel.g3db",
-                  "classAlias":"model"
-                }
+                "asset":"wheelAsset"
               }
             ]
           },
@@ -328,12 +326,7 @@
                 "type":"model",
                 "enabled":true,
                 "graphicsType":"dynamic",
-                "asset":
-                {
-                  "alias":"wheel2asset",
-                  "source":"models/gk_wheel.g3db",
-                  "classAlias":"model"
-                }
+                "asset":"wheelAsset"
               }
             ]
           },
@@ -391,12 +384,7 @@
                 "type":"model",
                 "enabled":true,
                 "graphicsType":"dynamic",
-                "asset":
-                {
-                  "alias":"wheel3asset",
-                  "source":"models/gk_wheel.g3db",
-                  "classAlias":"model"
-                }
+                "asset":"wheelAsset"
               }
             ]
           }

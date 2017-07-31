@@ -11,11 +11,12 @@ import io.github.voidzombie.nhglib.interfaces.JsonParseable;
  */
 public class ShapeJson implements JsonParseable<btCollisionShape> {
     public Nhg nhg;
+    public RigidBodyType type;
     private btCollisionShape shape;
 
     @Override
     public void parse(JsonValue shapeJson) {
-        RigidBodyType type = RigidBodyType.fromString(shapeJson.getString("type"));
+        type = RigidBodyType.fromString(shapeJson.getString("type"));
 
         switch (type) {
             case SPHERE:

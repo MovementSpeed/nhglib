@@ -5,27 +5,18 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.model.NodePart;
-import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
-import com.badlogic.gdx.utils.Array;
-import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.assets.Assets;
 import io.github.voidzombie.nhglib.data.models.serialization.components.*;
 import io.github.voidzombie.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
 import io.github.voidzombie.nhglib.graphics.utils.PbrMaterial;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.ModelComponent;
-import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
+import io.github.voidzombie.nhglib.runtime.ecs.components.physics.RigidBodyComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.utils.Entities;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.nhglib.runtime.messaging.Messaging;
-import io.github.voidzombie.nhglib.utils.data.Bundle;
 import io.github.voidzombie.nhglib.utils.data.Strings;
 import io.github.voidzombie.nhglib.utils.scenes.SceneUtils;
-import io.reactivex.Observable;
-import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Predicate;
-import io.reactivex.subjects.PublishSubject;
-import io.reactivex.subjects.Subject;
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
@@ -37,39 +28,15 @@ public class SceneManager {
     private Assets assets;
 
     private ComponentMapper<ModelComponent> modelMapper;
-    private ComponentMapper<NodeComponent> nodeMapper;
-
-    private Subject<Bundle> sizeSubject;
-    private Array<Asset> assetsToLoad;
-    private Array<Asset> temporaryLoadedAssets;
+    private ComponentMapper<RigidBodyComponent> rigidBodyMapper;
 
     public SceneManager(Messaging messaging, Entities entities, Assets assets) {
         this.messaging = messaging;
         this.entities = entities;
         this.assets = assets;
 
-        sizeSubject = PublishSubject.create();
-        sizeSubject.subscribe(new Consumer<Bundle>() {
-            @Override
-            public void accept(Bundle bundle) throws Exception {
-                if (bundle.getInteger("size") == 0) {
-                    ModelComponent modelComponent = (ModelComponent) bundle.get("modelComponent");
-                    processMaterialAssets(modelComponent);
-
-                    Bundle sceneBundle = new Bundle();
-                    sceneBundle.put(Strings.Defaults.sceneKey, currentScene);
-
-                    Message message = new Message(Strings.Events.sceneLoaded, sceneBundle);
-                    SceneManager.this.messaging.send(message);
-                }
-            }
-        });
-
-        assetsToLoad = new Array<>();
-        temporaryLoadedAssets = new Array<>();
-
         modelMapper = entities.getMapper(ModelComponent.class);
-        nodeMapper = entities.getMapper(NodeComponent.class);
+        rigidBodyMapper = entities.getMapper(RigidBodyComponent.class);
 
         SceneUtils.addComponentJsonMapping("message", MessageComponentJson.class);
         SceneUtils.addComponentJsonMapping("camera", CameraComponentJson.class);
@@ -83,57 +50,28 @@ public class SceneManager {
         SceneUtils.addAssetClassMapping("texture", Texture.class);
     }
 
-    public void loadScene(Scene scene) {
-        assetsToLoad.clear();
+    public void loadScene(final Scene scene) {
         currentScene = scene;
+        assets.queueAssets(scene.assets);
 
-        Observable.fromIterable(scene.sceneGraph.getEntities())
-                .doFinally(new Action() {
+        messaging.get(Strings.Events.assetLoadingFinished)
+                .subscribe(new Consumer<Message>() {
                     @Override
-                    public void run() throws Exception {
-                        assets.queueAssets(assetsToLoad);
-                    }
-                })
-                .subscribe(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer entity) throws Exception {
-                        if (modelMapper.has(entity)) {
-                            loadAssets(entity);
+                    public void accept(Message message) throws Exception {
+                        for (Integer entity : scene.sceneGraph.getEntities()) {
+                            processEntityAssets(entity, true);
                         }
                     }
                 });
     }
 
     public void unloadScene(final Scene scene) {
-        Observable.fromIterable(scene.sceneGraph.getEntities())
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer entity) throws Exception {
-                        return modelMapper.has(entity);
-                    }
-                })
-                .doFinally(new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        int rootEntity = scene.sceneGraph.getRootEntity();
-                        NodeComponent nodeComponent = nodeMapper.get(rootEntity);
-
-                        nodeComponent.setTranslation(0, 0, 0);
-                        nodeComponent.setRotation(0, 0, 0);
-                        nodeComponent.setScale(1, 1, 1);
-                        nodeComponent.applyTransforms();
-                    }
-                })
-                .subscribe(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer integer) throws Exception {
-                        ModelComponent modelComponent = modelMapper.get(integer);
-                        assets.unloadAsset(modelComponent.asset);
-                    }
-                });
+        for (Integer entity : scene.sceneGraph.getEntities()) {
+            processEntityAssets(entity, false);
+        }
     }
 
-    public void refresh() {
+    public void reloadScene() {
         loadScene(currentScene);
     }
 
@@ -141,102 +79,81 @@ public class SceneManager {
         return currentScene;
     }
 
-    private void loadAssets(Integer entity) {
-        final ModelComponent modelComponent = modelMapper.get(entity);
-
-        // Group all assets
-        final Array<Asset> allAssets = new Array<>();
-        final Asset modelAsset = modelComponent.asset;
-
-        for (PbrMaterial mat : modelComponent.pbrMaterials) {
-            if (mat.albedoAsset != null) {
-                allAssets.add(mat.albedoAsset);
-            }
-
-            if (mat.metalnessAsset != null) {
-                allAssets.add(mat.metalnessAsset);
-            }
-
-            if (mat.roughnessAsset != null) {
-                allAssets.add(mat.roughnessAsset);
-            }
-
-            if (mat.normalAsset != null) {
-                allAssets.add(mat.normalAsset);
-            }
-
-            if (mat.ambientOcclusionAsset != null) {
-                allAssets.add(mat.ambientOcclusionAsset);
-            }
+    private void processEntityAssets(Integer entity, boolean load) {
+        // Check if this entity has a model
+        if (modelMapper.has(entity)) {
+            processModelComponent(entity, load);
         }
 
-        // Start loading them
-        assets.queueAsset(modelAsset);
-
-        // Wait for them
-        messaging.get(Strings.Events.assetLoaded)
-                .subscribe(new Consumer<Message>() {
-                    @Override
-                    public void accept(Message message) throws Exception {
-                        Asset asset = (Asset) message.data.get(Strings.Defaults.assetKey);
-
-                        if (asset != null) {
-                            if (asset.is(modelAsset.alias)) {
-                                Model model = assets.get(asset);
-                                modelComponent.initWithModel(model);
-
-                                if (modelComponent.model.animations.size > 0) {
-                                    modelComponent.animationController =
-                                            new AnimationController(modelComponent.model);
-                                }
-
-                                assets.queueAssets(allAssets);
-                            } else {
-                                if (allAssets.contains(asset, false)) {
-                                    temporaryLoadedAssets.add(asset);
-                                    allAssets.removeValue(asset, false);
-
-                                    Bundle bundle = new Bundle();
-                                    bundle.put("size", allAssets.size);
-                                    bundle.put("modelComponent", modelComponent);
-
-                                    sizeSubject.onNext(bundle);
-                                }
-                            }
-                        }
-                    }
-                });
+        if (rigidBodyMapper.has(entity)) {
+            processRigidBodyComponent(entity, load);
+        }
     }
 
-    private void processMaterialAssets(ModelComponent modelComponent) {
-        for (Asset asset : temporaryLoadedAssets) {
-            Texture texture = assets.get(asset);
+    private void processModelComponent(Integer entity, boolean load) {
+        ModelComponent modelComponent = modelMapper.get(entity);
 
-            for (PbrMaterial pbrMat : modelComponent.pbrMaterials) {
-                if (asset.is(pbrMat.albedoAsset)) {
-                    pbrMat.set(PbrTextureAttribute.createAlbedo(texture));
-                } else if (asset.is(pbrMat.metalnessAsset)) {
-                    pbrMat.set(PbrTextureAttribute.createMetalness(texture));
-                } else if (asset.is(pbrMat.roughnessAsset)) {
-                    pbrMat.set(PbrTextureAttribute.createRoughness(texture));
-                } else if (asset.is(pbrMat.normalAsset)) {
-                    pbrMat.set(PbrTextureAttribute.createNormal(texture));
-                } else if (asset.is(pbrMat.ambientOcclusionAsset)) {
-                    pbrMat.set(PbrTextureAttribute.createAmbientOcclusion(texture));
+        if (load) {
+            Model model = assets.get(modelComponent.asset);
+            modelComponent.initWithModel(model);
+
+            for (PbrMaterial pbrMaterial : modelComponent.pbrMaterials) {
+                Texture albedo = assets.get(pbrMaterial.albedo);
+                Texture ambientOcclusion = assets.get(pbrMaterial.ambientOcclusion);
+                Texture metalness = assets.get(pbrMaterial.metalness);
+                Texture normal = assets.get(pbrMaterial.normal);
+                Texture roughness = assets.get(pbrMaterial.roughness);
+
+                if (albedo != null) {
+                    pbrMaterial.set(PbrTextureAttribute.createAlbedo(albedo));
                 }
+
+                if (ambientOcclusion != null) {
+                    pbrMaterial.set(PbrTextureAttribute.createAmbientOcclusion(ambientOcclusion));
+                }
+
+                if (metalness != null) {
+                    pbrMaterial.set(PbrTextureAttribute.createMetalness(metalness));
+                }
+
+                if (normal != null) {
+                    pbrMaterial.set(PbrTextureAttribute.createNormal(normal));
+                }
+
+                if (roughness != null) {
+                    pbrMaterial.set(PbrTextureAttribute.createRoughness(roughness));
+                }
+
+                if (pbrMaterial.targetNode != null && !pbrMaterial.targetNode.isEmpty()) {
+                    Node targetNode = modelComponent.model.getNode(pbrMaterial.targetNode);
+
+                    for (NodePart nodePart : targetNode.parts) {
+                        nodePart.material = pbrMaterial;
+                    }
+                } else {
+                    modelComponent.model.materials.first().set(pbrMaterial);
+                }
+            }
+        } else {
+            assets.unloadAsset(modelComponent.asset);
+
+            for (PbrMaterial mat : modelComponent.pbrMaterials) {
+                assets.unloadAsset(mat.roughness);
+                assets.unloadAsset(mat.normal);
+                assets.unloadAsset(mat.metalness);
+                assets.unloadAsset(mat.ambientOcclusion);
+                assets.unloadAsset(mat.albedo);
             }
         }
+    }
 
-        for (PbrMaterial pbrMat : modelComponent.pbrMaterials) {
-            if (pbrMat.targetNode != null && !pbrMat.targetNode.isEmpty()) {
-                Node targetNode = modelComponent.model.getNode(pbrMat.targetNode);
+    private void processRigidBodyComponent(Integer entity, boolean load) {
+        RigidBodyComponent rigidBodyComponent = rigidBodyMapper.get(entity);
 
-                for (NodePart nodePart : targetNode.parts) {
-                    nodePart.material = pbrMat;
-                }
-            } else {
-                modelComponent.model.materials.first().set(pbrMat);
-            }
+        if (load) {
+
+        } else {
+
         }
     }
 }

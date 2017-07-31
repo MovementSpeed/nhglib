@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.utils.Array;
-import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.graphics.utils.PbrMaterial;
 
 /**
@@ -17,10 +16,10 @@ public class ModelComponent extends Component {
 
     public Type type;
     public State state;
-    public Asset asset;
-
+    public String asset;
     public ModelInstance model;
     public AnimationController animationController;
+
     public Array<PbrMaterial> pbrMaterials;
 
     public ModelComponent() {
@@ -34,9 +33,13 @@ public class ModelComponent extends Component {
     public void initWithModel(Model m) {
         model = new ModelInstance(m);
         state = ModelComponent.State.READY;
+
+        if (m.animations.size > 0) {
+            animationController = new AnimationController(model);
+        }
     }
 
-    public void initWithAsset(Asset asset) {
+    public void initWithAsset(String asset) {
         this.asset = asset;
         this.state = State.NOT_INITIALIZED;
     }

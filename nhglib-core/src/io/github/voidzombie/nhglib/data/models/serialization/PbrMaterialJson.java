@@ -1,7 +1,5 @@
 package io.github.voidzombie.nhglib.data.models.serialization;
 
-import com.badlogic.gdx.assets.loaders.TextureLoader;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.voidzombie.nhglib.graphics.utils.PbrMaterial;
 import io.github.voidzombie.nhglib.interfaces.JsonParseable;
@@ -17,55 +15,30 @@ public class PbrMaterialJson implements JsonParseable<PbrMaterial> {
         pbrMaterial = new PbrMaterial();
         pbrMaterial.targetNode = jsonValue.getString("targetNode", "");
 
-        JsonValue albedoJson = jsonValue.get("albedo");
-        JsonValue metalnessJson = jsonValue.get("metalness");
-        JsonValue roughnessJson = jsonValue.get("roughness");
-        JsonValue normalJson = jsonValue.get("normal");
-        JsonValue ambientOcclusionJson = jsonValue.get("ambientOcclusion");
+        String albedo = jsonValue.getString("albedo", "");
+        String metalness = jsonValue.getString("metalness", "");
+        String roughness = jsonValue.getString("roughness", "");
+        String normal = jsonValue.getString("normal", "");
+        String ambientOcclusion = jsonValue.getString("ambientOcclusion", "");
 
-        TextureLoader.TextureParameter params = new TextureLoader.TextureParameter();
-        params.minFilter = Texture.TextureFilter.MipMap;
-        params.magFilter = Texture.TextureFilter.Linear;
-        params.genMipMaps = true;
-
-        if (albedoJson != null) {
-            AssetJson albedoAssetJson = new AssetJson();
-            albedoAssetJson.parse(albedoJson.get("asset"));
-
-            pbrMaterial.albedoAsset = albedoAssetJson.get();
-            pbrMaterial.albedoAsset.parameters = params;
+        if (albedo != null) {
+            pbrMaterial.albedo = albedo;
         }
 
-        if (metalnessJson != null) {
-            AssetJson metalnessAssetJson = new AssetJson();
-            metalnessAssetJson.parse(metalnessJson.get("asset"));
-
-            pbrMaterial.metalnessAsset = metalnessAssetJson.get();
-            pbrMaterial.metalnessAsset.parameters = params;
+        if (metalness != null) {
+            pbrMaterial.metalness = metalness;
         }
 
-        if (roughnessJson != null) {
-            AssetJson roughnessAssetJson = new AssetJson();
-            roughnessAssetJson.parse(roughnessJson.get("asset"));
-
-            pbrMaterial.roughnessAsset = roughnessAssetJson.get();
-            pbrMaterial.roughnessAsset.parameters = params;
+        if (roughness != null) {
+            pbrMaterial.roughness = roughness;
         }
 
-        if (normalJson != null) {
-            AssetJson normalAssetJson = new AssetJson();
-            normalAssetJson.parse(normalJson.get("asset"));
-
-            pbrMaterial.normalAsset = normalAssetJson.get();
-            pbrMaterial.normalAsset.parameters = params;
+        if (normal != null) {
+            pbrMaterial.normal = normal;
         }
 
-        if (ambientOcclusionJson != null) {
-            AssetJson ambientOcclusionAssetJson = new AssetJson();
-            ambientOcclusionAssetJson.parse(ambientOcclusionJson.get("asset"));
-
-            pbrMaterial.ambientOcclusionAsset = ambientOcclusionAssetJson.get();
-            pbrMaterial.ambientOcclusionAsset.parameters = params;
+        if (ambientOcclusion != null) {
+            pbrMaterial.ambientOcclusion = ambientOcclusion;
         }
     }
 
