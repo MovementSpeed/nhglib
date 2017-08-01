@@ -5,6 +5,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.model.NodePart;
+import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
+import com.badlogic.gdx.graphics.g3d.particles.ParticleEffectLoader;
+import com.badlogic.gdx.utils.Array;
+import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.assets.Assets;
 import io.github.voidzombie.nhglib.data.models.serialization.components.*;
 import io.github.voidzombie.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
@@ -14,9 +18,11 @@ import io.github.voidzombie.nhglib.physics.models.ConvexHullRigidBodyShape;
 import io.github.voidzombie.nhglib.physics.models.ConvexTriangleMeshRigidBodyShape;
 import io.github.voidzombie.nhglib.physics.models.RigidBodyShape;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.ModelComponent;
+import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.ParticleEffectComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.physics.RigidBodyComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.physics.VehicleComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.physics.WheelComponent;
+import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.ParticleRenderingSystem;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.PhysicsSystem;
 import io.github.voidzombie.nhglib.runtime.ecs.utils.Entities;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
@@ -38,6 +44,7 @@ public class SceneManager {
     private ComponentMapper<RigidBodyComponent> rigidBodyMapper;
     private ComponentMapper<VehicleComponent> vehicleMapper;
     private ComponentMapper<WheelComponent> vehicleWheelMapper;
+    private ComponentMapper<ParticleEffectComponent> particleEffectMapper;
 
     public SceneManager(Messaging messaging, Entities entities, Assets assets) {
         this.messaging = messaging;
@@ -48,6 +55,7 @@ public class SceneManager {
         rigidBodyMapper = entities.getMapper(RigidBodyComponent.class);
         vehicleMapper = entities.getMapper(VehicleComponent.class);
         vehicleWheelMapper = entities.getMapper(WheelComponent.class);
+        particleEffectMapper = entities.getMapper(ParticleEffectComponent.class);
 
         SceneUtils.addComponentJsonMapping("message", MessageComponentJson.class);
         SceneUtils.addComponentJsonMapping("camera", CameraComponentJson.class);
@@ -56,13 +64,17 @@ public class SceneManager {
         SceneUtils.addComponentJsonMapping("rigidBody", RigidBodyComponentJson.class);
         SceneUtils.addComponentJsonMapping("vehicle", VehicleComponentJson.class);
         SceneUtils.addComponentJsonMapping("wheel", WheelComponentJson.class);
+        SceneUtils.addComponentJsonMapping("particleEffect", ParticleEffectComponentJson.class);
 
         SceneUtils.addAssetClassMapping("model", Model.class);
         SceneUtils.addAssetClassMapping("texture", Texture.class);
+        SceneUtils.addAssetClassMapping("particleEffect", ParticleEffect.class);
     }
 
     public void loadScene(final Scene scene) {
         currentScene = scene;
+
+        processAssets(scene.assets);
         assets.queueAssets(scene.assets);
 
         messaging.get(Strings.Events.assetLoadingFinished)
@@ -90,6 +102,15 @@ public class SceneManager {
         return currentScene;
     }
 
+    private void processAssets(Array<Asset> assets) {
+        for (Asset asset : assets) {
+            if (asset.isType(ParticleEffect.class)) {
+                ParticleRenderingSystem particleRenderingSystem = entities.getEntitySystem(ParticleRenderingSystem.class);
+                asset.parameters = new ParticleEffectLoader.ParticleEffectLoadParameter(particleRenderingSystem.getParticleSystem().getBatches());
+            }
+        }
+    }
+
     private void processEntityAssets(Integer entity, boolean load) {
         // Check if this entity has a model
         if (modelMapper.has(entity)) {
@@ -109,6 +130,11 @@ public class SceneManager {
         // Check if this entity is a wheel
         if (vehicleWheelMapper.has(entity)) {
             processWheelComponent(entity);
+        }
+
+        // Check if this entity has a particle effect
+        if (particleEffectMapper.has(entity)) {
+            processParticleEffectComponent(entity, load);
         }
     }
 
@@ -230,5 +256,17 @@ public class SceneManager {
         WheelComponent wheelComponent = vehicleWheelMapper.get(entity);
         wheelComponent.build();
         wheelComponent.state = WheelComponent.State.READY;
+    }
+
+    private void processParticleEffectComponent(Integer entity, boolean load) {
+        ParticleEffectComponent particleEffectComponent = particleEffectMapper.get(entity);
+
+        if (load) {
+            ParticleRenderingSystem particleRenderingSystem = entities.getEntitySystem(ParticleRenderingSystem.class);
+            particleEffectComponent.build(assets, particleRenderingSystem.getParticleEffectProvider());
+            particleEffectComponent.state = ParticleEffectComponent.State.READY;
+        } else {
+            assets.unloadAsset(particleEffectComponent.asset);
+        }
     }
 }

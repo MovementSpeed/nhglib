@@ -65,7 +65,11 @@ public class Assets implements Updatable, AssetErrorListener {
     // AssetErrorListener
     @Override
     public void error(AssetDescriptor asset, Throwable throwable) {
-        throw new RuntimeException(throwable);
+        try {
+            throw throwable;
+        } catch (Throwable throwable1) {
+            throwable1.printStackTrace();
+        }
     }
 
     public void assetLoadingFinished() {

@@ -18,46 +18,16 @@
         "alias":"wheelAsset",
         "source":"models/gk_wheel.g3db",
         "classAlias":"model"
+      },
+      {
+        "alias":"particleAsset",
+        "source":"particles/kart_start_smoke.nhfx",
+        "classAlias":"particleEffect",
+        "dependenciesPath":"particles/"
       }
     ],
     "entities":
     [
-      {
-        "id":"camera",
-        "transform":
-        {
-          "position":
-          {
-            "x":1,
-            "y":0,
-            "z":0.0,
-          },
-          "rotation":
-          {
-            "x":0.0,
-            "y":270.0,
-            "z":0.0,
-          },
-          "scale":
-          {
-            "x":1.0,
-            "y":1.0,
-            "z":1.0,
-          }
-        },
-        "components":
-        [
-          {
-            "type":"camera",
-            "cameraType":"perspective",
-            "fieldOfView":67,
-            "nearPlane":0.01,
-            "farPlane":100
-          }
-        ],
-        "entities":
-        []
-      },
       {
         "id":"floor",
         "transform":
@@ -151,6 +121,40 @@
         ],
         "entities":
         [
+          {
+            "id":"camera",
+            "transform":
+            {
+              "position":
+              {
+                "x":0,
+                "y":0.5,
+                "z":-1.5,
+              },
+              "rotation":
+              {
+                "x":0.0,
+                "y":270.0,
+                "z":0.0,
+              },
+              "scale":
+              {
+                "x":1.0,
+                "y":1.0,
+                "z":1.0,
+              }
+            },
+            "components":
+            [
+              {
+                "type":"camera",
+                "cameraType":"perspective",
+                "fieldOfView":67,
+                "nearPlane":0.01,
+                "farPlane":100
+              }
+            ]
+          },
           {
             "id":"wheel0",
             "transform":
@@ -326,6 +330,40 @@
                 "graphicsType":"dynamic",
                 "asset":"wheelAsset"
               }
+            ],
+            "entities":
+            [
+              {
+                "id":"particleSpawner",
+                "transform":
+                {
+                  "position":
+                  {
+                    "x":0,
+                    "y":0,
+                    "z":0
+                  },
+                  "scale":
+                  {
+                    "x":0.15,
+                    "y":0.4,
+                    "z":0.15
+                  },
+                  "rotation":
+                  {
+                    "x":0,
+                    "y":0,
+                    "z":90
+                  }
+                },
+                "components":
+                [
+                  {
+                    "type":"particleEffect",
+                    "asset":"particleAsset"
+                  }
+                ]
+              }
             ]
           },
           {
@@ -384,6 +422,40 @@
                 "enabled":true,
                 "graphicsType":"dynamic",
                 "asset":"wheelAsset"
+              }
+            ],
+            "entities":
+            [
+              {
+                "id":"particleSpawner2",
+                "transform":
+                {
+                  "position":
+                  {
+                    "x":0,
+                    "y":0,
+                    "z":0
+                  },
+                  "scale":
+                  {
+                    "x":0.15,
+                    "y":0.4,
+                    "z":0.15
+                  },
+                  "rotation":
+                  {
+                    "x":0,
+                    "y":0,
+                    "z":90
+                  }
+                },
+                "components":
+                [
+                  {
+                    "type":"particleEffect",
+                    "asset":"particleAsset"
+                  }
+                ]
               }
             ]
           }

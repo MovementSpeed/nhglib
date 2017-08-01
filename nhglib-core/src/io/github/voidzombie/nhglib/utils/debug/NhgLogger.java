@@ -7,9 +7,6 @@ import io.github.voidzombie.nhglib.Nhg;
  * Created by Fausto Napoli on 19/10/2016.
  */
 public class NhgLogger {
-    public static float logFrequencyInSeconds = 1f;
-    private static float logTimer = logFrequencyInSeconds;
-
     public static void log(Object caller, String message) {
         if (Nhg.debugLogs && canLog()) {
             Gdx.app.log(getCallerString(caller), message);
@@ -24,17 +21,7 @@ public class NhgLogger {
     }
 
     private static boolean canLog() {
-        boolean res;
-
-        if (logTimer > 0) {
-            res = false;
-            logTimer -= logFrequencyInSeconds * Gdx.graphics.getDeltaTime();
-        } else {
-            res = true;
-            logTimer = logFrequencyInSeconds;
-        }
-
-        return res;
+        return true;
     }
 
     private static String getCallerString(Object caller) {
