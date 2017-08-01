@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btRaycastVehicle;
 import com.badlogic.gdx.physics.bullet.dynamics.btVehicleRaycaster;
 import com.badlogic.gdx.utils.Disposable;
+import io.github.voidzombie.nhglib.assets.Assets;
 
 /**
  * Created by Fausto Napoli on 11/06/2017.
@@ -65,6 +66,18 @@ public class VehicleComponent extends RigidBodyComponent implements Disposable {
         build(chassisShape, mass, friction, restitution, group, masks);
         getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
 
+        vehicleRaycaster = new btDefaultVehicleRaycaster(world);
+
+        vehicle = new btRaycastVehicle(vehicleTuning, getBody(), vehicleRaycaster);
+        vehicle.setCoordinateSystem(0, 1, 2);
+
+        return this;
+    }
+
+    public VehicleComponent build(Assets assets, btDynamicsWorld world) {
+        super.build(assets);
+
+        getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
         vehicleRaycaster = new btDefaultVehicleRaycaster(world);
 
         vehicle = new btRaycastVehicle(vehicleTuning, getBody(), vehicleRaycaster);

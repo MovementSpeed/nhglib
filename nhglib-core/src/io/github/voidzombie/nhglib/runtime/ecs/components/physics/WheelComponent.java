@@ -25,42 +25,43 @@ public class WheelComponent extends Component {
     public Vector3 axis;
     public Vector3 translation;
     public Quaternion rotation;
-    public btRaycastVehicle vehicle;
+
+    public VehicleComponent vehicleComponent;
 
     public WheelComponent() {
         state = State.NOT_INITIALIZED;
     }
 
-    public void build(btRaycastVehicle vehicle, int wheelIndex) {
-        this.vehicle = vehicle;
-        this.wheelIndex = wheelIndex;
-
+    public void build() {
         translation = new Vector3();
         rotation = new Quaternion();
+
+        vehicleComponent.addWheel(attachmentPoint, direction, axis, radius,
+                suspensionRestLength, wheelFriction, frontWheel);
     }
 
     public float getRotation() {
-        btWheelInfo info = vehicle.getWheelInfo(wheelIndex);
+        btWheelInfo info = vehicleComponent.vehicle.getWheelInfo(wheelIndex);
         return info.getRotation();
     }
 
     public float getSteering() {
-        btWheelInfo info = vehicle.getWheelInfo(wheelIndex);
+        btWheelInfo info = vehicleComponent.vehicle.getWheelInfo(wheelIndex);
         return info.getSteering();
     }
 
     public Vector3 getTranslation() {
-        Matrix4 mat = vehicle.getWheelTransformWS(wheelIndex);
+        Matrix4 mat = vehicleComponent.vehicle.getWheelTransformWS(wheelIndex);
         return mat.getTranslation(translation);
     }
 
     public Quaternion getRotationQuaternion() {
-        Matrix4 mat = vehicle.getWheelTransformWS(wheelIndex);
+        Matrix4 mat = vehicleComponent.vehicle.getWheelTransformWS(wheelIndex);
         return mat.getRotation(rotation);
     }
 
     public btRaycastVehicle getVehicle() {
-        return vehicle;
+        return vehicleComponent.vehicle;
     }
 
     public enum State {

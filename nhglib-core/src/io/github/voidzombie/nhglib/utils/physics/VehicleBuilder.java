@@ -142,7 +142,8 @@ public class VehicleBuilder {
             vehicleComponent.addWheel(point, direction, axis, radius, suspensionRestLength, friction, frontWheel);
 
             WheelComponent wheelComponent = entities.createComponent(wheelEntities[builtWheels], WheelComponent.class);
-            wheelComponent.build(vehicleComponent.getVehicle(), builtWheels);
+            wheelComponent.build();
+            wheelComponent.wheelIndex = builtWheels;
 
             builtWheels++;
         }

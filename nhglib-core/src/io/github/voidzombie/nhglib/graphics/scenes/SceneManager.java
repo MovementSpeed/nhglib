@@ -15,6 +15,9 @@ import io.github.voidzombie.nhglib.physics.models.ConvexTriangleMeshRigidBodySha
 import io.github.voidzombie.nhglib.physics.models.RigidBodyShape;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.ModelComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.physics.RigidBodyComponent;
+import io.github.voidzombie.nhglib.runtime.ecs.components.physics.VehicleComponent;
+import io.github.voidzombie.nhglib.runtime.ecs.components.physics.WheelComponent;
+import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.PhysicsSystem;
 import io.github.voidzombie.nhglib.runtime.ecs.utils.Entities;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.nhglib.runtime.messaging.Messaging;
@@ -33,6 +36,8 @@ public class SceneManager {
 
     private ComponentMapper<ModelComponent> modelMapper;
     private ComponentMapper<RigidBodyComponent> rigidBodyMapper;
+    private ComponentMapper<VehicleComponent> vehicleMapper;
+    private ComponentMapper<WheelComponent> vehicleWheelMapper;
 
     public SceneManager(Messaging messaging, Entities entities, Assets assets) {
         this.messaging = messaging;
@@ -41,6 +46,8 @@ public class SceneManager {
 
         modelMapper = entities.getMapper(ModelComponent.class);
         rigidBodyMapper = entities.getMapper(RigidBodyComponent.class);
+        vehicleMapper = entities.getMapper(VehicleComponent.class);
+        vehicleWheelMapper = entities.getMapper(WheelComponent.class);
 
         SceneUtils.addComponentJsonMapping("message", MessageComponentJson.class);
         SceneUtils.addComponentJsonMapping("camera", CameraComponentJson.class);
@@ -89,8 +96,19 @@ public class SceneManager {
             processModelComponent(entity, load);
         }
 
+        // Check if this entity has a rigid body
         if (rigidBodyMapper.has(entity)) {
             processRigidBodyComponent(entity, load);
+        }
+
+        // Check if this entity is a vehicle
+        if (vehicleMapper.has(entity)) {
+            processVehicleComponent(entity, load);
+        }
+
+        // Check if this entity is a wheel
+        if (vehicleWheelMapper.has(entity)) {
+            processWheelComponent(entity);
         }
     }
 
@@ -177,5 +195,40 @@ public class SceneManager {
                     break;
             }
         }
+    }
+
+    private void processVehicleComponent(Integer entity, boolean load) {
+        VehicleComponent vehicleComponent = vehicleMapper.get(entity);
+
+        if (load) {
+            PhysicsSystem physicsSystem = entities.getEntitySystem(PhysicsSystem.class);
+            vehicleComponent.build(assets, physicsSystem.getBulletWorld());
+            vehicleComponent.state = RigidBodyComponent.State.READY;
+        } else {
+            RigidBodyShape rigidBodyShape = vehicleComponent.rigidBodyShape;
+
+            switch (rigidBodyShape.type) {
+                case CONVEX_TRIANGLE_MESH:
+                    ConvexTriangleMeshRigidBodyShape convexTriangleMeshRigidBodyShape = (ConvexTriangleMeshRigidBodyShape) vehicleComponent.rigidBodyShape;
+                    assets.unloadAsset(convexTriangleMeshRigidBodyShape.asset);
+                    break;
+
+                case BVH_TRIANGLE_MESH:
+                    BvhTriangleMeshRigidBodyShape bvhTriangleMeshRigidBodyShape = (BvhTriangleMeshRigidBodyShape) vehicleComponent.rigidBodyShape;
+                    assets.unloadAsset(bvhTriangleMeshRigidBodyShape.asset);
+                    break;
+
+                case CONVEX_HULL:
+                    ConvexHullRigidBodyShape convexHullRigidBodyShape = (ConvexHullRigidBodyShape) vehicleComponent.rigidBodyShape;
+                    assets.unloadAsset(convexHullRigidBodyShape.asset);
+                    break;
+            }
+        }
+    }
+
+    private void processWheelComponent(Integer entity) {
+        WheelComponent wheelComponent = vehicleWheelMapper.get(entity);
+        wheelComponent.build();
+        wheelComponent.state = WheelComponent.State.READY;
     }
 }

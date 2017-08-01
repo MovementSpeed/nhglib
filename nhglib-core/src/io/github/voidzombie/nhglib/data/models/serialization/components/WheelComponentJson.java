@@ -41,6 +41,7 @@ public class WheelComponentJson extends ComponentJson {
             wheelComponent.attachmentPoint = attachmentPointJson.get();
             wheelComponent.direction = directionJson.get();
             wheelComponent.axis = axisJson.get();
+            wheelComponent.vehicleComponent = vehicleComponent;
         }
 
         output = wheelComponent;
