@@ -1,17 +1,16 @@
 package io.github.voidzombie.nhglib.runtime.ecs.systems.impl;
 
 import com.artemis.BaseSystem;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.utils.ShaderProvider;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
+import io.github.voidzombie.nhglib.graphics.ogl.NhgFrameBuffer;
 import io.github.voidzombie.nhglib.graphics.shaders.depth.DepthShaderProvider;
 import io.github.voidzombie.nhglib.graphics.shaders.tiledForward.TiledForwardShaderProvider;
 import io.github.voidzombie.nhglib.runtime.ecs.interfaces.RenderingSystemInterface;
@@ -31,11 +30,14 @@ public class RenderingSystem extends BaseSystem implements Disposable {
 
     public Texture depthTexture;
     private ModelBatch depthBatch;
-    private FrameBuffer depthFrameBuffer;
+    //private FrameBuffer depthFrameBuffer;
+    private NhgFrameBuffer nhgFrameBuffer;
 
     private Array<Camera> cameras;
     private Array<ModelBatch> modelBatches;
     private Array<RenderingSystemInterface> renderingInterfaces;
+
+    private SpriteBatch spriteBatch;
 
     public RenderingSystem() {
         clearColor = Color.BLACK;
@@ -46,14 +48,22 @@ public class RenderingSystem extends BaseSystem implements Disposable {
         DepthShaderProvider depthShaderProvider = new DepthShaderProvider();
         depthBatch = new ModelBatch(depthShaderProvider);
 
-        depthFrameBuffer = new FrameBuffer(
+        /*depthFrameBuffer = new FrameBuffer(
                 Pixmap.Format.RGB888,
                 Gdx.graphics.getBackBufferWidth(),
                 Gdx.graphics.getBackBufferHeight(),
-                true);
+                true);*/
+
+        nhgFrameBuffer = new NhgFrameBuffer();
+        nhgFrameBuffer.type = NhgFrameBuffer.Type.DEPTH;
+        nhgFrameBuffer.width = 1280;
+        nhgFrameBuffer.height = 720;
+        nhgFrameBuffer.init();
 
         modelBatches = new Array<>();
         renderingInterfaces = new Array<>();
+
+        spriteBatch = new SpriteBatch();
     }
 
     @Override
@@ -83,7 +93,8 @@ public class RenderingSystem extends BaseSystem implements Disposable {
             modelBatch.end();
 
             // Update depth texture
-            depthFrameBuffer.begin();
+            //depthFrameBuffer.begin();
+            nhgFrameBuffer.begin();
             GLUtils.clearScreen(Color.WHITE);
 
             depthBatch.begin(camera);
@@ -91,9 +102,19 @@ public class RenderingSystem extends BaseSystem implements Disposable {
                 depthBatch.render(rsi.getRenderableProviders(), environment);
             }
             depthBatch.end();
-            depthFrameBuffer.end();
+            nhgFrameBuffer.end();
+            //depthFrameBuffer.end();
 
-            depthTexture = depthFrameBuffer.getColorBufferTexture();
+            depthTexture = nhgFrameBuffer.colorTexture;
+
+            //depthTexture = depthFrameBuffer.getColorBufferTexture();
+
+            /*TextureRegion tr = new TextureRegion(depthTexture);
+            tr.flip(false, true);
+
+            spriteBatch.begin();
+            spriteBatch.draw(tr, 0, 0);
+            spriteBatch.end();*/
         }
     }
 
@@ -120,7 +141,8 @@ public class RenderingSystem extends BaseSystem implements Disposable {
     @Override
     public void dispose() {
         super.dispose();
-        depthFrameBuffer.dispose();
+        nhgFrameBuffer.dispose();
+        //depthFrameBuffer.dispose();
         shaderProvider.dispose();
         depthTexture.dispose();
         depthBatch.dispose();

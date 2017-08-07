@@ -1,129 +1,118 @@
-attribute vec3 a_position;
-uniform mat4 u_projViewWorldTrans;
-
-#if defined(diffuseTextureFlag) && defined(blendedFlag)
-#define blendedTextureFlag
+attribute vec4 a_position;
+attribute vec3 a_normal;
+attribute vec3 a_binormal;
+attribute vec3 a_tangent;
 attribute vec2 a_texCoord0;
-varying vec2 v_texCoords0;
-#endif
-
 
 #ifdef boneWeight0Flag
-#define boneWeightsFlag
-attribute vec2 a_boneWeight0;
-#endif //boneWeight0Flag
+    #define boneWeightsFlag
+    attribute vec2 a_boneWeight0;
+#endif
 
 #ifdef boneWeight1Flag
-#ifndef boneWeightsFlag
-#define boneWeightsFlag
+    attribute vec2 a_boneWeight1;
 #endif
-attribute vec2 a_boneWeight1;
-#endif //boneWeight1Flag
 
 #ifdef boneWeight2Flag
-#ifndef boneWeightsFlag
-#define boneWeightsFlag
+    attribute vec2 a_boneWeight2;
 #endif
-attribute vec2 a_boneWeight2;
-#endif //boneWeight2Flag
 
 #ifdef boneWeight3Flag
-#ifndef boneWeightsFlag
-#define boneWeightsFlag
+    attribute vec2 a_boneWeight3;
 #endif
-attribute vec2 a_boneWeight3;
-#endif //boneWeight3Flag
 
 #ifdef boneWeight4Flag
-#ifndef boneWeightsFlag
-#define boneWeightsFlag
+    attribute vec2 a_boneWeight4;
 #endif
-attribute vec2 a_boneWeight4;
-#endif //boneWeight4Flag
 
 #ifdef boneWeight5Flag
-#ifndef boneWeightsFlag
-#define boneWeightsFlag
+    attribute vec2 a_boneWeight5;
 #endif
-attribute vec2 a_boneWeight5;
-#endif //boneWeight5Flag
 
 #ifdef boneWeight6Flag
-#ifndef boneWeightsFlag
-#define boneWeightsFlag
+    attribute vec2 a_boneWeight6;
 #endif
-attribute vec2 a_boneWeight6;
-#endif //boneWeight6Flag
 
 #ifdef boneWeight7Flag
-#ifndef boneWeightsFlag
-#define boneWeightsFlag
+    attribute vec2 a_boneWeight7;
 #endif
-attribute vec2 a_boneWeight7;
-#endif //boneWeight7Flag
 
 #if defined(numBones) && defined(boneWeightsFlag)
-#if (numBones > 0) 
-#define skinningFlag
-#endif
-#endif
-
-#if defined(numBones)
-#if numBones > 0
-uniform mat4 u_bones[numBones];
-#endif //numBones
+    #if (numBones > 0)
+        #define skinningFlag
+    #endif
 #endif
 
-/*#ifdef PackedDepthFlag
-varying float v_depth;
-#endif //PackedDepthFlag*/
+#ifdef numBones
+    #if numBones > 0
+        uniform mat4 u_bones[numBones];
+    #endif
+#endif
+
+uniform mat4 u_mvpMatrix;
+uniform mat4 u_modelMatrix;
+uniform mat4 u_viewMatrix;
+
+varying vec3 v_position;
+varying vec2 v_texCoord;
+varying vec3 v_normal;
+varying vec3 v_binormal;
+varying vec3 v_tangent;
 varying float v_depth;
 
 void main() {
-	#ifdef blendedTextureFlag
-		v_texCoords0 = a_texCoord0;
-	#endif // blendedTextureFlag
-	
-	#ifdef skinningFlag
-		mat4 skinning = mat4(0.0);
-		#ifdef boneWeight0Flag
-			skinning += (a_boneWeight0.y) * u_bones[int(a_boneWeight0.x)];
-		#endif //boneWeight0Flag
-		#ifdef boneWeight1Flag				
-			skinning += (a_boneWeight1.y) * u_bones[int(a_boneWeight1.x)];
-		#endif //boneWeight1Flag
-		#ifdef boneWeight2Flag		
-			skinning += (a_boneWeight2.y) * u_bones[int(a_boneWeight2.x)];
-		#endif //boneWeight2Flag
-		#ifdef boneWeight3Flag
-			skinning += (a_boneWeight3.y) * u_bones[int(a_boneWeight3.x)];
-		#endif //boneWeight3Flag
-		#ifdef boneWeight4Flag
-			skinning += (a_boneWeight4.y) * u_bones[int(a_boneWeight4.x)];
-		#endif //boneWeight4Flag
-		#ifdef boneWeight5Flag
-			skinning += (a_boneWeight5.y) * u_bones[int(a_boneWeight5.x)];
-		#endif //boneWeight5Flag
-		#ifdef boneWeight6Flag
-			skinning += (a_boneWeight6.y) * u_bones[int(a_boneWeight6.x)];
-		#endif //boneWeight6Flag
-		#ifdef boneWeight7Flag
-			skinning += (a_boneWeight7.y) * u_bones[int(a_boneWeight7.x)];
-		#endif //boneWeight7Flag
-	#endif //skinningFlag
+    vec4 position;
+    vec3 normal;
 
-	#ifdef skinningFlag
-		vec4 pos = u_projViewWorldTrans * skinning * vec4(a_position, 1.0);
-	#else
-		vec4 pos = u_projViewWorldTrans * vec4(a_position, 1.0);
-	#endif
+    #ifdef numBones
+        mat4 skinning = mat4(0.0);
 
-	/*#ifdef PackedDepthFlag
-		v_depth = pos.z * 0.5 + 0.5;
-	#endif //PackedDepthFlag*/
+        #ifdef boneWeight0Flag
+            skinning += (a_boneWeight0.y) * u_bones[int(a_boneWeight0.x)];
+        #endif
 
-	v_depth = pos.z;
+        #ifdef boneWeight1Flag
+            skinning += (a_boneWeight1.y) * u_bones[int(a_boneWeight1.x)];
+        #endif
 
-	//vpos = pos;
-	gl_Position = pos;
+        #ifdef boneWeight2Flag
+            skinning += (a_boneWeight2.y) * u_bones[int(a_boneWeight2.x)];
+        #endif
+
+        #ifdef boneWeight3Flag
+            skinning += (a_boneWeight3.y) * u_bones[int(a_boneWeight3.x)];
+        #endif
+
+        #ifdef boneWeight4Flag
+            skinning += (a_boneWeight4.y) * u_bones[int(a_boneWeight4.x)];
+        #endif
+
+        #ifdef boneWeight5Flag
+            skinning += (a_boneWeight5.y) * u_bones[int(a_boneWeight5.x)];
+        #endif
+
+        #ifdef boneWeight6Flag
+            skinning += (a_boneWeight6.y) * u_bones[int(a_boneWeight6.x)];
+        #endif
+
+        #ifdef boneWeight7Flag
+            skinning += (a_boneWeight7.y) * u_bones[int(a_boneWeight7.x)];
+        #endif
+    #else
+        mat4 skinning = mat4(1.0);
+    #endif
+
+    position = u_modelMatrix * skinning * a_position;
+    normal = normalize(vec3(u_viewMatrix * u_modelMatrix * skinning * vec4(a_normal, 0.0)));
+
+	v_position = vec3(u_viewMatrix * position);
+    v_normal = normal;
+    v_binormal = a_binormal;
+    v_tangent = a_tangent;
+
+    vec4 fpos = u_mvpMatrix * position;
+    v_depth = fpos.z;
+
+    gl_Position = fpos;
+    v_texCoord = a_texCoord0;
 }

@@ -33,8 +33,8 @@ public class DepthMapShader extends BaseShader {
 
         String prefix = createPrefix(renderable);
 
-        String vert = prefix + Gdx.files.internal("shaders/depth_shader_2.vert").readString();
-        String frag = prefix + Gdx.files.internal("shaders/depth_shader_2.frag").readString();
+        String vert = prefix + Gdx.files.internal("shaders/depth_shader.vert").readString();
+        String frag = prefix + Gdx.files.internal("shaders/depth_shader.frag").readString();
 
         ShaderProgram.pedantic = false;
         program = new ShaderProgram(vert, frag);

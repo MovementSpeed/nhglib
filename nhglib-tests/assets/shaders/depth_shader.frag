@@ -9,37 +9,14 @@ precision mediump float;
 #define HIGH
 #endif
 
-#if defined(diffuseTextureFlag) && defined(blendedFlag)
-#define blendedTextureFlag
-varying MED vec2 v_texCoords0;
-uniform sampler2D u_diffuseTexture;
-uniform float u_alphaTest;
-#endif
+uniform float u_cameraFar;
 
-//#ifdef PackedDepthFlag
-varying HIGH float v_depth;
-//#endif //PackedDepthFlag
+varying vec4 v_position;
+varying float v_depth;
 
-//varying vec4 vpos;
-
-uniform mat4 u_projViewWorldTrans;
-
-void main() {
-	/*#ifdef blendedTextureFlag
-		if (texture2D(u_diffuseTexture, v_texCoords0).a < u_alphaTest)
-			discard;
-	#endif // blendedTextureFlag*/
-
-	//#ifdef PackedDepthFlag
-		//gl_FragColor = vec4(vec3(v_depth), 1.0);
-	//#endif //PackedDepthFlag
-
-	/*float A = gl_ProjectionMatrix[2].z;
-    float B = gl_ProjectionMatrix[3].z;*/
-    float zNear = 0.01;
-    float zFar = 100.0;
-
-    float depthFF = gl_FragCoord.z;
-
-    gl_FragColor = vec4(vec3(depthFF), 1.0);
+void main()
+{
+	float z = (v_depth - 0.01) / (2.0 - 0.01);
+	gl_FragDepth = z;
+	gl_FragColor = vec4(vec3(z), 1.0);
 }
