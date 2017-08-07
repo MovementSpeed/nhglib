@@ -2,20 +2,23 @@ package io.github.voidzombie.nhglib.runtime.ecs.systems.impl;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
-import com.badlogic.gdx.graphics.g3d.particles.batches.PointSpriteParticleBatch;
 import io.github.voidzombie.nhglib.graphics.particles.ParticleEffectProvider;
+import io.github.voidzombie.nhglib.graphics.particles.PointSpriteSoftParticleBatch;
+import io.github.voidzombie.nhglib.graphics.shaders.particles.ParticleShader;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.ParticleEffectComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.base.BaseRenderingSystem;
 import io.github.voidzombie.nhglib.runtime.ecs.utils.Entities;
 
 public class ParticleRenderingSystem extends BaseRenderingSystem {
-    //private ParticleEffect currentEffects;
+    private boolean initialized;
+
     private ParticleSystem particleSystem;
-    private PointSpriteParticleBatch pointSpriteBatch;
+    private PointSpriteSoftParticleBatch pointSpriteBatch;
     private ParticleEffectProvider particleEffectProvider;
 
     private ComponentMapper<NodeComponent> nodeMapper;
@@ -23,12 +26,27 @@ public class ParticleRenderingSystem extends BaseRenderingSystem {
 
     public ParticleRenderingSystem(Entities entities) {
         super(Aspect.all(NodeComponent.class, ParticleEffectComponent.class), entities);
-
-        pointSpriteBatch = new PointSpriteParticleBatch();
-        particleEffectProvider = new ParticleEffectProvider();
-
         particleSystem = new ParticleSystem();
-        particleSystem.add(pointSpriteBatch);
+        particleEffectProvider = new ParticleEffectProvider();
+    }
+
+    @Override
+    protected void begin() {
+        super.begin();
+
+        if (!initialized) {
+            initialized = true;
+
+            ParticleShader.Config config = new ParticleShader.Config(
+                    Gdx.files.internal("shaders/particle_shader.vert").readString(),
+                    Gdx.files.internal("shaders/particle_shader.frag").readString());
+
+            config.type = ParticleShader.ParticleType.Point;
+            config.align = ParticleShader.AlignMode.Screen;
+
+            pointSpriteBatch = new PointSpriteSoftParticleBatch(renderingSystem, 1000, config);
+            particleSystem.add(pointSpriteBatch);
+        }
     }
 
     @Override
@@ -44,6 +62,7 @@ public class ParticleRenderingSystem extends BaseRenderingSystem {
                 particleEffectComponent.added = true;
             }
 
+            nodeComponent.rotate(0, 25, 0);
             particleEffect.setTransform(nodeComponent.getTransform());
         }
     }

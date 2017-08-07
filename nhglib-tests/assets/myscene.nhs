@@ -24,6 +24,11 @@
         "source":"particles/kart_start_smoke.nhfx",
         "classAlias":"particleEffect",
         "dependenciesPath":"particles/"
+      },
+      {
+        "alias":"mat2_albedo",
+        "source":"textures/mat2_albedo.png",
+        "classAlias":"texture"
       }
     ],
     "entities":
@@ -66,7 +71,13 @@
             "type":"model",
             "enabled":true,
             "graphicsType":"dynamic",
-            "asset":"trackAsset"
+            "asset":"trackAsset",
+            "materials":
+            [
+              {
+                "albedo":"mat2_albedo"
+              }
+            ]
           }
         ],
         "entities":
@@ -149,9 +160,9 @@
               {
                 "type":"camera",
                 "cameraType":"perspective",
-                "fieldOfView":67,
+                "fieldOfView":70,
                 "nearPlane":0.01,
-                "farPlane":100
+                "farPlane":10.0
               }
             ]
           },
@@ -422,40 +433,6 @@
                 "enabled":true,
                 "graphicsType":"dynamic",
                 "asset":"wheelAsset"
-              }
-            ],
-            "entities":
-            [
-              {
-                "id":"particleSpawner2",
-                "transform":
-                {
-                  "position":
-                  {
-                    "x":0,
-                    "y":0,
-                    "z":0
-                  },
-                  "scale":
-                  {
-                    "x":0.15,
-                    "y":0.4,
-                    "z":0.15
-                  },
-                  "rotation":
-                  {
-                    "x":0,
-                    "y":0,
-                    "z":90
-                  }
-                },
-                "components":
-                [
-                  {
-                    "type":"particleEffect",
-                    "asset":"particleAsset"
-                  }
-                ]
               }
             ]
           }

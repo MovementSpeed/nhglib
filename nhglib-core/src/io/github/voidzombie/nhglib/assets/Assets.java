@@ -118,7 +118,8 @@ public class Assets implements Updatable, AssetErrorListener {
 
     /**
      * Loads an asset in a synchronized way.
-     * @param asset the asset.
+     *
+     * @param asset    the asset.
      * @param listener a listener for the asset loading.
      */
     public void loadAsset(final Asset asset, final AssetListener listener) {

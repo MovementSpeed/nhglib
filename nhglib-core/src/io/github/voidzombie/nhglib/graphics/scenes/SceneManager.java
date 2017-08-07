@@ -146,30 +146,44 @@ public class SceneManager {
             modelComponent.initWithModel(model);
 
             for (PbrMaterial pbrMaterial : modelComponent.pbrMaterials) {
-                Texture albedo = assets.get(pbrMaterial.albedo);
-                Texture ambientOcclusion = assets.get(pbrMaterial.ambientOcclusion);
-                Texture metalness = assets.get(pbrMaterial.metalness);
-                Texture normal = assets.get(pbrMaterial.normal);
-                Texture roughness = assets.get(pbrMaterial.roughness);
+                if (!pbrMaterial.albedo.isEmpty()) {
+                    Texture albedo = assets.get(pbrMaterial.albedo);
 
-                if (albedo != null) {
-                    pbrMaterial.set(PbrTextureAttribute.createAlbedo(albedo));
+                    if (albedo != null) {
+                        pbrMaterial.set(PbrTextureAttribute.createAlbedo(albedo));
+                    }
                 }
 
-                if (ambientOcclusion != null) {
-                    pbrMaterial.set(PbrTextureAttribute.createAmbientOcclusion(ambientOcclusion));
+                if (!pbrMaterial.ambientOcclusion.isEmpty()) {
+                    Texture ambientOcclusion = assets.get(pbrMaterial.ambientOcclusion);
+
+                    if (ambientOcclusion != null) {
+                        pbrMaterial.set(PbrTextureAttribute.createAmbientOcclusion(ambientOcclusion));
+                    }
                 }
 
-                if (metalness != null) {
-                    pbrMaterial.set(PbrTextureAttribute.createMetalness(metalness));
+                if (!pbrMaterial.metalness.isEmpty()) {
+                    Texture metalness = assets.get(pbrMaterial.metalness);
+
+                    if (metalness != null) {
+                        pbrMaterial.set(PbrTextureAttribute.createMetalness(metalness));
+                    }
                 }
 
-                if (normal != null) {
-                    pbrMaterial.set(PbrTextureAttribute.createNormal(normal));
+                if (!pbrMaterial.normal.isEmpty()) {
+                    Texture normal = assets.get(pbrMaterial.normal);
+
+                    if (normal != null) {
+                        pbrMaterial.set(PbrTextureAttribute.createNormal(normal));
+                    }
                 }
 
-                if (roughness != null) {
-                    pbrMaterial.set(PbrTextureAttribute.createRoughness(roughness));
+                if (!pbrMaterial.roughness.isEmpty()) {
+                    Texture roughness = assets.get(pbrMaterial.roughness);
+
+                    if (roughness != null) {
+                        pbrMaterial.set(PbrTextureAttribute.createRoughness(roughness));
+                    }
                 }
 
                 if (pbrMaterial.targetNode != null && !pbrMaterial.targetNode.isEmpty()) {

@@ -184,7 +184,7 @@ public class NhgG3dModelLoader extends NhgModelLoader<NhgModelLoader.ModelParame
                 // Read shininess
                 jsonMaterial.shininess = material.getFloat("shininess", 0.0f);
                 // Read opacity
-                jsonMaterial.opacity = material.getFloat("opacity", 1.0f);
+                jsonMaterial.opacity = 1.0f/*material.getFloat("opacity", 1.0f)*/;
 
                 // Read textures
                 JsonValue textures = material.get("textures");

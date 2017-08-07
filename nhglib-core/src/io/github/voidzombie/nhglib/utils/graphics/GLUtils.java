@@ -20,4 +20,12 @@ public class GLUtils {
         Gdx.gl.glClearColor(color.r, color.g, color.b, color.a);
         Gdx.gl.glClear(mask);
     }
+
+    public static void setViewport(int x, int y, int width, int height) {
+        Gdx.gl.glViewport(x, y, width, height);
+    }
+
+    public static void setViewport(int width, int height) {
+        setViewport(0, 0, width, height);
+    }
 }

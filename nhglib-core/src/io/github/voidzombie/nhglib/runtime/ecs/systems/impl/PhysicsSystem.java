@@ -2,7 +2,6 @@ package io.github.voidzombie.nhglib.runtime.ecs.systems.impl;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
-import com.artemis.systems.IteratingSystem;
 import com.artemis.utils.IntBag;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
@@ -18,16 +17,16 @@ import com.badlogic.gdx.physics.bullet.dynamics.btConstraintSolver;
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
-import com.badlogic.gdx.utils.Disposable;
 import io.github.voidzombie.nhglib.runtime.ecs.components.physics.RigidBodyComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.physics.VehicleComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.physics.WheelComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
+import io.github.voidzombie.nhglib.runtime.ecs.systems.base.NhgIteratingSystem;
 
 /**
  * Created by Fausto Napoli on 04/05/2017.
  */
-public class PhysicsSystem extends IteratingSystem implements Disposable {
+public class PhysicsSystem extends NhgIteratingSystem {
     public static float TIME_STEP = 1f / 60f;
 
     private boolean physicsInitialized;
@@ -49,6 +48,26 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
                 .one(RigidBodyComponent.class, VehicleComponent.class, WheelComponent.class));
 
         initPhysics();
+    }
+
+    @Override
+    public void dispose() {
+        physicsInitialized = false;
+
+        IntBag entityIds = getEntityIds();
+        for (int entity : entityIds.getData()) {
+            RigidBodyComponent bodyComponent = rigidBodyMapper.get(entity);
+
+            if (bodyComponent != null) {
+                bodyComponent.dispose();
+            }
+        }
+
+        dynamicsWorld.dispose();
+        constraintSolver.dispose();
+        collisionConfiguration.dispose();
+        collisionDispatcher.dispose();
+        dbvtBroadphase.dispose();
     }
 
     @Override
@@ -89,24 +108,6 @@ public class PhysicsSystem extends IteratingSystem implements Disposable {
     @Override
     protected void end() {
         super.end();
-    }
-
-    @Override
-    public void dispose() {
-        IntBag entityIds = getEntityIds();
-        for (int entity : entityIds.getData()) {
-            RigidBodyComponent bodyComponent = rigidBodyMapper.get(entity);
-
-            if (bodyComponent != null) {
-                bodyComponent.dispose();
-            }
-        }
-
-        dynamicsWorld.dispose();
-        constraintSolver.dispose();
-        collisionConfiguration.dispose();
-        collisionDispatcher.dispose();
-        dbvtBroadphase.dispose();
     }
 
     public void setGravity(Vector3 gravity) {

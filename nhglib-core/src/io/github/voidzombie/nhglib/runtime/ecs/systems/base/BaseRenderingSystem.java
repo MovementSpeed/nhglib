@@ -13,7 +13,9 @@ public abstract class BaseRenderingSystem extends NhgIteratingSystem implements 
     private boolean added;
 
     private Entities entities;
-    private CameraSystem cameraSystem;
+
+    protected RenderingSystem renderingSystem;
+    protected CameraSystem cameraSystem;
 
     protected Array<Camera> cameras;
     protected Array<RenderableProvider> renderableProviders;

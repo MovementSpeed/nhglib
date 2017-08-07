@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g3d.ModelCache;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Disposable;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.runtime.ecs.components.graphics.ModelComponent;
 import io.github.voidzombie.nhglib.runtime.ecs.components.scenes.NodeComponent;
@@ -18,23 +19,17 @@ import io.github.voidzombie.nhglib.runtime.messaging.Messaging;
 import io.github.voidzombie.nhglib.utils.data.Strings;
 import io.reactivex.functions.Consumer;
 
-public class ModelRenderingSystem extends BaseRenderingSystem {
-    private CameraSystem cameraSystem;
-
-    private Entities entities;
+public class ModelRenderingSystem extends BaseRenderingSystem implements Disposable {
     private Messaging messaging;
 
     private ComponentMapper<NodeComponent> nodeMapper;
     private ComponentMapper<ModelComponent> modelMapper;
 
-    private Array<Camera> cameras;
     private Array<ModelCache> dynamicCaches;
     private Array<ModelCache> staticCaches;
 
     public ModelRenderingSystem(Entities entities, Messaging messaging) {
         super(Aspect.all(NodeComponent.class, ModelComponent.class), entities);
-
-        this.entities = entities;
         this.messaging = messaging;
 
         dynamicCaches = new Array<>();
@@ -42,14 +37,22 @@ public class ModelRenderingSystem extends BaseRenderingSystem {
     }
 
     @Override
-    protected void begin() {
-        super.begin();
-
-        if (cameraSystem == null) {
-            cameraSystem = entities.getEntitySystem(CameraSystem.class);
+    public void dispose() {
+        for (ModelCache mc : dynamicCaches) {
+            mc.dispose();
         }
 
-        cameras = cameraSystem.cameras;
+        for (ModelCache mc : staticCaches) {
+            mc.dispose();
+        }
+
+        dynamicCaches.clear();
+        staticCaches.clear();
+    }
+
+    @Override
+    protected void begin() {
+        super.begin();
 
         for (int i = 0; i < cameras.size - dynamicCaches.size; i++) {
             dynamicCaches.add(new ModelCache());
