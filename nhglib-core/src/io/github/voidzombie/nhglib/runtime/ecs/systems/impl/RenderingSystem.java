@@ -4,12 +4,14 @@ import com.artemis.BaseSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.utils.ShaderProvider;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
+import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.graphics.ogl.NhgFrameBuffer;
 import io.github.voidzombie.nhglib.graphics.shaders.depth.DepthShaderProvider;
 import io.github.voidzombie.nhglib.graphics.shaders.tiledForward.TiledForwardShaderProvider;
@@ -21,16 +23,17 @@ import io.github.voidzombie.nhglib.utils.graphics.GLUtils;
  * Created by Fausto Napoli on 08/12/2016.
  */
 public class RenderingSystem extends BaseSystem implements Disposable {
+    public Texture depthTexture;
+
     // Injected references
     private CameraSystem cameraSystem;
 
     private ShaderProvider shaderProvider;
     private Environment environment;
     private Color clearColor;
-
-    public Texture depthTexture;
     private ModelBatch depthBatch;
     private NhgFrameBuffer nhgFrameBuffer;
+    private FPSLogger fpsLogger;
 
     private Array<Camera> cameras;
     private Array<ModelBatch> modelBatches;
@@ -40,6 +43,7 @@ public class RenderingSystem extends BaseSystem implements Disposable {
 
     public RenderingSystem() {
         clearColor = Color.BLACK;
+        fpsLogger = new FPSLogger();
         environment = new Environment();
 
         this.shaderProvider = new TiledForwardShaderProvider(environment);
@@ -98,6 +102,10 @@ public class RenderingSystem extends BaseSystem implements Disposable {
 
             depthTexture = nhgFrameBuffer.texture;
 
+            if (Nhg.debugLogs && Nhg.debugFpsLogs) {
+                fpsLogger.log();
+            }
+
             /*TextureRegion tr = new TextureRegion(depthTexture);
             tr.flip(false, true);
 
@@ -131,7 +139,6 @@ public class RenderingSystem extends BaseSystem implements Disposable {
     public void dispose() {
         super.dispose();
         nhgFrameBuffer.dispose();
-        //depthFrameBuffer.dispose();
         shaderProvider.dispose();
         depthTexture.dispose();
         depthBatch.dispose();

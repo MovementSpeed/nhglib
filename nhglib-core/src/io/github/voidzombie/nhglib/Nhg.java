@@ -36,6 +36,7 @@ public class Nhg {
 
     public static Boolean debugLogs = false;
     public static Boolean debugDrawPhysics = false;
+    public static Boolean debugFpsLogs = false;
 
     public Nhg() {
         messaging = new Messaging();
