@@ -24,6 +24,7 @@ import io.github.voidzombie.nhglib.runtime.entry.NhgEntry;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.nhglib.utils.data.Bounds;
 import io.github.voidzombie.nhglib.utils.data.Strings;
+import io.github.voidzombie.nhglib.utils.debug.NhgLogger;
 import io.github.voidzombie.tests.systems.TestNodeSystem;
 import io.reactivex.functions.Consumer;
 
@@ -66,7 +67,7 @@ public class Main extends NhgEntry implements InputListener {
         environment.set(gammaCorrectionAttribute);
 
         // Subscribe to asset events
-        nhg.messaging.get(Strings.Events.assetLoaded, Strings.Events.assetLoadingFinished)
+        nhg.messaging.get(Strings.Events.assetLoaded, Strings.Events.assetLoadingFinished, Strings.Events.sceneLoaded)
                 .subscribe(new Consumer<Message>() {
                     @Override
                     public void accept(Message message) throws Exception {
@@ -89,6 +90,8 @@ public class Main extends NhgEntry implements InputListener {
                                 nhg.input.setActiveContext("game", true);
                                 nhg.input.setActiveContext("global", true);
                             }
+                        } else if (message.is(Strings.Events.sceneLoaded)) {
+                            NhgLogger.log(this, "Scene loaded");
                         }
                     }
                 });

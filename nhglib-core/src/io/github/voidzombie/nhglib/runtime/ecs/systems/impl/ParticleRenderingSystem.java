@@ -62,7 +62,6 @@ public class ParticleRenderingSystem extends BaseRenderingSystem {
                 particleEffectComponent.added = true;
             }
 
-            nodeComponent.rotate(0, 3, 0);
             particleEffect.setTransform(nodeComponent.getTransform());
         }
     }

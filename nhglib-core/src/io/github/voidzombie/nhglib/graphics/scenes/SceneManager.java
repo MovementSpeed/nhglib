@@ -27,6 +27,7 @@ import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.PhysicsSystem;
 import io.github.voidzombie.nhglib.runtime.ecs.utils.Entities;
 import io.github.voidzombie.nhglib.runtime.messaging.Message;
 import io.github.voidzombie.nhglib.runtime.messaging.Messaging;
+import io.github.voidzombie.nhglib.utils.data.Bundle;
 import io.github.voidzombie.nhglib.utils.data.Strings;
 import io.github.voidzombie.nhglib.utils.scenes.SceneUtils;
 import io.reactivex.functions.Consumer;
@@ -35,6 +36,8 @@ import io.reactivex.functions.Consumer;
  * Created by Fausto Napoli on 08/12/2016.
  */
 public class SceneManager {
+    private int assetsToLoad;
+
     private Scene currentScene;
     private Messaging messaging;
     private Entities entities;
@@ -77,12 +80,28 @@ public class SceneManager {
         processAssets(scene.assets);
         assets.queueAssets(scene.assets);
 
-        messaging.get(Strings.Events.assetLoadingFinished)
+        assetsToLoad = scene.assets.size;
+
+        messaging.get(Strings.Events.assetLoadingFinished, Strings.Events.assetLoaded)
                 .subscribe(new Consumer<Message>() {
                     @Override
                     public void accept(Message message) throws Exception {
-                        for (Integer entity : scene.sceneGraph.getEntities()) {
-                            processEntityAssets(entity, true);
+                        if (message.is(Strings.Events.assetLoadingFinished)) {
+                            for (Integer entity : scene.sceneGraph.getEntities()) {
+                                processEntityAssets(entity, true);
+                            }
+                        } else if (message.is(Strings.Events.assetLoaded)) {
+                            Asset asset = (Asset) message.data.get(Strings.Defaults.assetKey);
+
+                            if (scene.assets.contains(asset, true)) {
+                                assetsToLoad--;
+                            }
+
+                            if (assetsToLoad == 0) {
+                                Bundle messageBundle = new Bundle();
+                                messageBundle.put(Strings.Defaults.sceneKey, scene);
+                                messaging.send(new Message(Strings.Events.sceneLoaded, messageBundle));
+                            }
                         }
                     }
                 });

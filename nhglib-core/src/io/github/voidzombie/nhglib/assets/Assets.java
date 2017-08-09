@@ -212,6 +212,10 @@ public class Assets implements Updatable, AssetErrorListener {
         }
     }
 
+    public boolean assetInQueue(Asset asset) {
+        return assetQueue.contains(asset, true);
+    }
+
     public interface AssetListener {
         void onAssetLoaded(Asset asset);
     }
