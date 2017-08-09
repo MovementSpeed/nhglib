@@ -13,7 +13,6 @@ import com.badlogic.gdx.graphics.g3d.shaders.BaseShader;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.GdxRuntimeException;
@@ -33,6 +32,8 @@ public class ParticleShader extends BaseShader {
      */
     private static final long optionalAttributes = IntAttribute.CullFace | DepthTestAttribute.Type;
     private static final Vector3 TMP_VECTOR3 = new Vector3();
+
+    public static boolean softParticles = false;
 
     protected static long implementedFlags = BlendingAttribute.Type | TextureAttribute.Diffuse;
 
@@ -172,7 +173,6 @@ public class ParticleShader extends BaseShader {
         currentMaterial = null;
         super.end();
 
-        //context.setDepthMask(true);
         context.setBlending(false, GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
     }
 
@@ -227,6 +227,11 @@ public class ParticleShader extends BaseShader {
             // else if(config.align == AlignMode.ParticleDirection)
             // prefix += "#define paticleDirectionFacing\n";
         }
+
+        if (config.softParticles) {
+            prefix += "#define SOFT_PARTICLES\n";
+        }
+
         return prefix;
     }
 
@@ -291,8 +296,6 @@ public class ParticleShader extends BaseShader {
     public static class Inputs {
         public final static Uniform cameraRight = new Uniform("u_cameraRight");
         public final static Uniform cameraInvDirection = new Uniform("u_cameraInvDirection");
-        public final static Uniform screenWidth = new Uniform("u_screenWidth");
-        public final static Uniform regionSize = new Uniform("u_regionSize");
     }
 
     public static class Setters {
@@ -343,33 +346,10 @@ public class ParticleShader extends BaseShader {
                 shader.set(inputID, shader.camera.position);
             }
         };
-        public final static Setter screenWidth = new Setter() {
-            @Override
-            public boolean isGlobal(BaseShader shader, int inputID) {
-                return true;
-            }
-
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, (float) Gdx.graphics.getWidth());
-            }
-        };
-        public final static Setter worldViewTrans = new Setter() {
-            final Matrix4 temp = new Matrix4();
-
-            @Override
-            public boolean isGlobal(BaseShader shader, int inputID) {
-                return false;
-            }
-
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, temp.set(shader.camera.view).mul(renderable.worldTransform));
-            }
-        };
     }
 
     public static class Config {
+        public boolean softParticles = ParticleShader.softParticles;
         public boolean ignoreUnimplemented = true;
 
         /**

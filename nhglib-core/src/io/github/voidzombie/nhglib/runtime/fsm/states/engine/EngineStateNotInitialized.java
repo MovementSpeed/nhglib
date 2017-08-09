@@ -75,8 +75,6 @@ public class EngineStateNotInitialized implements State<NhgEntry> {
         }
 
         nhgEntry.nhg.entities.setEntityWorld(new World(configurationBuilder.build()));
-        nhgEntry.engineStarted();
-
         nhgEntry.getFsm().changeState(EngineStates.INITIALIZED);
     }
 

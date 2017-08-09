@@ -45,7 +45,9 @@ void main()
 {
 	vec2 uv = v_region.xy + gl_PointCoord * v_region.zw - v_uvRegionCenter;
 	vec2 texCoord = mat2(v_rotation.x, v_rotation.y, v_rotation.z, v_rotation.w) * uv + v_uvRegionCenter;
+	vec4 color = texture2D(u_diffuseTexture, texCoord) * v_color;
 
+    #ifdef SOFT_PARTICLES
 	vec2 dcoords = vec2(gl_FragCoord.x / u_screen.x, gl_FragCoord.y / u_screen.y);
 	vec4 depthMap = texture2D(u_depthTexture, dcoords);
 
@@ -55,10 +57,9 @@ void main()
 
 	float zdiff = depth - pdepth;
 
-	vec4 color = texture2D(u_diffuseTexture, texCoord) * v_color;
-
 	HIGH float weight = contrast(zdiff, u_softness);
 	color.a = color.a * weight;
+	#endif
 
 	gl_FragColor = color;
 }
