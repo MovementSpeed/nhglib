@@ -1,10 +1,10 @@
 package io.github.voidzombie.nhglib.runtime.ecs.systems.impl;
 
 import com.artemis.BaseSystem;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.utils.ShaderProvider;
@@ -30,14 +30,13 @@ public class RenderingSystem extends BaseSystem implements Disposable {
 
     public Texture depthTexture;
     private ModelBatch depthBatch;
-    //private FrameBuffer depthFrameBuffer;
     private NhgFrameBuffer nhgFrameBuffer;
 
     private Array<Camera> cameras;
     private Array<ModelBatch> modelBatches;
     private Array<RenderingSystemInterface> renderingInterfaces;
 
-    private SpriteBatch spriteBatch;
+    //private SpriteBatch spriteBatch;
 
     public RenderingSystem() {
         clearColor = Color.BLACK;
@@ -48,22 +47,16 @@ public class RenderingSystem extends BaseSystem implements Disposable {
         DepthShaderProvider depthShaderProvider = new DepthShaderProvider();
         depthBatch = new ModelBatch(depthShaderProvider);
 
-        /*depthFrameBuffer = new FrameBuffer(
-                Pixmap.Format.RGB888,
-                Gdx.graphics.getBackBufferWidth(),
-                Gdx.graphics.getBackBufferHeight(),
-                true);*/
-
         nhgFrameBuffer = new NhgFrameBuffer();
         nhgFrameBuffer.type = NhgFrameBuffer.Type.DEPTH;
-        nhgFrameBuffer.width = 1280;
-        nhgFrameBuffer.height = 720;
+        nhgFrameBuffer.width = Gdx.graphics.getBackBufferWidth();
+        nhgFrameBuffer.height = Gdx.graphics.getBackBufferHeight();
         nhgFrameBuffer.init();
 
         modelBatches = new Array<>();
         renderingInterfaces = new Array<>();
 
-        spriteBatch = new SpriteBatch();
+        //spriteBatch = new SpriteBatch();
     }
 
     @Override
@@ -93,7 +86,6 @@ public class RenderingSystem extends BaseSystem implements Disposable {
             modelBatch.end();
 
             // Update depth texture
-            //depthFrameBuffer.begin();
             nhgFrameBuffer.begin();
             GLUtils.clearScreen(Color.WHITE);
 
@@ -103,11 +95,8 @@ public class RenderingSystem extends BaseSystem implements Disposable {
             }
             depthBatch.end();
             nhgFrameBuffer.end();
-            //depthFrameBuffer.end();
 
-            depthTexture = nhgFrameBuffer.colorTexture;
-
-            //depthTexture = depthFrameBuffer.getColorBufferTexture();
+            depthTexture = nhgFrameBuffer.texture;
 
             /*TextureRegion tr = new TextureRegion(depthTexture);
             tr.flip(false, true);

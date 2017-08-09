@@ -9,6 +9,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
+import io.github.voidzombie.nhglib.graphics.lights.NhgLight;
+import io.github.voidzombie.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 import io.github.voidzombie.nhglib.graphics.shaders.attributes.GammaCorrectionAttribute;
 import io.github.voidzombie.nhglib.graphics.worlds.NhgWorld;
@@ -54,9 +56,13 @@ public class Main extends NhgEntry implements InputListener {
 
         Environment environment = renderingSystem.getEnvironment();
 
+        NhgLightsAttribute lightsAttribute = new NhgLightsAttribute();
+        lightsAttribute.lights.add(NhgLight.point(5, 10, Color.WHITE));
+
         GammaCorrectionAttribute gammaCorrectionAttribute = new GammaCorrectionAttribute();
         gammaCorrectionAttribute.gammaCorrection = true;
 
+        environment.set(lightsAttribute);
         environment.set(gammaCorrectionAttribute);
 
         // Subscribe to asset events

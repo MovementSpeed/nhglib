@@ -28,6 +28,9 @@ varying vec4 v_color;
 varying vec4 v_rotation;
 varying MED vec4 v_region;
 
+uniform float u_softness;
+uniform vec2 u_screen;
+uniform vec2 u_cameraRange;
 uniform sampler2D u_diffuseTexture;
 uniform sampler2D u_depthTexture;
 
@@ -38,46 +41,24 @@ float contrast(float d, float softness) {
     return (d > 0.5) ? 1.0 - a : a;
 }
 
-void main() {
+void main()
+{
 	vec2 uv = v_region.xy + gl_PointCoord * v_region.zw - v_uvRegionCenter;
 	vec2 texCoord = mat2(v_rotation.x, v_rotation.y, v_rotation.z, v_rotation.w) * uv + v_uvRegionCenter;
 
-	vec2 dcoords = vec2(gl_FragCoord.x / 1280.0, gl_FragCoord.y / 720.0);
+	vec2 dcoords = vec2(gl_FragCoord.x / u_screen.x, gl_FragCoord.y / u_screen.y);
 	vec4 depthMap = texture2D(u_depthTexture, dcoords);
 
 	float depth = depthMap.x;
-	float pdepth = (v_depth - 0.01) / (2.0 - 0.01);
+	float pdepth = (v_depth - u_cameraRange.x) / (u_cameraRange.y - u_cameraRange.x);
     gl_FragDepth = pdepth;
 
 	float zdiff = depth - pdepth;
 
-    /*if (zdiff <= 0.0) {
-        discard;
-    }*/
-
-    //vec4 color = depthMap;
 	vec4 color = texture2D(u_diffuseTexture, texCoord) * v_color;
-	//vec4 color = vec4(1.0);
-	//vec4 color = vec4(vec3(pdepth), 1.0);
 
-	HIGH float weight = contrast(zdiff, 1.0);
+	HIGH float weight = contrast(zdiff, u_softness);
 	color.a = color.a * weight;
-
-	//color.a = 0.1;
-
-	//vec4 color = vec4(vec3(zdiff), 1.0);
-
-	/*if (pdepth == depth) {
-	    discard;
-	}*/
-
-    /*if (zdiff <= 0.0){
-        discard;
-    }*/
-
-    //vec4 color = vec4(vec3(1.0, 1.0, 1.0), z);
-
-	//vec4 color = vec4(vec3(pdepth), 1.0);
 
 	gl_FragColor = color;
 }

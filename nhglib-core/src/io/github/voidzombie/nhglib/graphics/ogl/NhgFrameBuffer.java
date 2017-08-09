@@ -11,7 +11,7 @@ import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
 public class NhgFrameBuffer {
-    public final static int GL_DEPTH24_STENCIL8_OES = 0x88F0;
+
 
     public boolean depth;
     public boolean stencil;
@@ -25,10 +25,12 @@ public class NhgFrameBuffer {
     public int defaultFramebufferHandle;
     public int width;
     public int height;
+    public int glInternalFormat;
+    public int glFormat;
+    public int glType;
 
     public Type type;
-
-    public Texture colorTexture;
+    public Texture texture;
 
     public void init() {
         if (!defaultFramebufferHandleInitialized) {
@@ -42,27 +44,25 @@ public class NhgFrameBuffer {
             }
         }
 
-        int glInternalFormat;
-        int glFormat;
-        int glType;
-
-        if (type == Type.DEPTH) {
-            glInternalFormat = GLOES.GL_DEPTH_COMPONENT32_OES;
-            glFormat = GL20.GL_DEPTH_COMPONENT;
-            glType = GLOES.GL_FLOAT;
-        } else {
-            glInternalFormat = GL20.GL_RGBA;
-            glFormat = glInternalFormat;
-            glType = GL20.GL_UNSIGNED_BYTE;
+        if (type != Type.CUSTOM) {
+            if (type == Type.DEPTH) {
+                glInternalFormat = GLOES.GL_DEPTH_COMPONENT32;
+                glFormat = GL20.GL_DEPTH_COMPONENT;
+                glType = GLOES.GL_FLOAT;
+            } else {
+                glInternalFormat = GL20.GL_RGBA;
+                glFormat = glInternalFormat;
+                glType = GL20.GL_UNSIGNED_BYTE;
+            }
         }
 
         GLOnlyTextureData data = new GLOnlyTextureData(
                 width, height, 0,
                 glInternalFormat, glFormat, glType);
 
-        colorTexture = new Texture(data);
-        colorTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        colorTexture.setWrap(Texture.TextureWrap.ClampToEdge, Texture.TextureWrap.ClampToEdge);
+        texture = new Texture(data);
+        texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
 
         frameBufferHandle = Gdx.gl.glGenFramebuffer();
 
@@ -74,42 +74,46 @@ public class NhgFrameBuffer {
             stencilBufferHandle = Gdx.gl.glGenRenderbuffer();
         }
 
-        Gdx.gl.glBindTexture(colorTexture.glTarget, colorTexture.getTextureObjectHandle());
+        Gdx.gl.glBindTexture(texture.glTarget, texture.getTextureObjectHandle());
 
         if (depth) {
             Gdx.gl.glBindRenderbuffer(GL20.GL_RENDERBUFFER, depthBufferHandle);
-            Gdx.gl.glRenderbufferStorage(GL20.GL_RENDERBUFFER, GLOES.GL_DEPTH_COMPONENT32_OES,
-                    colorTexture.getWidth(), colorTexture.getHeight());
+            Gdx.gl.glRenderbufferStorage(GL20.GL_RENDERBUFFER, GLOES.GL_DEPTH_COMPONENT32,
+                    texture.getWidth(), texture.getHeight());
         }
 
         if (stencil) {
             Gdx.gl.glBindRenderbuffer(GL20.GL_RENDERBUFFER, stencilBufferHandle);
             Gdx.gl.glRenderbufferStorage(GL20.GL_RENDERBUFFER, GL20.GL_STENCIL_INDEX8,
-                    colorTexture.getWidth(), colorTexture.getHeight());
+                    texture.getWidth(), texture.getHeight());
         }
 
         Gdx.gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER, frameBufferHandle);
 
         if (type == Type.DEPTH) {
-            Gdx.gl.glFramebufferTexture2D(GL20.GL_FRAMEBUFFER, GL20.GL_DEPTH_ATTACHMENT, GL20.GL_TEXTURE_2D,
-                    colorTexture.getTextureObjectHandle(), 0);
+            Gdx.gl.glFramebufferTexture2D(GL20.GL_FRAMEBUFFER,
+                    GL20.GL_DEPTH_ATTACHMENT, GL20.GL_TEXTURE_2D,
+                    texture.getTextureObjectHandle(), 0);
         } else {
-            Gdx.gl.glFramebufferTexture2D(GL20.GL_FRAMEBUFFER, GL20.GL_COLOR_ATTACHMENT0, GL20.GL_TEXTURE_2D,
-                    colorTexture.getTextureObjectHandle(), 0);
+            Gdx.gl.glFramebufferTexture2D(GL20.GL_FRAMEBUFFER,
+                    GL20.GL_COLOR_ATTACHMENT0, GL20.GL_TEXTURE_2D,
+                    texture.getTextureObjectHandle(), 0);
         }
 
         if (depth) {
-            Gdx.gl.glFramebufferRenderbuffer(GL20.GL_FRAMEBUFFER, GL20.GL_DEPTH_ATTACHMENT,
-                    GL20.GL_RENDERBUFFER, depthBufferHandle);
+            Gdx.gl.glFramebufferRenderbuffer(GL20.GL_FRAMEBUFFER,
+                    GL20.GL_DEPTH_ATTACHMENT, GL20.GL_RENDERBUFFER,
+                    depthBufferHandle);
         }
 
         if (stencil) {
-            Gdx.gl.glFramebufferRenderbuffer(GL20.GL_FRAMEBUFFER, GL20.GL_STENCIL_ATTACHMENT,
-                    GL20.GL_RENDERBUFFER, stencilBufferHandle);
+            Gdx.gl.glFramebufferRenderbuffer(GL20.GL_FRAMEBUFFER,
+                    GL20.GL_STENCIL_ATTACHMENT, GL20.GL_RENDERBUFFER,
+                    stencilBufferHandle);
         }
 
         Gdx.gl.glBindRenderbuffer(GL20.GL_RENDERBUFFER, 0);
-        Gdx.gl.glBindTexture(colorTexture.glTarget, 0);
+        Gdx.gl.glBindTexture(texture.glTarget, 0);
 
         int result = Gdx.gl.glCheckFramebufferStatus(GL20.GL_FRAMEBUFFER);
 
@@ -129,7 +133,7 @@ public class NhgFrameBuffer {
             depthStencilPackedBufferHandle = Gdx.gl.glGenRenderbuffer();
             hasDepthStencilPackedBuffer = true;
             Gdx.gl.glBindRenderbuffer(GL20.GL_RENDERBUFFER, depthStencilPackedBufferHandle);
-            Gdx.gl.glRenderbufferStorage(GL20.GL_RENDERBUFFER, GL_DEPTH24_STENCIL8_OES, colorTexture.getWidth(), colorTexture.getHeight());
+            Gdx.gl.glRenderbufferStorage(GL20.GL_RENDERBUFFER, GLOES.GL_DEPTH24_STENCIL8_OES, texture.getWidth(), texture.getHeight());
             Gdx.gl.glBindRenderbuffer(GL20.GL_RENDERBUFFER, 0);
 
             Gdx.gl.glFramebufferRenderbuffer(GL20.GL_FRAMEBUFFER, GL20.GL_DEPTH_ATTACHMENT, GL20.GL_RENDERBUFFER, depthStencilPackedBufferHandle);
@@ -140,7 +144,7 @@ public class NhgFrameBuffer {
         Gdx.gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER, defaultFramebufferHandle);
 
         if (result != GL20.GL_FRAMEBUFFER_COMPLETE) {
-            colorTexture.dispose();
+            texture.dispose();
 
             if (hasDepthStencilPackedBuffer) {
                 Gdx.gl.glDeleteBuffer(depthStencilPackedBufferHandle);
@@ -165,7 +169,7 @@ public class NhgFrameBuffer {
 
     public void begin() {
         Gdx.gl20.glBindFramebuffer(GL20.GL_FRAMEBUFFER, frameBufferHandle);
-        Gdx.gl20.glViewport(0, 0, colorTexture.getWidth(), colorTexture.getHeight());
+        Gdx.gl20.glViewport(0, 0, texture.getWidth(), texture.getHeight());
     }
 
     public void end() {
@@ -176,7 +180,7 @@ public class NhgFrameBuffer {
     public void dispose() {
         GL20 gl = Gdx.gl20;
 
-        colorTexture.dispose();
+        texture.dispose();
 
         if (hasDepthStencilPackedBuffer) {
             gl.glDeleteRenderbuffer(depthStencilPackedBufferHandle);
@@ -190,6 +194,7 @@ public class NhgFrameBuffer {
 
     public enum Type {
         COLOR,
-        DEPTH
+        DEPTH,
+        CUSTOM
     }
 }

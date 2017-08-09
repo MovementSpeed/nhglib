@@ -13,12 +13,14 @@ import com.badlogic.gdx.graphics.g3d.shaders.BaseShader;
 import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import io.github.voidzombie.nhglib.utils.graphics.ShaderUtils;
 
 public class DepthMapShader extends BaseShader {
     private float bones[];
     private Params params;
+    private Vector2 tmp;
     private Matrix4 idtMatrix;
     private Renderable renderable;
 
@@ -30,6 +32,8 @@ public class DepthMapShader extends BaseShader {
     public DepthMapShader(final Renderable renderable, Params params) {
         this.renderable = renderable;
         this.params = params;
+
+        tmp = new Vector2();
 
         String prefix = createPrefix(renderable);
 
@@ -66,17 +70,10 @@ public class DepthMapShader extends BaseShader {
             }
         });
 
-        register("u_cameraFar", new GlobalSetter() {
+        register("u_cameraRange", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, camera.far);
-            }
-        });
-
-        register("u_lightPosition", new GlobalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, camera.position);
+                shader.set(inputID, tmp.set(shader.camera.near, shader.camera.far));
             }
         });
     }

@@ -9,14 +9,14 @@ precision mediump float;
 #define HIGH
 #endif
 
-uniform float u_cameraFar;
-
 varying vec4 v_position;
 varying float v_depth;
 
+uniform vec2 u_cameraRange;
+
 void main()
 {
-	float z = (v_depth - 0.01) / (2.0 - 0.01);
+	float z = (v_depth - u_cameraRange.x) / (u_cameraRange.y - u_cameraRange.x);
 	gl_FragDepth = z;
 	gl_FragColor = vec4(vec3(z), 1.0);
 }

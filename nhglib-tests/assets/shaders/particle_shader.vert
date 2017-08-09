@@ -88,7 +88,7 @@ varying vec4 v_color;
 varying vec4 v_rotation;
 varying MED vec4 v_region;
 
-uniform float u_screenWidth;
+uniform vec2 u_screen;
 uniform vec2 u_regionSize;
 uniform mat4 u_modelMatrix;
 uniform mat4 u_viewMatrix;
@@ -106,7 +106,7 @@ void main()
 	vec4 eyePos = u_viewMatrix * a_position;
 	vec4 projCorner = u_projectionMatrix * vec4(halfSize, halfSize, eyePos.z, eyePos.w);
 
-	gl_PointSize = u_screenWidth * projCorner.x / projCorner.w;
+	gl_PointSize = u_screen.x * projCorner.x / projCorner.w;
 
 	v_position = eyePos;
 

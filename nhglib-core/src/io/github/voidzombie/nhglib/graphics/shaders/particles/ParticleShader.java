@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.impl.RenderingSystem;
@@ -48,6 +49,7 @@ public class ParticleShader extends BaseShader {
      */
     private Renderable renderable;
     private Material currentMaterial;
+    private Vector2 tmp;
 
     public ParticleShader(final Renderable renderable) {
         this(renderable, new Config());
@@ -71,6 +73,9 @@ public class ParticleShader extends BaseShader {
         this.config = config;
         this.program = shaderProgram;
         this.renderable = renderable;
+
+        tmp = new Vector2();
+
         materialMask = renderable.material.getMask() | optionalAttributes;
         vertexMask = renderable.meshPart.mesh.getVertexAttributes().getMask();
 
@@ -78,7 +83,7 @@ public class ParticleShader extends BaseShader {
             throw new GdxRuntimeException("Some attributes not implemented yet (" + materialMask + ")");
 
         // Global uniforms
-        register(Inputs.screenWidth, Setters.screenWidth);
+        //register(Inputs.screenWidth, Setters.screenWidth);
         register(Inputs.cameraRight, Setters.cameraRight);
         register(Inputs.cameraInvDirection, Setters.cameraInvDirection);
         register(DefaultShader.Inputs.cameraUp, Setters.cameraUp);
@@ -86,6 +91,29 @@ public class ParticleShader extends BaseShader {
 
         // Object uniforms
         register(DefaultShader.Inputs.diffuseTexture, DefaultShader.Setters.diffuseTexture);
+
+        register("u_softness", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                shader.set(inputID, 0.6f);
+            }
+        });
+
+        register("u_screen", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                shader.set(inputID, tmp.set(
+                        Gdx.graphics.getBackBufferWidth(),
+                        Gdx.graphics.getBackBufferHeight()));
+            }
+        });
+
+        register("u_cameraRange", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                shader.set(inputID, tmp.set(shader.camera.near, shader.camera.far));
+            }
+        });
 
         register("u_depthTexture", new LocalSetter() {
             @Override
