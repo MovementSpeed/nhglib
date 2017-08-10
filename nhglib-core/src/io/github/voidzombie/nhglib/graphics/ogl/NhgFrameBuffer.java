@@ -46,7 +46,7 @@ public class NhgFrameBuffer {
 
         if (type != Type.CUSTOM) {
             if (type == Type.DEPTH) {
-                glInternalFormat = GLOES.GL_DEPTH_COMPONENT32;
+                glInternalFormat = GL20.GL_DEPTH_COMPONENT16;
                 glFormat = GL20.GL_DEPTH_COMPONENT;
                 glType = GL20.GL_UNSIGNED_INT;
             } else {
@@ -78,7 +78,7 @@ public class NhgFrameBuffer {
 
         if (depth) {
             Gdx.gl.glBindRenderbuffer(GL20.GL_RENDERBUFFER, depthBufferHandle);
-            Gdx.gl.glRenderbufferStorage(GL20.GL_RENDERBUFFER, GLOES.GL_DEPTH_COMPONENT32,
+            Gdx.gl.glRenderbufferStorage(GL20.GL_RENDERBUFFER, GL20.GL_DEPTH_COMPONENT16,
                     texture.getWidth(), texture.getHeight());
         }
 
