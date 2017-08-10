@@ -48,7 +48,7 @@ public class NhgFrameBuffer {
             if (type == Type.DEPTH) {
                 glInternalFormat = GLOES.GL_DEPTH_COMPONENT32;
                 glFormat = GL20.GL_DEPTH_COMPONENT;
-                glType = GLOES.GL_FLOAT;
+                glType = GL20.GL_UNSIGNED_INT;
             } else {
                 glInternalFormat = GL20.GL_RGBA;
                 glFormat = glInternalFormat;
