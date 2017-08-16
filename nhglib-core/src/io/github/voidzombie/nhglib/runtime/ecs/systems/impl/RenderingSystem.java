@@ -14,7 +14,7 @@ import com.badlogic.gdx.utils.Disposable;
 import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.graphics.ogl.NhgFrameBuffer;
 import io.github.voidzombie.nhglib.graphics.shaders.depth.DepthShaderProvider;
-import io.github.voidzombie.nhglib.graphics.shaders.tiledForward.TiledForwardShaderProvider;
+import io.github.voidzombie.nhglib.graphics.shaders.tiledForward.PBRShaderProvider;
 import io.github.voidzombie.nhglib.runtime.ecs.interfaces.RenderingSystemInterface;
 import io.github.voidzombie.nhglib.runtime.ecs.systems.base.BaseRenderingSystem;
 import io.github.voidzombie.nhglib.utils.graphics.GLUtils;
@@ -23,7 +23,7 @@ import io.github.voidzombie.nhglib.utils.graphics.GLUtils;
  * Created by Fausto Napoli on 08/12/2016.
  */
 public class RenderingSystem extends BaseSystem implements Disposable {
-    public Texture depthTexture;
+    public static boolean depthTextureMode;
 
     // Injected references
     private CameraSystem cameraSystem;
@@ -34,6 +34,7 @@ public class RenderingSystem extends BaseSystem implements Disposable {
     private ModelBatch depthBatch;
     private NhgFrameBuffer nhgFrameBuffer;
     private FPSLogger fpsLogger;
+    private Texture depthTexture;
 
     private Array<Camera> cameras;
     private Array<ModelBatch> modelBatches;
@@ -46,7 +47,7 @@ public class RenderingSystem extends BaseSystem implements Disposable {
         fpsLogger = new FPSLogger();
         environment = new Environment();
 
-        this.shaderProvider = new TiledForwardShaderProvider(environment);
+        this.shaderProvider = new PBRShaderProvider(environment);
 
         DepthShaderProvider depthShaderProvider = new DepthShaderProvider();
         depthBatch = new ModelBatch(depthShaderProvider);
@@ -89,18 +90,20 @@ public class RenderingSystem extends BaseSystem implements Disposable {
             }
             modelBatch.end();
 
-            // Update depth texture
-            nhgFrameBuffer.begin();
-            GLUtils.clearScreen(Color.WHITE);
+            if (depthTextureMode) {
+                // Update depth texture
+                nhgFrameBuffer.begin();
+                GLUtils.clearScreen(Color.WHITE);
 
-            depthBatch.begin(camera);
-            for (RenderingSystemInterface rsi : renderingInterfaces) {
-                depthBatch.render(rsi.getRenderableProviders(), environment);
+                depthBatch.begin(camera);
+                for (RenderingSystemInterface rsi : renderingInterfaces) {
+                    depthBatch.render(rsi.getRenderableProviders(), environment);
+                }
+                depthBatch.end();
+                nhgFrameBuffer.end();
+
+                depthTexture = nhgFrameBuffer.texture;
             }
-            depthBatch.end();
-            nhgFrameBuffer.end();
-
-            depthTexture = nhgFrameBuffer.texture;
 
             if (Nhg.debugLogs && Nhg.debugFpsLogs) {
                 fpsLogger.log();
@@ -127,6 +130,12 @@ public class RenderingSystem extends BaseSystem implements Disposable {
         }
     }
 
+    public void addRenderingInterfaces(RenderingSystemInterface... renderingSystemInterfaces) {
+        for (RenderingSystemInterface rsi : renderingSystemInterfaces) {
+            renderingInterfaces.add(rsi);
+        }
+    }
+
     public Environment getEnvironment() {
         return environment;
     }
@@ -140,10 +149,13 @@ public class RenderingSystem extends BaseSystem implements Disposable {
         super.dispose();
         nhgFrameBuffer.dispose();
         shaderProvider.dispose();
-        depthTexture.dispose();
         depthBatch.dispose();
 
         cameras.clear();
+
+        if (depthTexture != null) {
+            depthTexture.dispose();
+        }
 
         for (ModelBatch mb : modelBatches) {
             mb.dispose();

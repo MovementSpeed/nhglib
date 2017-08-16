@@ -63,6 +63,7 @@ project(":nhglib-core") {
     apply plugin: 'maven'
 
     dependencies {
+        compile "com.twelvemonkeys.imageio:imageio-hdr:3.3.2"
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-ai:1.8.0"
         compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"

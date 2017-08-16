@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.IntArray;
 import io.github.voidzombie.nhglib.graphics.lights.NhgLight;
 import io.github.voidzombie.nhglib.graphics.lights.NhgLightsAttribute;
+import io.github.voidzombie.nhglib.graphics.shaders.attributes.IBLAttribute;
 import io.github.voidzombie.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
 import io.github.voidzombie.nhglib.utils.data.MatrixPool;
 import io.github.voidzombie.nhglib.utils.data.VectorPool;
@@ -24,7 +25,7 @@ import io.github.voidzombie.nhglib.utils.graphics.ShaderUtils;
 /**
  * Created by Fausto Napoli on 18/03/2017.
  */
-public class TiledForwardShader extends BaseShader {
+public class PBRShader extends BaseShader {
     public static float lightRenderDistance = 15f;
 
     private float bones[];
@@ -50,15 +51,15 @@ public class TiledForwardShader extends BaseShader {
     private Array<NhgLight> lights;
     private Array<NhgLight> lightsToRender;
 
-    public TiledForwardShader(Renderable renderable, Environment environment, Params params) {
+    public PBRShader(Renderable renderable, Environment environment, Params params) {
         this.renderable = renderable;
         this.environment = environment;
         this.params = params;
 
         String prefix = createPrefix(renderable);
 
-        String vert = prefix + Gdx.files.internal("shaders/tiled_forward_shader.vert").readString();
-        String frag = prefix + Gdx.files.internal("shaders/tiled_forward_shader.frag").readString();
+        String vert = prefix + Gdx.files.internal("shaders/tf_pbr_shader.vert").readString();
+        String frag = prefix + Gdx.files.internal("shaders/tf_pbr_shader.frag").readString();
 
         ShaderProgram.pedantic = false;
         shaderProgram = new ShaderProgram(vert, frag);
@@ -159,6 +160,17 @@ public class TiledForwardShader extends BaseShader {
             }
         });
 
+        register("u_irradiance", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                IBLAttribute attribute = (IBLAttribute) combinedAttributes.get(IBLAttribute.Type);
+
+                if (attribute != null) {
+                    shader.set(inputID, attribute.textureDescription.texture);
+                }
+            }
+        });
+
         register("u_lights", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
@@ -222,14 +234,16 @@ public class TiledForwardShader extends BaseShader {
     public boolean canRender(Renderable instance) {
         boolean diffuse = ShaderUtils.hasAlbedo(instance) == params.albedo;
         boolean metalness = ShaderUtils.hasMetalness(instance) == params.metalness;
-        boolean roughness = ShaderUtils.hasRoughness(renderable) == params.roughness;
-        boolean normal = ShaderUtils.hasPbrNormal(renderable) == params.normal;
-        boolean ambientOcclusion = ShaderUtils.hasAmbientOcclusion(renderable) == params.ambientOcclusion;
+        boolean roughness = ShaderUtils.hasRoughness(instance) == params.roughness;
+        boolean normal = ShaderUtils.hasPbrNormal(instance) == params.normal;
+        boolean ambientOcclusion = ShaderUtils.hasAmbientOcclusion(instance) == params.ambientOcclusion;
         boolean bones = ShaderUtils.useBones(instance) == params.useBones;
         boolean lit = ShaderUtils.hasLights(instance.environment) == params.lit;
         boolean gammaCorrection = ShaderUtils.useGammaCorrection(instance.environment) == params.gammaCorrection;
+        boolean imageBasedLighting = ShaderUtils.useImageBasedLighting(instance.environment) == params.imageBasedLighting;
 
-        return diffuse && metalness && roughness && normal && ambientOcclusion && bones && lit && gammaCorrection;
+        return diffuse && metalness && roughness && normal && ambientOcclusion && bones &&
+                lit && gammaCorrection && imageBasedLighting;
     }
 
     @Override
@@ -434,6 +448,10 @@ public class TiledForwardShader extends BaseShader {
             prefix += "#define defGammaCorrection\n";
         }
 
+        if (params.imageBasedLighting) {
+            prefix += "#define defImageBasedLighting\n";
+        }
+
         if (params.lit) {
             NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
             prefix += "#define lights " + lightsAttribute.lights.size + "\n";
@@ -467,5 +485,6 @@ public class TiledForwardShader extends BaseShader {
         boolean ambientOcclusion;
         boolean lit;
         boolean gammaCorrection;
+        boolean imageBasedLighting;
     }
 }

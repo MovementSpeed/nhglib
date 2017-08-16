@@ -10,17 +10,17 @@ import io.github.voidzombie.nhglib.utils.graphics.ShaderUtils;
 /**
  * Created by Fausto Napoli on 20/03/2017.
  */
-public class TiledForwardShaderProvider extends BaseShaderProvider {
+public class PBRShaderProvider extends BaseShaderProvider {
     private Environment environment;
 
-    public TiledForwardShaderProvider(Environment environment) {
+    public PBRShaderProvider(Environment environment) {
         if (environment == null) throw new GdxRuntimeException("Environment parameter should not be null.");
         this.environment = environment;
     }
 
     @Override
     protected Shader createShader(Renderable renderable) {
-        TiledForwardShader.Params params = new TiledForwardShader.Params();
+        PBRShader.Params params = new PBRShader.Params();
         params.albedo = ShaderUtils.hasAlbedo(renderable);
         params.metalness = ShaderUtils.hasMetalness(renderable);
         params.roughness = ShaderUtils.hasRoughness(renderable);
@@ -29,7 +29,8 @@ public class TiledForwardShaderProvider extends BaseShaderProvider {
         params.useBones = ShaderUtils.useBones(renderable);
         params.lit = ShaderUtils.hasLights(environment);
         params.gammaCorrection = ShaderUtils.useGammaCorrection(environment);
+        params.imageBasedLighting = ShaderUtils.useImageBasedLighting(environment);
 
-        return new TiledForwardShader(renderable, environment, params);
+        return new PBRShader(renderable, environment, params);
     }
 }

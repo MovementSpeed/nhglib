@@ -34,6 +34,40 @@
     "entities":
     [
       {
+        "id":"camera",
+        "transform":
+        {
+          "position":
+          {
+            "x":0,
+            "y":0,
+            "z":0,
+          },
+          "rotation":
+          {
+            "x":0.0,
+            "y":180.0,
+            "z":0.0,
+          },
+          "scale":
+          {
+            "x":1.0,
+            "y":1.0,
+            "z":1.0,
+          }
+        },
+        "components":
+        [
+          {
+            "type":"camera",
+            "cameraType":"perspective",
+            "fieldOfView":67,
+            "nearPlane":0.01,
+            "farPlane":10.0
+          }
+        ]
+      },
+      {
         "id":"floor",
         "transform":
         {
@@ -132,40 +166,6 @@
         ],
         "entities":
         [
-          {
-            "id":"camera",
-            "transform":
-            {
-              "position":
-              {
-                "x":0,
-                "y":0.25,
-                "z":-1.5,
-              },
-              "rotation":
-              {
-                "x":0.0,
-                "y":180.0,
-                "z":0.0,
-              },
-              "scale":
-              {
-                "x":1.0,
-                "y":1.0,
-                "z":1.0,
-              }
-            },
-            "components":
-            [
-              {
-                "type":"camera",
-                "cameraType":"perspective",
-                "fieldOfView":70,
-                "nearPlane":0.01,
-                "farPlane":10.0
-              }
-            ]
-          },
           {
             "id":"wheel0",
             "transform":

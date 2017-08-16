@@ -47,14 +47,24 @@ uniform mat4 u_viewMatrix;
     uniform sampler2D u_ambientOcclusion;
 #endif
 
+#ifdef defImageBasedLighting
+    uniform samplerCube u_irradiance;
+#endif
+
 varying vec2 v_texCoord;
 varying vec3 v_position;
 varying vec3 v_normal;
 varying vec3 v_binormal;
 varying vec3 v_tangent;
 
-vec3 fresnelSchlick(float cosTheta, vec3 F0) {
+vec3 fresnelSchlick(float cosTheta, vec3 F0)
+{
     return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+}
+
+vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
+{
+    return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
 float DistributionGGX(vec3 N, vec3 H, float rough) {
@@ -108,7 +118,7 @@ void main() {
     #ifdef defRoughness
         float roughness = texture2D(u_roughness, v_texCoord).r;
     #else
-        float roughness = 1.0;
+        float roughness = 0.5;
     #endif
 
     #ifdef defAmbientOcclusion
@@ -202,7 +212,18 @@ void main() {
         }
     #endif
 
-    vec3 ambient = vec3(0.03) * albedo;
+    #ifdef defImageBasedLighting
+        vec3 kS = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+        vec3 kD = 1.0 - kS;
+        kD *= 1.0 - metalness;
+
+        vec3 irradiance = textureCube(u_irradiance, N).rgb;
+        vec3 diffuse = irradiance * albedo;
+        vec3 ambient = (kD * diffuse) * ambientOcclusion;
+    #else
+        vec3 ambient = vec3(0.03) * albedo;
+    #endif
+
     vec3 color = ambient + Lo;
 
     #ifdef defGammaCorrection

@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
 import com.badlogic.gdx.utils.Array;
 import io.github.voidzombie.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.voidzombie.nhglib.graphics.shaders.attributes.GammaCorrectionAttribute;
+import io.github.voidzombie.nhglib.graphics.shaders.attributes.IBLAttribute;
 import io.github.voidzombie.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
 
 /**
@@ -193,5 +194,14 @@ public class ShaderUtils {
     public static boolean useGammaCorrection(Environment environment) {
         GammaCorrectionAttribute gammaCorrectionAttribute = (GammaCorrectionAttribute) environment.get(GammaCorrectionAttribute.Type);
         return gammaCorrectionAttribute == null || gammaCorrectionAttribute.gammaCorrection;
+    }
+
+    public static boolean useImageBasedLighting(Environment environment) {
+        boolean res;
+
+        IBLAttribute iblAttribute = (IBLAttribute) environment.get(IBLAttribute.Type);
+        res = iblAttribute != null && iblAttribute.textureDescription != null;
+
+        return res;
     }
 }
