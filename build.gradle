@@ -69,7 +69,6 @@ project(":nhglib-core") {
         compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
         compile "net.onedaybeard.artemis:artemis-odb:2.0.0"
-        compile 'com.google.guava:guava:20.0'
         compile 'io.reactivex.rxjava2:rxjava:2.0.2'
     }
 }

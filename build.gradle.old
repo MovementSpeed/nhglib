@@ -65,7 +65,7 @@ project(":nhglib-core") {
                     name project.name
                     description project.description
                     packaging 'jar'
-                    groupId 'io.github.voidzombie'
+                    groupId 'io.github.movementspeed'
                     artifactId project.name
                     url 'https://github.com/VoidZombie/nhglib'
 
@@ -146,7 +146,7 @@ project(":nhglib-android") {
                     name project.name
                     description project.description
                     packaging 'jar'
-                    groupId 'io.github.voidzombie'
+                    groupId 'io.github.movementspeed'
                     artifactId project.name
                     url 'https://github.com/VoidZombie/nhglib'
 
@@ -202,7 +202,7 @@ project(":nhglib-ios") {
     apply plugin: 'signing'
     apply plugin: 'maven'
 
-    group='io.github.voidzombie'
+    group='io.github.movementspeed'
 
     // Signature of artifacts
     signing {
@@ -226,7 +226,7 @@ project(":nhglib-ios") {
                     name project.name
                     description project.description
                     packaging 'jar'
-                    groupId 'io.github.voidzombie'
+                    groupId 'io.github.movementspeed'
                     artifactId project.name
                     url 'https://github.com/VoidZombie/nhglib'
 
@@ -302,7 +302,7 @@ project(":nhglib-desktop") {
                     name project.name
                     description project.description
                     packaging 'jar'
-                    groupId 'io.github.voidzombie'
+                    groupId 'io.github.movementspeed'
                     artifactId project.name
                     url 'https://github.com/VoidZombie/nhglib'
 
@@ -380,7 +380,7 @@ project(":nhglib-html") {
                     name project.name
                     description project.description
                     packaging 'jar'
-                    groupId 'io.github.voidzombie'
+                    groupId 'io.github.movementspeed'
                     artifactId project.name
                     url 'https://github.com/VoidZombie/nhglib'
 
