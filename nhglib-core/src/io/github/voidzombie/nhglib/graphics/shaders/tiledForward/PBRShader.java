@@ -163,7 +163,29 @@ public class PBRShader extends BaseShader {
         register("u_irradiance", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                IBLAttribute attribute = (IBLAttribute) combinedAttributes.get(IBLAttribute.Type);
+                IBLAttribute attribute = (IBLAttribute) combinedAttributes.get(IBLAttribute.IrradianceType);
+
+                if (attribute != null) {
+                    shader.set(inputID, attribute.textureDescription.texture);
+                }
+            }
+        });
+
+        register("u_prefilter", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                IBLAttribute attribute = (IBLAttribute) combinedAttributes.get(IBLAttribute.PrefilterType);
+
+                if (attribute != null) {
+                    shader.set(inputID, attribute.textureDescription.texture);
+                }
+            }
+        });
+
+        register("u_brdf", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                IBLAttribute attribute = (IBLAttribute) combinedAttributes.get(IBLAttribute.BrdfType);
 
                 if (attribute != null) {
                     shader.set(inputID, attribute.textureDescription.texture);

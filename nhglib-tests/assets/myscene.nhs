@@ -374,10 +374,6 @@
                 },
                 "components":
                 [
-                  {
-                    "type":"particleEffect",
-                    "asset":"particleAsset"
-                  }
                 ]
               }
             ]

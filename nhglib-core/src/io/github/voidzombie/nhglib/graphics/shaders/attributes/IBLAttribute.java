@@ -1,6 +1,8 @@
 package io.github.voidzombie.nhglib.graphics.shaders.attributes;
 
 import com.badlogic.gdx.graphics.Cubemap;
+import com.badlogic.gdx.graphics.GLTexture;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Attribute;
 import com.badlogic.gdx.graphics.g3d.utils.TextureDescriptor;
 import com.badlogic.gdx.utils.GdxRuntimeException;
@@ -10,22 +12,35 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
  */
 public class IBLAttribute extends Attribute {
     public final static String IrradianceAlias = "irradianceTexture";
-    public final static long Type = register(IrradianceAlias);
+    public final static String PrefilterAlias = "prefilterTexture";
+    public final static String BrdfAlias = "brdfTexture";
 
-    protected static long Mask = Type;
+    public final static long IrradianceType = register(IrradianceAlias);
+    public final static long PrefilterType = register(PrefilterAlias);
+    public final static long BrdfType = register(BrdfAlias);
+
+    protected static long Mask = IrradianceType | PrefilterType | BrdfType;
 
     public final static boolean is(final long mask) {
         return (mask & Mask) != 0;
     }
 
     public static IBLAttribute createIrradiance(final Cubemap cubemap) {
-        return new IBLAttribute(Type, cubemap);
+        return new IBLAttribute(IrradianceType, cubemap);
     }
 
-    public final TextureDescriptor<Cubemap> textureDescription;
+    public static IBLAttribute createPrefilter(final Cubemap cubemap) {
+        return new IBLAttribute(PrefilterType, cubemap);
+    }
+
+    public static IBLAttribute createBrdf(final Texture texture) {
+        return new IBLAttribute(BrdfType, texture);
+    }
+
+    public final TextureDescriptor<GLTexture> textureDescription;
     /**
      * The index of the texture coordinate vertex attribute to use for this IBLAttribute. Whether this value is used, depends
-     * on the shader and {@link Attribute#type} value. For basic (model specific) types (e.g. {@link #Type},
+     * on the shader and {@link Attribute#type} value. For basic (model specific) types (e.g. {@link #IrradianceType},
      * etc.), this value is usually ignored and the first texture coordinate vertex attribute is used.
      */
     public int uvIndex = 0;
@@ -51,8 +66,9 @@ public class IBLAttribute extends Attribute {
         textureDescription.texture = texture;
     }
 
-    public IBLAttribute(final IBLAttribute copyFrom) {
-        this(copyFrom.type, copyFrom.textureDescription, copyFrom.uvIndex);
+    public IBLAttribute(final long type, final Texture texture) {
+        this(type);
+        textureDescription.texture = texture;
     }
 
     public void set(final Cubemap cubemap) {
@@ -61,7 +77,7 @@ public class IBLAttribute extends Attribute {
 
     @Override
     public Attribute copy() {
-        return new IBLAttribute(this);
+        return null;
     }
 
     @Override

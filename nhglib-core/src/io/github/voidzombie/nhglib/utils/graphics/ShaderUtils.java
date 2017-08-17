@@ -199,7 +199,7 @@ public class ShaderUtils {
     public static boolean useImageBasedLighting(Environment environment) {
         boolean res;
 
-        IBLAttribute iblAttribute = (IBLAttribute) environment.get(IBLAttribute.Type);
+        IBLAttribute iblAttribute = (IBLAttribute) environment.get(IBLAttribute.IrradianceType);
         res = iblAttribute != null && iblAttribute.textureDescription != null;
 
         return res;

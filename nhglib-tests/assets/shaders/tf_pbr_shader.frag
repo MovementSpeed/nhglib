@@ -49,6 +49,8 @@ uniform mat4 u_viewMatrix;
 
 #ifdef defImageBasedLighting
     uniform samplerCube u_irradiance;
+    uniform samplerCube u_prefilter;
+    uniform sampler2D u_brdf;
 #endif
 
 varying vec2 v_texCoord;
@@ -112,7 +114,7 @@ void main() {
     #ifdef defMetalness
         float metalness = texture2D(u_metalness, v_texCoord).r;
     #else
-        float metalness = 0.0;
+        float metalness = 0.5;
     #endif
 
     #ifdef defRoughness
@@ -124,7 +126,7 @@ void main() {
     #ifdef defAmbientOcclusion
         float ambientOcclusion = texture2D(u_ambientOcclusion, v_texCoord).r;
     #else
-        float ambientOcclusion = 0.03;
+        float ambientOcclusion = 1.0;
     #endif
 
     #ifdef defNormal
@@ -143,6 +145,7 @@ void main() {
     #endif
 
     vec3 V = normalize(-v_position);
+    vec3 R = reflect(-V, N);
 
     vec3 Lo = vec3(0.0);
     vec3 F0 = vec3(0.04);
@@ -213,13 +216,22 @@ void main() {
     #endif
 
     #ifdef defImageBasedLighting
-        vec3 kS = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+        vec3 F = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+
+        vec3 kS = F;
         vec3 kD = 1.0 - kS;
         kD *= 1.0 - metalness;
 
         vec3 irradiance = textureCube(u_irradiance, N).rgb;
         vec3 diffuse = irradiance * albedo;
-        vec3 ambient = (kD * diffuse) * ambientOcclusion;
+
+        const float MAX_REFLECTION_LOD = 4.0;
+
+        vec3 prefilteredColor = textureCubeLod(u_prefilter, R, roughness * MAX_REFLECTION_LOD).rgb;
+        vec2 brdf = texture2D(u_brdf, vec2(max(dot(N, V), 0.0), roughness)).rg;
+        vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
+
+        vec3 ambient = (kD * diffuse + specular) * ambientOcclusion;
     #else
         vec3 ambient = vec3(0.03) * albedo;
     #endif

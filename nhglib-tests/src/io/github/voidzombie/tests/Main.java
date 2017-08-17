@@ -83,7 +83,7 @@ public class Main extends NhgEntry implements InputListener {
 
         cubeModelInstance = new ModelInstance(cubeModel);
 
-        environmentCubemap = equirectangularHdrToCubemap("textures/test_hdr.hdr", 1024, 1024);
+        environmentCubemap = equirectangularHdrToCubemap("textures/newport_loft.hdr", 1024, 1024);
         irradianceCubemap = renderIrradiance(environmentCubemap);
         prefilteredCubemap = renderPrefilter(environmentCubemap);
         brdfTexture = renderBRDF();
@@ -104,7 +104,6 @@ public class Main extends NhgEntry implements InputListener {
 
         renderingSystem = nhg.entities.getEntitySystem(RenderingSystem.class);
         renderingSystem.setClearColor(Color.GRAY);
-        //renderingSystem.addRenderingInterfaces(this);
 
         Environment environment = renderingSystem.getEnvironment();
 
@@ -114,11 +113,15 @@ public class Main extends NhgEntry implements InputListener {
         GammaCorrectionAttribute gammaCorrectionAttribute = new GammaCorrectionAttribute();
         gammaCorrectionAttribute.gammaCorrection = true;
 
-        IBLAttribute iblAttribute = IBLAttribute.createIrradiance(irradianceCubemap);
+        IBLAttribute irradianceAttribute = IBLAttribute.createIrradiance(irradianceCubemap);
+        IBLAttribute prefilterAttribute = IBLAttribute.createPrefilter(prefilteredCubemap);
+        IBLAttribute brdfAttribute = IBLAttribute.createBrdf(brdfTexture);
 
         environment.set(lightsAttribute);
         environment.set(gammaCorrectionAttribute);
-        environment.set(iblAttribute);
+        environment.set(irradianceAttribute);
+        environment.set(prefilterAttribute);
+        environment.set(brdfAttribute);
 
         // Subscribe to asset events
         nhg.messaging.get(Strings.Events.assetLoaded, Strings.Events.assetLoadingFinished, Strings.Events.sceneLoaded)
@@ -156,7 +159,7 @@ public class Main extends NhgEntry implements InputListener {
         super.engineUpdate(delta);
         world.update();
 
-        if (cameraComponent != null) {
+        /*if (cameraComponent != null) {
             brdfTexture.bind(0);
             simpleCubemapShader.begin();
             simpleCubemapShader.setUniformMatrix("u_view", cameraComponent.camera.view);
@@ -165,7 +168,7 @@ public class Main extends NhgEntry implements InputListener {
             cubeModelInstance.model.meshes.first().render(simpleCubemapShader, GL20.GL_TRIANGLES);
             //quadMesh.render(simpleCubemapShader, GL20.GL_TRIANGLES);
             simpleCubemapShader.end();
-        }
+        }*/
     }
 
     @Override
