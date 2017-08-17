@@ -8,13 +8,16 @@ import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.FrameBufferCubemap;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.UBJsonReader;
 import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.graphics.lights.NhgLight;
@@ -53,11 +56,13 @@ public class Main extends NhgEntry implements InputListener {
     private CameraComponent cameraComponent;
     private RenderingSystem renderingSystem;
 
+    private Mesh quadMesh;
     private ModelInstance cubeModelInstance;
     private ShaderProgram simpleCubemapShader;
     private Cubemap environmentCubemap;
     private Cubemap irradianceCubemap;
     private Cubemap prefilteredCubemap;
+    private Texture brdfTexture;
 
     @Override
     public void engineStarted() {
@@ -81,7 +86,7 @@ public class Main extends NhgEntry implements InputListener {
         environmentCubemap = equirectangularHdrToCubemap("textures/test_hdr.hdr", 1024, 1024);
         irradianceCubemap = renderIrradiance(environmentCubemap);
         prefilteredCubemap = renderPrefilter(environmentCubemap);
-
+        brdfTexture = renderBRDF();
     }
 
     @Override
@@ -152,12 +157,13 @@ public class Main extends NhgEntry implements InputListener {
         world.update();
 
         if (cameraComponent != null) {
-            prefilteredCubemap.bind(0);
+            brdfTexture.bind(0);
             simpleCubemapShader.begin();
             simpleCubemapShader.setUniformMatrix("u_view", cameraComponent.camera.view);
             simpleCubemapShader.setUniformMatrix("u_projection", cameraComponent.camera.projection);
             simpleCubemapShader.setUniformi("u_environmentMap", 0);
             cubeModelInstance.model.meshes.first().render(simpleCubemapShader, GL20.GL_TRIANGLES);
+            //quadMesh.render(simpleCubemapShader, GL20.GL_TRIANGLES);
             simpleCubemapShader.end();
         }
     }
@@ -503,5 +509,27 @@ public class Main extends NhgEntry implements InputListener {
         prefilterShader.end();
 
         return frameBufferCubemap.getColorBufferTexture();
+    }
+
+    private Texture renderBRDF() {
+        G3dModelLoader modelLoader = new G3dModelLoader(new UBJsonReader());
+        Model quad = modelLoader.loadModel(Gdx.files.internal("models/quad.g3db"));
+        quadMesh = quad.meshes.first();
+
+        ShaderProgram brdfShader = new ShaderProgram(
+                Gdx.files.internal("shaders/brdf_shader.vert"),
+                Gdx.files.internal("shaders/brdf_shader.frag"));
+
+        FrameBuffer frameBuffer = new FrameBuffer(Pixmap.Format.RGB888, 512, 512, true);
+
+        brdfShader.begin();
+        frameBuffer.begin();
+        Gdx.gl.glViewport(0, 0, 512, 512);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+        quadMesh.render(brdfShader, GL20.GL_TRIANGLES);
+        frameBuffer.end();
+        brdfShader.end();
+
+        return frameBuffer.getColorBufferTexture();
     }
 }

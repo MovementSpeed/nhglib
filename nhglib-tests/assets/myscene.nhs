@@ -20,6 +20,11 @@
         "classAlias":"model"
       },
       {
+        "alias":"quad",
+        "source":"models/quad.g3db",
+        "classAlias":"model"
+      },
+      {
         "alias":"particleAsset",
         "source":"particles/kart_start_smoke.nhfx",
         "classAlias":"particleEffect",
