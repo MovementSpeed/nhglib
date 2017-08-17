@@ -19,6 +19,7 @@ import io.github.voidzombie.nhglib.Nhg;
 import io.github.voidzombie.nhglib.assets.Asset;
 import io.github.voidzombie.nhglib.graphics.lights.NhgLight;
 import io.github.voidzombie.nhglib.graphics.lights.NhgLightsAttribute;
+import io.github.voidzombie.nhglib.graphics.ogl.NhgFrameBufferCubemap;
 import io.github.voidzombie.nhglib.graphics.scenes.Scene;
 import io.github.voidzombie.nhglib.graphics.shaders.attributes.GammaCorrectionAttribute;
 import io.github.voidzombie.nhglib.graphics.shaders.attributes.IBLAttribute;
@@ -56,6 +57,7 @@ public class Main extends NhgEntry implements InputListener {
     private ShaderProgram simpleCubemapShader;
     private Cubemap environmentCubemap;
     private Cubemap irradianceCubemap;
+    private Cubemap prefilteredCubemap;
 
     @Override
     public void engineStarted() {
@@ -78,6 +80,8 @@ public class Main extends NhgEntry implements InputListener {
 
         environmentCubemap = equirectangularHdrToCubemap("textures/test_hdr.hdr", 1024, 1024);
         irradianceCubemap = renderIrradiance(environmentCubemap);
+        prefilteredCubemap = renderPrefilter(environmentCubemap);
+
     }
 
     @Override
@@ -147,15 +151,15 @@ public class Main extends NhgEntry implements InputListener {
         super.engineUpdate(delta);
         world.update();
 
-        /*if (cameraComponent != null) {
-            irradianceCubemap.bind(0);
+        if (cameraComponent != null) {
+            prefilteredCubemap.bind(0);
             simpleCubemapShader.begin();
             simpleCubemapShader.setUniformMatrix("u_view", cameraComponent.camera.view);
             simpleCubemapShader.setUniformMatrix("u_projection", cameraComponent.camera.projection);
             simpleCubemapShader.setUniformi("u_environmentMap", 0);
             cubeModelInstance.model.meshes.first().render(simpleCubemapShader, GL20.GL_TRIANGLES);
             simpleCubemapShader.end();
-        }*/
+        }
     }
 
     @Override
@@ -411,6 +415,92 @@ public class Main extends NhgEntry implements InputListener {
         }
         frameBufferCubemap.end();
         irradianceShader.end();
+
+        return frameBufferCubemap.getColorBufferTexture();
+    }
+
+    private Cubemap renderPrefilter(Cubemap environmentCubemap) {
+        ShaderProgram prefilterShader = new ShaderProgram(
+                Gdx.files.internal("shaders/equi_to_cube_shader.vert"),
+                Gdx.files.internal("shaders/prefilter_shader.frag"));
+
+        Array<PerspectiveCamera> perspectiveCameras = new Array<>();
+
+        for (int i = 0; i < 6; i++) {
+            PerspectiveCamera pc = new PerspectiveCamera(90, 128, 128);
+            pc.near = 0.1f;
+            pc.far = 10.0f;
+            perspectiveCameras.add(pc);
+        }
+
+        PerspectiveCamera pc1 = perspectiveCameras.get(0);
+        pc1.lookAt(0, 0, 1);
+        pc1.rotate(Vector3.Z, 180);
+        pc1.update();
+
+        PerspectiveCamera pc2 = perspectiveCameras.get(1);
+        pc2.lookAt(0, 0, -1);
+        pc2.rotate(Vector3.Z, 180);
+        pc2.update();
+
+        // top
+        PerspectiveCamera pc3 = perspectiveCameras.get(2);
+        pc3.rotate(Vector3.Z, 90);
+        pc3.lookAt(0, 1, 0);
+        pc3.update();
+
+        // down
+        PerspectiveCamera pc4 = perspectiveCameras.get(3);
+        pc4.rotate(Vector3.Z, 270);
+        pc4.lookAt(0, -1, 0);
+        pc4.update();
+
+        // forward
+        PerspectiveCamera pc5 = perspectiveCameras.get(4);
+        pc5.lookAt(-1, 0, 0);
+        pc5.rotate(Vector3.X, 180);
+        pc5.update();
+
+        // back
+        PerspectiveCamera pc6 = perspectiveCameras.get(5);
+        pc6.lookAt(1, 0, 0);
+        pc6.rotate(Vector3.X, 180);
+        pc6.update();
+
+        NhgFrameBufferCubemap frameBufferCubemap = new NhgFrameBufferCubemap(Pixmap.Format.RGB888,
+                128, 128, true);
+
+        prefilterShader.begin();
+        prefilterShader.setUniformMatrix("u_projection", perspectiveCameras.first().projection);
+        prefilterShader.setUniformi("u_environment", 0);
+        frameBufferCubemap.begin();
+        environmentCubemap.bind(0);
+        int maxMipLevels = 5;
+        for (int mip = 0; mip < maxMipLevels; mip++) {
+            // reisze framebuffer according to mip-level size.
+            double ml = Math.pow(0.5, (double) mip);
+
+            int mipWidth = (int) (128f * ml);
+            int mipHeight = (int) (128f * ml);
+
+            Gdx.gl.glBindRenderbuffer(GL20.GL_RENDERBUFFER, frameBufferCubemap.getDepthBufferHandle());
+            Gdx.gl.glRenderbufferStorage(GL20.GL_RENDERBUFFER, GL20.GL_DEPTH_COMPONENT16, mipWidth, mipHeight);
+            Gdx.gl.glViewport(0, 0, mipWidth, mipHeight);
+
+            float roughness = (float) mip / (float) (maxMipLevels - 1);
+            prefilterShader.setUniformf("u_roughness", roughness);
+
+            for (int i = 0; i < 6; ++i) {
+                prefilterShader.setUniformMatrix("u_view", perspectiveCameras.get(i).view);
+
+                frameBufferCubemap.bindSide(i, mip);
+
+                Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+                cubeModelInstance.model.meshes.first().render(prefilterShader, GL20.GL_TRIANGLES);
+            }
+        }
+        frameBufferCubemap.end();
+        prefilterShader.end();
 
         return frameBufferCubemap.getColorBufferTexture();
     }

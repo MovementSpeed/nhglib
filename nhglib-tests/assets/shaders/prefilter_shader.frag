@@ -29,7 +29,7 @@ void main()
 
         if (NdotL > 0.0)
         {
-            prefilteredColor += texture(u_environment, L).rgb * NdotL;
+            prefilteredColor += textureCube(u_environment, L).rgb * NdotL;
             totalWeight += NdotL;
         }
     }
