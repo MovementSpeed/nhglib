@@ -114,13 +114,13 @@ void main() {
     #ifdef defMetalness
         float metalness = texture2D(u_metalness, v_texCoord).r;
     #else
-        float metalness = 0.50;
+        float metalness = 1.0;
     #endif
 
     #ifdef defRoughness
         float roughness = texture2D(u_roughness, v_texCoord).r;
     #else
-        float roughness = 0.5;
+        float roughness = 0.0;
     #endif
 
     #ifdef defAmbientOcclusion
