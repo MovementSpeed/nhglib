@@ -49,7 +49,7 @@ public class LightProbe {
 
     public void build(String hdrTexturePath, int envWidth, int envHeight) {
         if (hdrTexturePath != null) {
-            environmentCubemap = renderEnvironmentFromHdrTextureV2(hdrTexturePath, envWidth, envHeight);
+            environmentCubemap = renderEnvironmentFromHdrTexture(hdrTexturePath, envWidth, envHeight);
         } else {
             environmentCubemap = renderEnvironmentFromScene(envWidth, envHeight);
         }
@@ -139,54 +139,6 @@ public class LightProbe {
     }
 
     private Cubemap renderEnvironmentFromHdrTexture(String texturePath, int width, int height) {
-        Texture equirectangularTexture = null;
-        ShaderProgram equiToCubeShader = new ShaderProgram(
-                Gdx.files.internal("shaders/equi_to_cube_shader.vert"),
-                Gdx.files.internal("shaders/equi_to_cube_shader.frag"));
-
-        try {
-            FileHandle fh = Gdx.files.internal(texturePath);
-            BufferedImage bufferedImage = ImageIO.read(fh.file());
-
-            int bWidth = bufferedImage.getWidth();
-            int bHeight = bufferedImage.getHeight();
-
-            Pixmap pixmap = new Pixmap(bWidth, bHeight, Pixmap.Format.RGB888);
-
-            for (int x = 0; x < bWidth; x++) {
-                for (int y = 0; y < bHeight; y++) {
-                    int rgb = bufferedImage.getRGB(x, y);
-                    pixmap.drawPixel(x, bHeight - y, rgb);
-                }
-            }
-
-            equirectangularTexture = new Texture(pixmap);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        frameBufferCubemap = new FrameBufferCubemap(Pixmap.Format.RGB888, width, height, true);
-
-        if (equirectangularTexture != null) {
-            equirectangularTexture.bind(0);
-            equiToCubeShader.begin();
-            equiToCubeShader.setUniformMatrix("u_projection", perspectiveCameras.first().projection);
-            equiToCubeShader.setUniformi("u_equirectangularMap", 0);
-            frameBufferCubemap.begin();
-            for (int i = 0; i < 6; i++) {
-                equiToCubeShader.setUniformMatrix("u_view", perspectiveCameras.get(i).view);
-                Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-                cubeMesh.render(equiToCubeShader, GL20.GL_TRIANGLES);
-                frameBufferCubemap.nextSide();
-            }
-            frameBufferCubemap.end();
-            equiToCubeShader.end();
-        }
-
-        return frameBufferCubemap.getColorBufferTexture();
-    }
-
-    private Cubemap renderEnvironmentFromHdrTextureV2(String texturePath, int width, int height) {
         Texture equirectangularTexture;
         ShaderProgram equiToCubeShader = new ShaderProgram(
                 Gdx.files.internal("shaders/equi_to_cube_shader.vert"),
