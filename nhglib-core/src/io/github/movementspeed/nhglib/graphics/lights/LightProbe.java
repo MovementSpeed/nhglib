@@ -13,11 +13,19 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.UBJsonReader;
+import com.twelvemonkeys.imageio.plugins.hdr.HDRImageReadParam;
+import com.twelvemonkeys.imageio.plugins.hdr.HDRImageReader;
+import com.twelvemonkeys.imageio.plugins.hdr.tonemap.NullToneMapper;
+import io.github.movementspeed.nhglib.graphics.ogl.NhgFloatTextureData;
 import io.github.movementspeed.nhglib.graphics.ogl.NhgFrameBufferCubemap;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferFloat;
 import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * Created by Fausto Napoli on 17/08/2017.
@@ -41,7 +49,7 @@ public class LightProbe {
 
     public void build(String hdrTexturePath, int envWidth, int envHeight) {
         if (hdrTexturePath != null) {
-            environmentCubemap = renderEnvironmentFromHdrTexture(hdrTexturePath, envWidth, envHeight);
+            environmentCubemap = renderEnvironmentFromHdrTextureV2(hdrTexturePath, envWidth, envHeight);
         } else {
             environmentCubemap = renderEnvironmentFromScene(envWidth, envHeight);
         }
@@ -178,6 +186,47 @@ public class LightProbe {
         return frameBufferCubemap.getColorBufferTexture();
     }
 
+    private Cubemap renderEnvironmentFromHdrTextureV2(String texturePath, int width, int height) {
+        Texture equirectangularTexture;
+        ShaderProgram equiToCubeShader = new ShaderProgram(
+                Gdx.files.internal("shaders/equi_to_cube_shader.vert"),
+                Gdx.files.internal("shaders/equi_to_cube_shader.frag"));
+
+        BufferedImage bufferedImage = getHdrImage(Gdx.files.internal(texturePath));
+        float[] rgb = ((DataBufferFloat) bufferedImage.getRaster().getDataBuffer()).getData();
+
+        int bWidth = bufferedImage.getWidth();
+        int bHeight = bufferedImage.getHeight();
+
+        NhgFloatTextureData data = new NhgFloatTextureData(bWidth, bHeight, 3);
+        data.prepare();
+        data.getBuffer().put(rgb);
+        data.getBuffer().flip();
+
+        equirectangularTexture = new Texture(data);
+
+        NhgFrameBufferCubemap frameBufferCubemap = new NhgFrameBufferCubemap(Pixmap.Format.RGB888, width, height, true);
+        frameBufferCubemap.type = 1;
+        frameBufferCubemap.genMipMap = false;
+        frameBufferCubemap.buildFBO();
+
+        equirectangularTexture.bind(0);
+        equiToCubeShader.begin();
+        equiToCubeShader.setUniformMatrix("u_projection", perspectiveCameras.first().projection);
+        equiToCubeShader.setUniformi("u_equirectangularMap", 0);
+        frameBufferCubemap.begin();
+        for (int i = 0; i < 6; i++) {
+            equiToCubeShader.setUniformMatrix("u_view", perspectiveCameras.get(i).view);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+            cubeMesh.render(equiToCubeShader, GL20.GL_TRIANGLES);
+            frameBufferCubemap.nextSide(0);
+        }
+        frameBufferCubemap.end();
+        equiToCubeShader.end();
+
+        return frameBufferCubemap.getColorBufferTexture();
+    }
+
     private Cubemap renderEnvironmentFromScene(int width, int height) {
         return null;
     }
@@ -257,6 +306,9 @@ public class LightProbe {
 
         NhgFrameBufferCubemap frameBufferCubemap = new NhgFrameBufferCubemap(Pixmap.Format.RGB888,
                 128, 128, true);
+        frameBufferCubemap.genMipMap = true;
+        frameBufferCubemap.type = 0;
+        frameBufferCubemap.buildFBO();
 
         prefilterShader.begin();
         prefilterShader.setUniformMatrix("u_projection", perspectiveCameras.first().projection);
@@ -311,5 +363,45 @@ public class LightProbe {
         brdfShader.end();
 
         return frameBuffer.getColorBufferTexture();
+    }
+
+    private BufferedImage getHdrImage(FileHandle fileHandle) {
+        BufferedImage res = null;
+
+        try {
+            // Create input stream
+            ImageInputStream input = ImageIO.createImageInputStream(fileHandle.file());
+
+            try {
+                // Get the reader
+                Iterator<ImageReader> readers = ImageIO.getImageReaders(input);
+
+                if (!readers.hasNext()) {
+                    throw new IllegalArgumentException("No reader for: " + fileHandle.file());
+                }
+
+                HDRImageReader reader = (HDRImageReader) readers.next();
+
+                try {
+                    reader.setInput(input);
+
+                    HDRImageReadParam param = (HDRImageReadParam) reader.getDefaultReadParam();
+                    param.setToneMapper(new NullToneMapper());
+
+                    // Finally read the image, using settings from param
+                    res = reader.read(0, param);
+                } finally {
+                    // Dispose reader in finally block to avoid memory leaks
+                    reader.dispose();
+                }
+            } finally {
+                // Close stream in finally block to avoid resource leaks
+                input.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return res;
     }
 }

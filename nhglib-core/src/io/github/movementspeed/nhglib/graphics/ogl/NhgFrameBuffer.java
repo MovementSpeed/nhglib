@@ -133,7 +133,7 @@ public class NhgFrameBuffer {
             depthStencilPackedBufferHandle = Gdx.gl.glGenRenderbuffer();
             hasDepthStencilPackedBuffer = true;
             Gdx.gl.glBindRenderbuffer(GL20.GL_RENDERBUFFER, depthStencilPackedBufferHandle);
-            Gdx.gl.glRenderbufferStorage(GL20.GL_RENDERBUFFER, GLOES.GL_DEPTH24_STENCIL8_OES, texture.getWidth(), texture.getHeight());
+            Gdx.gl.glRenderbufferStorage(GL20.GL_RENDERBUFFER, GLConstants.GL_DEPTH24_STENCIL8_OES, texture.getWidth(), texture.getHeight());
             Gdx.gl.glBindRenderbuffer(GL20.GL_RENDERBUFFER, 0);
 
             Gdx.gl.glFramebufferRenderbuffer(GL20.GL_FRAMEBUFFER, GL20.GL_DEPTH_ATTACHMENT, GL20.GL_RENDERBUFFER, depthStencilPackedBufferHandle);

@@ -3,7 +3,12 @@ package io.github.movementspeed.tests;
 import com.artemis.BaseSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -43,6 +48,8 @@ public class Main extends NhgEntry implements InputListener {
     private RenderingSystem renderingSystem;
 
     private ShaderProgram simpleCubemapShader;
+    private LightProbe lightProbe;
+    private Mesh cubeMesh;
 
     @Override
     public void engineStarted() {
@@ -54,6 +61,13 @@ public class Main extends NhgEntry implements InputListener {
         simpleCubemapShader = new ShaderProgram(
                 Gdx.files.internal("shaders/simple_cubemap.vert"),
                 Gdx.files.internal("shaders/simple_cubemap.frag"));
+
+        ModelBuilder mb = new ModelBuilder();
+        Model cube = mb.createBox(1, 1, 1, new Material(),
+                VertexAttributes.Usage.Position |
+                        VertexAttributes.Usage.Normal |
+                        VertexAttributes.Usage.TextureCoordinates);
+        cubeMesh = cube.meshes.first();
     }
 
     @Override
@@ -80,8 +94,8 @@ public class Main extends NhgEntry implements InputListener {
         GammaCorrectionAttribute gammaCorrectionAttribute = new GammaCorrectionAttribute();
         gammaCorrectionAttribute.gammaCorrection = true;
 
-        LightProbe lightProbe = new LightProbe();
-        lightProbe.build("textures/newport_loft.hdr", 512, 512);
+        lightProbe = new LightProbe();
+        lightProbe.build("textures/test_hdr.hdr", 512, 512);
 
         IBLAttribute irradianceAttribute = IBLAttribute.createIrradiance(lightProbe.getIrradiance());
         IBLAttribute prefilterAttribute = IBLAttribute.createPrefilter(lightProbe.getPrefilter());
@@ -128,6 +142,16 @@ public class Main extends NhgEntry implements InputListener {
     public void engineUpdate(float delta) {
         super.engineUpdate(delta);
         world.update();
+
+        /*if (cameraComponent != null) {
+            lightProbe.getEnvironment().bind(0);
+            simpleCubemapShader.begin();
+            simpleCubemapShader.setUniformMatrix("u_view", cameraComponent.camera.view);
+            simpleCubemapShader.setUniformMatrix("u_projection", cameraComponent.camera.projection);
+            simpleCubemapShader.setUniformi("u_environmentMap", 0);
+            cubeMesh.render(simpleCubemapShader, GL20.GL_TRIANGLES);
+            simpleCubemapShader.end();
+        }*/
     }
 
     @Override

@@ -14,15 +14,26 @@ import java.nio.FloatBuffer;
  * A {@link TextureData} implementation which should be used to create float textures.
  */
 public class NhgFloatTextureData implements TextureData {
+    private boolean isPrepared = false;
 
-    int width = 0;
-    int height = 0;
-    boolean isPrepared = false;
-    FloatBuffer buffer;
+    private int width = 0;
+    private int height = 0;
+    private int numComponents;
 
-    public NhgFloatTextureData(int w, int h) {
+    private int format;
+    private int internalFormat;
+    private FloatBuffer buffer;
+
+    public NhgFloatTextureData(int w, int h, int numComponents) {
+        this(w, h, numComponents, GL20.GL_RGB, GL20.GL_RGB);
+    }
+
+    public NhgFloatTextureData(int w, int h, int numComponents, int internalFormat, int format) {
         this.width = w;
         this.height = h;
+        this.numComponents = numComponents;
+        this.internalFormat = internalFormat;
+        this.format = format;
     }
 
     @Override
@@ -38,7 +49,7 @@ public class NhgFloatTextureData implements TextureData {
     @Override
     public void prepare() {
         if (isPrepared) throw new GdxRuntimeException("Already prepared");
-        this.buffer = BufferUtils.newFloatBuffer(width * height * 4);
+        this.buffer = BufferUtils.newFloatBuffer(width * height * numComponents);
         isPrepared = true;
     }
 
@@ -52,17 +63,14 @@ public class NhgFloatTextureData implements TextureData {
 
             // GLES and WebGL defines texture format by 3rd and 8th argument,
             // so to get a float texture one needs to supply GL_RGBA and GL_FLOAT there.
-            Gdx.gl.glTexImage2D(target, 0, GL20.GL_RGB, width, height, 0, GL20.GL_RGB, GL20.GL_FLOAT, buffer);
-
+            Gdx.gl.glTexImage2D(target, 0, internalFormat, width, height, 0, format, GL20.GL_FLOAT, buffer);
         } else {
             if (!Gdx.graphics.supportsExtension("GL_ARB_texture_float"))
                 throw new GdxRuntimeException("Extension GL_ARB_texture_float not supported!");
 
-            final int GL_RGBA32F = 34836; // this is a const from GL 3.0, used only on desktops
-
             // in desktop OpenGL the texture format is defined only by the third argument,
             // hence we need to use GL_RGBA32F there (this constant is unavailable in GLES/WebGL)
-            Gdx.gl.glTexImage2D(target, 0, GL_RGBA32F, width, height, 0, GL20.GL_RGBA, GL20.GL_FLOAT, buffer);
+            Gdx.gl.glTexImage2D(target, 0, internalFormat, width, height, 0, format, GL20.GL_FLOAT, buffer);
         }
     }
 

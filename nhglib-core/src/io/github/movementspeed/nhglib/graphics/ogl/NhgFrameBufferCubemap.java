@@ -1,10 +1,7 @@
 package io.github.movementspeed.nhglib.graphics.ogl;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Cubemap;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.glutils.GLFrameBuffer;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
@@ -46,6 +43,13 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
  * @author realitix
  */
 public class NhgFrameBufferCubemap extends GLFrameBuffer<Cubemap> {
+    public boolean genMipMap;
+
+    /**
+     * 0: Default format
+     * 1: Float format
+     */
+    public int type = 0;
 
     /**
      * the zero-based index of the active side
@@ -61,7 +65,7 @@ public class NhgFrameBufferCubemap extends GLFrameBuffer<Cubemap> {
      * @param hasDepth
      */
     public NhgFrameBufferCubemap(Pixmap.Format format, int width, int height, boolean hasDepth) {
-        this(format, width, height, hasDepth, false);
+        this(format, width, height, hasDepth, false, false, 0);
     }
 
     /**
@@ -75,24 +79,20 @@ public class NhgFrameBufferCubemap extends GLFrameBuffer<Cubemap> {
      * @param hasStencil whether to attach a stencil buffer
      * @throws com.badlogic.gdx.utils.GdxRuntimeException in case the FrameBuffer could not be created
      */
-    public NhgFrameBufferCubemap(Pixmap.Format format, int width, int height, boolean hasDepth, boolean hasStencil) {
+    public NhgFrameBufferCubemap(Pixmap.Format format, int width, int height, boolean hasDepth, boolean hasStencil, boolean genMipMap, int textureType) {
         super(format, width, height, hasDepth, hasStencil);
+        this.genMipMap = genMipMap;
+        this.type = textureType;
     }
 
+    /**
+     * Makes the frame buffer current so everything gets drawn to it, must be followed by call to either {@link #nextSide(int mipLevel)} or
+     * {@link #bindSide(com.badlogic.gdx.graphics.Cubemap.CubemapSide, int mipLevel)} to activate the side to render onto.
+     */
     @Override
-    protected Cubemap createColorTexture() {
-        int glFormat = Pixmap.Format.toGlFormat(format);
-        int glType = Pixmap.Format.toGlType(format);
-        NhgGLOnlyTextureData data = new NhgGLOnlyTextureData(width, height, 0, glFormat, glFormat, glType, true);
-
-        Cubemap result = new Cubemap(data, data, data, data, data, data);
-        result.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
-        result.setWrap(Texture.TextureWrap.ClampToEdge, Texture.TextureWrap.ClampToEdge);
-
-        Gdx.gl.glBindTexture(result.glTarget, result.getTextureObjectHandle());
-        Gdx.gl.glGenerateMipmap(GL20.GL_TEXTURE_CUBE_MAP);
-
-        return result;
+    public void bind() {
+        currentSide = -1;
+        super.bind();
     }
 
     @Override
@@ -111,14 +111,63 @@ public class NhgFrameBufferCubemap extends GLFrameBuffer<Cubemap> {
         }
     }
 
-    /**
-     * Makes the frame buffer current so everything gets drawn to it, must be followed by call to either {@link #nextSide(int mipLevel)} or
-     * {@link #bindSide(com.badlogic.gdx.graphics.Cubemap.CubemapSide, int mipLevel)} to activate the side to render onto.
-     */
     @Override
-    public void bind() {
-        currentSide = -1;
-        super.bind();
+    protected void build() {
+        // Do nothing, use buildFBO after initialization
+    }
+
+    @Override
+    protected Cubemap createColorTexture() {
+        TextureData data = null;
+
+        switch (type) {
+            case 0:
+                int glFormat = Pixmap.Format.toGlFormat(format);
+                int glType = Pixmap.Format.toGlType(format);
+                data = new NhgGLOnlyTextureData(width, height, 0, glFormat, glFormat, glType, true);
+                break;
+
+            case 1:
+                data = new NhgFloatTextureData(width, height, 3);
+                break;
+        }
+
+        Cubemap result = new Cubemap(data, data, data, data, data, data);
+
+        Texture.TextureFilter minFilter = genMipMap ? Texture.TextureFilter.MipMapLinearLinear : Texture.TextureFilter.Linear;
+
+        result.setFilter(minFilter, Texture.TextureFilter.Linear);
+        result.setWrap(Texture.TextureWrap.ClampToEdge, Texture.TextureWrap.ClampToEdge);
+
+        if (genMipMap) {
+            Gdx.gl.glBindTexture(result.glTarget, result.getTextureObjectHandle());
+            Gdx.gl.glGenerateMipmap(GL20.GL_TEXTURE_CUBE_MAP);
+        }
+
+        return result;
+    }
+
+    /**
+     * Bind the side, making it active to render on. Should be called in between a call to {@link #begin()} and {@link #end()}.
+     */
+    public void bindSide(int sideN, int mipLevel) {
+        currentSide = sideN;
+        Cubemap.CubemapSide side = getSide();
+
+        Gdx.gl20.glFramebufferTexture2D(GL20.GL_FRAMEBUFFER, GL20.GL_COLOR_ATTACHMENT0, side.glEnum,
+                colorTexture.getTextureObjectHandle(), mipLevel);
+    }
+
+    public void buildFBO() {
+        super.build();
+    }
+
+    public void setGenMipMap(boolean genMipMap) {
+        this.genMipMap = genMipMap;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 
     /**
@@ -142,27 +191,15 @@ public class NhgFrameBufferCubemap extends GLFrameBuffer<Cubemap> {
      *
      * @param side The side to bind
      */
-    protected void bindSide(final Cubemap.CubemapSide side, int mipLevel) {
+    private void bindSide(final Cubemap.CubemapSide side, int mipLevel) {
         Gdx.gl20.glFramebufferTexture2D(GL20.GL_FRAMEBUFFER, GL20.GL_COLOR_ATTACHMENT0, side.glEnum,
                 colorTexture.getTextureObjectHandle(), mipLevel);
     }
-
-    /**
-     * Bind the side, making it active to render on. Should be called in between a call to {@link #begin()} and {@link #end()}.
-     */
-    public void bindSide(int sideN, int mipLevel) {
-        currentSide = sideN;
-        Cubemap.CubemapSide side = getSide();
-
-        Gdx.gl20.glFramebufferTexture2D(GL20.GL_FRAMEBUFFER, GL20.GL_COLOR_ATTACHMENT0, side.glEnum,
-                colorTexture.getTextureObjectHandle(), mipLevel);
-    }
-
 
     /**
      * Get the currently bound side.
      */
-    public Cubemap.CubemapSide getSide() {
+    private Cubemap.CubemapSide getSide() {
         return currentSide < 0 ? null : Cubemap.CubemapSide.values()[currentSide];
     }
 }

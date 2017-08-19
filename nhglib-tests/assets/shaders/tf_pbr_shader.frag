@@ -120,7 +120,7 @@ void main() {
     #ifdef defRoughness
         float roughness = texture2D(u_roughness, v_texCoord).r;
     #else
-        float roughness = 0.0;
+        float roughness = 0.5;
     #endif
 
     #ifdef defAmbientOcclusion
