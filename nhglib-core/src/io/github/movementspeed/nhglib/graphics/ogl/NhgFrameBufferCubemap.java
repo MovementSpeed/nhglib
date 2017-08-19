@@ -5,43 +5,6 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.glutils.GLFrameBuffer;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
-/**
- * <p>
- * Encapsulates OpenGL ES 2.0 frame buffer objects. This is a simple helper class which should cover most FBO uses. It will
- * automatically create a cubemap for the color attachment and a renderbuffer for the depth buffer. You can get a hold of the
- * cubemap by {@link com.badlogic.gdx.graphics.glutils.FrameBufferCubemap#getColorBufferTexture()}. This class will only work with OpenGL ES 2.0.
- * </p>
- * <p>
- * <p>
- * FrameBuffers are managed. In case of an OpenGL context loss, which only happens on Android when a user switches to another
- * application or receives an incoming call, the framebuffer will be automatically recreated.
- * </p>
- * <p>
- * <p>
- * A FrameBuffer must be disposed if it is no longer needed
- * </p>
- * <p>
- * <p>
- * Typical use: <br />
- * FrameBufferCubemap frameBuffer = new FrameBufferCubemap(Format.RGBA8888, fSize, fSize, true); <br />
- * frameBuffer.begin(); <br />
- * while( frameBuffer.nextSide() ) { <br />
- * frameBuffer.getSide().getUp(camera.up); <br />
- * frameBuffer.getSide().getDirection(camera.direction);<br />
- * camera.update(); <br />
- * <p>
- * Gdx.gl.glClearColor(0, 0, 0, 1); <br />
- * Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT); <br />
- * modelBatch.begin(camera); <br />
- * modelBatch.render(renderableProviders); <br />
- * modelBatch.end(); <br />
- * } <br />
- * frameBuffer.end(); <br />
- * Cubemap cubemap = frameBuffer.getColorBufferCubemap();
- * </p>
- *
- * @author realitix
- */
 public class NhgFrameBufferCubemap extends GLFrameBuffer<Cubemap> {
     public boolean genMipMap;
 

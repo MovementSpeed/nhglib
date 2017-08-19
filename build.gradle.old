@@ -41,7 +41,7 @@ project(":nhglib-core") {
     apply plugin: 'signing'
     apply plugin: 'maven'
 
-    group = 'com.github.VoidZombie'
+    group = 'com.github.MovementSpeed'
 
     // Signature of artifacts
     signing {
@@ -67,12 +67,12 @@ project(":nhglib-core") {
                     packaging 'jar'
                     groupId 'io.github.movementspeed'
                     artifactId project.name
-                    url 'https://github.com/VoidZombie/nhglib'
+                    url 'https://github.com/MovementSpeed/nhglib'
 
                     scm {
-                        connection 'scm:git:https://github.com/VoidZombie/nhglib.git'
-                        developerConnection 'scm:git:git@github.com:VoidZombie/nhglib.git'
-                        url 'https://github.com/VoidZombie/nhglib.git'
+                        connection 'scm:git:https://github.com/MovementSpeed/nhglib.git'
+                        developerConnection 'scm:git:git@github.com:MovementSpeed/nhglib.git'
+                        url 'https://github.com/MovementSpeed/nhglib.git'
                     }
 
                     licenses {
@@ -85,7 +85,7 @@ project(":nhglib-core") {
 
                     developers {
                         developer {
-                            id = 'VoidZombie'
+                            id = 'MovementSpeed'
                             name = 'Fausto Napoli'
                             email = 'worsearoom@gmail.com'
                         }
@@ -148,12 +148,12 @@ project(":nhglib-android") {
                     packaging 'jar'
                     groupId 'io.github.movementspeed'
                     artifactId project.name
-                    url 'https://github.com/VoidZombie/nhglib'
+                    url 'https://github.com/MovementSpeed/nhglib'
 
                     scm {
-                        connection 'scm:git:https://github.com/VoidZombie/nhglib.git'
-                        developerConnection 'scm:git:git@github.com:VoidZombie/nhglib.git'
-                        url 'https://github.com/VoidZombie/nhglib.git'
+                        connection 'scm:git:https://github.com/MovementSpeed/nhglib.git'
+                        developerConnection 'scm:git:git@github.com:MovementSpeed/nhglib.git'
+                        url 'https://github.com/MovementSpeed/nhglib.git'
                     }
 
                     licenses {
@@ -166,7 +166,7 @@ project(":nhglib-android") {
 
                     developers {
                         developer {
-                            id = 'VoidZombie'
+                            id = 'MovementSpeed'
                             name = 'Fausto Napoli'
                             email = 'worsearoom@gmail.com'
                         }
@@ -228,12 +228,12 @@ project(":nhglib-ios") {
                     packaging 'jar'
                     groupId 'io.github.movementspeed'
                     artifactId project.name
-                    url 'https://github.com/VoidZombie/nhglib'
+                    url 'https://github.com/MovementSpeed/nhglib'
 
                     scm {
-                        connection 'scm:git:https://github.com/VoidZombie/nhglib.git'
-                        developerConnection 'scm:git:git@github.com:VoidZombie/nhglib.git'
-                        url 'https://github.com/VoidZombie/nhglib.git'
+                        connection 'scm:git:https://github.com/MovementSpeed/nhglib.git'
+                        developerConnection 'scm:git:git@github.com:MovementSpeed/nhglib.git'
+                        url 'https://github.com/MovementSpeed/nhglib.git'
                     }
 
                     licenses {
@@ -246,7 +246,7 @@ project(":nhglib-ios") {
 
                     developers {
                         developer {
-                            id = 'VoidZombie'
+                            id = 'MovementSpeed'
                             name = 'Fausto Napoli'
                             email = 'worsearoom@gmail.com'
                         }
@@ -304,12 +304,12 @@ project(":nhglib-desktop") {
                     packaging 'jar'
                     groupId 'io.github.movementspeed'
                     artifactId project.name
-                    url 'https://github.com/VoidZombie/nhglib'
+                    url 'https://github.com/MovementSpeed/nhglib'
 
                     scm {
-                        connection 'scm:git:https://github.com/VoidZombie/nhglib.git'
-                        developerConnection 'scm:git:git@github.com:VoidZombie/nhglib.git'
-                        url 'https://github.com/VoidZombie/nhglib.git'
+                        connection 'scm:git:https://github.com/MovementSpeed/nhglib.git'
+                        developerConnection 'scm:git:git@github.com:MovementSpeed/nhglib.git'
+                        url 'https://github.com/MovementSpeed/nhglib.git'
                     }
 
                     licenses {
@@ -322,7 +322,7 @@ project(":nhglib-desktop") {
 
                     developers {
                         developer {
-                            id = 'VoidZombie'
+                            id = 'MovementSpeed'
                             name = 'Fausto Napoli'
                             email = 'worsearoom@gmail.com'
                         }
@@ -382,12 +382,12 @@ project(":nhglib-html") {
                     packaging 'jar'
                     groupId 'io.github.movementspeed'
                     artifactId project.name
-                    url 'https://github.com/VoidZombie/nhglib'
+                    url 'https://github.com/MovementSpeed/nhglib'
 
                     scm {
-                        connection 'scm:git:https://github.com/VoidZombie/nhglib.git'
-                        developerConnection 'scm:git:git@github.com:VoidZombie/nhglib.git'
-                        url 'https://github.com/VoidZombie/nhglib.git'
+                        connection 'scm:git:https://github.com/MovementSpeed/nhglib.git'
+                        developerConnection 'scm:git:git@github.com:MovementSpeed/nhglib.git'
+                        url 'https://github.com/MovementSpeed/nhglib.git'
                     }
 
                     licenses {
@@ -400,7 +400,7 @@ project(":nhglib-html") {
 
                     developers {
                         developer {
-                            id = 'VoidZombie'
+                            id = 'MovementSpeed'
                             name = 'Fausto Napoli'
                             email = 'worsearoom@gmail.com'
                         }
