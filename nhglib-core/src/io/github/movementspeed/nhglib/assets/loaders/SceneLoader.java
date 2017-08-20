@@ -39,9 +39,6 @@ public class SceneLoader extends AsynchronousAssetLoader<Scene, SceneLoader.Scen
         return null;
     }
 
-    public static class SceneParameter extends AssetLoaderParameters<Scene> {
-    }
-
     private Scene getScene(byte[] bytes) {
         Scene scene = null;
 
@@ -57,5 +54,8 @@ public class SceneLoader extends AsynchronousAssetLoader<Scene, SceneLoader.Scen
         }
 
         return scene;
+    }
+
+    public static class SceneParameter extends AssetLoaderParameters<Scene> {
     }
 }

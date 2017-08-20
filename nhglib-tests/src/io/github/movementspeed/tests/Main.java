@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.assets.Asset;
+import io.github.movementspeed.nhglib.files.HDRData;
 import io.github.movementspeed.nhglib.graphics.lights.LightProbe;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
@@ -46,6 +47,7 @@ public class Main extends NhgEntry implements InputListener {
     private NodeComponent cameraNode;
     private CameraComponent cameraComponent;
     private RenderingSystem renderingSystem;
+    private Environment environment;
 
     private ShaderProgram simpleCubemapShader;
     private LightProbe lightProbe;
@@ -86,7 +88,7 @@ public class Main extends NhgEntry implements InputListener {
         renderingSystem = nhg.entities.getEntitySystem(RenderingSystem.class);
         renderingSystem.setClearColor(Color.GRAY);
 
-        Environment environment = renderingSystem.getEnvironment();
+        environment = renderingSystem.getEnvironment();
 
         NhgLightsAttribute lightsAttribute = new NhgLightsAttribute();
         lightsAttribute.lights.add(NhgLight.point(5, 10, Color.WHITE));
@@ -94,18 +96,8 @@ public class Main extends NhgEntry implements InputListener {
         GammaCorrectionAttribute gammaCorrectionAttribute = new GammaCorrectionAttribute();
         gammaCorrectionAttribute.gammaCorrection = true;
 
-        lightProbe = new LightProbe();
-        lightProbe.build("textures/test_hdr.hdr", 512, 512);
-
-        IBLAttribute irradianceAttribute = IBLAttribute.createIrradiance(lightProbe.getIrradiance());
-        IBLAttribute prefilterAttribute = IBLAttribute.createPrefilter(lightProbe.getPrefilter());
-        IBLAttribute brdfAttribute = IBLAttribute.createBrdf(lightProbe.getBrdf());
-
         environment.set(lightsAttribute);
         environment.set(gammaCorrectionAttribute);
-        environment.set(irradianceAttribute);
-        environment.set(prefilterAttribute);
-        environment.set(brdfAttribute);
 
         // Subscribe to asset events
         nhg.messaging.get(Strings.Events.assetLoaded, Strings.Events.assetLoadingFinished, Strings.Events.sceneLoaded)
@@ -133,6 +125,18 @@ public class Main extends NhgEntry implements InputListener {
                             }
                         } else if (message.is(Strings.Events.sceneLoaded)) {
                             NhgLogger.log(this, "Scene loaded");
+                            HDRData data = nhg.assets.get("test_hdr");
+
+                            lightProbe = new LightProbe();
+                            lightProbe.build(data, 512, 512);
+
+                            IBLAttribute irradianceAttribute = IBLAttribute.createIrradiance(lightProbe.getIrradiance());
+                            IBLAttribute prefilterAttribute = IBLAttribute.createPrefilter(lightProbe.getPrefilter());
+                            IBLAttribute brdfAttribute = IBLAttribute.createBrdf(lightProbe.getBrdf());
+
+                            environment.set(irradianceAttribute);
+                            environment.set(prefilterAttribute);
+                            environment.set(brdfAttribute);
                         }
                     }
                 });

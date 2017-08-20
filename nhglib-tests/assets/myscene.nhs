@@ -34,6 +34,11 @@
         "alias":"mat2_albedo",
         "source":"textures/mat2_albedo.png",
         "classAlias":"texture"
+      },
+      {
+        "alias":"test_hdr",
+        "source":"textures/test_hdr.hdr",
+        "classAlias":"hdr"
       }
     ],
     "entities":

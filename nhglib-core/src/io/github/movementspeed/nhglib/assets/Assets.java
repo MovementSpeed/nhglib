@@ -13,9 +13,11 @@ import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.UBJsonReader;
 import io.github.movementspeed.nhglib.Nhg;
+import io.github.movementspeed.nhglib.assets.loaders.HDRLoader;
 import io.github.movementspeed.nhglib.assets.loaders.JsonLoader;
 import io.github.movementspeed.nhglib.assets.loaders.NhgG3dModelLoader;
 import io.github.movementspeed.nhglib.assets.loaders.SceneLoader;
+import io.github.movementspeed.nhglib.files.HDRData;
 import io.github.movementspeed.nhglib.graphics.scenes.Scene;
 import io.github.movementspeed.nhglib.interfaces.Updatable;
 import io.github.movementspeed.nhglib.runtime.fsm.base.AssetsStates;
@@ -44,6 +46,7 @@ public class Assets implements Updatable, AssetErrorListener {
         assetManager = new AssetManager();
         assetManager.setLoader(Scene.class, new SceneLoader(nhg, assetManager.getFileHandleResolver()));
         assetManager.setLoader(JsonValue.class, new JsonLoader(assetManager.getFileHandleResolver()));
+        assetManager.setLoader(HDRData.class, new HDRLoader(assetManager.getFileHandleResolver()));
 
         assetManager.setLoader(Model.class, ".g3db", new NhgG3dModelLoader(this,
                 new UBJsonReader(), assetManager.getFileHandleResolver()));

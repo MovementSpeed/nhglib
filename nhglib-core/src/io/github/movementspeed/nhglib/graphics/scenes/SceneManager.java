@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.assets.Asset;
 import io.github.movementspeed.nhglib.assets.Assets;
 import io.github.movementspeed.nhglib.data.models.serialization.components.*;
+import io.github.movementspeed.nhglib.files.HDRData;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
 import io.github.movementspeed.nhglib.graphics.utils.PbrMaterial;
 import io.github.movementspeed.nhglib.physics.models.BvhTriangleMeshRigidBodyShape;
@@ -72,6 +73,7 @@ public class SceneManager {
         SceneUtils.addAssetClassMapping("model", Model.class);
         SceneUtils.addAssetClassMapping("texture", Texture.class);
         SceneUtils.addAssetClassMapping("particleEffect", ParticleEffect.class);
+        SceneUtils.addAssetClassMapping("hdr", HDRData.class);
     }
 
     public void loadScene(final Scene scene) {

@@ -1,7 +1,6 @@
 package io.github.movementspeed.nhglib.graphics.lights;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -14,10 +13,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.UBJsonReader;
 import io.github.movementspeed.nhglib.files.HDRData;
-import io.github.movementspeed.nhglib.graphics.ogl.NhgFloatTextureData;
 import io.github.movementspeed.nhglib.graphics.ogl.NhgFrameBufferCubemap;
-
-import java.io.IOException;
 
 /**
  * Created by Fausto Napoli on 17/08/2017.
@@ -39,9 +35,9 @@ public class LightProbe {
         init();
     }
 
-    public void build(String hdrTexturePath, int envWidth, int envHeight) {
-        if (hdrTexturePath != null) {
-            environmentCubemap = renderEnvironmentFromHdrTexture(hdrTexturePath, envWidth, envHeight);
+    public void build(HDRData hdrData, int envWidth, int envHeight) {
+        if (hdrData != null) {
+            environmentCubemap = renderEnvironmentFromHDRData(hdrData, envWidth, envHeight);
         } else {
             environmentCubemap = renderEnvironmentFromScene(envWidth, envHeight);
         }
@@ -130,24 +126,13 @@ public class LightProbe {
         pc6.update();
     }
 
-    private Cubemap renderEnvironmentFromHdrTexture(String texturePath, int width, int height) {
+    private Cubemap renderEnvironmentFromHDRData(HDRData data, int width, int height) {
         Texture equirectangularTexture;
         ShaderProgram equiToCubeShader = new ShaderProgram(
                 Gdx.files.internal("shaders/equi_to_cube_shader.vert"),
                 Gdx.files.internal("shaders/equi_to_cube_shader.frag"));
 
-        HDRData hdrData = getHDRData(Gdx.files.internal(texturePath));
-        float[] rgb = hdrData.getFlatPixelArray();
-
-        int bWidth = hdrData.getWidth();
-        int bHeight = hdrData.getHeight();
-
-        NhgFloatTextureData data = new NhgFloatTextureData(bWidth, bHeight, 3);
-        data.prepare();
-        data.getBuffer().put(rgb);
-        data.getBuffer().flip();
-
-        equirectangularTexture = new Texture(data);
+        equirectangularTexture = data.toTexture();
 
         NhgFrameBufferCubemap frameBufferCubemap = new NhgFrameBufferCubemap(Pixmap.Format.RGB888, width, height, true);
         frameBufferCubemap.type = 1;
@@ -307,17 +292,5 @@ public class LightProbe {
         brdfShader.end();
 
         return frameBuffer.getColorBufferTexture();
-    }
-
-    private HDRData getHDRData(FileHandle fileHandle) {
-        HDRData data = null;
-
-        try {
-            data = new HDRData(fileHandle.file());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return data;
     }
 }

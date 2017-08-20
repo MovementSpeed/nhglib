@@ -1,12 +1,17 @@
 package io.github.movementspeed.nhglib.files;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
+import io.github.movementspeed.nhglib.graphics.ogl.NhgFloatTextureData;
 
 import java.io.*;
 
-
-// This class is used to convert a HDR format image into a three-dimension float array represents the
-//RGB channels of the original image.
+/**
+ * @author Peng Chen
+ *         http://aicp70.wixsite.com/aboutme/single-post/2015/10/29/1-HDR-file-and-its-readin-program-by-JAVA
+ *         This class is used to convert a HDR format image into a three-dimension float array represents the
+ *         RGB channels of the original image.
+ */
 public class HDRData {
     //the width of the HDR image
     private int width;
@@ -91,6 +96,17 @@ public class HDRData {
         } finally {
             in.close();
         }
+    }
+
+    public Texture toTexture() {
+        float[] rgb = getFlatPixelArray();
+
+        NhgFloatTextureData data = new NhgFloatTextureData(width, height, 3);
+        data.prepare();
+        data.getBuffer().put(rgb);
+        data.getBuffer().flip();
+
+        return new Texture(data);
     }
 
     //Construction method if the input is a InputStream.
