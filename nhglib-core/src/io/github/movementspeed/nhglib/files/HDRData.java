@@ -4,7 +4,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.graphics.ogl.NhgFloatTextureData;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * @author Peng Chen
@@ -87,15 +88,16 @@ public class HDRData {
     }
 
     //Construction method if the input is a file.
-    public HDRData(File file) throws IOException {
-        if (file == null)
+    public HDRData(byte[] in) throws IOException {
+        if (in == null)
             throw new NullPointerException();
-        InputStream in = new BufferedInputStream(new FileInputStream(file));
-        try {
+        //InputStream in = new BufferedInputStream(new FileInputStream(file));
+        read(in);
+        /*try {
             read(in);
         } finally {
             in.close();
-        }
+        }*/
     }
 
     public Texture toTexture() {
@@ -111,13 +113,14 @@ public class HDRData {
 
     //Construction method if the input is a InputStream.
     //Parse the HDR file by its format. HDR format encode can be seen in Radiance HDR(.pic,.hdr) file format
-    private void read(InputStream in) throws IOException {
+    private void read(byte[] in) throws IOException {
+        ByteCounter counter = new ByteCounter();
         //Parse HDR file's header line
         //readLine(InputStream in) method will be introduced later.
 
         //The first line of the HDR file. If it is a HDR file, the first line should be "#?RADIANCE"
         //If not, we will throw a IllegalArgumentException.
-        String isHDR = readLine(in);
+        String isHDR = readLine(counter, in);
         if (!isHDR.equals("#?RADIANCE"))
             throw new IllegalArgumentException("Unrecognized format: " + isHDR);
 
@@ -128,11 +131,11 @@ public class HDRData {
         //The above information is not so important for us.
         //The only important information for us is the Resolution which shows the size of the HDR image
         //The resolution information's format is fixed. Usaually, it will be -Y 1024 +X 2048 something like this.
-        String inform = readLine(in);
+        String inform = readLine(counter, in);
         while (!inform.equals("")) {
-            inform = readLine(in);
+            inform = readLine(counter, in);
         }
-        inform = readLine(in);
+        inform = readLine(counter, in);
         String[] tokens = inform.split(" ", 4);
         if (tokens[0].charAt(1) == 'Y') {
             width = Integer.parseInt(tokens[3]);
@@ -150,9 +153,8 @@ public class HDRData {
         //According to the HDR format document, each pixel is stored as 4 bytes, one bytes mantissa for each r,g,b and a shared one byte exponent.
         //The pixel data may be stored uncompressed or using a straightforward run length encoding scheme.
 
-        DataInput din = new DataInputStream(in);
+        //DataInput din = new DataInputStream(in);
         buffers = new int[height][width][4];
-
 
         //We read the information row by row. In each row, the first four bytes store the column number information.
         //The first and second bytes store "2". And the third byte stores the higher 8 bits of col num, the fourth byte stores the lower 8 bits of col num.
@@ -162,10 +164,11 @@ public class HDRData {
             //For every line of the data part, the first and second byte should be 2(DEC).
             //The third*2^8+the fourth should equals to the width. They combined the width information.
             //For every line, we need check this kind of informatioin. And the starting four nums of every line is the same
-            int a = din.readUnsignedByte();
-            int b = din.readUnsignedByte();
-            int c = din.readUnsignedByte();
-            int d = din.readUnsignedByte();
+            int a = unsignedToBytes(in[counter.get()]);
+            int b = unsignedToBytes(in[counter.get()]);
+            int c = unsignedToBytes(in[counter.get()]);
+            int d = unsignedToBytes(in[counter.get()]);
+
             if (a != 2 || b != 2)
                 throw new IllegalArgumentException("This hdr file is not made by RLE run length encoded ");
             if (((c << 8) + d) != width)
@@ -179,9 +182,9 @@ public class HDRData {
             //And the first data is the number of how many induplicate items, and the following data stream is their associated data.
             for (int j = 0; j < 4; j++) { //This loop controls the four channel. R,G,B and Exp.
                 for (int w = 0; w < width; ) {//This w controls the Wth col to readin.
-                    int num = din.readUnsignedByte();
+                    int num = unsignedToBytes(in[counter.get()]);
                     if (num > 128) {//This means the following one data is duplicate item. And
-                        int duplicate = din.readUnsignedByte();
+                        int duplicate = unsignedToBytes(in[counter.get()]);
                         num -= 128;
                         while (num > 0) {
                             buffers[i][w++][j] = duplicate;
@@ -189,7 +192,7 @@ public class HDRData {
                         }
                     } else {  //This situation is the no duplicate case.
                         while (num > 0) {
-                            buffers[i][w++][j] = din.readUnsignedByte();
+                            buffers[i][w++][j] = unsignedToBytes(in[counter.get()]);
                             num--;
                         }
                     }
@@ -200,12 +203,12 @@ public class HDRData {
 
         //The above for loop is used to generated the four channel of each pixel. RGBE. The next patch of codes are used to generate float pixel values of each three channel by using the transition expression.
         /*The transition relationship between rgbe and HDR FP32(RGB) is as follow:
-		 * 1. From rgbe to FP 32 (RGB)   this relationship is used to input and decode the HDR file.
+         * 1. From rgbe to FP 32 (RGB)   this relationship is used to input and decode the HDR file.
 		 * if(e==0) R=G=B=0.0;
 		 * else R=r*2^(e-128-8);
 		 *      G=g*2^(e-128-8);
 		 *      B=b*2^(e-128-8);
-		 * 
+		 *
 		 * 2.From FP32(RGB) to rgbe   This relationship is used to output and encode the HDR file.
 		 * v=max(R,G,B);
 		 * if(v<1e-32),r=g=b=0;
@@ -214,8 +217,8 @@ public class HDRData {
 		 *       g=G*m*256.0/v;
 		 *       b=B*m*256.0/v;
 		 *       e=n+128;
-		 *       
-		 *       
+		 *
+		 *
 		 *pixels[][][] stores the FP32(RGB) information. pixels[i][j][0] stores the R channel.
 		 *
 		 *By the way, we need generate the luminance of each pixel. By using the expressing:
@@ -264,10 +267,10 @@ public class HDRData {
         lummean = lumsum / (height * width);
     }
 
-    private String readLine(InputStream in) throws IOException {
+    private String readLine(ByteCounter counter, byte[] bytes) throws IOException {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         for (int i = 0; ; i++) {
-            int b = in.read();
+            int b = bytes[counter.get()];
             if (b == '\n' || b == -1) {
                 break;
             } else if (i == 100) {
@@ -279,4 +282,22 @@ public class HDRData {
         return new String(bout.toByteArray(), "US-ASCII");
     }
 
+    public static int unsignedToBytes(byte b) {
+        return b & 0xFF;
+    }
+
+
+    private class ByteCounter {
+        private int count;
+
+        public void inc() {
+            count++;
+        }
+
+        public int get() {
+            int c = count;
+            inc();
+            return c;
+        }
+    }
 }

@@ -9,7 +9,6 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.files.HDRData;
 
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -27,7 +26,7 @@ public class HDRLoader extends AsynchronousAssetLoader<HDRData, HDRLoader.HDRPar
 
     @Override
     public HDRData loadSync(AssetManager manager, String fileName, FileHandle file, HDRParams parameter) {
-        return loadHDR(file.file());
+        return loadHDR(file);
     }
 
     @Override
@@ -35,11 +34,11 @@ public class HDRLoader extends AsynchronousAssetLoader<HDRData, HDRLoader.HDRPar
         return null;
     }
 
-    public HDRData loadHDR(File file) {
+    public HDRData loadHDR(FileHandle file) {
         HDRData hdrData = null;
 
         try {
-            hdrData = new HDRData(file);
+            hdrData = new HDRData(file.readBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }
