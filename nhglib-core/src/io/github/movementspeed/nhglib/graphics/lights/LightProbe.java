@@ -13,19 +13,11 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.UBJsonReader;
-import com.twelvemonkeys.imageio.plugins.hdr.HDRImageReadParam;
-import com.twelvemonkeys.imageio.plugins.hdr.HDRImageReader;
-import com.twelvemonkeys.imageio.plugins.hdr.tonemap.NullToneMapper;
+import io.github.movementspeed.nhglib.files.HDRData;
 import io.github.movementspeed.nhglib.graphics.ogl.NhgFloatTextureData;
 import io.github.movementspeed.nhglib.graphics.ogl.NhgFrameBufferCubemap;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferFloat;
 import java.io.IOException;
-import java.util.Iterator;
 
 /**
  * Created by Fausto Napoli on 17/08/2017.
@@ -144,11 +136,11 @@ public class LightProbe {
                 Gdx.files.internal("shaders/equi_to_cube_shader.vert"),
                 Gdx.files.internal("shaders/equi_to_cube_shader.frag"));
 
-        BufferedImage bufferedImage = getHdrImage(Gdx.files.internal(texturePath));
-        float[] rgb = ((DataBufferFloat) bufferedImage.getRaster().getDataBuffer()).getData();
+        HDRData hdrData = getHDRData(Gdx.files.internal(texturePath));
+        float[] rgb = hdrData.getFlatPixelArray();
 
-        int bWidth = bufferedImage.getWidth();
-        int bHeight = bufferedImage.getHeight();
+        int bWidth = hdrData.getWidth();
+        int bHeight = hdrData.getHeight();
 
         NhgFloatTextureData data = new NhgFloatTextureData(bWidth, bHeight, 3);
         data.prepare();
@@ -317,43 +309,15 @@ public class LightProbe {
         return frameBuffer.getColorBufferTexture();
     }
 
-    private BufferedImage getHdrImage(FileHandle fileHandle) {
-        BufferedImage res = null;
+    private HDRData getHDRData(FileHandle fileHandle) {
+        HDRData data = null;
 
         try {
-            // Create input stream
-            ImageInputStream input = ImageIO.createImageInputStream(fileHandle.file());
-
-            try {
-                // Get the reader
-                Iterator<ImageReader> readers = ImageIO.getImageReaders(input);
-
-                if (!readers.hasNext()) {
-                    throw new IllegalArgumentException("No reader for: " + fileHandle.file());
-                }
-
-                HDRImageReader reader = (HDRImageReader) readers.next();
-
-                try {
-                    reader.setInput(input);
-
-                    HDRImageReadParam param = (HDRImageReadParam) reader.getDefaultReadParam();
-                    param.setToneMapper(new NullToneMapper());
-
-                    // Finally read the image, using settings from param
-                    res = reader.read(0, param);
-                } finally {
-                    // Dispose reader in finally block to avoid memory leaks
-                    reader.dispose();
-                }
-            } finally {
-                // Close stream in finally block to avoid resource leaks
-                input.close();
-            }
+            data = new HDRData(fileHandle.file());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return res;
+        return data;
     }
 }
