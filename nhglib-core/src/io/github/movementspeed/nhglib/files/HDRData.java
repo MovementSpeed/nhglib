@@ -91,13 +91,8 @@ public class HDRData {
     public HDRData(byte[] in) throws IOException {
         if (in == null)
             throw new NullPointerException();
-        //InputStream in = new BufferedInputStream(new FileInputStream(file));
+
         read(in);
-        /*try {
-            read(in);
-        } finally {
-            in.close();
-        }*/
     }
 
     public Texture toTexture() {
