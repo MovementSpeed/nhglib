@@ -125,7 +125,7 @@ public class Main extends NhgEntry implements InputListener {
                             }
                         } else if (message.is(Strings.Events.sceneLoaded)) {
                             NhgLogger.log(this, "Scene loaded");
-                            HDRData data = nhg.assets.get("test_hdr");
+                            HDRData data = nhg.assets.get("newport_loft");
 
                             lightProbe = new LightProbe();
                             lightProbe.build(data, 512, 512);

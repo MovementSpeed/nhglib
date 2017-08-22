@@ -91,7 +91,13 @@ public class NhgFrameBufferCubemap extends GLFrameBuffer<Cubemap> {
                 break;
 
             case 1:
-                data = new NhgFloatTextureData(width, height, 3);
+                if (Gdx.graphics.supportsExtension("OES_texture_float")) {
+                    data = new NhgFloatTextureData(width, height, 3);
+                } else {
+                    glFormat = Pixmap.Format.toGlFormat(format);
+                    glType = Pixmap.Format.toGlType(format);
+                    data = new NhgGLOnlyTextureData(width, height, 0, glFormat, glFormat, glType, true);
+                }
                 break;
         }
 

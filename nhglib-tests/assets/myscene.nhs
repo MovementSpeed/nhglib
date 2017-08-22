@@ -36,8 +36,8 @@
         "classAlias":"texture"
       },
       {
-        "alias":"test_hdr",
-        "source":"textures/test_hdr.hdr",
+        "alias":"newport_loft",
+        "source":"textures/newport_loft.hdr",
         "classAlias":"hdr"
       }
     ],
