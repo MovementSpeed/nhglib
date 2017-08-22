@@ -12,14 +12,14 @@ precision mediump float;
 #ifdef billboard
 //Billboard particles
 //In
-attribute vec3 a_position;
-attribute vec2 a_texCoord0;
-attribute vec4 a_sizeAndRotation;
-attribute vec4 a_color;
+in vec3 a_position;
+in vec2 a_texCoord0;
+in vec4 a_sizeAndRotation;
+in vec4 a_color;
 
 //out
-varying MED vec2 v_texCoords0;
-varying vec4 v_color;
+out MED vec2 v_texCoords0;
+out vec4 v_color;
 
 //Camera
 uniform mat4 u_projViewTrans;
@@ -36,7 +36,7 @@ uniform vec3 u_cameraUp;
 #endif
 #ifdef paticleDirectionFacing
 uniform vec3 u_cameraPosition;
-attribute vec3 a_direction;
+in vec3 a_direction;
 #endif
 
 void main()
@@ -75,18 +75,18 @@ void main()
 }
 #else
 //Point particles
-attribute vec3 a_sizeAndRotation;
-attribute vec4 a_position;
-attribute vec4 a_color;
-attribute vec4 a_region;
+in vec3 a_sizeAndRotation;
+in vec4 a_position;
+in vec4 a_color;
+in vec4 a_region;
 
 //out
-varying float v_depth;
-varying vec2 v_uvRegionCenter;
-varying vec4 v_position;
-varying vec4 v_color;
-varying vec4 v_rotation;
-varying MED vec4 v_region;
+out float v_depth;
+out vec2 v_uvRegionCenter;
+out vec4 v_position;
+out vec4 v_color;
+out vec4 v_rotation;
+out MED vec4 v_region;
 
 uniform vec2 u_screen;
 uniform vec2 u_regionSize;

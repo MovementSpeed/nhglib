@@ -135,7 +135,7 @@ public class LightProbe {
         equirectangularTexture = data.toTexture();
 
         NhgFrameBufferCubemap frameBufferCubemap = new NhgFrameBufferCubemap(Pixmap.Format.RGB888, width, height, true);
-        frameBufferCubemap.type = 0;
+        frameBufferCubemap.type = 1;
         frameBufferCubemap.genMipMap = false;
         frameBufferCubemap.buildFBO();
 

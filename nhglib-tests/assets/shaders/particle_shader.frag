@@ -9,24 +9,25 @@ precision mediump float;
 #define HIGH
 #endif
 
+out vec4 fragmentColor;
 
 #ifdef billboard
 //Billboard particles
-varying vec4 v_color;
-varying MED vec2 v_texCoords0;
+in vec4 v_color;
+in MED vec2 v_texCoords0;
 uniform sampler2D u_diffuseTexture;
 
 void main() {
-	gl_FragColor = texture2D(u_diffuseTexture, v_texCoords0) * v_color;
+	fragmentColor = texture(u_diffuseTexture, v_texCoords0) * v_color;
 }
 #else
 
 //Point particles
-varying float v_depth;
-varying vec2 v_uvRegionCenter;
-varying vec4 v_color;
-varying vec4 v_rotation;
-varying MED vec4 v_region;
+in float v_depth;
+in vec2 v_uvRegionCenter;
+in vec4 v_color;
+in vec4 v_rotation;
+in MED vec4 v_region;
 
 uniform float u_softness;
 uniform vec2 u_screen;
@@ -45,11 +46,11 @@ void main()
 {
 	vec2 uv = v_region.xy + gl_PointCoord * v_region.zw - v_uvRegionCenter;
 	vec2 texCoord = mat2(v_rotation.x, v_rotation.y, v_rotation.z, v_rotation.w) * uv + v_uvRegionCenter;
-	vec4 color = texture2D(u_diffuseTexture, texCoord) * v_color;
+	vec4 color = texture(u_diffuseTexture, texCoord) * v_color;
 
     #ifdef SOFT_PARTICLES
 	vec2 dcoords = vec2(gl_FragCoord.x / u_screen.x, gl_FragCoord.y / u_screen.y);
-	vec4 depthMap = texture2D(u_depthTexture, dcoords);
+	vec4 depthMap = texture(u_depthTexture, dcoords);
 
 	float depth = depthMap.x;
 	float pdepth = (v_depth - u_cameraRange.x) / (u_cameraRange.y - u_cameraRange.x);
@@ -61,7 +62,7 @@ void main()
 	color.a = color.a * weight;
 	#endif
 
-	gl_FragColor = color;
+	fragmentColor = color;
 }
 
 #endif

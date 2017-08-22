@@ -1,8 +1,21 @@
-attribute vec3 a_position;
-attribute vec2 a_texCoord0;
+#version 300 es
 
-varying vec3 v_localPos;
-varying vec2 v_texCoord;
+#ifdef GL_ES
+#define LOWP lowp
+#define MED mediump
+#define HIGH highp
+precision mediump float;
+#else
+#define MED
+#define LOWP
+#define HIGH
+#endif
+
+in vec3 a_position;
+in vec2 a_texCoord0;
+
+out vec3 v_localPos;
+out vec2 v_texCoord;
 
 uniform mat4 u_projection;
 uniform mat4 u_view;

@@ -1,6 +1,5 @@
 package io.github.movementspeed.nhglib.graphics.shaders.particles;
 
-import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
@@ -214,18 +213,13 @@ public class ParticleShader extends BaseShader {
     }
 
     public static String createPrefix(final Renderable renderable, final Config config) {
-        String prefix = "";
-        if (Gdx.app.getType() == ApplicationType.Desktop)
-            prefix += "#version 120\n";
-        else
-            prefix += "#version 100\n";
+        String prefix = "#version 300 es\n";
+
         if (config.type == ParticleType.Billboard) {
             prefix += "#define billboard\n";
             if (config.align == AlignMode.Screen)
                 prefix += "#define screenFacing\n";
             else if (config.align == AlignMode.ViewPoint) prefix += "#define viewPointFacing\n";
-            // else if(config.align == AlignMode.ParticleDirection)
-            // prefix += "#define paticleDirectionFacing\n";
         }
 
         if (config.softParticles) {

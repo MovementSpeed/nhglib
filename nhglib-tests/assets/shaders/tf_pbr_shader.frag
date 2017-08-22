@@ -1,10 +1,19 @@
 #ifdef GL_ES
+#define LOWP lowp
+#define MED mediump
+#define HIGH highp
 precision mediump float;
+#else
+#define MED
+#define LOWP
+#define HIGH
 #endif
 
 #define M_PI 3.14159265359
 #define MIN_ATTENUATION 0.0001
 #define ATTENUATION_THRESHOLD 0.01
+
+out vec4 fragmentColor;
 
 uniform int u_graphicsWidth;
 uniform int u_graphicsHeight;
@@ -53,11 +62,11 @@ uniform mat4 u_viewMatrix;
     uniform sampler2D u_brdf;
 #endif
 
-varying vec2 v_texCoord;
-varying vec3 v_position;
-varying vec3 v_normal;
-varying vec3 v_binormal;
-varying vec3 v_tangent;
+in vec2 v_texCoord;
+in vec3 v_position;
+in vec3 v_normal;
+in vec3 v_binormal;
+in vec3 v_tangent;
 
 vec3 fresnelSchlick(float cosTheta, vec3 F0)
 {
@@ -69,7 +78,8 @@ vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
     return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
-float DistributionGGX(vec3 N, vec3 H, float rough) {
+float DistributionGGX(vec3 N, vec3 H, float rough)
+{
     float a = rough*rough;
     float a2 = a*a;
     float NdotH = max(dot(N, H), 0.0);
@@ -84,9 +94,10 @@ float DistributionGGX(vec3 N, vec3 H, float rough) {
     return nom / denom;
 }
 
-float GeometrySchlickGGX(float NdotV, float rough) {
+float GeometrySchlickGGX(float NdotV, float rough)
+{
     float r = (rough + 1.0);
-    float k = (r*r) / 8.0;
+    float k = (r * r) / 8.0;
 
     float nom = NdotV;
 
@@ -95,7 +106,9 @@ float GeometrySchlickGGX(float NdotV, float rough) {
 
     return nom / denom;
 }
-float GeometrySmith(vec3 N, vec3 V, vec3 L, float rough) {
+
+float GeometrySmith(vec3 N, vec3 V, vec3 L, float rough)
+{
     float NdotV = max(dot(N, V), 0.0);
     float NdotL = max(dot(N, L), 0.0);
     float ggx2 = GeometrySchlickGGX(NdotV, rough);
@@ -106,31 +119,31 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float rough) {
 
 void main() {
     #ifdef defAlbedo
-        vec3 albedo = texture2D(u_albedo, v_texCoord).rgb;
+        vec3 albedo = texture(u_albedo, v_texCoord).rgb;
     #else
         vec3 albedo = vec3(0.5);
     #endif
 
     #ifdef defMetalness
-        float metalness = texture2D(u_metalness, v_texCoord).r;
+        float metalness = texture(u_metalness, v_texCoord).r;
     #else
-        float metalness = 1.0;
+        float metalness = 0.0;
     #endif
 
     #ifdef defRoughness
-        float roughness = texture2D(u_roughness, v_texCoord).r;
+        float roughness = texture(u_roughness, v_texCoord).r;
     #else
-        float roughness = 0.0;
+        float roughness = 1.0;
     #endif
 
     #ifdef defAmbientOcclusion
-        float ambientOcclusion = texture2D(u_ambientOcclusion, v_texCoord).r;
+        float ambientOcclusion = texture(u_ambientOcclusion, v_texCoord).r;
     #else
         float ambientOcclusion = 1.0;
     #endif
 
     #ifdef defNormal
-        vec3 normalMap = texture2D(u_normal, v_texCoord).rgb;
+        vec3 normalMap = texture(u_normal, v_texCoord).rgb;
 
         vec3 N = normalize(v_normal);
         vec3 tangent = normalize(v_tangent);
@@ -157,16 +170,16 @@ void main() {
 
         float textureRow = float(tileY * 10 + tileX) / 128.0;
 
-        vec4 pixel = texture2D(u_lights, vec2(0.5 / 64.0, textureRow));
+        vec4 pixel = texture(u_lights, vec2(0.5 / 64.0, textureRow));
         int pixelCeil = int(ceil(pixel.r * 255.0));
 
         for (int i = 0; i < pixelCeil; i++) {
-            vec4 tempPixel = texture2D(u_lights, vec2((float(i) + 1.5) / 64.0, textureRow));
+            vec4 tempPixel = texture(u_lights, vec2((float(i) + 1.5) / 64.0, textureRow));
 
             int lightId = int(clamp(ceil(tempPixel.r * 255.0), 0.0, 255.0));
             Light light = u_lightsList[lightId];
 
-            vec4 lightInfo = texture2D(u_lightInfo, vec2(0.5, float(lightId) / 128.0));
+            vec4 lightInfo = texture(u_lightInfo, vec2(0.5, float(lightId) / 128.0));
             float lightRadius = lightInfo.a * 255.0;
             lightInfo.a = 1.0;
 
@@ -222,13 +235,13 @@ void main() {
         vec3 kD = 1.0 - kS;
         kD *= 1.0 - metalness;
 
-        vec3 irradiance = textureCube(u_irradiance, N).rgb;
+        vec3 irradiance = texture(u_irradiance, N).rgb;
         vec3 diffuse = irradiance * albedo;
 
         const float MAX_REFLECTION_LOD = 4.0;
 
-        vec3 prefilteredColor = textureCubeLod(u_prefilter, R, roughness * MAX_REFLECTION_LOD).rgb;
-        vec2 brdf = texture2D(u_brdf, vec2(max(dot(N, V), 0.0), roughness)).rg;
+        vec3 prefilteredColor = textureLod(u_prefilter, R, roughness * MAX_REFLECTION_LOD).rgb;
+        vec2 brdf = texture(u_brdf, vec2(max(dot(N, V), 0.0), roughness)).rg;
         vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
         vec3 ambient = (kD * diffuse + specular) * ambientOcclusion;
@@ -243,5 +256,5 @@ void main() {
         color = pow(color, vec3(1.0 / 2.2));
     #endif
 
-    gl_FragColor = vec4(color, 1.0);
+    fragmentColor = vec4(color, 1.0);
 }

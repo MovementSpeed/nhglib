@@ -1,40 +1,53 @@
-attribute vec4 a_position;
-attribute vec3 a_normal;
-attribute vec3 a_binormal;
-attribute vec3 a_tangent;
-attribute vec2 a_texCoord0;
+#version 300 es
+
+#ifdef GL_ES
+#define LOWP lowp
+#define MED mediump
+#define HIGH highp
+precision mediump float;
+#else
+#define MED
+#define LOWP
+#define HIGH
+#endif
+
+in vec4 a_position;
+in vec3 a_normal;
+in vec3 a_binormal;
+in vec3 a_tangent;
+in vec2 a_texCoord0;
 
 #ifdef boneWeight0Flag
     #define boneWeightsFlag
-    attribute vec2 a_boneWeight0;
+    in vec2 a_boneWeight0;
 #endif
 
 #ifdef boneWeight1Flag
-    attribute vec2 a_boneWeight1;
+    in vec2 a_boneWeight1;
 #endif
 
 #ifdef boneWeight2Flag
-    attribute vec2 a_boneWeight2;
+    in vec2 a_boneWeight2;
 #endif
 
 #ifdef boneWeight3Flag
-    attribute vec2 a_boneWeight3;
+    in vec2 a_boneWeight3;
 #endif
 
 #ifdef boneWeight4Flag
-    attribute vec2 a_boneWeight4;
+    in vec2 a_boneWeight4;
 #endif
 
 #ifdef boneWeight5Flag
-    attribute vec2 a_boneWeight5;
+    in vec2 a_boneWeight5;
 #endif
 
 #ifdef boneWeight6Flag
-    attribute vec2 a_boneWeight6;
+    in vec2 a_boneWeight6;
 #endif
 
 #ifdef boneWeight7Flag
-    attribute vec2 a_boneWeight7;
+    in vec2 a_boneWeight7;
 #endif
 
 #if defined(numBones) && defined(boneWeightsFlag)
@@ -53,12 +66,12 @@ uniform mat4 u_mvpMatrix;
 uniform mat4 u_modelMatrix;
 uniform mat4 u_viewMatrix;
 
-varying vec3 v_position;
-varying vec2 v_texCoord;
-varying vec3 v_normal;
-varying vec3 v_binormal;
-varying vec3 v_tangent;
-varying float v_depth;
+out vec3 v_position;
+out vec2 v_texCoord;
+out vec3 v_normal;
+out vec3 v_binormal;
+out vec3 v_tangent;
+out float v_depth;
 
 void main() {
     vec4 position;

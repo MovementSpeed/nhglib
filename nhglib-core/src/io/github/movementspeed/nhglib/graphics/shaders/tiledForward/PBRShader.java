@@ -431,7 +431,7 @@ public class PBRShader extends BaseShader {
     }
 
     private String createPrefix(Renderable renderable) {
-        String prefix = "";
+        String prefix = "#version 300 es\n";
 
         if (params.useBones) {
             prefix += "#define numBones " + 12 + "\n";

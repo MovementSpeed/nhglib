@@ -1,19 +1,12 @@
+#version 300 es
+
+#ifdef GL_ES
+precision mediump float;
+#endif
+
 varying vec2 v_texCoord;
 
 const float PI = 3.14159265359;
-
-float VanDerCorpus(uint bits);
-vec2 Hammersley(uint i, uint N);
-vec3 ImportanceSampleGGX(vec2 Xi, vec3 N, float roughness);
-vec2 IntegrateBRDF(float NdotV, float roughness);
-float GeometrySchlickGGX(float NdotV, float roughness);
-float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness);
-
-void main()
-{
-    vec2 integratedBRDF = IntegrateBRDF(v_texCoord.x, v_texCoord.y);
-    gl_FragColor = vec4(integratedBRDF.x, integratedBRDF.y, 1.0, 1.0);
-}
 
 float VanDerCorpus(uint n, uint base)
 {
@@ -33,6 +26,11 @@ float VanDerCorpus(uint n, uint base)
     }
 
     return result;
+}
+
+vec2 Hammersley(uint i, uint N)
+{
+    return vec2(float(i) / float(N), VanDerCorpus(i, 2u));
 }
 
 vec3 ImportanceSampleGGX(vec2 Xi, vec3 N, float roughness)
@@ -58,15 +56,10 @@ vec3 ImportanceSampleGGX(vec2 Xi, vec3 N, float roughness)
     return normalize(sampleVec);
 }
 
-vec2 Hammersley(uint i, uint N)
-{
-    return vec2(float(i) / float(N), VanDerCorpus(i, 2u));
-}
-
 vec2 IntegrateBRDF(float NdotV, float roughness)
 {
     vec3 V;
-    V.x = sqrt(1.0 - NdotV*NdotV);
+    V.x = sqrt(1.0 - NdotV * NdotV);
     V.y = 0.0;
     V.z = NdotV;
 
@@ -123,4 +116,10 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
     float ggx1 = GeometrySchlickGGX(NdotL, roughness);
 
     return ggx1 * ggx2;
+}
+
+void main()
+{
+    vec2 integratedBRDF = IntegrateBRDF(v_texCoord.x, v_texCoord.y);
+    gl_FragColor = vec4(integratedBRDF.x, integratedBRDF.y, 1.0, 1.0);
 }
