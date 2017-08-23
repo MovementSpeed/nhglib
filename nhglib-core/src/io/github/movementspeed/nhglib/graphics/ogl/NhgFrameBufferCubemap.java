@@ -83,6 +83,10 @@ public class NhgFrameBufferCubemap extends GLFrameBuffer<Cubemap> {
     protected Cubemap createColorTexture() {
         TextureData data = null;
 
+        if (!Gdx.graphics.supportsExtension("OES_texture_float")) {
+            type = 0;
+        }
+
         switch (type) {
             case 0:
                 int glFormat = Pixmap.Format.toGlFormat(format);
@@ -92,13 +96,6 @@ public class NhgFrameBufferCubemap extends GLFrameBuffer<Cubemap> {
 
             case 1:
                 data = new NhgFloatTextureData(width, height, 3);
-                /*if (Gdx.graphics.supportsExtension("OES_texture_float")) {
-                    data = new NhgFloatTextureData(width, height, 3);
-                } else {
-                    glFormat = Pixmap.Format.toGlFormat(format);
-                    glType = Pixmap.Format.toGlType(format);
-                    data = new NhgGLOnlyTextureData(width, height, 0, glFormat, glFormat, glType, true);
-                }*/
                 break;
         }
 
