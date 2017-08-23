@@ -1,5 +1,6 @@
 package io.github.movementspeed.nhglib.files;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -101,7 +102,7 @@ public class HDRData {
     }
 
     public Texture toTexture() {
-        Texture texture = null;
+        Texture texture;
         float[] rgb = getFlatPixelArray();
         float min = Float.MAX_VALUE, max = Float.MIN_VALUE;
 
@@ -113,7 +114,7 @@ public class HDRData {
             }
         }
 
-        if (Gdx.graphics.supportsExtension("OES_texture_float")) {
+        if (Gdx.app.getType() == Application.ApplicationType.Desktop || Gdx.graphics.supportsExtension("OES_texture_float")) {
             NhgFloatTextureData data = new NhgFloatTextureData(width, height, 3);
             data.prepare();
             data.getBuffer().put(rgb);

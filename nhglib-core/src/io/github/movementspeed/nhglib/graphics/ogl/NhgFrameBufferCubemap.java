@@ -1,5 +1,6 @@
 package io.github.movementspeed.nhglib.graphics.ogl;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.glutils.GLFrameBuffer;
@@ -83,7 +84,7 @@ public class NhgFrameBufferCubemap extends GLFrameBuffer<Cubemap> {
     protected Cubemap createColorTexture() {
         TextureData data = null;
 
-        if (!Gdx.graphics.supportsExtension("OES_texture_float")) {
+        if (!Gdx.graphics.supportsExtension("OES_texture_float") && Gdx.app.getType() != Application.ApplicationType.Desktop) {
             type = 0;
         }
 
