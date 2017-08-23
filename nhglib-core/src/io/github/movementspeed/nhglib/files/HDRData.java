@@ -1,8 +1,13 @@
 package io.github.movementspeed.nhglib.files;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.graphics.ogl.NhgFloatTextureData;
+import io.github.movementspeed.nhglib.utils.data.FloatInterval;
+import io.github.movementspeed.nhglib.utils.math.NhgMath;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -96,14 +101,46 @@ public class HDRData {
     }
 
     public Texture toTexture() {
+        Texture texture = null;
         float[] rgb = getFlatPixelArray();
+        float min = Float.MAX_VALUE, max = Float.MIN_VALUE;
 
-        NhgFloatTextureData data = new NhgFloatTextureData(width, height, 3);
-        data.prepare();
-        data.getBuffer().put(rgb);
-        data.getBuffer().flip();
+        for (float f : rgb) {
+            if (f < min) {
+                min = f;
+            } else if (f > max) {
+                max = f;
+            }
+        }
 
-        return new Texture(data);
+        if (Gdx.graphics.supportsExtension("OES_texture_float")) {
+            NhgFloatTextureData data = new NhgFloatTextureData(width, height, 3);
+            data.prepare();
+            data.getBuffer().put(rgb);
+            data.getBuffer().flip();
+
+            texture = new Texture(data);
+        } else {
+            Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGB888);
+
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    float r = pixels[y][x][0];
+                    float g = pixels[y][x][1];
+                    float b = pixels[y][x][2];
+
+                    r = NhgMath.normalize(r, new FloatInterval(min, max), new FloatInterval(0f, 1f));
+                    g = NhgMath.normalize(g, new FloatInterval(min, max), new FloatInterval(0f, 1f));
+                    b = NhgMath.normalize(b, new FloatInterval(min, max), new FloatInterval(0f, 1f));
+
+                    pixmap.drawPixel(x, y, Color.rgb888(r, g, b));
+                }
+            }
+
+            texture = new Texture(pixmap);
+        }
+
+        return texture;
     }
 
     //Construction method if the input is a InputStream.
