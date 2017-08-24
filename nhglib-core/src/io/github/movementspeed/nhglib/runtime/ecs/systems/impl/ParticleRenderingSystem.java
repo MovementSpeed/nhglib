@@ -28,6 +28,8 @@ public class ParticleRenderingSystem extends BaseRenderingSystem {
         super(Aspect.all(NodeComponent.class, ParticleEffectComponent.class), entities);
         particleSystem = new ParticleSystem();
         particleEffectProvider = new ParticleEffectProvider();
+
+        renderableProviders.add(particleSystem);
     }
 
     @Override
@@ -69,7 +71,6 @@ public class ParticleRenderingSystem extends BaseRenderingSystem {
     @Override
     protected void end() {
         super.end();
-        renderableProviders.clear();
 
         for (int i = 0; i < cameras.size; i++) {
             Camera camera = cameras.get(i);
@@ -79,8 +80,6 @@ public class ParticleRenderingSystem extends BaseRenderingSystem {
             particleSystem.begin();
             particleSystem.draw();
             particleSystem.end();
-
-            addRenderableProviders(particleSystem);
         }
     }
 

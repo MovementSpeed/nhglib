@@ -7,8 +7,6 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import io.github.movementspeed.nhglib.runtime.ecs.components.graphics.LightComponent;
 import io.github.movementspeed.nhglib.runtime.ecs.components.scenes.NodeComponent;
-import io.github.movementspeed.nhglib.utils.data.MatrixPool;
-import io.github.movementspeed.nhglib.utils.data.VectorPool;
 
 /**
  * Created by Fausto Napoli on 14/03/2017.
@@ -17,8 +15,16 @@ public class LightingSystem extends IteratingSystem {
     private ComponentMapper<NodeComponent> nodeMapper;
     private ComponentMapper<LightComponent> lightMapper;
 
+    private Matrix4 tempMat;
+    private Vector3 tempVec1;
+    private Vector3 tempVec2;
+
     public LightingSystem() {
         super(Aspect.all(NodeComponent.class, LightComponent.class));
+
+        tempMat = new Matrix4();
+        tempVec1 = new Vector3();
+        tempVec2 = new Vector3();
     }
 
     @Override
@@ -32,20 +38,13 @@ public class LightingSystem extends IteratingSystem {
         switch (light.type) {
             case SPOT_LIGHT:
             case DIRECTIONAL_LIGHT:
-                Matrix4 tempMatrix = MatrixPool.getMatrix4();
-                tempMatrix.set(node.getTransform());
-                tempMatrix.translate(0f, 1f, 0f);
+                tempMat.set(node.getTransform());
+                tempMat.translate(0f, 1f, 0f);
 
-                Vector3 direction = VectorPool.getVector3();
-                Vector3 tempVec = VectorPool.getVector3();
+                tempVec1.set(light.light.position)
+                        .sub(tempMat.getTranslation(tempVec2));
 
-                direction.set(light.light.position)
-                        .sub(tempMatrix.getTranslation(tempVec));
-
-                light.light.direction.set(direction);
-
-                MatrixPool.freeMatrix4(tempMatrix);
-                VectorPool.freeVector3(direction, tempVec);
+                light.light.direction.set(tempVec1);
                 break;
         }
     }

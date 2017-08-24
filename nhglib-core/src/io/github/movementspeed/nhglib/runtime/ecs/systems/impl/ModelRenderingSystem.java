@@ -55,8 +55,14 @@ public class ModelRenderingSystem extends BaseRenderingSystem implements Disposa
         super.begin();
 
         for (int i = 0; i < cameras.size - dynamicCaches.size; i++) {
-            dynamicCaches.add(new ModelCache());
-            staticCaches.add(new ModelCache());
+            ModelCache mc1 = new ModelCache();
+            ModelCache mc2 = new ModelCache();
+
+            dynamicCaches.add(mc1);
+            staticCaches.add(mc2);
+
+            renderableProviders.add(mc1);
+            renderableProviders.add(mc2);
         }
 
         for (int i = 0; i < cameras.size; i++) {
@@ -111,14 +117,10 @@ public class ModelRenderingSystem extends BaseRenderingSystem implements Disposa
     @Override
     protected void end() {
         super.end();
-        renderableProviders.clear();
 
         for (int i = 0; i < cameras.size; i++) {
             ModelCache dynamicCache = dynamicCaches.get(i);
-            ModelCache staticCache = staticCaches.get(i);
-
             dynamicCache.end();
-            addRenderableProviders(dynamicCache, staticCache);
         }
     }
 
