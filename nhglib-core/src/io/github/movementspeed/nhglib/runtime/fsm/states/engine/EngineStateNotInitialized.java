@@ -41,7 +41,7 @@ public class EngineStateNotInitialized implements State<NhgEntry> {
         }
 
         if (!hasSystemClass(LightingSystem.class, entitySystems)) {
-            entitySystems.add(new LightingSystem(nhgEntry.nhg.threading));
+            entitySystems.add(new LightingSystem());
         } else {
             NhgLogger.log(this, "LightingSystem already registered, ignoring registration.");
         }

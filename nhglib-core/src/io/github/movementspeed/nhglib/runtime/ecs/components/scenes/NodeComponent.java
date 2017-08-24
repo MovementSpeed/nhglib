@@ -5,8 +5,6 @@ import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
-import io.github.movementspeed.nhglib.utils.data.QuaternionPool;
-import io.github.movementspeed.nhglib.utils.data.VectorPool;
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
@@ -31,7 +29,9 @@ public class NodeComponent extends PooledComponent {
 
     public String parentInternalNodeId;
 
-    private Vector3 temp;
+    private Vector3 tempVec;
+    private Vector3 tempVec2;
+    private Quaternion tempQuat;
 
     private Vector3 translation;
     private Vector3 rotation;
@@ -46,24 +46,26 @@ public class NodeComponent extends PooledComponent {
     public NodeComponent() {
         node = new Node();
 
-        temp = VectorPool.getVector3();
+        tempVec = new Vector3();
+        tempVec2 = new Vector3();
+        tempQuat = new Quaternion();
 
-        translation = VectorPool.getVector3();
-        rotation = VectorPool.getVector3();
-        scale = VectorPool.getVector3().set(1, 1, 1);
+        translation = new Vector3();
+        rotation = new Vector3();
+        scale = new Vector3(1, 1, 1);
 
-        translationDelta = VectorPool.getVector3();
-        rotationDelta = VectorPool.getVector3();
-        scaleDelta = VectorPool.getVector3();
+        translationDelta = new Vector3();
+        rotationDelta = new Vector3();
+        scaleDelta = new Vector3();
 
         rotationQuaternion = new Quaternion();
     }
 
     @Override
     protected void reset() {
-        node.translation.set(VectorPool.getVector3());
+        node.translation.set(new Vector3());
         node.rotation.set(new Quaternion());
-        node.scale.set(VectorPool.getVector3());
+        node.scale.set(new Vector3());
 
         translationDelta.set(Vector3.Zero);
         rotationDelta.set(Vector3.Zero);
@@ -142,19 +144,16 @@ public class NodeComponent extends PooledComponent {
                 translation.y - y,
                 translation.z - z);
 
-        Vector3 translation = VectorPool.getVector3();
-        translation.set(x, y, z);
+        tempVec.set(x, y, z);
 
-        float len = translation.len();
-        translation.rot(node.localTransform).nor().scl(len);
+        float len = tempVec.len();
+        tempVec.rot(node.localTransform).nor().scl(len);
 
-        node.translation.add(translation);
+        node.translation.add(tempVec);
 
         if (apply) {
             applyTransforms();
         }
-
-        VectorPool.freeVector3(translation);
     }
 
     public void setRotation(Vector3 rotation) {
@@ -237,16 +236,12 @@ public class NodeComponent extends PooledComponent {
                 rotation.y - y,
                 rotation.z - z);
 
-        Quaternion quaternion = QuaternionPool.getQuaternion();
-        quaternion.setEulerAngles(y, x, z);
-
-        node.rotation.mul(quaternion);
+        tempQuat.setEulerAngles(y, x, z);
+        node.rotation.mul(tempQuat);
 
         if (apply) {
             applyTransforms();
         }
-
-        QuaternionPool.freeQuaternion(quaternion);
     }
 
     public void setScale(Vector3 scale) {
@@ -310,20 +305,13 @@ public class NodeComponent extends PooledComponent {
 
     public void setTransform(Matrix4 transform) {
         if (transform != null) {
-            Vector3 translation = VectorPool.getVector3();
-            Vector3 scale = VectorPool.getVector3();
-            Quaternion rotation = QuaternionPool.getQuaternion();
+            transform.getTranslation(tempVec);
+            transform.getRotation(tempQuat);
+            transform.getScale(tempVec2);
 
-            transform.getTranslation(translation);
-            transform.getRotation(rotation);
-            transform.getScale(scale);
-
-            setTranslation(translation);
-            setRotation(rotation);
-            setScale(scale);
-
-            VectorPool.freeVector3(translation, scale);
-            QuaternionPool.freeQuaternion(rotation);
+            setTranslation(tempVec);
+            setRotation(tempQuat);
+            setScale(tempVec2);
         }
     }
 
@@ -456,21 +444,21 @@ public class NodeComponent extends PooledComponent {
     }
 
     public Vector3 getTranslationDelta() {
-        Vector3 res = temp.set(translationDelta);
+        Vector3 res = tempVec.set(translationDelta);
         translationDelta.set(Vector3.Zero);
 
         return res;
     }
 
     public Vector3 getRotationDelta() {
-        Vector3 res = temp.set(rotationDelta);
+        Vector3 res = tempVec.set(rotationDelta);
         rotationDelta.set(Vector3.Zero);
 
         return res;
     }
 
     public Vector3 getScaleDelta() {
-        Vector3 res = temp.set(scaleDelta);
+        Vector3 res = tempVec.set(scaleDelta);
         scaleDelta.set(Vector3.Zero);
 
         return res;

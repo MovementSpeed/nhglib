@@ -2,24 +2,23 @@ package io.github.movementspeed.nhglib.runtime.ecs.systems.impl;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
+import com.artemis.systems.IteratingSystem;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import io.github.movementspeed.nhglib.runtime.ecs.components.graphics.LightComponent;
 import io.github.movementspeed.nhglib.runtime.ecs.components.scenes.NodeComponent;
-import io.github.movementspeed.nhglib.runtime.ecs.systems.base.ThreadedIteratingSystem;
-import io.github.movementspeed.nhglib.runtime.threading.Threading;
 import io.github.movementspeed.nhglib.utils.data.MatrixPool;
 import io.github.movementspeed.nhglib.utils.data.VectorPool;
 
 /**
  * Created by Fausto Napoli on 14/03/2017.
  */
-public class LightingSystem extends ThreadedIteratingSystem {
+public class LightingSystem extends IteratingSystem {
     private ComponentMapper<NodeComponent> nodeMapper;
     private ComponentMapper<LightComponent> lightMapper;
 
-    public LightingSystem(Threading threading) {
-        super(Aspect.all(NodeComponent.class, LightComponent.class), threading);
+    public LightingSystem() {
+        super(Aspect.all(NodeComponent.class, LightComponent.class));
     }
 
     @Override
