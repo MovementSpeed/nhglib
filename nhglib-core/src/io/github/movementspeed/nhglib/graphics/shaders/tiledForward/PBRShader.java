@@ -26,7 +26,24 @@ import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils;
  * Created by Fausto Napoli on 18/03/2017.
  */
 public class PBRShader extends BaseShader {
+    protected final int light0_type = register(new Uniform("u_lightsList[0].type"));
+    protected final int light0_position = register(new Uniform("u_lightsList[0].position"));
+    protected final int light0_direction = register(new Uniform("u_lightsList[0].direction"));
+    protected final int light0_intesity = register(new Uniform("u_lightsList[0].intensity"));
+    protected final int light0_innerAngle = register(new Uniform("u_lightsList[0].innerAngle"));
+    protected final int light0_outerAngle = register(new Uniform("u_lightsList[0].outerAngle"));
+    protected final int light1_type = register(new Uniform("u_lightsList[1].type"));
+
     public static float lightRenderDistance = 15f;
+
+    protected int lightsLoc;
+    protected int lightsTypeOffset;
+    protected int lightsPositionOffset;
+    protected int lightsDirectionOffset;
+    protected int lightsIntensityOffset;
+    protected int lightsInnerAngleOffset;
+    protected int lightsOuterAngleOffset;
+    protected int lightsSize;
 
     private float bones[];
 
@@ -220,6 +237,17 @@ public class PBRShader extends BaseShader {
     public void init() {
         super.init(shaderProgram, renderable);
 
+        lightsLoc = loc(light0_type);
+        lightsTypeOffset = loc(light0_type) - lightsLoc;
+        lightsPositionOffset = has(light0_position) ? loc(light0_position) - lightsLoc : -1;
+        lightsDirectionOffset = has(light0_direction) ? loc(light0_direction) - lightsLoc : -1;
+        lightsIntensityOffset = has(light0_intesity) ? loc(light0_intesity) - lightsLoc : -1;
+        lightsInnerAngleOffset = has(light0_innerAngle) ? loc(light0_innerAngle) - lightsLoc : -1;
+        lightsOuterAngleOffset = has(light0_outerAngle) ? loc(light0_outerAngle) - lightsLoc : -1;
+
+        lightsSize = loc(light1_type) - lightsLoc;
+        if (lightsSize < 0) lightsSize = 0;
+
         idtMatrix = new Matrix4();
         bones = new float[0];
 
@@ -284,7 +312,7 @@ public class PBRShader extends BaseShader {
 
     @Override
     public void render(Renderable renderable) {
-        for (int light = 0; light < lightsToRender.size; light++) {
+        /*for (int light = 0; light < lightsToRender.size; light++) {
             NhgLight nhgLight = lightsToRender.get(light);
             String lightUniform = "u_lightsList[" + light + "].";
 
@@ -299,6 +327,25 @@ public class PBRShader extends BaseShader {
             shaderProgram.setUniformf(lightUniform + "outerAngle", nhgLight.outerAngle);
 
             VectorPool.freeVector3(viewSpacePosition, viewSpaceDirection);
+        }*/
+
+        if (lightsLoc >= 0) {
+            for (int light = 0; light < lightsToRender.size; light++) {
+                int idx = lightsLoc + light * lightsSize;
+                NhgLight nhgLight = lightsToRender.get(light);
+
+                Vector3 viewSpacePosition = getViewSpacePosition(nhgLight);
+                Vector3 viewSpaceDirection = getViewSpaceDirection(nhgLight);
+
+                shaderProgram.setUniformi(idx + lightsTypeOffset, nhgLight.type.ordinal());
+                shaderProgram.setUniformf(idx + lightsPositionOffset, viewSpacePosition);
+                shaderProgram.setUniformf(idx + lightsDirectionOffset, viewSpaceDirection);
+                shaderProgram.setUniformf(idx + lightsIntensityOffset, nhgLight.intensity);
+                shaderProgram.setUniformf(idx + lightsInnerAngleOffset, nhgLight.innerAngle);
+                shaderProgram.setUniformf(idx + lightsOuterAngleOffset, nhgLight.outerAngle);
+
+                VectorPool.freeVector3(viewSpacePosition, viewSpaceDirection);
+            }
         }
 
         updateBones(renderable);
@@ -390,7 +437,11 @@ public class PBRShader extends BaseShader {
         a.setToTranslation(light.position);
 
         Matrix4 b = MatrixPool.getMatrix4();
-        b.set(a).translate(new Vector3(light.direction).scl(light.radius));
+
+        Vector3 trans = VectorPool.getVector3();
+        trans.set(light.direction).scl(light.radius);
+
+        b.set(a).translate(trans);
 
         Vector3 p1 = VectorPool.getVector3();
         Vector3 p2 = VectorPool.getVector3();
@@ -406,7 +457,7 @@ public class PBRShader extends BaseShader {
             lightsToRender.add(light);
         }
 
-        VectorPool.freeVector3(p1, p2, m);
+        VectorPool.freeVector3(p1, p2, m, trans);
         MatrixPool.freeMatrix4(a, b);
     }
 

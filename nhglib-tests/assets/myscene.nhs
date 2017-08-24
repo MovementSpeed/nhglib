@@ -25,20 +25,9 @@
         "classAlias":"model"
       },
       {
-        "alias":"particleAsset",
-        "source":"particles/kart_start_smoke.nhfx",
-        "classAlias":"particleEffect",
-        "dependenciesPath":"particles/"
-      },
-      {
         "alias":"mat2_albedo",
         "source":"textures/mat2_albedo.png",
         "classAlias":"texture"
-      },
-      {
-        "alias":"newport_loft",
-        "source":"textures/newport_loft.hdr",
-        "classAlias":"hdr"
       }
     ],
     "entities":
