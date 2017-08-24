@@ -36,8 +36,16 @@ public class RigidBodyComponent extends Component implements Disposable {
     public btCollisionShape collisionShape;
     public btRigidBody.btRigidBodyConstructionInfo constructionInfo;
 
+    private Vector3 translation;
+    private Vector3 scale;
+    private Quaternion rotation;
+
     public RigidBodyComponent() {
         state = State.NOT_INITIALIZED;
+
+        translation = new Vector3();
+        scale = new Vector3();
+        rotation = new Quaternion();
     }
 
     @Override
@@ -123,15 +131,15 @@ public class RigidBodyComponent extends Component implements Disposable {
     }
 
     public Vector3 getTranslation() {
-        return motionState.transform.getTranslation(new Vector3());
+        return motionState.transform.getTranslation(translation);
     }
 
     public Vector3 getScale() {
-        return motionState.transform.getScale(new Vector3());
+        return motionState.transform.getScale(scale);
     }
 
     public Quaternion getRotation() {
-        return motionState.transform.getRotation(new Quaternion());
+        return motionState.transform.getRotation(rotation);
     }
 
     private void buildCollisionShape(Assets assets) {

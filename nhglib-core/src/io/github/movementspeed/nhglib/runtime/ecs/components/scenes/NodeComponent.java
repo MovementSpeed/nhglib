@@ -17,7 +17,7 @@ public class NodeComponent extends PooledComponent {
     /**
      * Unique NodeComponent ID, corresponds with entity itself
      */
-    public Integer id;
+    public int id;
 
     /**
      * Node
@@ -70,7 +70,7 @@ public class NodeComponent extends PooledComponent {
         scaleDelta.set(Vector3.Zero);
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
         node.id = "node_" + id;
     }
@@ -341,92 +341,92 @@ public class NodeComponent extends PooledComponent {
         node.calculateTransforms(recursive);
     }
 
-    public Float getX() {
+    public float getX() {
         return getTranslation().x;
     }
 
-    public Float getY() {
+    public float getY() {
         return getTranslation().y;
     }
 
-    public Float getZ() {
+    public float getZ() {
         return getTranslation().z;
     }
 
-    public Float getXRotation() {
+    public float getXRotation() {
         return getRotation().x;
     }
 
-    public Float getYRotation() {
+    public float getYRotation() {
         return getRotation().y;
     }
 
-    public Float getZRotation() {
+    public float getZRotation() {
         return getRotation().z;
     }
 
-    public Float getXScale() {
+    public float getXScale() {
         return getScale().x;
     }
 
-    public Float getYScale() {
+    public float getYScale() {
         return getScale().y;
     }
 
-    public Float getZScale() {
+    public float getZScale() {
         return getScale().z;
     }
 
-    public Float getXDelta() {
-        Float res = translationDelta.x;
+    public float getXDelta() {
+        float res = translationDelta.x;
         translationDelta.x = 0;
         return res;
     }
 
-    public Float getYDelta() {
-        Float res = translationDelta.y;
+    public float getYDelta() {
+        float res = translationDelta.y;
         translationDelta.y = 0;
         return res;
     }
 
-    public Float getZDelta() {
-        Float res = translationDelta.z;
+    public float getZDelta() {
+        float res = translationDelta.z;
         translationDelta.z = 0;
         return res;
     }
 
-    public Float getXRotationDelta() {
-        Float res = rotationDelta.x;
+    public float getXRotationDelta() {
+        float res = rotationDelta.x;
         rotationDelta.x = 0;
         return res;
     }
 
-    public Float getYRotationDelta() {
-        Float res = rotationDelta.y;
+    public float getYRotationDelta() {
+        float res = rotationDelta.y;
         rotationDelta.y = 0;
         return res;
     }
 
-    public Float getZRotationDelta() {
-        Float res = rotationDelta.z;
+    public float getZRotationDelta() {
+        float res = rotationDelta.z;
         rotationDelta.z = 0;
         return res;
     }
 
-    public Float getXScaleDelta() {
-        Float res = scaleDelta.x;
+    public float getXScaleDelta() {
+        float res = scaleDelta.x;
         scaleDelta.x = 0;
         return res;
     }
 
-    public Float getYScaleDelta() {
-        Float res = scaleDelta.y;
+    public float getYScaleDelta() {
+        float res = scaleDelta.y;
         scaleDelta.y = 0;
         return res;
     }
 
-    public Float getZScaleDelta() {
-        Float res = scaleDelta.z;
+    public float getZScaleDelta() {
+        float res = scaleDelta.z;
         scaleDelta.z = 0;
         return res;
     }
