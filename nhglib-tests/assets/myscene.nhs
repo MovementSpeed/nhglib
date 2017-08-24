@@ -28,6 +28,11 @@
         "alias":"mat2_albedo",
         "source":"textures/mat2_albedo.png",
         "classAlias":"texture"
+      },
+      {
+        "alias":"newport_loft",
+        "source":"textures/newport_loft.hdr",
+        "classAlias":"hdr"
       }
     ],
     "entities":

@@ -7,8 +7,6 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.graphics.ogl.NhgFloatTextureData;
-import io.github.movementspeed.nhglib.utils.data.FloatInterval;
-import io.github.movementspeed.nhglib.utils.math.NhgMath;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -109,7 +107,9 @@ public class HDRData {
         for (float f : rgb) {
             if (f < min) {
                 min = f;
-            } else if (f > max) {
+            }
+
+            if (f > max) {
                 max = f;
             }
         }
@@ -130,11 +130,11 @@ public class HDRData {
                     float g = pixels[y][x][1];
                     float b = pixels[y][x][2];
 
-                    r = NhgMath.normalize(r, new FloatInterval(min, max), new FloatInterval(0f, 1f));
-                    g = NhgMath.normalize(g, new FloatInterval(min, max), new FloatInterval(0f, 1f));
-                    b = NhgMath.normalize(b, new FloatInterval(min, max), new FloatInterval(0f, 1f));
+                    r /= r + 1.0f;
+                    g /= g + 1.0f;
+                    b /= b + 1.0f;
 
-                    pixmap.drawPixel(x, y, Color.rgb888(r, g, b));
+                    pixmap.drawPixel(x, y, Color.rgba8888(r, g, b, 1.0f));
                 }
             }
 
@@ -177,6 +177,7 @@ public class HDRData {
             width = Integer.parseInt(tokens[1]);
             height = Integer.parseInt(tokens[3]);
         }
+
         if (width <= 0)
             throw new IllegalArgumentException("Width must be positive");
         if (height <= 0)
