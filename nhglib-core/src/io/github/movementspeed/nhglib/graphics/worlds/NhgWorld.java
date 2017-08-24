@@ -61,7 +61,7 @@ public class NhgWorld {
 
     public void setReferenceEntity(String entityName) {
         if (entityName != null && !entityName.isEmpty()) {
-            Integer referenceEntity =
+            int referenceEntity =
                     sceneManager.getCurrentScene().sceneGraph.getSceneEntity(entityName);
 
             referenceNodeComponent =

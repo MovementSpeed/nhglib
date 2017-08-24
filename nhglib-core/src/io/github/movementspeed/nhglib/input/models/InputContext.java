@@ -8,7 +8,7 @@ import com.badlogic.gdx.utils.ArrayMap;
 public class InputContext {
     private final ArrayMap<String, NhgInput> inputMap;
 
-    private Boolean active;
+    private boolean active;
     private String name;
 
     public InputContext(String name) {
@@ -18,7 +18,7 @@ public class InputContext {
         inputMap = new ArrayMap<>();
     }
 
-    public void setActive(Boolean active) {
+    public void setActive(boolean active) {
         this.active = active;
     }
 
@@ -32,7 +32,7 @@ public class InputContext {
         }
     }
 
-    public Boolean isActive() {
+    public boolean isActive() {
         return active;
     }
 

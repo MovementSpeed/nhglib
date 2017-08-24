@@ -218,18 +218,16 @@ public class InputHandler implements ControllerListener, InputProcessor {
         dispatchMouseInputs();
     }
 
-    public void setActiveContext(String contextName, Boolean active) {
-        if (active != null) {
-            InputContext inputContext = inputContexts.get(contextName);
+    public void setActiveContext(String contextName, boolean active) {
+        InputContext inputContext = inputContexts.get(contextName);
 
-            if (inputContext != null) {
-                inputContext.setActive(active);
+        if (inputContext != null) {
+            inputContext.setActive(active);
 
-                if (active) {
-                    activeContexts.add(inputContext);
-                } else {
-                    activeContexts.removeValue(inputContext, true);
-                }
+            if (active) {
+                activeContexts.add(inputContext);
+            } else {
+                activeContexts.removeValue(inputContext, true);
             }
         }
     }
@@ -272,8 +270,8 @@ public class InputHandler implements ControllerListener, InputProcessor {
         }
     }
 
-    public Boolean isActive(String contextName) {
-        Boolean res = false;
+    public boolean isActive(String contextName) {
+        boolean res = false;
         InputContext inputContext = inputContexts.get(contextName);
 
         if (inputContext != null) {
@@ -333,7 +331,7 @@ public class InputHandler implements ControllerListener, InputProcessor {
         }
     }
 
-    private void processStickInput(Integer controllerId, Controller controller, NhgInput input) {
+    private void processStickInput(int controllerId, Controller controller, NhgInput input) {
         if (config != null) {
             Vector2 axis = VectorPool.getVector2();
             axis.set(0, 0);
@@ -417,7 +415,7 @@ public class InputHandler implements ControllerListener, InputProcessor {
         }
     }
 
-    private void processPointerInput(Integer pointer, NhgInput input) {
+    private void processPointerInput(int pointer, NhgInput input) {
         if (config != null) {
             Vector2 axis = VectorPool.getVector2();
             PointerInputConfiguration conf = config.getPointerConfiguration(input.getName());
@@ -486,7 +484,7 @@ public class InputHandler implements ControllerListener, InputProcessor {
         if (activeKeyCodes.size > 0) {
             ArrayMap.Keys<Integer> keyCodes = activeKeyCodes.keys();
 
-            for (Integer keyCode : keyCodes) {
+            for (int keyCode : keyCodes) {
                 NhgInput input = activeKeyCodes.get(keyCode);
 
                 if (input != null && isValidInput(input)) {
@@ -521,7 +519,7 @@ public class InputHandler implements ControllerListener, InputProcessor {
         if (activePointers.size > 0) {
             ArrayMap.Keys<Integer> pointers = activePointers.keys();
 
-            for (Integer pointer : pointers) {
+            for (int pointer : pointers) {
                 NhgInput input = activePointers.get(pointer);
 
                 if (input != null && isValidInput(input)) {
@@ -580,7 +578,7 @@ public class InputHandler implements ControllerListener, InputProcessor {
             for (NhgInput in : inputs) {
                 KeyInputConfiguration conf = config.getKeyConfiguration(in.getName());
 
-                if (in.getType() == InputType.KEY && conf.getKeyCode().compareTo(keycode) == 0) {
+                if (in.getType() == InputType.KEY && conf.getKeyCode() == keycode) {
                     res = in;
                     break;
                 }
@@ -599,7 +597,7 @@ public class InputHandler implements ControllerListener, InputProcessor {
             for (NhgInput in : inputs) {
                 PointerInputConfiguration conf = config.getPointerConfiguration(in.getName());
 
-                if (in.getType() == InputType.POINTER && conf.getId().compareTo(id) == 0) {
+                if (in.getType() == InputType.POINTER && conf.getId() == id) {
                     res = in;
                     break;
                 }
@@ -637,9 +635,7 @@ public class InputHandler implements ControllerListener, InputProcessor {
             for (NhgInput in : inputs) {
                 StickInputConfiguration conf = config.getStickConfiguration(in.getName());
 
-                if (in.getType() == InputType.STICK &&
-                        conf.getControllerId() != null &&
-                        conf.getControllerId().compareTo(id) == 0) {
+                if (in.getType() == InputType.STICK && conf.getControllerId() == id) {
                     res.add(in);
                 }
             }

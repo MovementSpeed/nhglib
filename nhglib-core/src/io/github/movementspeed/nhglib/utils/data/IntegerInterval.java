@@ -4,47 +4,43 @@ package io.github.movementspeed.nhglib.utils.data;
  * Created by Fausto Napoli on 22/01/2017.
  */
 public class IntegerInterval {
-    private Integer a;
-    private Integer b;
+    private int a;
+    private int b;
 
-    public IntegerInterval(Integer a, Integer b) {
+    public IntegerInterval(int a, int b) {
         this.a = a;
         this.b = b;
     }
 
-    public void setA(Integer a) {
+    public void setA(int a) {
         this.a = a;
     }
 
-    public void setB(Integer b) {
+    public void setB(int b) {
         this.b = b;
     }
 
-    public Boolean inRange(Integer value) {
+    public boolean inRange(int value) {
         return inRange(value, true);
     }
 
-    public Boolean inRange(Integer value, Boolean inclusive) {
-        Boolean res;
+    public boolean inRange(int value, boolean inclusive) {
+        boolean res;
 
-        if (a != null && b != null) {
-            if (inclusive) {
-                res = value <= b && value >= a;
-            } else {
-                res = value < b && value > a;
-            }
+        if (inclusive) {
+            res = value <= b && value >= a;
         } else {
-            res = false;
+            res = value < b && value > a;
         }
 
         return res;
     }
 
-    public Integer getA() {
+    public int getA() {
         return a;
     }
 
-    public Integer getB() {
+    public int getB() {
         return b;
     }
 }

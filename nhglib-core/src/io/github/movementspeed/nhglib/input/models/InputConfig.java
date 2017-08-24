@@ -4,12 +4,12 @@ package io.github.movementspeed.nhglib.input.models;
  * Created by Fausto Napoli on 08/01/2017.
  */
 public class InputConfig {
-    private Integer keycode;
-    private Integer controllerId;
-    private Float minValue;
-    private Float maxValue;
-    private Float stickDeadZoneRadius;
-    private Float sensitivity;
+    private int keycode;
+    private int controllerId;
+    private float minValue;
+    private float maxValue;
+    private float stickDeadZoneRadius;
+    private float sensitivity;
     private InputMode inputMode;
     private StickType stickType;
 
@@ -22,27 +22,27 @@ public class InputConfig {
         sensitivity = 1.0f;
     }
 
-    public void setKeycode(Integer keycode) {
+    public void setKeycode(int keycode) {
         this.keycode = keycode;
     }
 
-    public void setControllerId(Integer controllerId) {
+    public void setControllerId(int controllerId) {
         this.controllerId = controllerId;
     }
 
-    public void setMinValue(Float minValue) {
+    public void setMinValue(float minValue) {
         this.minValue = minValue;
     }
 
-    public void setMaxValue(Float maxValue) {
+    public void setMaxValue(float maxValue) {
         this.maxValue = maxValue;
     }
 
-    public void setStickDeadZoneRadius(Float stickDeadZoneRadius) {
+    public void setStickDeadZoneRadius(float stickDeadZoneRadius) {
         this.stickDeadZoneRadius = stickDeadZoneRadius;
     }
 
-    public void setSensitivity(Float sensitivity) {
+    public void setSensitivity(float sensitivity) {
         this.sensitivity = sensitivity;
     }
 
@@ -54,27 +54,27 @@ public class InputConfig {
         this.stickType = stickType;
     }
 
-    public Integer getKeycode() {
+    public int getKeycode() {
         return keycode;
     }
 
-    public Integer getControllerId() {
+    public int getControllerId() {
         return controllerId;
     }
 
-    public Float getMinValue() {
+    public float getMinValue() {
         return minValue;
     }
 
-    public Float getMaxValue() {
+    public float getMaxValue() {
         return maxValue;
     }
 
-    public Float getStickDeadZoneRadius() {
+    public float getStickDeadZoneRadius() {
         return stickDeadZoneRadius;
     }
 
-    public Float getSensitivity() {
+    public float getSensitivity() {
         return sensitivity;
     }
 

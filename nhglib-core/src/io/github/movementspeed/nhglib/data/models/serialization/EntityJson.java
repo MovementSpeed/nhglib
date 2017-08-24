@@ -11,9 +11,9 @@ import io.github.movementspeed.nhglib.utils.scenes.SceneUtils;
  * Created by Fausto Napoli on 19/12/2016.
  */
 public class EntityJson implements JsonParseable<Integer> {
-    public Integer parentEntity;
+    public int parentEntity;
 
-    private Integer output;
+    private int output;
 
     private Nhg nhg;
     private SceneGraph sceneGraph;
@@ -79,7 +79,7 @@ public class EntityJson implements JsonParseable<Integer> {
         output = entity;
     }
 
-    public void setParentEntity(Integer parentEntity) {
+    public void setParentEntity(int parentEntity) {
         this.parentEntity = parentEntity;
     }
 

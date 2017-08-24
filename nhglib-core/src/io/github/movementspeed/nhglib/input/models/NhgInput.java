@@ -6,7 +6,7 @@ import io.github.movementspeed.nhglib.input.enums.InputAction;
  * Created by Fausto Napoli on 08/01/2017.
  */
 public class NhgInput {
-    private Boolean handled;
+    private boolean handled;
     private String name;
     private InputType type;
     private InputSource inputSource;
@@ -19,7 +19,7 @@ public class NhgInput {
         inputSource = new InputSource();
     }
 
-    public void setHandled(Boolean handled) {
+    public void setHandled(boolean handled) {
         this.handled = handled;
     }
 
@@ -39,11 +39,11 @@ public class NhgInput {
         this.inputAction = inputAction;
     }
 
-    public Boolean is(String name) {
+    public boolean is(String name) {
         return this.name.contentEquals(name);
     }
 
-    public Boolean isHandled() {
+    public boolean isHandled() {
         return handled;
     }
 

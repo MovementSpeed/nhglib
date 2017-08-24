@@ -7,10 +7,10 @@ import io.github.movementspeed.nhglib.input.models.StickType;
  * Created by Fausto Napoli on 24/01/2017.
  */
 public class StickInputConfiguration extends InputConfiguration {
-    private Integer controllerId;
+    private int controllerId;
     private StickType stickType;
 
-    public void setControllerId(Integer controllerId) {
+    public void setControllerId(int controllerId) {
         this.controllerId = controllerId;
     }
 
@@ -18,7 +18,7 @@ public class StickInputConfiguration extends InputConfiguration {
         this.stickType = stickType;
     }
 
-    public Integer getControllerId() {
+    public int getControllerId() {
         return controllerId;
     }
 

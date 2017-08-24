@@ -6,153 +6,121 @@ import java.util.HashMap;
  * Created by Fausto Napoli on 25/10/2016.
  */
 public class Bundle extends HashMap<String, Object> {
-    public Boolean getBoolean(String key) {
-        return getBoolean(key, null);
+    public boolean getBoolean(String key) {
+        return getBoolean(key, false);
     }
 
-    public Boolean getBoolean(String key, Boolean defaultValue) {
-        Boolean res = null;
+    public boolean getBoolean(String key, boolean defaultValue) {
+        boolean res = defaultValue;
         Object value = get(key);
 
         if (value instanceof Boolean) {
-            res = (Boolean) value;
-        }
-
-        if (res == null) {
-            res = defaultValue;
+            res = (boolean) value;
         }
 
         return res;
     }
 
-    public Byte getByte(String key) {
-        return getByte(key, null);
+    public byte getByte(String key) {
+        return getByte(key, (byte) -1);
     }
 
-    public Byte getByte(String key, Byte defaultValue) {
-        Byte res = null;
+    public byte getByte(String key, byte defaultValue) {
+        byte res = defaultValue;
         Object value = get(key);
 
         if (value instanceof Byte) {
-            res = (Byte) value;
-        }
-
-        if (res == null) {
-            res = defaultValue;
+            res = (byte) value;
         }
 
         return res;
     }
 
-    public Short getShort(String key) {
-        return getShort(key, null);
+    public short getShort(String key) {
+        return getShort(key, (short) -1);
     }
 
-    public Short getShort(String key, Short defaultValue) {
-        Short res = null;
+    public short getShort(String key, short defaultValue) {
+        short res = defaultValue;
         Object value = get(key);
 
         if (value instanceof Short) {
-            res = (Short) value;
-        }
-
-        if (res == null) {
-            res = defaultValue;
+            res = (short) value;
         }
 
         return res;
     }
 
-    public Integer getInteger(String key) {
-        return getInteger(key, null);
+    public int getInteger(String key) {
+        return getInteger(key, -1);
     }
 
-    public Integer getInteger(String key, Integer defaultValue) {
-        Integer res = null;
+    public int getInteger(String key, int defaultValue) {
+        int res = defaultValue;
         Object value = get(key);
 
         if (value instanceof Integer) {
-            res = (Integer) value;
-        }
-
-        if (res == null) {
-            res = defaultValue;
+            res = (int) value;
         }
 
         return res;
     }
 
-    public Long getLong(String key) {
-        return getLong(key, null);
+    public long getLong(String key) {
+        return getLong(key, -1L);
     }
 
-    public Long getLong(String key, Long defaultValue) {
-        Long res = null;
+    public long getLong(String key, long defaultValue) {
+        long res = defaultValue;
         Object value = get(key);
 
         if (value instanceof Long) {
-            res = (Long) value;
-        }
-
-        if (res == null) {
-            res = defaultValue;
+            res = (long) value;
         }
 
         return res;
     }
 
-    public Float getFloat(String key) {
-        return getFloat(key, null);
+    public float getFloat(String key) {
+        return getFloat(key, -1f);
     }
 
-    public Float getFloat(String key, Float defaultValue) {
-        Float res = null;
+    public float getFloat(String key, float defaultValue) {
+        float res = defaultValue;
         Object value = get(key);
 
         if (value instanceof Float) {
-            res = (Float) value;
-        }
-
-        if (res == null) {
-            res = defaultValue;
+            res = (float) value;
         }
 
         return res;
     }
 
-    public Double getDouble(String key) {
-        return getDouble(key, null);
+    public double getDouble(String key) {
+        return getDouble(key, -1D);
     }
 
-    public Double getDouble(String key, Double defaultValue) {
-        Double res = null;
+    public double getDouble(String key, double defaultValue) {
+        double res = defaultValue;
         Object value = get(key);
 
         if (value instanceof Double) {
-            res = (Double) value;
-        }
-
-        if (res == null) {
-            res = defaultValue;
+            res = (double) value;
         }
 
         return res;
     }
 
-    public Character getCharacter(String key) {
-        return getCharacter(key, null);
+    public char getCharacter(String key) {
+        return getCharacter(key, ' ');
     }
 
-    public Character getCharacter(String key, Character defaultValue) {
-        Character res = null;
+    public char getCharacter(String key, char defaultValue) {
+        char res = defaultValue;
         Object value = get(key);
 
         if (value instanceof Character) {
-            res = (Character) value;
-        }
-
-        if (res == null) {
-            res = defaultValue;
+            res = (char) value;
         }
 
         return res;

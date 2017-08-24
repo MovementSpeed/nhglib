@@ -4,49 +4,49 @@ package io.github.movementspeed.nhglib.input.controllers;
  * Created by Fausto Napoli on 24/01/2017.
  */
 public class StickConfiguration {
-    private Boolean invertHorizontalAxis;
-    private Boolean invertVerticalAxis;
-    private Float deadZoneRadius;
-    private Float horizontalSensitivity;
-    private Float verticalSensitivity;
+    private boolean invertHorizontalAxis;
+    private boolean invertVerticalAxis;
+    private float deadZoneRadius;
+    private float horizontalSensitivity;
+    private float verticalSensitivity;
 
-    public void setInvertHorizontalAxis(Boolean invertHorizontalAxis) {
+    public void setInvertHorizontalAxis(boolean invertHorizontalAxis) {
         this.invertHorizontalAxis = invertHorizontalAxis;
     }
 
-    public void setInvertVerticalAxis(Boolean invertVerticalAxis) {
+    public void setInvertVerticalAxis(boolean invertVerticalAxis) {
         this.invertVerticalAxis = invertVerticalAxis;
     }
 
-    public void setDeadZoneRadius(Float deadZoneRadius) {
+    public void setDeadZoneRadius(float deadZoneRadius) {
         this.deadZoneRadius = deadZoneRadius;
     }
 
-    public void setHorizontalSensitivity(Float horizontalSensitivity) {
+    public void setHorizontalSensitivity(float horizontalSensitivity) {
         this.horizontalSensitivity = horizontalSensitivity;
     }
 
-    public void setVerticalSensitivity(Float verticalSensitivity) {
+    public void setVerticalSensitivity(float verticalSensitivity) {
         this.verticalSensitivity = verticalSensitivity;
     }
 
-    public Boolean getInvertHorizontalAxis() {
+    public boolean getInvertHorizontalAxis() {
         return invertHorizontalAxis;
     }
 
-    public Boolean getInvertVerticalAxis() {
+    public boolean getInvertVerticalAxis() {
         return invertVerticalAxis;
     }
 
-    public Float getDeadZoneRadius() {
+    public float getDeadZoneRadius() {
         return deadZoneRadius;
     }
 
-    public Float getHorizontalSensitivity() {
+    public float getHorizontalSensitivity() {
         return horizontalSensitivity;
     }
 
-    public Float getVerticalSensitivity() {
+    public float getVerticalSensitivity() {
         return verticalSensitivity;
     }
 }

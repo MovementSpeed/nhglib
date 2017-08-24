@@ -9,8 +9,8 @@ import io.github.movementspeed.nhglib.interfaces.JsonParseable;
  * Created by Fausto Napoli on 19/12/2016.
  */
 public abstract class ComponentJson implements JsonParseable<Component> {
-    public Integer parentEntity;
-    public Integer entity;
+    public int parentEntity;
+    public int entity;
 
     public Nhg nhg;
     public SceneGraph sceneGraph;

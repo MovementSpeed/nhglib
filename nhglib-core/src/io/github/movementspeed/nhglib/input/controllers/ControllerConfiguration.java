@@ -4,11 +4,11 @@ package io.github.movementspeed.nhglib.input.controllers;
  * Created by Fausto Napoli on 24/01/2017.
  */
 public class ControllerConfiguration {
-    private Integer id;
+    private int id;
     private StickConfiguration leftStick;
     private StickConfiguration rightStick;
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -20,7 +20,7 @@ public class ControllerConfiguration {
         this.rightStick = rightStick;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 

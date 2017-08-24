@@ -8,7 +8,7 @@ import io.github.movementspeed.nhglib.utils.data.StringUtils;
  * Data structure for a message.
  */
 public class Message {
-    public Integer id;
+    public int id;
     public Bundle data;
 
     public Message(String name) {
@@ -26,18 +26,18 @@ public class Message {
         if (o == null || getClass() != o.getClass()) return false;
 
         Message message = (Message) o;
-        return id.equals(message.id);
+        return id == message.id;
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
+        int result = id;
         result = 31 * result + (data != null ? data.hashCode() : 0);
         return result;
     }
 
     public boolean is(String name) {
-        Integer id = StringUtils.idFromString(name);
-        return this.id.equals(id);
+        int id = StringUtils.idFromString(name);
+        return this.id == id;
     }
 }

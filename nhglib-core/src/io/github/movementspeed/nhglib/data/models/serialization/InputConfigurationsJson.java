@@ -35,7 +35,7 @@ public class InputConfigurationsJson implements JsonParseable<InputConfiguration
         for (JsonValue keyJson : keysJson) {
             String name = keyJson.getString("name");
             String keyName = keyJson.getString("keyName", "");
-            Integer keyCode = keyJson.getInt("keyCode", -1);
+            int keyCode = keyJson.getInt("keyCode", -1);
             InputMode inputMode = InputMode.fromString(keyJson.getString("inputMode"));
 
             if (keyCode == -1) {
@@ -53,7 +53,7 @@ public class InputConfigurationsJson implements JsonParseable<InputConfiguration
         // Sticks
         for (JsonValue stickJson : sticksJson) {
             String name = stickJson.getString("name");
-            Integer controllerId = stickJson.getInt("controllerId");
+            int controllerId = stickJson.getInt("controllerId");
             StickType stickType = StickType.fromString(stickJson.getString("stickType"));
 
             StickInputConfiguration stickInputConfiguration = new StickInputConfiguration();
@@ -66,11 +66,11 @@ public class InputConfigurationsJson implements JsonParseable<InputConfiguration
 
         // Pointers
         for (JsonValue pointerJson : pointersJson) {
-            Integer pointerId = pointerJson.getInt("id");
+            int pointerId = pointerJson.getInt("id");
             String name = pointerJson.getString("name");
 
-            Float horizontalSensitivity = pointerJson.getFloat("horizontalSensitivity");
-            Float verticalSensitivity = pointerJson.getFloat("verticalSensitivity");
+            float horizontalSensitivity = pointerJson.getFloat("horizontalSensitivity");
+            float verticalSensitivity = pointerJson.getFloat("verticalSensitivity");
 
             PointerSourceType pointerSourceType = PointerSourceType.fromString(pointerJson.getString("sourceType"));
 
@@ -86,7 +86,7 @@ public class InputConfigurationsJson implements JsonParseable<InputConfiguration
 
         // Controllers
         for (JsonValue controllerJson : controllersJson) {
-            Integer id = controllerJson.getInt("id");
+            int id = controllerJson.getInt("id");
 
             JsonValue leftStickConfigurationJson = controllerJson.get("leftStick");
             JsonValue rightStickConfigurationJson = controllerJson.get("rightStick");
@@ -104,8 +104,8 @@ public class InputConfigurationsJson implements JsonParseable<InputConfiguration
 
         // Mouse
         for (JsonValue mouse : mouseJson) {
-            Float mouseHorizontalSensitivity = mouse.getFloat("horizontalSensitivity", 0f);
-            Float mouseVerticalSensitivity = mouse.getFloat("verticalSensitivity", 0f);
+            float mouseHorizontalSensitivity = mouse.getFloat("horizontalSensitivity", 0f);
+            float mouseVerticalSensitivity = mouse.getFloat("verticalSensitivity", 0f);
 
             String name = mouse.getString("name");
             MouseSourceType mouseSourceType = MouseSourceType.fromString(mouse.getString("sourceType"));
@@ -126,12 +126,12 @@ public class InputConfigurationsJson implements JsonParseable<InputConfiguration
     }
 
     private StickConfiguration stickConfigurationFromJson(JsonValue stickConfigurationJson) {
-        Boolean invertHorizontalAxis = stickConfigurationJson.getBoolean("invertHorizontalAxis");
-        Boolean invertVerticalAxis = stickConfigurationJson.getBoolean("invertVerticalAxis");
+        boolean invertHorizontalAxis = stickConfigurationJson.getBoolean("invertHorizontalAxis");
+        boolean invertVerticalAxis = stickConfigurationJson.getBoolean("invertVerticalAxis");
 
-        Float deadZoneRadius = stickConfigurationJson.getFloat("deadZoneRadius");
-        Float horizontalSensitivity = stickConfigurationJson.getFloat("horizontalSensitivity");
-        Float verticalSensitivity = stickConfigurationJson.getFloat("verticalSensitivity");
+        float deadZoneRadius = stickConfigurationJson.getFloat("deadZoneRadius");
+        float horizontalSensitivity = stickConfigurationJson.getFloat("horizontalSensitivity");
+        float verticalSensitivity = stickConfigurationJson.getFloat("verticalSensitivity");
 
         StickConfiguration stickConfiguration = new StickConfiguration();
         stickConfiguration.setInvertHorizontalAxis(invertHorizontalAxis);

@@ -15,7 +15,7 @@ public class InputSource {
         this.value = value;
     }
 
-    public Boolean is(String name) {
+    public boolean is(String name) {
         return name.contentEquals(name);
     }
 

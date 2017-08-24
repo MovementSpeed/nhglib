@@ -7,10 +7,10 @@ import io.github.movementspeed.nhglib.input.models.InputMode;
  * Created by Fausto Napoli on 24/01/2017.
  */
 public class KeyInputConfiguration extends InputConfiguration {
-    private Integer keyCode;
+    private int keyCode;
     private InputMode inputMode;
 
-    public void setKeyCode(Integer keyCode) {
+    public void setKeyCode(int keyCode) {
         this.keyCode = keyCode;
     }
 
@@ -18,7 +18,7 @@ public class KeyInputConfiguration extends InputConfiguration {
         this.inputMode = inputMode;
     }
 
-    public Integer getKeyCode() {
+    public int getKeyCode() {
         return keyCode;
     }
 

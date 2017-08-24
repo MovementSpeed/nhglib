@@ -86,11 +86,11 @@ public class InputConfigurations {
         return res;
     }
 
-    public ControllerConfiguration getControllerConfiguration(Integer id) {
+    public ControllerConfiguration getControllerConfiguration(int id) {
         ControllerConfiguration res = null;
 
         for (ControllerConfiguration configuration : controllerConfigurations) {
-            if (configuration.getId().compareTo(id) == 0) {
+            if (configuration.getId() == id) {
                 res = configuration;
             }
         }

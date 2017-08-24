@@ -34,9 +34,9 @@ public class Nhg {
     public Threading threading;
     public Entities entities;
 
-    public static Boolean debugLogs = false;
-    public static Boolean debugDrawPhysics = false;
-    public static Boolean debugFpsLogs = false;
+    public static boolean debugLogs = false;
+    public static boolean debugDrawPhysics = false;
+    public static boolean debugFpsLogs = false;
 
     public Nhg() {
         messaging = new Messaging();

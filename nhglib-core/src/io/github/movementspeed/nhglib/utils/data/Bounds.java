@@ -7,21 +7,21 @@ import com.badlogic.gdx.math.Vector3;
  * Simple data structure to hold 3D bounds data.
  */
 public class Bounds {
-    private Float halfWidth;
-    private Float halfHeight;
-    private Float halfDepth;
+    private float halfWidth;
+    private float halfHeight;
+    private float halfDepth;
 
-    private Float width;
-    private Float height;
-    private Float depth;
+    private float width;
+    private float height;
+    private float depth;
 
-    public Bounds(Float width, Float height, Float depth) {
+    public Bounds(float width, float height, float depth) {
         setWidth(width);
         setHeight(height);
         setDepth(depth);
     }
 
-    public void setWidth(Float width) {
+    public void setWidth(float width) {
         if (width > 0f) {
             this.width = width;
             this.halfWidth = width / 2f;
@@ -31,7 +31,7 @@ public class Bounds {
         }
     }
 
-    public void setHeight(Float height) {
+    public void setHeight(float height) {
         if (height > 0f) {
             this.height = height;
             this.halfHeight = height / 2f;
@@ -41,7 +41,7 @@ public class Bounds {
         }
     }
 
-    public void setDepth(Float depth) {
+    public void setDepth(float depth) {
         if (depth > 0f) {
             this.depth = depth;
             this.halfDepth = depth / 2f;
@@ -51,20 +51,20 @@ public class Bounds {
         }
     }
 
-    public Float getWidth() {
+    public float getWidth() {
         return width;
     }
 
-    public Float getHeight() {
+    public float getHeight() {
         return height;
     }
 
-    public Float getDepth() {
+    public float getDepth() {
         return depth;
     }
 
-    public Boolean inBounds(Vector3 point) {
-        Boolean res = true;
+    public boolean inBounds(Vector3 point) {
+        boolean res = true;
 
         if (point.x > halfWidth || point.x < -halfWidth) {
             res = false;
@@ -105,10 +105,10 @@ public class Bounds {
     }
 
     public class Info {
-        public Boolean inBounds;
-        public Integer widthSide;
-        public Integer heightSide;
-        public Integer depthSide;
+        public boolean inBounds;
+        public int widthSide;
+        public int heightSide;
+        public int depthSide;
 
         public Info() {
             inBounds = false;

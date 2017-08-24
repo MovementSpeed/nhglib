@@ -31,7 +31,7 @@ public class NhgLogger {
             callerString = (String) caller;
         } else {
             callerString = caller.getClass().getName();
-            Integer lastIndexOfDot = callerString.lastIndexOf(".");
+            int lastIndexOfDot = callerString.lastIndexOf(".");
             callerString = callerString.substring(lastIndexOfDot + 1, callerString.length());
         }
 

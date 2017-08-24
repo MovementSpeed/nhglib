@@ -89,7 +89,7 @@ public class SceneManager {
                     @Override
                     public void accept(Message message) throws Exception {
                         if (message.is(Strings.Events.assetLoadingFinished)) {
-                            for (Integer entity : scene.sceneGraph.getEntities()) {
+                            for (int entity : scene.sceneGraph.getEntities()) {
                                 processEntityAssets(entity, true);
                             }
                         } else if (message.is(Strings.Events.assetLoaded)) {
@@ -110,7 +110,7 @@ public class SceneManager {
     }
 
     public void unloadScene(final Scene scene) {
-        for (Integer entity : scene.sceneGraph.getEntities()) {
+        for (int entity : scene.sceneGraph.getEntities()) {
             processEntityAssets(entity, false);
         }
     }
@@ -132,7 +132,7 @@ public class SceneManager {
         }
     }
 
-    private void processEntityAssets(Integer entity, boolean load) {
+    private void processEntityAssets(int entity, boolean load) {
         // Check if this entity has a model
         if (modelMapper.has(entity)) {
             processModelComponent(entity, load);
@@ -159,7 +159,7 @@ public class SceneManager {
         }
     }
 
-    private void processModelComponent(Integer entity, boolean load) {
+    private void processModelComponent(int entity, boolean load) {
         ModelComponent modelComponent = modelMapper.get(entity);
 
         if (load) {
@@ -230,7 +230,7 @@ public class SceneManager {
         }
     }
 
-    private void processRigidBodyComponent(Integer entity, boolean load) {
+    private void processRigidBodyComponent(int entity, boolean load) {
         RigidBodyComponent rigidBodyComponent = rigidBodyMapper.get(entity);
 
         if (load) {
@@ -258,7 +258,7 @@ public class SceneManager {
         }
     }
 
-    private void processVehicleComponent(Integer entity, boolean load) {
+    private void processVehicleComponent(int entity, boolean load) {
         VehicleComponent vehicleComponent = vehicleMapper.get(entity);
 
         if (load) {
@@ -287,13 +287,13 @@ public class SceneManager {
         }
     }
 
-    private void processWheelComponent(Integer entity) {
+    private void processWheelComponent(int entity) {
         WheelComponent wheelComponent = vehicleWheelMapper.get(entity);
         wheelComponent.build();
         wheelComponent.state = WheelComponent.State.READY;
     }
 
-    private void processParticleEffectComponent(Integer entity, boolean load) {
+    private void processParticleEffectComponent(int entity, boolean load) {
         ParticleEffectComponent particleEffectComponent = particleEffectMapper.get(entity);
 
         if (load) {

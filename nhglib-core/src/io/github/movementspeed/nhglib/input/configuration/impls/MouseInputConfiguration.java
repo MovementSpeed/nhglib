@@ -7,16 +7,16 @@ import io.github.movementspeed.nhglib.input.models.MouseSourceType;
  * Created by Fausto Napoli on 24/01/2017.
  */
 public class MouseInputConfiguration extends InputConfiguration {
-    private Float horizontalSensitivity;
-    private Float verticalSensitivity;
+    private float horizontalSensitivity;
+    private float verticalSensitivity;
 
     private MouseSourceType mouseSourceType;
 
-    public void setHorizontalSensitivity(Float horizontalSensitivity) {
+    public void setHorizontalSensitivity(float horizontalSensitivity) {
         this.horizontalSensitivity = horizontalSensitivity;
     }
 
-    public void setVerticalSensitivity(Float verticalSensitivity) {
+    public void setVerticalSensitivity(float verticalSensitivity) {
         this.verticalSensitivity = verticalSensitivity;
     }
 
@@ -24,11 +24,11 @@ public class MouseInputConfiguration extends InputConfiguration {
         this.mouseSourceType = mouseSourceType;
     }
 
-    public Float getHorizontalSensitivity() {
+    public float getHorizontalSensitivity() {
         return horizontalSensitivity;
     }
 
-    public Float getVerticalSensitivity() {
+    public float getVerticalSensitivity() {
         return verticalSensitivity;
     }
 

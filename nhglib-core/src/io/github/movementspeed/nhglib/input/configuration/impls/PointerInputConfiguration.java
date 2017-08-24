@@ -7,22 +7,22 @@ import io.github.movementspeed.nhglib.input.models.PointerSourceType;
  * Created by Fausto Napoli on 24/01/2017.
  */
 public class PointerInputConfiguration extends InputConfiguration {
-    private Integer id;
+    private int id;
 
-    private Float horizontalSensitivity;
-    private Float verticalSensitivity;
+    private float horizontalSensitivity;
+    private float verticalSensitivity;
 
     private PointerSourceType pointerSourceType;
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public void setHorizontalSensitivity(Float horizontalSensitivity) {
+    public void setHorizontalSensitivity(float horizontalSensitivity) {
         this.horizontalSensitivity = horizontalSensitivity;
     }
 
-    public void setVerticalSensitivity(Float verticalSensitivity) {
+    public void setVerticalSensitivity(float verticalSensitivity) {
         this.verticalSensitivity = verticalSensitivity;
     }
 
@@ -30,15 +30,15 @@ public class PointerInputConfiguration extends InputConfiguration {
         this.pointerSourceType = pointerSourceType;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public Float getHorizontalSensitivity() {
+    public float getHorizontalSensitivity() {
         return horizontalSensitivity;
     }
 
-    public Float getVerticalSensitivity() {
+    public float getVerticalSensitivity() {
         return verticalSensitivity;
     }
 
