@@ -5,8 +5,6 @@ import com.badlogic.gdx.graphics.g3d.environment.BaseLight;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import io.github.movementspeed.nhglib.enums.LightType;
-import io.github.movementspeed.nhglib.utils.data.MatrixPool;
-import io.github.movementspeed.nhglib.utils.data.VectorPool;
 
 /**
  * Created by Fausto Napoli on 18/03/2017.
@@ -25,9 +23,9 @@ public class NhgLight extends BaseLight<NhgLight> {
 
     public NhgLight() {
         intensity = 0;
-        position = VectorPool.getVector3();
-        direction = VectorPool.getVector3();
-        transform = MatrixPool.getMatrix4();
+        position = new Vector3();
+        direction = new Vector3();
+        transform = new Matrix4();
     }
 
     public static NhgLight directional(float intensity, Color color) {

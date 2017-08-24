@@ -27,7 +27,6 @@ import io.github.movementspeed.nhglib.input.enums.InputAction;
 import io.github.movementspeed.nhglib.input.interfaces.InputListener;
 import io.github.movementspeed.nhglib.input.models.*;
 import io.github.movementspeed.nhglib.utils.data.Strings;
-import io.github.movementspeed.nhglib.utils.data.VectorPool;
 import io.github.movementspeed.nhglib.utils.debug.NhgLogger;
 
 /**
@@ -35,6 +34,8 @@ import io.github.movementspeed.nhglib.utils.debug.NhgLogger;
  */
 public class InputHandler implements ControllerListener, InputProcessor {
     private InputConfigurations config;
+    private Vector2 tempVec;
+
     private Array<InputContext> activeContexts;
     private Array<InputListener> inputListeners;
 
@@ -49,6 +50,8 @@ public class InputHandler implements ControllerListener, InputProcessor {
     private ArrayMap<String, InputContext> inputContexts;
 
     public InputHandler() {
+        tempVec = new Vector2();
+
         activeContexts = new Array<>();
         activeKeyCodes = new ArrayMap<>();
         activePointers = new ArrayMap<>();
@@ -333,8 +336,7 @@ public class InputHandler implements ControllerListener, InputProcessor {
 
     private void processStickInput(int controllerId, Controller controller, NhgInput input) {
         if (config != null) {
-            Vector2 axis = VectorPool.getVector2();
-            axis.set(0, 0);
+            tempVec.set(0, 0);
 
             boolean invertHorizontalAxis = false;
             boolean invertVerticalAxis = false;
@@ -351,11 +353,11 @@ public class InputHandler implements ControllerListener, InputProcessor {
             switch (stickType) {
                 case LEFT:
                     if (Xbox.isXboxController(controller)) {
-                        axis.x = controller.getAxis(ControllerCodes.Xbox360.STICK_LEFT_HORIZONTAL);
-                        axis.y = controller.getAxis(ControllerCodes.Xbox360.STICK_LEFT_VERTICAL);
+                        tempVec.x = controller.getAxis(ControllerCodes.Xbox360.STICK_LEFT_HORIZONTAL);
+                        tempVec.y = controller.getAxis(ControllerCodes.Xbox360.STICK_LEFT_VERTICAL);
                     } else if (Ouya.isRunningOnOuya()) {
-                        axis.x = controller.getAxis(Ouya.AXIS_LEFT_X);
-                        axis.y = controller.getAxis(Ouya.AXIS_LEFT_Y);
+                        tempVec.x = controller.getAxis(Ouya.AXIS_LEFT_X);
+                        tempVec.y = controller.getAxis(Ouya.AXIS_LEFT_Y);
                     }
 
                     StickConfiguration stickConfiguration = controllerConf.getLeftStick();
@@ -370,11 +372,11 @@ public class InputHandler implements ControllerListener, InputProcessor {
 
                 case RIGHT:
                     if (Xbox.isXboxController(controller)) {
-                        axis.x = controller.getAxis(ControllerCodes.Xbox360.STICK_RIGHT_HORIZONTAL);
-                        axis.y = controller.getAxis(ControllerCodes.Xbox360.STICK_RIGHT_VERTICAL);
+                        tempVec.x = controller.getAxis(ControllerCodes.Xbox360.STICK_RIGHT_HORIZONTAL);
+                        tempVec.y = controller.getAxis(ControllerCodes.Xbox360.STICK_RIGHT_VERTICAL);
                     } else if (Ouya.isRunningOnOuya()) {
-                        axis.x = controller.getAxis(Ouya.AXIS_RIGHT_X);
-                        axis.y = controller.getAxis(Ouya.AXIS_RIGHT_Y);
+                        tempVec.x = controller.getAxis(Ouya.AXIS_RIGHT_X);
+                        tempVec.y = controller.getAxis(Ouya.AXIS_RIGHT_Y);
                     }
 
                     stickConfiguration = controllerConf.getRightStick();
@@ -392,48 +394,47 @@ public class InputHandler implements ControllerListener, InputProcessor {
             }
 
             if (invertHorizontalAxis) {
-                axis.x *= -1;
+                tempVec.x *= -1;
             }
 
             if (invertVerticalAxis) {
-                axis.y *= -1;
+                tempVec.y *= -1;
             }
 
-            if (Math.abs(axis.x) < deadZone) {
-                axis.x = 0;
+            if (Math.abs(tempVec.x) < deadZone) {
+                tempVec.x = 0;
             }
 
-            if (Math.abs(axis.y) < deadZone) {
-                axis.y = 0;
+            if (Math.abs(tempVec.y) < deadZone) {
+                tempVec.y = 0;
             }
 
-            axis.scl(horizontalSensitivity, verticalSensitivity);
+            tempVec.scl(horizontalSensitivity, verticalSensitivity);
 
             InputSource inputSource = input.getInputSource();
             inputSource.setName(controller.getName());
-            inputSource.setValue(axis);
+            inputSource.setValue(tempVec);
         }
     }
 
     private void processPointerInput(int pointer, NhgInput input) {
         if (config != null) {
-            Vector2 axis = VectorPool.getVector2();
             PointerInputConfiguration conf = config.getPointerConfiguration(input.getName());
 
             switch (conf.getPointerSourceType()) {
                 case POINTER_DELTA_XY:
-                    axis.set(Gdx.input.getDeltaX(pointer), Gdx.input.getDeltaY(pointer));
-                    axis.scl(conf.getHorizontalSensitivity(), conf.getVerticalSensitivity());
+                    tempVec.set(Gdx.input.getDeltaX(pointer), Gdx.input.getDeltaY(pointer));
+                    tempVec.scl(conf.getHorizontalSensitivity(), conf.getVerticalSensitivity());
                     break;
 
                 case POINTER_XY:
-                    axis.set(Gdx.input.getX(pointer), Gdx.input.getY(pointer));
+                    tempVec.set(Gdx.input.getX(pointer), Gdx.input.getY(pointer));
                     break;
             }
 
             InputSource inputSource = input.getInputSource();
             inputSource.setName(input.getName());
-            inputSource.setValue(axis);
+            inputSource.setValue(tempVec);
         }
     }
 
@@ -442,14 +443,12 @@ public class InputHandler implements ControllerListener, InputProcessor {
             MouseInputConfiguration conf = config.getMouseConfiguration(input.getName());
 
             if (conf.getMouseSourceType() == MouseSourceType.MOUSE_XY) {
-                Vector2 axis = VectorPool.getVector2();
-
-                axis.set(Gdx.input.getDeltaX(), Gdx.input.getDeltaY());
-                axis.scl(conf.getHorizontalSensitivity(), conf.getVerticalSensitivity());
+                tempVec.set(Gdx.input.getDeltaX(), Gdx.input.getDeltaY());
+                tempVec.scl(conf.getHorizontalSensitivity(), conf.getVerticalSensitivity());
 
                 InputSource inputSource = input.getInputSource();
                 inputSource.setName(input.getName());
-                inputSource.setValue(axis);
+                inputSource.setValue(tempVec);
 
                 activeMouseInputs.removeKey(MouseSourceType.MOUSE_XY);
             }
