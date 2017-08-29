@@ -18,8 +18,6 @@ import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.IBLAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
-import io.github.movementspeed.nhglib.utils.data.MatrixPool;
-import io.github.movementspeed.nhglib.utils.data.VectorPool;
 import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils;
 
 /**
@@ -298,8 +296,6 @@ public class PBRShader extends BaseShader {
             shaderProgram.setUniformf(lightUniform + "intensity", nhgLight.intensity);
             shaderProgram.setUniformf(lightUniform + "innerAngle", nhgLight.innerAngle);
             shaderProgram.setUniformf(lightUniform + "outerAngle", nhgLight.outerAngle);
-
-            VectorPool.freeVector3(viewSpacePosition, viewSpaceDirection);
         }
 
         updateBones(renderable);
@@ -386,16 +382,13 @@ public class PBRShader extends BaseShader {
         }
     }
 
+    private Vector3 p1 = new Vector3(), p2 = new Vector3(), m = new Vector3();
+    private Matrix4 a = new Matrix4(), b = new Matrix4();
+
     private void cullSpotLight(NhgLight light) {
-        Matrix4 a = MatrixPool.getMatrix4();
         a.setToTranslation(light.position);
 
-        Matrix4 b = MatrixPool.getMatrix4();
         b.set(a).translate(new Vector3(light.direction).scl(light.radius));
-
-        Vector3 p1 = VectorPool.getVector3();
-        Vector3 p2 = VectorPool.getVector3();
-        Vector3 m = VectorPool.getVector3();
 
         a.getTranslation(p1);
         b.getTranslation(p2);
@@ -406,9 +399,6 @@ public class PBRShader extends BaseShader {
         if (camera.frustum.sphereInFrustum(m, radius)) {
             lightsToRender.add(light);
         }
-
-        VectorPool.freeVector3(p1, p2, m);
-        MatrixPool.freeMatrix4(a, b);
     }
 
     private void cullLights() {
@@ -483,8 +473,9 @@ public class PBRShader extends BaseShader {
         return prefix;
     }
 
+    private Vector3 position = new Vector3(), direction = new Vector3();
+
     private Vector3 getViewSpacePosition(NhgLight light) {
-        Vector3 position = VectorPool.getVector3();
         position.set(light.position)
                 .mul(camera.view);
 
@@ -492,7 +483,6 @@ public class PBRShader extends BaseShader {
     }
 
     private Vector3 getViewSpaceDirection(NhgLight light) {
-        Vector3 direction = VectorPool.getVector3();
         direction.set(light.direction)
                 .rot(camera.view);
 

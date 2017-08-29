@@ -16,8 +16,6 @@ import com.badlogic.gdx.utils.JsonValue;
 import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.assets.Asset;
 import io.github.movementspeed.nhglib.graphics.lights.LightProbe;
-import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
-import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.movementspeed.nhglib.graphics.scenes.Scene;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.GammaCorrectionAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.particles.ParticleShader;
@@ -88,13 +86,13 @@ public class Main extends NhgEntry implements InputListener {
 
         environment = renderingSystem.getEnvironment();
 
-        NhgLightsAttribute lightsAttribute = new NhgLightsAttribute();
-        lightsAttribute.lights.add(NhgLight.point(50, 100, Color.WHITE));
+        /*NhgLightsAttribute lightsAttribute = new NhgLightsAttribute();
+        lightsAttribute.lights.add(NhgLight.point(50, 100, Color.WHITE));*/
 
         GammaCorrectionAttribute gammaCorrectionAttribute = new GammaCorrectionAttribute();
-        gammaCorrectionAttribute.gammaCorrection = false;
+        gammaCorrectionAttribute.gammaCorrection = true;
 
-        environment.set(lightsAttribute);
+        //environment.set(lightsAttribute);
         environment.set(gammaCorrectionAttribute);
 
         // Subscribe to asset events
