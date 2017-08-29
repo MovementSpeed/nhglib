@@ -47,7 +47,7 @@ public class PBRShader extends BaseShader {
 
     private Array<IntArray> lightsFrustum;
     private Array<NhgLight> lights;
-    private Array<NhgLight> lightsToRender;
+    //private Array<NhgLight> lightsToRender;
 
     public PBRShader(Renderable renderable, Environment environment, Params params) {
         this.renderable = renderable;
@@ -212,6 +212,59 @@ public class PBRShader extends BaseShader {
         } else {
             lights = new Array<>();
         }
+
+        /*shaderProgram.setUniformi(lightUniform + "type", nhgLight.type.ordinal());
+        shaderProgram.setUniformf(lightUniform + "position", viewSpacePosition);
+        shaderProgram.setUniformf(lightUniform + "direction", viewSpaceDirection);
+        shaderProgram.setUniformf(lightUniform + "intensity", nhgLight.intensity);
+        shaderProgram.setUniformf(lightUniform + "innerAngle", nhgLight.innerAngle);
+        shaderProgram.setUniformf(lightUniform + "outerAngle", nhgLight.outerAngle);*/
+
+        for (int i = 0; i < lights.size; i++) {
+            final NhgLight light = lights.get(i);
+
+            register("u_lightsList[" + i + "].type", new LocalSetter() {
+                @Override
+                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                    shader.set(inputID, light.type.ordinal());
+                }
+            });
+
+            register("u_lightsList[" + i + "].position", new LocalSetter() {
+                @Override
+                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                    shader.set(inputID, getViewSpacePosition(light));
+                }
+            });
+
+            register("u_lightsList[" + i + "].direction", new LocalSetter() {
+                @Override
+                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                    shader.set(inputID, getViewSpaceDirection(light));
+                }
+            });
+
+            register("u_lightsList[" + i + "].intensity", new LocalSetter() {
+                @Override
+                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                    shader.set(inputID, light.intensity);
+                }
+            });
+
+            register("u_lightsList[" + i + "].innerAngle", new LocalSetter() {
+                @Override
+                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                    shader.set(inputID, light.innerAngle);
+                }
+            });
+
+            register("u_lightsList[" + i + "].outerAngle", new LocalSetter() {
+                @Override
+                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                    shader.set(inputID, light.outerAngle);
+                }
+            });
+        }
     }
 
     @Override
@@ -222,7 +275,7 @@ public class PBRShader extends BaseShader {
         bones = new float[0];
 
         lightsFrustum = new Array<>();
-        lightsToRender = new Array<>();
+        //lightsToRender = new Array<>();
 
         for (int i = 0; i < 100; i++) {
             lightsFrustum.add(new IntArray());
@@ -283,7 +336,7 @@ public class PBRShader extends BaseShader {
 
     @Override
     public void render(Renderable renderable) {
-        for (int light = 0; light < lightsToRender.size; light++) {
+        /*for (int light = 0; light < lightsToRender.size; light++) {
             NhgLight nhgLight = lightsToRender.get(light);
             String lightUniform = "u_lightsList[" + light + "].";
 
@@ -296,7 +349,7 @@ public class PBRShader extends BaseShader {
             shaderProgram.setUniformf(lightUniform + "intensity", nhgLight.intensity);
             shaderProgram.setUniformf(lightUniform + "innerAngle", nhgLight.innerAngle);
             shaderProgram.setUniformf(lightUniform + "outerAngle", nhgLight.outerAngle);
-        }
+        }*/
 
         updateBones(renderable);
         super.render(renderable);
@@ -305,8 +358,7 @@ public class PBRShader extends BaseShader {
     @Override
     public void end() {
         super.end();
-
-        lightsToRender.clear();
+        //lightsToRender.clear();
     }
 
     @Override
@@ -322,15 +374,17 @@ public class PBRShader extends BaseShader {
             lightsFrustum.get(i).clear();
         }
 
-        for (i = 0; i < lightsToRender.size; i++) {
-            NhgLight light = lightsToRender.get(i);
+        for (i = 0; i < lights.size; i++) {
+            NhgLight light = lights.get(i);
 
-            frustums.checkFrustums(light.position, light.radius, lightsFrustum, i);
-            color.set(light.color);
-            color.a = light.radius / 255f;
+            if (light.enabled) {
+                frustums.checkFrustums(light.position, light.radius, lightsFrustum, i);
+                color.set(light.color);
+                color.a = light.radius / 255f;
 
-            lightInfoPixmap.setColor(color);
-            lightInfoPixmap.drawPixel(0, i);
+                lightInfoPixmap.setColor(color);
+                lightInfoPixmap.drawPixel(0, i);
+            }
         }
 
         lightInfoTexture.draw(lightInfoPixmap, 0, 0);
@@ -376,10 +430,8 @@ public class PBRShader extends BaseShader {
     }
 
     private void cullPointLight(NhgLight light) {
-        if (camera.frustum.sphereInFrustum(light.position, light.radius) &&
-                camera.position.dst(light.position) < lightRenderDistance) {
-            lightsToRender.add(light);
-        }
+        light.enabled = camera.frustum.sphereInFrustum(light.position, light.radius) &&
+                camera.position.dst(light.position) < lightRenderDistance;
     }
 
     private Vector3 p1 = new Vector3(), p2 = new Vector3(), m = new Vector3();
@@ -396,9 +448,7 @@ public class PBRShader extends BaseShader {
 
         float radius = p1.dst(p2) * 0.5f;
 
-        if (camera.frustum.sphereInFrustum(m, radius)) {
-            lightsToRender.add(light);
-        }
+        light.enabled = camera.frustum.sphereInFrustum(m, radius);
     }
 
     private void cullLights() {
@@ -414,7 +464,7 @@ public class PBRShader extends BaseShader {
                         break;
 
                     case DIRECTIONAL_LIGHT:
-                        lightsToRender.add(light);
+                        light.enabled = true;
                         break;
                 }
             }

@@ -13,16 +13,19 @@ public class NhgLight extends BaseLight<NhgLight> {
     public final Vector3 position;
     public final Vector3 direction;
 
-    public LightType type;
+    public boolean enabled;
     public float radius;
     public float intensity;
     public float innerAngle;
     public float outerAngle;
 
+    public LightType type;
+
     private Matrix4 transform;
 
     public NhgLight() {
         intensity = 0;
+        enabled = true;
         position = new Vector3();
         direction = new Vector3();
         transform = new Matrix4();
@@ -66,6 +69,7 @@ public class NhgLight extends BaseLight<NhgLight> {
     public NhgLight copy() {
         NhgLight copy = new NhgLight();
 
+        copy.enabled = this.enabled;
         copy.position.set(this.position);
         copy.direction.set(this.direction);
         copy.type = this.type;
