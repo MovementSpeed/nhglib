@@ -67,8 +67,6 @@
             "lightType":"pointLight",
             "intensity":10,
             "range":40,
-            "innerAngle":45,
-            "outerAngle":75,
             "color":
             {
               "r":0.9372,
