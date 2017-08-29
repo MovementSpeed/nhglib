@@ -4,7 +4,9 @@
 precision mediump float;
 #endif
 
-varying vec2 v_texCoord;
+out vec4 fragColor;
+
+in vec2 v_texCoord;
 
 const float PI = 3.14159265359;
 
@@ -56,6 +58,27 @@ vec3 ImportanceSampleGGX(vec2 Xi, vec3 N, float roughness)
     return normalize(sampleVec);
 }
 
+float GeometrySchlickGGX(float NdotV, float roughness)
+{
+    float a = roughness;
+    float k = (a * a) / 2.0;
+
+    float nom   = NdotV;
+    float denom = NdotV * (1.0 - k) + k;
+
+    return nom / denom;
+}
+
+float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
+{
+    float NdotV = max(dot(N, V), 0.0);
+    float NdotL = max(dot(N, L), 0.0);
+    float ggx2 = GeometrySchlickGGX(NdotV, roughness);
+    float ggx1 = GeometrySchlickGGX(NdotL, roughness);
+
+    return ggx1 * ggx2;
+}
+
 vec2 IntegrateBRDF(float NdotV, float roughness)
 {
     vec3 V;
@@ -97,29 +120,8 @@ vec2 IntegrateBRDF(float NdotV, float roughness)
     return vec2(A, B);
 }
 
-float GeometrySchlickGGX(float NdotV, float roughness)
-{
-    float a = roughness;
-    float k = (a * a) / 2.0;
-
-    float nom   = NdotV;
-    float denom = NdotV * (1.0 - k) + k;
-
-    return nom / denom;
-}
-
-float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
-{
-    float NdotV = max(dot(N, V), 0.0);
-    float NdotL = max(dot(N, L), 0.0);
-    float ggx2 = GeometrySchlickGGX(NdotV, roughness);
-    float ggx1 = GeometrySchlickGGX(NdotL, roughness);
-
-    return ggx1 * ggx2;
-}
-
 void main()
 {
     vec2 integratedBRDF = IntegrateBRDF(v_texCoord.x, v_texCoord.y);
-    gl_FragColor = vec4(integratedBRDF.x, integratedBRDF.y, 1.0, 1.0);
+    fragColor = vec4(integratedBRDF.x, integratedBRDF.y, 1.0, 1.0);
 }

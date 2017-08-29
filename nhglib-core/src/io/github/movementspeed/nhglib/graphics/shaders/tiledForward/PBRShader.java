@@ -18,38 +18,19 @@ import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.IBLAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
+import io.github.movementspeed.nhglib.utils.data.MatrixPool;
+import io.github.movementspeed.nhglib.utils.data.VectorPool;
 import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils;
 
 /**
  * Created by Fausto Napoli on 18/03/2017.
  */
 public class PBRShader extends BaseShader {
-    protected final int bonesUniform = register(new Uniform("u_bones"));
-
-    protected final int light0_type = register(new Uniform("u_lightsList[0].type"));
-    protected final int light0_position = register(new Uniform("u_lightsList[0].position"));
-    protected final int light0_direction = register(new Uniform("u_lightsList[0].direction"));
-    protected final int light0_intesity = register(new Uniform("u_lightsList[0].intensity"));
-    protected final int light0_innerAngle = register(new Uniform("u_lightsList[0].innerAngle"));
-    protected final int light0_outerAngle = register(new Uniform("u_lightsList[0].outerAngle"));
-    protected final int light1_type = register(new Uniform("u_lightsList[1].type"));
-
     public static float lightRenderDistance = 15f;
-
-    protected int bonesLoc;
-    protected int lightsLoc;
-    protected int lightsTypeOffset;
-    protected int lightsPositionOffset;
-    protected int lightsDirectionOffset;
-    protected int lightsIntensityOffset;
-    protected int lightsInnerAngleOffset;
-    protected int lightsOuterAngleOffset;
-    protected int lightsSize;
 
     private float bones[];
 
     private Matrix4 idtMatrix;
-    private Vector3 temp;
 
     private Color color;
 
@@ -239,21 +220,7 @@ public class PBRShader extends BaseShader {
     public void init() {
         super.init(shaderProgram, renderable);
 
-        bonesLoc = loc(bonesUniform);
-
-        lightsLoc = loc(light0_type);
-        lightsTypeOffset = loc(light0_type) - lightsLoc;
-        lightsPositionOffset = has(light0_position) ? loc(light0_position) - lightsLoc : -1;
-        lightsDirectionOffset = has(light0_direction) ? loc(light0_direction) - lightsLoc : -1;
-        lightsIntensityOffset = has(light0_intesity) ? loc(light0_intesity) - lightsLoc : -1;
-        lightsInnerAngleOffset = has(light0_innerAngle) ? loc(light0_innerAngle) - lightsLoc : -1;
-        lightsOuterAngleOffset = has(light0_outerAngle) ? loc(light0_outerAngle) - lightsLoc : -1;
-
-        lightsSize = loc(light1_type) - lightsLoc;
-        if (lightsSize < 0) lightsSize = 0;
-
         idtMatrix = new Matrix4();
-        temp = new Vector3();
         bones = new float[0];
 
         lightsFrustum = new Array<>();
@@ -279,6 +246,7 @@ public class PBRShader extends BaseShader {
 
         frustums = new SmallFrustums(10, 10);
     }
+
 
     @Override
     public int compareTo(Shader other) {
@@ -317,21 +285,21 @@ public class PBRShader extends BaseShader {
 
     @Override
     public void render(Renderable renderable) {
-        if (lightsLoc >= 0) {
-            for (int light = 0; light < lightsToRender.size; light++) {
-                int idx = lightsLoc + light * lightsSize;
-                NhgLight nhgLight = lightsToRender.get(light);
+        for (int light = 0; light < lightsToRender.size; light++) {
+            NhgLight nhgLight = lightsToRender.get(light);
+            String lightUniform = "u_lightsList[" + light + "].";
 
-                Vector3 viewSpacePosition = getViewSpacePosition(nhgLight);
-                Vector3 viewSpaceDirection = getViewSpaceDirection(nhgLight);
+            Vector3 viewSpacePosition = getViewSpacePosition(nhgLight);
+            Vector3 viewSpaceDirection = getViewSpaceDirection(nhgLight);
 
-                shaderProgram.setUniformi(idx + lightsTypeOffset, nhgLight.type.ordinal());
-                shaderProgram.setUniformf(idx + lightsPositionOffset, viewSpacePosition);
-                shaderProgram.setUniformf(idx + lightsDirectionOffset, viewSpaceDirection);
-                shaderProgram.setUniformf(idx + lightsIntensityOffset, nhgLight.intensity);
-                shaderProgram.setUniformf(idx + lightsInnerAngleOffset, nhgLight.innerAngle);
-                shaderProgram.setUniformf(idx + lightsOuterAngleOffset, nhgLight.outerAngle);
-            }
+            shaderProgram.setUniformi(lightUniform + "type", nhgLight.type.ordinal());
+            shaderProgram.setUniformf(lightUniform + "position", viewSpacePosition);
+            shaderProgram.setUniformf(lightUniform + "direction", viewSpaceDirection);
+            shaderProgram.setUniformf(lightUniform + "intensity", nhgLight.intensity);
+            shaderProgram.setUniformf(lightUniform + "innerAngle", nhgLight.innerAngle);
+            shaderProgram.setUniformf(lightUniform + "outerAngle", nhgLight.outerAngle);
+
+            VectorPool.freeVector3(viewSpacePosition, viewSpaceDirection);
         }
 
         updateBones(renderable);
@@ -341,6 +309,7 @@ public class PBRShader extends BaseShader {
     @Override
     public void end() {
         super.end();
+
         lightsToRender.clear();
     }
 
@@ -398,9 +367,7 @@ public class PBRShader extends BaseShader {
 
     private void updateBones(Renderable renderable) {
         if (renderable.bones != null) {
-            if (bones == null || renderable.bones.length > bones.length) {
-                bones = new float[renderable.bones.length * 16];
-            }
+            bones = new float[renderable.bones.length * 16];
 
             for (int i = 0; i < bones.length; i++) {
                 final int idx = i / 16;
@@ -408,7 +375,7 @@ public class PBRShader extends BaseShader {
                         idtMatrix.val[i % 16] : renderable.bones[idx].val[i % 16];
             }
 
-            shaderProgram.setUniformMatrix4fv(bonesLoc, bones, 0, bones.length);
+            shaderProgram.setUniformMatrix4fv("u_bones", bones, 0, bones.length);
         }
     }
 
@@ -419,24 +386,29 @@ public class PBRShader extends BaseShader {
         }
     }
 
-    private Matrix4 temp1Mat = new Matrix4(), temp2Mat = new Matrix4();
-    private Vector3 temp1Vec = new Vector3(), temp2Vec = new Vector3();
-
     private void cullSpotLight(NhgLight light) {
-        temp1Mat.setToTranslation(light.position);
+        Matrix4 a = MatrixPool.getMatrix4();
+        a.setToTranslation(light.position);
 
-        temp.set(light.direction).scl(light.radius);
-        temp2Mat.set(temp1Mat).translate(temp);
+        Matrix4 b = MatrixPool.getMatrix4();
+        b.set(a).translate(new Vector3(light.direction).scl(light.radius));
 
-        temp1Mat.getTranslation(temp1Vec);
-        temp2Mat.getTranslation(temp2Vec);
-        temp.set(temp1Vec).add(temp2Vec).scl(0.5f);
+        Vector3 p1 = VectorPool.getVector3();
+        Vector3 p2 = VectorPool.getVector3();
+        Vector3 m = VectorPool.getVector3();
 
-        float radius = temp1Vec.dst(temp2Vec) * 0.5f;
+        a.getTranslation(p1);
+        b.getTranslation(p2);
+        m.set(p1).add(p2).scl(0.5f);
 
-        if (camera.frustum.sphereInFrustum(temp, radius)) {
+        float radius = p1.dst(p2) * 0.5f;
+
+        if (camera.frustum.sphereInFrustum(m, radius)) {
             lightsToRender.add(light);
         }
+
+        VectorPool.freeVector3(p1, p2, m);
+        MatrixPool.freeMatrix4(a, b);
     }
 
     private void cullLights() {
@@ -512,17 +484,19 @@ public class PBRShader extends BaseShader {
     }
 
     private Vector3 getViewSpacePosition(NhgLight light) {
-        temp.set(light.position)
+        Vector3 position = VectorPool.getVector3();
+        position.set(light.position)
                 .mul(camera.view);
 
-        return temp;
+        return position;
     }
 
     private Vector3 getViewSpaceDirection(NhgLight light) {
-        temp.set(light.direction)
+        Vector3 direction = VectorPool.getVector3();
+        direction.set(light.direction)
                 .rot(camera.view);
 
-        return temp;
+        return direction;
     }
 
     public static class Params {

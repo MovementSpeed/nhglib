@@ -4,6 +4,7 @@ package io.github.movementspeed.nhglib.enums;
  * Created by Fausto Napoli on 14/03/2017.
  */
 public enum LightType {
+    NONE,
     DIRECTIONAL_LIGHT,
     POINT_LIGHT,
     SPOT_LIGHT;

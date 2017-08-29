@@ -78,8 +78,7 @@ vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
     return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
-float DistributionGGX(vec3 N, vec3 H, float rough)
-{
+float DistributionGGX(vec3 N, vec3 H, float rough) {
     float a = rough*rough;
     float a2 = a*a;
     float NdotH = max(dot(N, H), 0.0);
@@ -94,10 +93,9 @@ float DistributionGGX(vec3 N, vec3 H, float rough)
     return nom / denom;
 }
 
-float GeometrySchlickGGX(float NdotV, float rough)
-{
+float GeometrySchlickGGX(float NdotV, float rough) {
     float r = (rough + 1.0);
-    float k = (r * r) / 8.0;
+    float k = (r*r) / 8.0;
 
     float nom = NdotV;
 
@@ -106,9 +104,7 @@ float GeometrySchlickGGX(float NdotV, float rough)
 
     return nom / denom;
 }
-
-float GeometrySmith(vec3 N, vec3 V, vec3 L, float rough)
-{
+float GeometrySmith(vec3 N, vec3 V, vec3 L, float rough) {
     float NdotV = max(dot(N, V), 0.0);
     float NdotL = max(dot(N, L), 0.0);
     float ggx2 = GeometrySchlickGGX(NdotV, rough);
@@ -127,13 +123,13 @@ void main() {
     #ifdef defMetalness
         float metalness = texture(u_metalness, v_texCoord).r;
     #else
-        float metalness = 0.0;
+        float metalness = 1.0;
     #endif
 
     #ifdef defRoughness
         float roughness = texture(u_roughness, v_texCoord).r;
     #else
-        float roughness = 1.0;
+        float roughness = 0.0;
     #endif
 
     #ifdef defAmbientOcclusion
@@ -159,6 +155,7 @@ void main() {
 
     vec3 V = normalize(-v_position);
     vec3 R = reflect(-V, N);
+    R = vec3(inverse(u_viewMatrix) * vec4(R, 0.0));
 
     vec3 Lo = vec3(0.0);
     vec3 F0 = vec3(0.04);
