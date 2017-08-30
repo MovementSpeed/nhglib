@@ -19,6 +19,18 @@ import io.github.movementspeed.nhglib.graphics.ogl.NhgFrameBufferCubemap;
  * Created by Fausto Napoli on 17/08/2017.
  */
 public class LightProbe {
+    private float environmentWidth;
+    private float environmentHeight;
+
+    private float irradianceWidth;
+    private float irradianceHeight;
+
+    private float prefilterWidth;
+    private float prefilterHeight;
+
+    private float brdfWidth;
+    private float brdfHeight;
+
     private Cubemap environmentCubemap;
     private Cubemap irradianceCubemap;
     private Cubemap prefilteredCubemap;
@@ -35,11 +47,22 @@ public class LightProbe {
         init();
     }
 
-    public void build(HDRData hdrData, int envWidth, int envHeight) {
+    public void build(HDRData hdrData, float environmentWidth, float environmentHeight, float irradianceWidth, float irradianceHeight, float prefilterWidth, float prefilterHeight, float brdfWidth, float brdfHeight) {
+        this.environmentWidth = environmentWidth;
+        this.environmentHeight = environmentHeight;
+        this.irradianceWidth = irradianceWidth;
+        this.irradianceHeight = irradianceHeight;
+        this.prefilterWidth = prefilterWidth;
+        this.prefilterHeight = prefilterHeight;
+        this.brdfWidth = brdfWidth;
+        this.brdfHeight = brdfHeight;
+
+        initCameras();
+
         if (hdrData != null) {
-            environmentCubemap = renderEnvironmentFromHDRData(hdrData, envWidth, envHeight);
+            environmentCubemap = renderEnvironmentFromHDRData(hdrData);
         } else {
-            environmentCubemap = renderEnvironmentFromScene(envWidth, envHeight);
+            environmentCubemap = renderEnvironmentFromScene();
         }
 
         irradianceCubemap = renderIrradiance(environmentCubemap);
@@ -47,8 +70,9 @@ public class LightProbe {
         brdfTexture = renderBRDF();
     }
 
-    public void build(int envWidth, int envHeight) {
-        build(null, envWidth, envHeight);
+    public void build(float environmentWidth, float environmentHeight) {
+        build(null, environmentWidth, environmentHeight, 32f, 32f,
+                128f, 128f, environmentWidth, environmentHeight);
     }
 
     public Cubemap getEnvironment() {
@@ -69,7 +93,6 @@ public class LightProbe {
 
     private void init() {
         createMeshes();
-        initCameras();
     }
 
     private void createMeshes() {
@@ -89,7 +112,7 @@ public class LightProbe {
         perspectiveCameras = new Array<>();
 
         for (int i = 0; i < 6; i++) {
-            PerspectiveCamera pc = new PerspectiveCamera(90, 512, 512);
+            PerspectiveCamera pc = new PerspectiveCamera(90, environmentWidth, environmentHeight);
             pc.near = 0.1f;
             pc.far = 10.0f;
             perspectiveCameras.add(pc);
@@ -126,7 +149,7 @@ public class LightProbe {
         pc6.update();
     }
 
-    private Cubemap renderEnvironmentFromHDRData(HDRData data, int width, int height) {
+    private Cubemap renderEnvironmentFromHDRData(HDRData data) {
         Texture equirectangularTexture;
         ShaderProgram equiToCubeShader = new ShaderProgram(
                 Gdx.files.internal("shaders/equi_to_cube_shader.vert"),
@@ -134,7 +157,7 @@ public class LightProbe {
 
         equirectangularTexture = data.toTexture();
 
-        NhgFrameBufferCubemap frameBufferCubemap = new NhgFrameBufferCubemap(Pixmap.Format.RGB888, width, height, true);
+        NhgFrameBufferCubemap frameBufferCubemap = new NhgFrameBufferCubemap(Pixmap.Format.RGB888, (int) environmentWidth, (int) environmentHeight, true);
         frameBufferCubemap.type = 0;
         frameBufferCubemap.genMipMap = false;
         frameBufferCubemap.buildFBO();
@@ -156,7 +179,7 @@ public class LightProbe {
         return frameBufferCubemap.getColorBufferTexture();
     }
 
-    private Cubemap renderEnvironmentFromScene(int width, int height) {
+    private Cubemap renderEnvironmentFromScene() {
         return null;
     }
 
@@ -166,7 +189,7 @@ public class LightProbe {
                 Gdx.files.internal("shaders/irradiance_shader.frag"));
 
         frameBufferCubemap = new FrameBufferCubemap(Pixmap.Format.RGB888,
-                32, 32, true);
+                (int) irradianceWidth, (int) irradianceHeight, true);
 
         environmentCubemap.bind(0);
         irradianceShader.begin();
@@ -193,7 +216,7 @@ public class LightProbe {
         Array<PerspectiveCamera> perspectiveCameras = new Array<>();
 
         for (int i = 0; i < 6; i++) {
-            PerspectiveCamera pc = new PerspectiveCamera(90, 128, 128);
+            PerspectiveCamera pc = new PerspectiveCamera(90, prefilterWidth, prefilterHeight);
             pc.near = 0.1f;
             pc.far = 10.0f;
             perspectiveCameras.add(pc);
@@ -234,7 +257,7 @@ public class LightProbe {
         pc6.update();
 
         NhgFrameBufferCubemap frameBufferCubemap = new NhgFrameBufferCubemap(Pixmap.Format.RGB888,
-                128, 128, true);
+                (int) prefilterWidth, (int) prefilterHeight, true);
         frameBufferCubemap.genMipMap = true;
         frameBufferCubemap.type = 0;
         frameBufferCubemap.buildFBO();
@@ -251,8 +274,8 @@ public class LightProbe {
             // resize framebuffer according to mip-level size.
             double ml = Math.pow(0.5, (double) mip);
 
-            int mipWidth = (int) (128f * ml);
-            int mipHeight = (int) (128f * ml);
+            int mipWidth = (int) (prefilterWidth * ml);
+            int mipHeight = (int) (prefilterHeight * ml);
 
             Gdx.gl.glBindRenderbuffer(GL20.GL_RENDERBUFFER, frameBufferCubemap.getDepthBufferHandle());
             Gdx.gl.glRenderbufferStorage(GL20.GL_RENDERBUFFER, GL20.GL_DEPTH_COMPONENT16, mipWidth, mipHeight);
@@ -281,11 +304,11 @@ public class LightProbe {
                 Gdx.files.internal("shaders/brdf_shader.vert"),
                 Gdx.files.internal("shaders/brdf_shader.frag"));
 
-        FrameBuffer frameBuffer = new FrameBuffer(Pixmap.Format.RGB888, 512, 512, true);
+        FrameBuffer frameBuffer = new FrameBuffer(Pixmap.Format.RGB888, (int) brdfWidth, (int) brdfHeight, true);
 
         brdfShader.begin();
         frameBuffer.begin();
-        Gdx.gl.glViewport(0, 0, 512, 512);
+        Gdx.gl.glViewport(0, 0, (int) brdfWidth, (int) brdfHeight);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         quadMesh.render(brdfShader, GL20.GL_TRIANGLES);
         frameBuffer.end();

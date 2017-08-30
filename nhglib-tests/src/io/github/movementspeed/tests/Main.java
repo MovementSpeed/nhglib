@@ -15,9 +15,11 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.assets.Asset;
+import io.github.movementspeed.nhglib.files.HDRData;
 import io.github.movementspeed.nhglib.graphics.lights.LightProbe;
 import io.github.movementspeed.nhglib.graphics.scenes.Scene;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.GammaCorrectionAttribute;
+import io.github.movementspeed.nhglib.graphics.shaders.attributes.IBLAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.particles.ParticleShader;
 import io.github.movementspeed.nhglib.graphics.worlds.NhgWorld;
 import io.github.movementspeed.nhglib.graphics.worlds.strategies.impl.DefaultWorldStrategy;
@@ -121,10 +123,14 @@ public class Main extends NhgEntry implements InputListener {
                             }
                         } else if (message.is(Strings.Events.sceneLoaded)) {
                             NhgLogger.log(this, "Scene loaded");
-                            /*HDRData data = nhg.assets.get("newport_loft");
+                            HDRData data = nhg.assets.get("newport_loft");
 
                             lightProbe = new LightProbe();
-                            lightProbe.build(data, 512, 512);
+                            lightProbe.build(data,
+                                    128f, 128f,
+                                    32f, 32f,
+                                    64f, 64f,
+                                    128f, 128f);
 
                             IBLAttribute irradianceAttribute = IBLAttribute.createIrradiance(lightProbe.getIrradiance());
                             IBLAttribute prefilterAttribute = IBLAttribute.createPrefilter(lightProbe.getPrefilter());
@@ -132,7 +138,7 @@ public class Main extends NhgEntry implements InputListener {
 
                             environment.set(irradianceAttribute);
                             environment.set(prefilterAttribute);
-                            environment.set(brdfAttribute);*/
+                            environment.set(brdfAttribute);
                         }
                     }
                 });
