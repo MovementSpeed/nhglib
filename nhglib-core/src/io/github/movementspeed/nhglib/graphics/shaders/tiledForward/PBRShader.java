@@ -26,8 +26,16 @@ import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils;
 public class PBRShader extends BaseShader {
     public static float lightRenderDistance = 15f;
 
+    private int maxBonesLength = Integer.MIN_VALUE;
+    private int bonesIID;
+    private int bonesLoc;
     private float bones[];
 
+    private Vector3 vec1 = new Vector3();
+    private Vector3 vec2 = new Vector3();
+    private Vector3 vec3 = new Vector3();
+    private Matrix4 mat1 = new Matrix4();
+    private Matrix4 mat2 = new Matrix4();
     private Matrix4 idtMatrix;
 
     private Color color;
@@ -213,13 +221,6 @@ public class PBRShader extends BaseShader {
             lights = new Array<>();
         }
 
-        /*shaderProgram.setUniformi(lightUniform + "type", nhgLight.type.ordinal());
-        shaderProgram.setUniformf(lightUniform + "position", viewSpacePosition);
-        shaderProgram.setUniformf(lightUniform + "direction", viewSpaceDirection);
-        shaderProgram.setUniformf(lightUniform + "intensity", nhgLight.intensity);
-        shaderProgram.setUniformf(lightUniform + "innerAngle", nhgLight.innerAngle);
-        shaderProgram.setUniformf(lightUniform + "outerAngle", nhgLight.outerAngle);*/
-
         for (int i = 0; i < lights.size; i++) {
             final NhgLight light = lights.get(i);
 
@@ -265,6 +266,28 @@ public class PBRShader extends BaseShader {
                 }
             });
         }
+
+        bonesIID = register("u_bones", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                if (renderable.bones != null) {
+                    int renderableBonesLength = renderable.bones.length * 16;
+
+                    if (renderableBonesLength > maxBonesLength) {
+                        maxBonesLength = renderableBonesLength;
+                        bones = new float[renderableBonesLength];
+                    }
+
+                    for (int i = 0; i < renderableBonesLength; i++) {
+                        final int idx = i / 16;
+                        bones[i] = (idx >= renderable.bones.length || renderable.bones[idx] == null) ?
+                                idtMatrix.val[i % 16] : renderable.bones[idx].val[i % 16];
+                    }
+
+                    shaderProgram.setUniformMatrix4fv(bonesLoc, bones, 0, renderableBonesLength);
+                }
+            }
+        });
     }
 
     @Override
@@ -273,6 +296,7 @@ public class PBRShader extends BaseShader {
 
         idtMatrix = new Matrix4();
         bones = new float[0];
+        bonesLoc = loc(bonesIID);
 
         lightsFrustum = new Array<>();
         //lightsToRender = new Array<>();
@@ -336,21 +360,6 @@ public class PBRShader extends BaseShader {
 
     @Override
     public void render(Renderable renderable) {
-        /*for (int light = 0; light < lightsToRender.size; light++) {
-            NhgLight nhgLight = lightsToRender.get(light);
-            String lightUniform = "u_lightsList[" + light + "].";
-
-            Vector3 viewSpacePosition = getViewSpacePosition(nhgLight);
-            Vector3 viewSpaceDirection = getViewSpaceDirection(nhgLight);
-
-            shaderProgram.setUniformi(lightUniform + "type", nhgLight.type.ordinal());
-            shaderProgram.setUniformf(lightUniform + "position", viewSpacePosition);
-            shaderProgram.setUniformf(lightUniform + "direction", viewSpaceDirection);
-            shaderProgram.setUniformf(lightUniform + "intensity", nhgLight.intensity);
-            shaderProgram.setUniformf(lightUniform + "innerAngle", nhgLight.innerAngle);
-            shaderProgram.setUniformf(lightUniform + "outerAngle", nhgLight.outerAngle);
-        }*/
-
         updateBones(renderable);
         super.render(renderable);
     }
@@ -358,7 +367,6 @@ public class PBRShader extends BaseShader {
     @Override
     public void end() {
         super.end();
-        //lightsToRender.clear();
     }
 
     @Override
@@ -416,17 +424,22 @@ public class PBRShader extends BaseShader {
     }
 
     private void updateBones(Renderable renderable) {
-        if (renderable.bones != null) {
-            bones = new float[renderable.bones.length * 16];
+        /*if (renderable.bones != null) {
+            int renderableBonesLength = renderable.bones.length * 16;
 
-            for (int i = 0; i < bones.length; i++) {
+            if (renderableBonesLength > maxBonesLength) {
+                maxBonesLength = renderableBonesLength;
+                bones = new float[renderableBonesLength];
+            }
+
+            for (int i = 0; i < renderableBonesLength; i++) {
                 final int idx = i / 16;
                 bones[i] = (idx >= renderable.bones.length || renderable.bones[idx] == null) ?
                         idtMatrix.val[i % 16] : renderable.bones[idx].val[i % 16];
             }
 
-            shaderProgram.setUniformMatrix4fv("u_bones", bones, 0, bones.length);
-        }
+            shaderProgram.setUniformMatrix4fv("u_bones", bones, 0, renderableBonesLength);
+        }*/
     }
 
     private void cullPointLight(NhgLight light) {
@@ -434,21 +447,16 @@ public class PBRShader extends BaseShader {
                 camera.position.dst(light.position) < lightRenderDistance;
     }
 
-    private Vector3 p1 = new Vector3(), p2 = new Vector3(), m = new Vector3();
-    private Matrix4 a = new Matrix4(), b = new Matrix4();
-
     private void cullSpotLight(NhgLight light) {
-        a.setToTranslation(light.position);
+        mat1.setToTranslation(light.position);
+        mat2.set(mat1).translate(new Vector3(light.direction).scl(light.radius));
 
-        b.set(a).translate(new Vector3(light.direction).scl(light.radius));
+        mat1.getTranslation(vec1);
+        mat2.getTranslation(vec2);
+        vec3.set(vec1).add(vec2).scl(0.5f);
 
-        a.getTranslation(p1);
-        b.getTranslation(p2);
-        m.set(p1).add(p2).scl(0.5f);
-
-        float radius = p1.dst(p2) * 0.5f;
-
-        light.enabled = camera.frustum.sphereInFrustum(m, radius);
+        float radius = vec1.dst(vec2) * 0.5f;
+        light.enabled = camera.frustum.sphereInFrustum(vec3, radius);
     }
 
     private void cullLights() {
@@ -523,20 +531,18 @@ public class PBRShader extends BaseShader {
         return prefix;
     }
 
-    private Vector3 position = new Vector3(), direction = new Vector3();
-
     private Vector3 getViewSpacePosition(NhgLight light) {
-        position.set(light.position)
+        vec1.set(light.position)
                 .mul(camera.view);
 
-        return position;
+        return vec1;
     }
 
     private Vector3 getViewSpaceDirection(NhgLight light) {
-        direction.set(light.direction)
+        vec1.set(light.direction)
                 .rot(camera.view);
 
-        return direction;
+        return vec1;
     }
 
     public static class Params {
