@@ -55,7 +55,6 @@ public class PBRShader extends BaseShader {
 
     private Array<IntArray> lightsFrustum;
     private Array<NhgLight> lights;
-    //private Array<NhgLight> lightsToRender;
 
     public PBRShader(Renderable renderable, Environment environment, Params params) {
         this.renderable = renderable;
@@ -299,7 +298,6 @@ public class PBRShader extends BaseShader {
         bonesLoc = loc(bonesIID);
 
         lightsFrustum = new Array<>();
-        //lightsToRender = new Array<>();
 
         for (int i = 0; i < 100; i++) {
             lightsFrustum.add(new IntArray());
@@ -360,7 +358,6 @@ public class PBRShader extends BaseShader {
 
     @Override
     public void render(Renderable renderable) {
-        updateBones(renderable);
         super.render(renderable);
     }
 
@@ -421,25 +418,6 @@ public class PBRShader extends BaseShader {
         }
 
         lightTexture.draw(lightPixmap, 0, 0);
-    }
-
-    private void updateBones(Renderable renderable) {
-        /*if (renderable.bones != null) {
-            int renderableBonesLength = renderable.bones.length * 16;
-
-            if (renderableBonesLength > maxBonesLength) {
-                maxBonesLength = renderableBonesLength;
-                bones = new float[renderableBonesLength];
-            }
-
-            for (int i = 0; i < renderableBonesLength; i++) {
-                final int idx = i / 16;
-                bones[i] = (idx >= renderable.bones.length || renderable.bones[idx] == null) ?
-                        idtMatrix.val[i % 16] : renderable.bones[idx].val[i % 16];
-            }
-
-            shaderProgram.setUniformMatrix4fv("u_bones", bones, 0, renderableBonesLength);
-        }*/
     }
 
     private void cullPointLight(NhgLight light) {
@@ -526,6 +504,14 @@ public class PBRShader extends BaseShader {
         if (params.lit) {
             NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
             prefix += "#define lights " + lightsAttribute.lights.size + "\n";
+        }
+
+        String renderer = Gdx.gl.glGetString(GL30.GL_RENDERER).toUpperCase();
+
+        if (renderer.contains("MALI")) {
+            prefix += "#define GPU_MALI\n";
+        } else if (renderer.contains("ADRENO")) {
+            prefix += "#define GPU_ADRENO\n";
         }
 
         return prefix;
