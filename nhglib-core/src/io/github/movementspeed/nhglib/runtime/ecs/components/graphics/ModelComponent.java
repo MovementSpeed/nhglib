@@ -36,8 +36,11 @@ public class ModelComponent extends Component {
     }
 
     public void initWithModel(Model m) {
-        model = new ModelInstance(m);
+        initWithModel(new ModelInstance(m));
+    }
 
+    public void initWithModel(ModelInstance m) {
+        model = m;
         boundingBox = new BoundingBox();
         model.calculateBoundingBox(boundingBox);
 
