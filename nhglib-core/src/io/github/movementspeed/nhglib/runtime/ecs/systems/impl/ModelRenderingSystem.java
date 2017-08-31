@@ -59,36 +59,36 @@ public class ModelRenderingSystem extends BaseRenderingSystem implements Disposa
         if (modelComponent.enabled) {
             Camera camera = cameras.first();
 
-            if (modelComponent.animationController != null) {
-                modelComponent.animationController.update(Gdx.graphics.getDeltaTime());
-            }
-
-            if (camera.frustum.sphereInFrustum(nodeComponent.getTranslation(), modelComponent.radius) &&
-                    modelComponent.type == ModelComponent.Type.DYNAMIC &&
-                    modelComponent.model != null) {
-                if (!modelComponent.nodeAdded) {
-                    modelComponent.nodeAdded = true;
-
-                    for (int i = 0; i < modelComponent.model.nodes.size; i++) {
-                        Node n = modelComponent.model.nodes.get(i);
-                        nodeComponent.node.addChild(n);
-                    }
-
-                    String parentInternalNodeId = nodeComponent.parentInternalNodeId;
-
-                    if (parentInternalNodeId != null && !parentInternalNodeId.isEmpty()) {
-                        NodeComponent parentNodeComponent = nodeComponent.parentNodeComponent;
-                        Node parentInternalNode = parentNodeComponent.node.getChild(parentInternalNodeId, true, false);
-
-                        if (parentInternalNode != null) {
-                            parentNodeComponent.node.removeChild(nodeComponent.node);
-                            parentInternalNode.addChild(nodeComponent.node);
-                        }
-                    }
+            if (camera.frustum.sphereInFrustum(nodeComponent.getTranslation(), modelComponent.radius)) {
+                if (modelComponent.animationController != null) {
+                    modelComponent.animationController.update(Gdx.graphics.getDeltaTime());
                 }
 
-                modelComponent.model.calculateTransforms();
-                dynamicCache.add(modelComponent.model);
+                if (modelComponent.type == ModelComponent.Type.DYNAMIC && modelComponent.model != null) {
+                    if (!modelComponent.nodeAdded) {
+                        modelComponent.nodeAdded = true;
+
+                        for (int i = 0; i < modelComponent.model.nodes.size; i++) {
+                            Node n = modelComponent.model.nodes.get(i);
+                            nodeComponent.node.addChild(n);
+                        }
+
+                        String parentInternalNodeId = nodeComponent.parentInternalNodeId;
+
+                        if (parentInternalNodeId != null && !parentInternalNodeId.isEmpty()) {
+                            NodeComponent parentNodeComponent = nodeComponent.parentNodeComponent;
+                            Node parentInternalNode = parentNodeComponent.node.getChild(parentInternalNodeId, true, false);
+
+                            if (parentInternalNode != null) {
+                                parentNodeComponent.node.removeChild(nodeComponent.node);
+                                parentInternalNode.addChild(nodeComponent.node);
+                            }
+                        }
+                    }
+
+                    modelComponent.model.calculateTransforms();
+                    dynamicCache.add(modelComponent.model);
+                }
             }
         }
     }
