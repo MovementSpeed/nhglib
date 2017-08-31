@@ -98,7 +98,10 @@ public class ModelRenderingSystem extends BaseRenderingSystem implements Disposa
     @Override
     protected void end() {
         super.end();
-        dynamicCache.end();
+
+        if (cameras.size > 0) {
+            dynamicCache.end();
+        }
     }
 
     @Override
