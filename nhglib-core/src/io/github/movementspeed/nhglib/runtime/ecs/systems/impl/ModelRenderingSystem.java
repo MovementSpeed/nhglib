@@ -47,8 +47,10 @@ public class ModelRenderingSystem extends BaseRenderingSystem implements Disposa
     protected void begin() {
         super.begin();
 
-        Camera camera = cameras.first();
-        dynamicCache.begin(camera);
+        if (cameras.size > 0) {
+            Camera camera = cameras.first();
+            dynamicCache.begin(camera);
+        }
     }
 
     @Override
@@ -56,7 +58,7 @@ public class ModelRenderingSystem extends BaseRenderingSystem implements Disposa
         ModelComponent modelComponent = modelMapper.get(entityId);
         NodeComponent nodeComponent = nodeMapper.get(entityId);
 
-        if (modelComponent.enabled) {
+        if (modelComponent.enabled && cameras.size > 0) {
             Camera camera = cameras.first();
 
             if (camera.frustum.sphereInFrustum(nodeComponent.getTranslation(), modelComponent.radius)) {
@@ -120,21 +122,22 @@ public class ModelRenderingSystem extends BaseRenderingSystem implements Disposa
     }
 
     private void rebuildCache(RenderableProvider... renderableProviders) {
-        ModelCache previousCache = new ModelCache();
+        if (cameras.size > 0) {
+            ModelCache previousCache = new ModelCache();
+            Camera camera = cameras.first();
 
-        Camera camera = cameras.first();
+            previousCache.begin(camera);
+            previousCache.add(staticCache);
+            previousCache.end();
 
-        previousCache.begin(camera);
-        previousCache.add(staticCache);
-        previousCache.end();
+            staticCache.begin(camera);
+            staticCache.add(previousCache);
 
-        staticCache.begin(camera);
-        staticCache.add(previousCache);
+            for (RenderableProvider provider : renderableProviders) {
+                staticCache.add(provider);
+            }
 
-        for (RenderableProvider provider : renderableProviders) {
-            staticCache.add(provider);
+            staticCache.end();
         }
-
-        staticCache.end();
     }
 }
