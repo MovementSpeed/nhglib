@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g3d.ModelCache;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.graphics.g3d.model.Node;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import io.github.movementspeed.nhglib.assets.Asset;
 import io.github.movementspeed.nhglib.runtime.ecs.components.graphics.ModelComponent;
@@ -25,52 +24,31 @@ public class ModelRenderingSystem extends BaseRenderingSystem implements Disposa
     private ComponentMapper<NodeComponent> nodeMapper;
     private ComponentMapper<ModelComponent> modelMapper;
 
-    private Array<ModelCache> dynamicCaches;
-    private Array<ModelCache> staticCaches;
+    private ModelCache dynamicCache;
+    private ModelCache staticCache;
 
     public ModelRenderingSystem(Entities entities, Messaging messaging) {
         super(Aspect.all(NodeComponent.class, ModelComponent.class), entities);
         this.messaging = messaging;
 
-        dynamicCaches = new Array<>();
-        staticCaches = new Array<>();
+        dynamicCache = new ModelCache();
+        staticCache = new ModelCache();
+        renderableProviders.add(dynamicCache);
+        renderableProviders.add(staticCache);
     }
 
     @Override
     public void dispose() {
-        for (ModelCache mc : dynamicCaches) {
-            mc.dispose();
-        }
-
-        for (ModelCache mc : staticCaches) {
-            mc.dispose();
-        }
-
-        dynamicCaches.clear();
-        staticCaches.clear();
+        dynamicCache.dispose();
+        staticCache.dispose();
     }
 
     @Override
     protected void begin() {
         super.begin();
 
-        for (int i = 0; i < cameras.size - dynamicCaches.size; i++) {
-            ModelCache mc1 = new ModelCache();
-            ModelCache mc2 = new ModelCache();
-
-            dynamicCaches.add(mc1);
-            staticCaches.add(mc2);
-
-            renderableProviders.add(mc1);
-            renderableProviders.add(mc2);
-        }
-
-        for (int i = 0; i < cameras.size; i++) {
-            Camera camera = cameras.get(i);
-
-            ModelCache dynamicCache = dynamicCaches.get(i);
-            dynamicCache.begin(camera);
-        }
+        Camera camera = cameras.first();
+        dynamicCache.begin(camera);
     }
 
     @Override
@@ -79,11 +57,15 @@ public class ModelRenderingSystem extends BaseRenderingSystem implements Disposa
         NodeComponent nodeComponent = nodeMapper.get(entityId);
 
         if (modelComponent.enabled) {
+            Camera camera = cameras.first();
+
             if (modelComponent.animationController != null) {
                 modelComponent.animationController.update(Gdx.graphics.getDeltaTime());
             }
 
-            if (modelComponent.type == ModelComponent.Type.DYNAMIC && modelComponent.model != null) {
+            if (camera.frustum.sphereInFrustum(nodeComponent.getTranslation(), modelComponent.radius) &&
+                    modelComponent.type == ModelComponent.Type.DYNAMIC &&
+                    modelComponent.model != null) {
                 if (!modelComponent.nodeAdded) {
                     modelComponent.nodeAdded = true;
 
@@ -106,10 +88,7 @@ public class ModelRenderingSystem extends BaseRenderingSystem implements Disposa
                 }
 
                 modelComponent.model.calculateTransforms();
-
-                for (ModelCache modelCache : dynamicCaches) {
-                    modelCache.add(modelComponent.model);
-                }
+                dynamicCache.add(modelComponent.model);
             }
         }
     }
@@ -117,11 +96,7 @@ public class ModelRenderingSystem extends BaseRenderingSystem implements Disposa
     @Override
     protected void end() {
         super.end();
-
-        for (int i = 0; i < cameras.size; i++) {
-            ModelCache dynamicCache = dynamicCaches.get(i);
-            dynamicCache.end();
-        }
+        dynamicCache.end();
     }
 
     @Override
@@ -145,25 +120,21 @@ public class ModelRenderingSystem extends BaseRenderingSystem implements Disposa
     }
 
     private void rebuildCache(RenderableProvider... renderableProviders) {
-        Array<ModelCache> previousModelCaches = new Array<>(staticCaches);
+        ModelCache previousCache = new ModelCache();
 
-        for (int i = 0; i < cameras.size; i++) {
-            ModelCache previousModelCache = previousModelCaches.get(i);
-            ModelCache staticCache = staticCaches.get(i);
-            Camera camera = cameras.get(i);
+        Camera camera = cameras.first();
 
-            previousModelCache.begin(camera);
-            previousModelCache.add(staticCache);
-            previousModelCache.end();
+        previousCache.begin(camera);
+        previousCache.add(staticCache);
+        previousCache.end();
 
-            staticCache.begin(camera);
-            staticCache.add(previousModelCache);
+        staticCache.begin(camera);
+        staticCache.add(previousCache);
 
-            for (RenderableProvider provider : renderableProviders) {
-                staticCache.add(provider);
-            }
-
-            staticCache.end();
+        for (RenderableProvider provider : renderableProviders) {
+            staticCache.add(provider);
         }
+
+        staticCache.end();
     }
 }

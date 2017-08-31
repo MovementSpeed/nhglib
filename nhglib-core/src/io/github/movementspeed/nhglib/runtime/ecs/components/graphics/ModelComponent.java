@@ -4,6 +4,8 @@ import com.artemis.Component;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.graphics.utils.PbrMaterial;
 
@@ -14,10 +16,13 @@ public class ModelComponent extends Component {
     public boolean enabled;
     public boolean nodeAdded;
 
+    public float radius;
+
     public Type type;
     public State state;
     public String asset;
     public ModelInstance model;
+    public BoundingBox boundingBox;
     public AnimationController animationController;
 
     public Array<PbrMaterial> pbrMaterials;
@@ -32,6 +37,13 @@ public class ModelComponent extends Component {
 
     public void initWithModel(Model m) {
         model = new ModelInstance(m);
+
+        boundingBox = new BoundingBox();
+        model.calculateBoundingBox(boundingBox);
+
+        Vector3 dimensions = boundingBox.getDimensions(new Vector3());
+        radius = dimensions.len() / 2f;
+
         state = ModelComponent.State.READY;
 
         if (m.animations.size > 0) {
