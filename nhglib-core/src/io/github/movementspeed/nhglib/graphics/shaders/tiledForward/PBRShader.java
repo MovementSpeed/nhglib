@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.IntArray;
+import com.badlogic.gdx.utils.PerformanceCounters;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.IBLAttribute;
@@ -52,6 +53,7 @@ public class PBRShader extends BaseShader {
     private Environment environment;
     private SmallFrustums frustums;
     private ShaderProgram shaderProgram;
+    public static PerformanceCounters counters;
 
     private Array<IntArray> lightsFrustum;
     private Array<NhgLight> lights;
@@ -60,6 +62,10 @@ public class PBRShader extends BaseShader {
         this.renderable = renderable;
         this.environment = environment;
         this.params = params;
+
+        counters = new PerformanceCounters();
+        counters.add("p1");
+        counters.add("p2");
 
         String prefix = createPrefix(renderable);
 
@@ -373,6 +379,7 @@ public class PBRShader extends BaseShader {
     }
 
     private void createLightTexture() {
+        counters.counters.get(0).start();
         int i;
 
         for (i = 0; i < 100; i++) {
@@ -418,6 +425,7 @@ public class PBRShader extends BaseShader {
         }
 
         lightTexture.draw(lightPixmap, 0, 0);
+        counters.counters.get(0).stop();
     }
 
     private void cullPointLight(NhgLight light) {
