@@ -49,4 +49,9 @@ public abstract class BaseRenderingSystem extends NhgIteratingSystem implements 
     public Array<RenderableProvider> getRenderableProviders() {
         return renderableProviders;
     }
+
+    @Override
+    public void clearRenderableProviders() {
+        renderableProviders.clear();
+    }
 }

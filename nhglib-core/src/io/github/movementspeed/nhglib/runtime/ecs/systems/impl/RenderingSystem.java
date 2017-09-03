@@ -1,7 +1,6 @@
 package io.github.movementspeed.nhglib.runtime.ecs.systems.impl;
 
 import com.artemis.BaseSystem;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.FPSLogger;
@@ -12,8 +11,6 @@ import com.badlogic.gdx.graphics.g3d.utils.ShaderProvider;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import io.github.movementspeed.nhglib.Nhg;
-import io.github.movementspeed.nhglib.graphics.ogl.NhgFrameBuffer;
-import io.github.movementspeed.nhglib.graphics.shaders.depth.DepthShaderProvider;
 import io.github.movementspeed.nhglib.graphics.shaders.tiledForward.PBRShaderProvider;
 import io.github.movementspeed.nhglib.runtime.ecs.interfaces.RenderingSystemInterface;
 import io.github.movementspeed.nhglib.runtime.ecs.systems.base.BaseRenderingSystem;
@@ -31,13 +28,14 @@ public class RenderingSystem extends BaseSystem implements Disposable {
     private ShaderProvider shaderProvider;
     private Environment environment;
     private Color clearColor;
-    private ModelBatch depthBatch;
-    private NhgFrameBuffer nhgFrameBuffer;
+    private ModelBatch renderer;
+    //private ModelBatch depthBatch;
+    //private NhgFrameBuffer nhgFrameBuffer;
     private FPSLogger fpsLogger;
-    private Texture depthTexture;
+    //private Texture depthTexture;
 
-    private Array<Camera> cameras;
-    private Array<ModelBatch> modelBatches;
+    //private Array<Camera> cameras;
+    //private Array<ModelBatch> modelBatches;
     private Array<RenderingSystemInterface> renderingInterfaces;
 
     //private SpriteBatch spriteBatch;
@@ -47,9 +45,10 @@ public class RenderingSystem extends BaseSystem implements Disposable {
         fpsLogger = new FPSLogger();
         environment = new Environment();
 
-        this.shaderProvider = new PBRShaderProvider(environment);
+        shaderProvider = new PBRShaderProvider(environment);
+        renderer = new ModelBatch(shaderProvider);
 
-        DepthShaderProvider depthShaderProvider = new DepthShaderProvider();
+        /*DepthShaderProvider depthShaderProvider = new DepthShaderProvider();
         depthBatch = new ModelBatch(depthShaderProvider);
 
         nhgFrameBuffer = new NhgFrameBuffer();
@@ -58,7 +57,7 @@ public class RenderingSystem extends BaseSystem implements Disposable {
         nhgFrameBuffer.height = Gdx.graphics.getBackBufferHeight();
         nhgFrameBuffer.init();
 
-        modelBatches = new Array<>();
+        modelBatches = new Array<>();*/
         renderingInterfaces = new Array<>();
 
         //spriteBatch = new SpriteBatch();
@@ -66,19 +65,35 @@ public class RenderingSystem extends BaseSystem implements Disposable {
 
     @Override
     protected void processSystem() {
-        if (cameras == null) {
-            cameras = cameraSystem.cameras;
+        if (Nhg.debugLogs && Nhg.debugFpsLogs) {
+            fpsLogger.log();
         }
+
+        if (cameraSystem.cameras.size > 0) {
+            Camera camera = cameraSystem.cameras.first();
+            GLUtils.clearScreen(clearColor);
+
+            renderer.begin(camera);
+            for (RenderingSystemInterface rsi : renderingInterfaces) {
+                renderer.render(rsi.getRenderableProviders(), environment);
+                rsi.clearRenderableProviders();
+            }
+            renderer.end();
+        }
+
+        /*if (cameras == null) {
+            cameras = cameraSystem.cameras;
+        }*/
 
         // Add as many ModelBatches as needed. If there are 5 cameras,
         // 5 model batches are added. Since there are 5 model batches,
         // cameras.size - modelBatches.size is 0, so none are added.
         // So if a camera is added, this will add just 1 model batch.
-        for (int i = 0; i < cameras.size - modelBatches.size; i++) {
+        /*for (int i = 0; i < cameras.size - modelBatches.size; i++) {
             modelBatches.add(new ModelBatch(shaderProvider));
-        }
+        }*/
 
-        for (int i = 0; i < cameras.size; i++) {
+        /*for (int i = 0; i < cameras.size; i++) {
             Camera camera = cameras.get(i);
             ModelBatch modelBatch = modelBatches.get(i);
 
@@ -109,13 +124,13 @@ public class RenderingSystem extends BaseSystem implements Disposable {
                 fpsLogger.log();
             }
 
-            /*TextureRegion tr = new TextureRegion(depthTexture);
+            TextureRegion tr = new TextureRegion(depthTexture);
             tr.flip(false, true);
 
             spriteBatch.begin();
             spriteBatch.draw(tr, 0, 0);
-            spriteBatch.end();*/
-        }
+            spriteBatch.end();
+        }*/
     }
 
     public void setClearColor(Color clearColor) {
@@ -141,17 +156,18 @@ public class RenderingSystem extends BaseSystem implements Disposable {
     }
 
     public Texture getDepthTexture() {
-        return depthTexture;
+        return null;
     }
 
     @Override
     public void dispose() {
         super.dispose();
-        nhgFrameBuffer.dispose();
+        //nhgFrameBuffer.dispose();
         shaderProvider.dispose();
-        depthBatch.dispose();
+        renderer.dispose();
+        //depthBatch.dispose();
 
-        cameras.clear();
+        /*cameras.clear();
 
         if (depthTexture != null) {
             depthTexture.dispose();
@@ -159,6 +175,6 @@ public class RenderingSystem extends BaseSystem implements Disposable {
 
         for (ModelBatch mb : modelBatches) {
             mb.dispose();
-        }
+        }*/
     }
 }

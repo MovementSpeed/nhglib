@@ -4,53 +4,22 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.g3d.ModelCache;
-import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.graphics.g3d.model.Node;
-import com.badlogic.gdx.utils.Disposable;
-import io.github.movementspeed.nhglib.assets.Asset;
 import io.github.movementspeed.nhglib.runtime.ecs.components.graphics.ModelComponent;
 import io.github.movementspeed.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.movementspeed.nhglib.runtime.ecs.systems.base.BaseRenderingSystem;
 import io.github.movementspeed.nhglib.runtime.ecs.utils.Entities;
-import io.github.movementspeed.nhglib.runtime.messaging.Message;
 import io.github.movementspeed.nhglib.runtime.messaging.Messaging;
-import io.github.movementspeed.nhglib.utils.data.Strings;
-import io.reactivex.functions.Consumer;
 
-public class ModelRenderingSystem extends BaseRenderingSystem implements Disposable {
+public class ModelRenderingSystem extends BaseRenderingSystem {
     private Messaging messaging;
 
     private ComponentMapper<NodeComponent> nodeMapper;
     private ComponentMapper<ModelComponent> modelMapper;
 
-    private ModelCache dynamicCache;
-    private ModelCache staticCache;
-
     public ModelRenderingSystem(Entities entities, Messaging messaging) {
         super(Aspect.all(NodeComponent.class, ModelComponent.class), entities);
         this.messaging = messaging;
-
-        dynamicCache = new ModelCache();
-        staticCache = new ModelCache();
-        renderableProviders.add(dynamicCache);
-        renderableProviders.add(staticCache);
-    }
-
-    @Override
-    public void dispose() {
-        dynamicCache.dispose();
-        staticCache.dispose();
-    }
-
-    @Override
-    protected void begin() {
-        super.begin();
-
-        if (cameras.size > 0) {
-            Camera camera = cameras.first();
-            dynamicCache.begin(camera);
-        }
     }
 
     @Override
@@ -90,21 +59,12 @@ public class ModelRenderingSystem extends BaseRenderingSystem implements Disposa
                     modelComponent.animationController.update(Gdx.graphics.getDeltaTime());
                 }
 
-                dynamicCache.add(modelComponent.model);
+                renderableProviders.add(modelComponent.model);
             }
         }
     }
 
-    @Override
-    protected void end() {
-        super.end();
-
-        if (cameras.size > 0) {
-            dynamicCache.end();
-        }
-    }
-
-    @Override
+    /*@Override
     protected void inserted(int entityId) {
         super.inserted(entityId);
         final ModelComponent modelComponent = modelMapper.get(entityId);
@@ -142,5 +102,5 @@ public class ModelRenderingSystem extends BaseRenderingSystem implements Disposa
 
             staticCache.end();
         }
-    }
+    }*/
 }
