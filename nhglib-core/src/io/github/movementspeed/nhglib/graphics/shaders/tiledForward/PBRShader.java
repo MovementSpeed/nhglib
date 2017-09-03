@@ -347,7 +347,7 @@ public class PBRShader extends BaseShader {
         this.camera = camera;
         frustums.setFrustums(((PerspectiveCamera) camera));
 
-        cullLights();
+        //cullLights();
         createLightTexture();
 
         super.begin(camera, context);
