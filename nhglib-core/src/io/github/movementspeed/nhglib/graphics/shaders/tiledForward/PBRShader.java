@@ -25,6 +25,7 @@ import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils;
  */
 public class PBRShader extends BaseShader {
     public static float lightRenderDistance = 15f;
+    private static final float radDiv = 1f / 255f;
 
     private int maxBonesLength = Integer.MIN_VALUE;
     private int bonesIID;
@@ -384,8 +385,15 @@ public class PBRShader extends BaseShader {
 
             if (light.enabled) {
                 frustums.checkFrustums(light.position, light.radius, lightsFrustum, i);
+            }
+        }
+
+        for (i = 0; i < lights.size; i++) {
+            NhgLight light = lights.get(i);
+
+            if (light.enabled) {
                 color.set(light.color);
-                color.a = light.radius / 255f;
+                color.a = light.radius * radDiv;
 
                 lightInfoPixmap.setColor(color);
                 lightInfoPixmap.drawPixel(0, i);
@@ -398,7 +406,7 @@ public class PBRShader extends BaseShader {
             int column = 0;
             float r = lightsFrustum.get(row).size;
 
-            color.set(r / 255.0f, 0, 0, 0);
+            color.set(r * radDiv, 0, 0, 0);
 
             lightPixmap.setColor(color);
             lightPixmap.drawPixel(column, row);
@@ -408,7 +416,7 @@ public class PBRShader extends BaseShader {
             for (int k = 0; k < lightsFrustum.get(row).size; k++) {
                 int j = (lightsFrustum.get(row).get(k));
 
-                color.set(((float) j) / 255.0f, 0, 0, 0);
+                color.set(((float) j) * radDiv, 0, 0, 0);
 
                 lightPixmap.setColor(color);
                 lightPixmap.drawPixel(column, row);
