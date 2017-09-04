@@ -348,7 +348,7 @@ public class PBRShader extends BaseShader {
         frustums.setFrustums(((PerspectiveCamera) camera));
 
         //cullLights();
-        //createLightTexture();
+        createLightTexture();
 
         super.begin(camera, context);
         context.setCullFace(GL20.GL_BACK);
