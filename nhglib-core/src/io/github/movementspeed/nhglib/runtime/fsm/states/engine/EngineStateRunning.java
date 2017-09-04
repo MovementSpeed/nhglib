@@ -3,7 +3,6 @@ package io.github.movementspeed.nhglib.runtime.fsm.states.engine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
-import io.github.movementspeed.nhglib.graphics.shaders.tiledForward.PBRShader;
 import io.github.movementspeed.nhglib.runtime.entry.NhgEntry;
 import io.github.movementspeed.nhglib.runtime.fsm.base.EngineStates;
 import io.github.movementspeed.nhglib.runtime.messaging.Message;
@@ -35,9 +34,6 @@ public class EngineStateRunning implements State<NhgEntry> {
     @Override
     public void update(NhgEntry nhgEntry) {
         float delta = Gdx.graphics.getDeltaTime();
-
-        if (PBRShader.counters != null)
-            PBRShader.counters.tick(delta);
 
         nhgEntry.nhg.input.update();
         nhgEntry.nhg.assets.update();
