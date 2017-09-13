@@ -1,51 +1,62 @@
 #ifdef GL_ES
-#define LOWP lowp
-#define MED mediump
-#define HIGH highp
-precision mediump float;
+    #ifdef GPU_MALI
+        #define LOWP lowp
+        #define MEDP mediump
+        #define HIGHP highp
+    #elif defined GPU_ADRENO
+        #define LOWP
+        #define MEDP
+        #define HIGHP
+    #else
+        #define MEDP
+        #define LOWP
+        #define HIGHP
+    #endif
+
+    precision mediump float;
 #else
-#define MED
-#define LOWP
-#define HIGH
+    #define MEDP
+    #define LOWP
+    #define HIGHP
 #endif
 
-in vec4 a_position;
-in vec3 a_normal;
-in vec3 a_binormal;
-in vec3 a_tangent;
-in vec2 a_texCoord0;
+in HIGHP vec4 a_position;
+in HIGHP vec3 a_binormal;
+in HIGHP vec3 a_tangent;
+in LOWP vec2 a_texCoord0;
+in LOWP vec3 a_normal;
 
 #ifdef boneWeight0Flag
     #define boneWeightsFlag
-    in vec2 a_boneWeight0;
+    in LOWP vec2 a_boneWeight0;
 #endif
 
 #ifdef boneWeight1Flag
-    in vec2 a_boneWeight1;
+    in LOWP vec2 a_boneWeight1;
 #endif
 
 #ifdef boneWeight2Flag
-    in vec2 a_boneWeight2;
+    in LOWP vec2 a_boneWeight2;
 #endif
 
 #ifdef boneWeight3Flag
-    in vec2 a_boneWeight3;
+    in LOWP vec2 a_boneWeight3;
 #endif
 
 #ifdef boneWeight4Flag
-    in vec2 a_boneWeight4;
+    in LOWP vec2 a_boneWeight4;
 #endif
 
 #ifdef boneWeight5Flag
-    in vec2 a_boneWeight5;
+    in LOWP vec2 a_boneWeight5;
 #endif
 
 #ifdef boneWeight6Flag
-    in vec2 a_boneWeight6;
+    in LOWP vec2 a_boneWeight6;
 #endif
 
 #ifdef boneWeight7Flag
-    in vec2 a_boneWeight7;
+    in LOWP vec2 a_boneWeight7;
 #endif
 
 #if defined(numBones) && defined(boneWeightsFlag)
@@ -56,26 +67,26 @@ in vec2 a_texCoord0;
 
 #ifdef numBones
     #if numBones > 0
-        uniform mat4 u_bones[numBones];
+        uniform HIGHP mat4 u_bones[numBones];
     #endif
 #endif
 
-uniform mat4 u_mvpMatrix;
-uniform mat4 u_modelMatrix;
-uniform mat4 u_viewMatrix;
+uniform HIGHP mat4 u_mvpMatrix;
+uniform HIGHP mat4 u_viewMatrix;
+uniform HIGHP mat4 u_modelMatrix;
 
-out vec3 v_position;
-out vec2 v_texCoord;
-out vec3 v_normal;
-out vec3 v_binormal;
-out vec3 v_tangent;
+out HIGHP vec3 v_position;
+out HIGHP vec3 v_binormal;
+out HIGHP vec3 v_tangent;
+out LOWP vec2 v_texCoord;
+out LOWP vec3 v_normal;
 
 void main() {
-    vec4 position;
-    vec3 normal;
+    LOWP vec4 position;
+    LOWP vec3 normal;
 
     #ifdef numBones
-        mat4 skinning = mat4(0.0);
+        HIGHP mat4 skinning = mat4(0.0);
 
         #ifdef boneWeight0Flag
             skinning += (a_boneWeight0.y) * u_bones[int(a_boneWeight0.x)];
@@ -109,7 +120,7 @@ void main() {
             skinning += (a_boneWeight7.y) * u_bones[int(a_boneWeight7.x)];
         #endif
     #else
-        mat4 skinning = mat4(1.0);
+        HIGHP mat4 skinning = mat4(1.0);
     #endif
 
     position = u_modelMatrix * skinning * a_position;
