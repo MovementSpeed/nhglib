@@ -68,6 +68,10 @@ public class LightProbe {
         irradianceCubemap = renderIrradiance(environmentCubemap);
         prefilteredCubemap = renderPrefilter(environmentCubemap);
         brdfTexture = renderBRDF();
+
+        if (hdrData != null) {
+            hdrData.clear();
+        }
     }
 
     public void build(float environmentWidth, float environmentHeight) {

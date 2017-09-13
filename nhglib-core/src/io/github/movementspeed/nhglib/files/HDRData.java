@@ -42,6 +42,22 @@ public class HDRData {
     //The minimum value of the lum[][]
     private float lummin;
 
+    private Texture texture;
+    private Pixmap pixmap;
+
+    public void clear() {
+        pixels = null;
+        buffers = null;
+        lum = null;
+        flatPixelArray = null;
+        width = 0;
+        height = 0;
+        lummean = 0;
+        lummax = 0;
+        lummin = 0;
+        texture.dispose();
+    }
+
     public int getWidth() {
         return width;
     }
@@ -100,7 +116,6 @@ public class HDRData {
     }
 
     public Texture toTexture() {
-        Texture texture;
         float[] rgb = getFlatPixelArray();
         float min = Float.MAX_VALUE, max = Float.MIN_VALUE;
 
@@ -122,7 +137,7 @@ public class HDRData {
 
             texture = new Texture(data);
         } else {
-            Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGB888);
+            pixmap = new Pixmap(width, height, Pixmap.Format.RGB888);
 
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
@@ -319,7 +334,6 @@ public class HDRData {
     public static int unsignedToBytes(byte b) {
         return b & 0xFF;
     }
-
 
     private class ByteCounter {
         private int count;
