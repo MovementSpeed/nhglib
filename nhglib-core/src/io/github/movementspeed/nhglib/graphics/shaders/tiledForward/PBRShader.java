@@ -12,8 +12,10 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.FloatArray;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.IntArray;
+import io.github.movementspeed.nhglib.enums.LightType;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.IBLAttribute;
@@ -25,7 +27,6 @@ import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils;
  */
 public class PBRShader extends BaseShader {
     public static float lightRenderDistance = 15f;
-    private static final float radDiv = 1f / 255f;
 
     private int maxBonesLength = Integer.MIN_VALUE;
     private int bonesIID;
@@ -33,10 +34,6 @@ public class PBRShader extends BaseShader {
     private float bones[];
 
     private Vector3 vec1 = new Vector3();
-    private Vector3 vec2 = new Vector3();
-    private Vector3 vec3 = new Vector3();
-    private Matrix4 mat1 = new Matrix4();
-    private Matrix4 mat2 = new Matrix4();
     private Matrix4 idtMatrix;
 
     private Color color;
@@ -51,11 +48,18 @@ public class PBRShader extends BaseShader {
     private Params params;
     private Renderable renderable;
     private Environment environment;
-    private SmallFrustums frustums;
+    private LightGrid lightGrid;
     private ShaderProgram shaderProgram;
 
     private Array<IntArray> lightsFrustum;
     private Array<NhgLight> lights;
+
+    private IntArray lightTypes;
+    private FloatArray lightIntensities;
+    private FloatArray lightInnerAngles;
+    private FloatArray lightOuterAngles;
+    private FloatArray lightPositions;
+    private FloatArray lightDirections;
 
     public PBRShader(Renderable renderable, Environment environment, Params params) {
         this.renderable = renderable;
@@ -199,60 +203,6 @@ public class PBRShader extends BaseShader {
             }
         });
 
-        NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
-
-        if (lightsAttribute != null) {
-            lights = lightsAttribute.lights;
-        } else {
-            lights = new Array<>();
-        }
-
-        for (int i = 0; i < lights.size; i++) {
-            final NhgLight light = lights.get(i);
-
-            register("u_lightsList[" + i + "].type", new LocalSetter() {
-                @Override
-                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                    shader.set(inputID, light.type.ordinal());
-                }
-            });
-
-            register("u_lightsList[" + i + "].position", new LocalSetter() {
-                @Override
-                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                    shader.set(inputID, getViewSpacePosition(light));
-                }
-            });
-
-            register("u_lightsList[" + i + "].direction", new LocalSetter() {
-                @Override
-                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                    shader.set(inputID, getViewSpaceDirection(light));
-                }
-            });
-
-            register("u_lightsList[" + i + "].intensity", new LocalSetter() {
-                @Override
-                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                    shader.set(inputID, light.intensity);
-                }
-            });
-
-            register("u_lightsList[" + i + "].innerAngle", new LocalSetter() {
-                @Override
-                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                    shader.set(inputID, light.innerAngle);
-                }
-            });
-
-            register("u_lightsList[" + i + "].outerAngle", new LocalSetter() {
-                @Override
-                public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                    shader.set(inputID, light.outerAngle);
-                }
-            });
-        }
-
         register("u_lights", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
@@ -266,6 +216,40 @@ public class PBRShader extends BaseShader {
                 shader.set(inputID, lightInfoTexture);
             }
         });
+
+        NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
+
+        if (lightsAttribute != null) {
+            lights = lightsAttribute.lights;
+        } else {
+            lights = new Array<>();
+        }
+
+        lightTypes = new IntArray(new int[lights.size]);
+        lightIntensities = new FloatArray(new float[lights.size]);
+        lightInnerAngles = new FloatArray(new float[lights.size]);
+        lightOuterAngles = new FloatArray(new float[lights.size]);
+        lightPositions = new FloatArray(new float[lights.size * 3]);
+        lightDirections = new FloatArray(new float[lights.size * 3]);
+
+        for (int i = 0; i < lights.size; i++) {
+            NhgLight l = lights.get(i);
+
+            lightTypes.set(i, l.type.ordinal());
+            lightIntensities.set(i, l.intensity);
+            lightInnerAngles.set(i, l.innerAngle);
+            lightOuterAngles.set(i, l.outerAngle);
+        }
+
+        shaderProgram.begin();
+        for (int i = 0; i < lightTypes.size; i++) {
+            shaderProgram.setUniformi("u_lightTypes[" + i + "]", lightTypes.get(i));
+        }
+
+        shaderProgram.setUniform1fv("u_lightIntensities", lightIntensities.items, 0, lights.size);
+        shaderProgram.setUniform1fv("u_lightInnerAngles", lightInnerAngles.items, 0, lights.size);
+        shaderProgram.setUniform1fv("u_lightOuterAngles", lightOuterAngles.items, 0, lights.size);
+        shaderProgram.end();
 
         bonesIID = register("u_bones", new LocalSetter() {
             @Override
@@ -318,7 +302,7 @@ public class PBRShader extends BaseShader {
         lightInfoPixmap = new Pixmap(1, 128, Pixmap.Format.RGBA8888);
         lightInfoPixmap.setBlending(Pixmap.Blending.None);
 
-        frustums = new SmallFrustums(10, 10);
+        lightGrid = new LightGrid(10, 10);
     }
 
 
@@ -346,15 +330,18 @@ public class PBRShader extends BaseShader {
     @Override
     public void begin(Camera camera, RenderContext context) {
         this.camera = camera;
-        frustums.setFrustums(((PerspectiveCamera) camera));
 
-        //cullLights();
-        createLightTexture();
-
-        super.begin(camera, context);
         context.setCullFace(GL20.GL_BACK);
         context.setDepthTest(GL20.GL_LEQUAL);
         context.setDepthMask(true);
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        lightGrid.setFrustums(((PerspectiveCamera) camera));
+        makeLightTexture();
+
+        super.begin(camera, context);
+        program.setUniform3fv("u_lightPositions", getLightPositions(), 0, lights.size * 3);
+        program.setUniform3fv("u_lightDirections", getLightDirections(), 0, lights.size * 3);
     }
 
     @Override
@@ -373,96 +360,46 @@ public class PBRShader extends BaseShader {
         super.dispose();
     }
 
-    private void createLightTexture() {
-        int i;
-
-        for (i = 0; i < 100; i++) {
+    private void makeLightTexture() {
+        for (int i = 0; i < 100; i++) {
             lightsFrustum.get(i).clear();
         }
 
-        for (i = 0; i < lights.size; i++) {
-            NhgLight light = lights.get(i);
-
-            if (light.enabled) {
-                frustums.checkFrustums(light.position, light.radius, lightsFrustum, i);
-            }
+        for (int i = 0; i < lights.size; i++) {
+            NhgLight l = lights.get(i);
+            lightGrid.checkFrustums(l.position, l.radius, lightsFrustum, i);
         }
 
-        for (i = 0; i < lights.size; i++) {
-            NhgLight light = lights.get(i);
-
-            if (light.enabled) {
-                color.set(light.color);
-                color.a = light.radius * radDiv;
-
-                lightInfoPixmap.setColor(color);
-                lightInfoPixmap.drawPixel(0, i);
-            }
+        for (int i = 0; i < lights.size; i++) {
+            NhgLight l = lights.get(i);
+            color.set(l.color.r, l.color.g, l.color.b, l.radius / 255);
+            lightInfoPixmap.setColor(color);
+            lightInfoPixmap.drawPixel(0, i);
         }
 
         lightInfoTexture.draw(lightInfoPixmap, 0, 0);
 
         for (int row = 0; row < 100; row++) {
-            int column = 0;
+            int col = 0;
             float r = lightsFrustum.get(row).size;
 
-            color.set(r * radDiv, 0, 0, 0);
-
+            color.set(r / 255, 0, 0, 0);
             lightPixmap.setColor(color);
-            lightPixmap.drawPixel(column, row);
+            lightPixmap.drawPixel(col, row);
 
-            column++;
+            col++;
 
-            for (int k = 0; k < lightsFrustum.get(row).size; k++) {
-                int j = (lightsFrustum.get(row).get(k));
+            for (int i = 0; i < lightsFrustum.get(row).size; i++) {
+                int j = lightsFrustum.get(row).get(i);
 
-                color.set(((float) j) * radDiv, 0, 0, 0);
-
+                color.set(((float) j) / 255, 0, 0, 0);
                 lightPixmap.setColor(color);
-                lightPixmap.drawPixel(column, row);
-
-                column++;
+                lightPixmap.drawPixel(col, row);
+                col++;
             }
         }
 
         lightTexture.draw(lightPixmap, 0, 0);
-    }
-
-    private void cullPointLight(NhgLight light) {
-        light.enabled = camera.frustum.sphereInFrustum(light.position, light.radius) &&
-                camera.position.dst(light.position) < lightRenderDistance;
-    }
-
-    private void cullSpotLight(NhgLight light) {
-        mat1.setToTranslation(light.position);
-        mat2.set(mat1).translate(new Vector3(light.direction).scl(light.radius));
-
-        mat1.getTranslation(vec1);
-        mat2.getTranslation(vec2);
-        vec3.set(vec1).add(vec2).scl(0.5f);
-
-        float radius = vec1.dst(vec2) * 0.5f;
-        light.enabled = camera.frustum.sphereInFrustum(vec3, radius);
-    }
-
-    private void cullLights() {
-        if (lights != null) {
-            for (NhgLight light : lights) {
-                switch (light.type) {
-                    case POINT_LIGHT:
-                        cullPointLight(light);
-                        break;
-
-                    case SPOT_LIGHT:
-                        cullSpotLight(light);
-                        break;
-
-                    case DIRECTIONAL_LIGHT:
-                        light.enabled = true;
-                        break;
-                }
-            }
-        }
     }
 
     private String createPrefix(Renderable renderable) {
@@ -525,18 +462,38 @@ public class PBRShader extends BaseShader {
         return prefix;
     }
 
-    private Vector3 getViewSpacePosition(NhgLight light) {
-        vec1.set(light.position)
-                .mul(camera.view);
+    private float[] getLightPositions() {
+        int i = 0;
 
-        return vec1;
+        for (int k = 0; k < lights.size; k++) {
+            vec1.set(lights.get(k).position);
+            vec1.mul(camera.view);
+
+            lightPositions.set(i++, vec1.x);
+            lightPositions.set(i++, vec1.y);
+            lightPositions.set(i++, vec1.z);
+        }
+
+        return lightPositions.items;
     }
 
-    private Vector3 getViewSpaceDirection(NhgLight light) {
-        vec1.set(light.direction)
-                .rot(camera.view);
+    private float[] getLightDirections() {
+        int i = 0;
 
-        return vec1;
+        for (int k = 0; k < lights.size; k++) {
+            NhgLight light = lights.get(k);
+
+            if (light.type != LightType.POINT_LIGHT) {
+                vec1.set(light.direction)
+                        .rot(camera.view);
+
+                lightDirections.set(i++, vec1.x);
+                lightDirections.set(i++, vec1.y);
+                lightDirections.set(i++, vec1.z);
+            }
+        }
+
+        return lightDirections.items;
     }
 
     public static class Params {
