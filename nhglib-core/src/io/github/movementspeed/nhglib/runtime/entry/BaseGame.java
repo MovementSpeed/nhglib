@@ -31,6 +31,7 @@ abstract class BaseGame implements
 
     @Override
     public final void resize(int width, int height) {
+        onResize(width, height);
     }
 
     @Override
@@ -54,24 +55,29 @@ abstract class BaseGame implements
     }
 
     @Override
-    public void engineStarted() {
+    public void onStart() {
     }
 
     @Override
-    public void engineInitialized() {
+    public void onInitialized() {
     }
 
     @Override
-    public void engineUpdate(float delta) {
+    public void onUpdate(float delta) {
     }
 
     @Override
-    public void enginePaused() {
+    public void onPause() {
 
     }
 
     @Override
-    public void engineClosing() {
+    public void onClose() {
+    }
+
+    @Override
+    public void onResize(int width, int height) {
+
     }
 
     @Override

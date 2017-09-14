@@ -334,7 +334,7 @@ public class PBRShader extends BaseShader {
         context.setCullFace(GL20.GL_BACK);
         context.setDepthTest(GL20.GL_LEQUAL);
         context.setDepthMask(true);
-        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        //Gdx.gl.glViewport(0, 0, (int) camera.viewportWidth, (int) camera.viewportHeight);
 
         lightGrid.setFrustums(((PerspectiveCamera) camera));
         makeLightTexture();

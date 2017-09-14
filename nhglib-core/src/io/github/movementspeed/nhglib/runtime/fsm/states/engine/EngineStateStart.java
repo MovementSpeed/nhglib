@@ -15,7 +15,7 @@ public class EngineStateStart implements State<NhgEntry> {
 
     @Override
     public void update(NhgEntry nhgEntry) {
-        nhgEntry.engineStarted();
+        nhgEntry.onStart();
         nhgEntry.getFsm().changeState(EngineStates.NOT_INITIALIZED);
     }
 

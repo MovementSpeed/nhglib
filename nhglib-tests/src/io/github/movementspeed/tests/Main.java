@@ -4,6 +4,7 @@ import com.artemis.BaseSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
@@ -14,6 +15,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.assets.Asset;
 import io.github.movementspeed.nhglib.files.HDRData;
@@ -30,6 +32,7 @@ import io.github.movementspeed.nhglib.input.interfaces.InputListener;
 import io.github.movementspeed.nhglib.input.models.NhgInput;
 import io.github.movementspeed.nhglib.runtime.ecs.components.graphics.CameraComponent;
 import io.github.movementspeed.nhglib.runtime.ecs.components.scenes.NodeComponent;
+import io.github.movementspeed.nhglib.runtime.ecs.systems.impl.CameraSystem;
 import io.github.movementspeed.nhglib.runtime.ecs.systems.impl.RenderingSystem;
 import io.github.movementspeed.nhglib.runtime.entry.NhgEntry;
 import io.github.movementspeed.nhglib.runtime.messaging.Message;
@@ -53,10 +56,11 @@ public class Main extends NhgEntry implements InputListener {
     private ShaderProgram simpleCubemapShader;
     private LightProbe lightProbe;
     private Mesh cubeMesh;
+    FitViewport fitViewport;
 
     @Override
-    public void engineStarted() {
-        super.engineStarted();
+    public void onStart() {
+        super.onStart();
         Nhg.debugLogs = true;
         Nhg.debugDrawPhysics = false;
         ParticleShader.softParticles = false;
@@ -74,8 +78,8 @@ public class Main extends NhgEntry implements InputListener {
     }
 
     @Override
-    public void engineInitialized() {
-        super.engineInitialized();
+    public void onInitialized() {
+        super.onInitialized();
 
         world = new NhgWorld(nhg.messaging, nhg.entities, nhg.assets,
                 new DefaultWorldStrategy(),
@@ -88,6 +92,7 @@ public class Main extends NhgEntry implements InputListener {
 
         renderingSystem = nhg.entities.getEntitySystem(RenderingSystem.class);
         renderingSystem.setClearColor(Color.GRAY);
+        renderingSystem.setRenderScale(0.25f);
 
         environment = renderingSystem.getEnvironment();
 
@@ -131,6 +136,15 @@ public class Main extends NhgEntry implements InputListener {
                             }
                         } else if (message.is(Strings.Events.sceneLoaded)) {
                             NhgLogger.log(this, "Scene loaded");
+
+                            CameraSystem cameraSystem = nhg.entities.getEntitySystem(CameraSystem.class);
+                            PerspectiveCamera perspectiveCamera = (PerspectiveCamera) cameraSystem.cameras.first();
+                            perspectiveCamera.viewportWidth = 960;
+                            perspectiveCamera.viewportHeight = 540;
+
+                            /*fitViewport = new FitViewport(640, 360, perspectiveCamera);
+                            fitViewport.update(1280, 720);*/
+
                             HDRData data = nhg.assets.get("newport_loft");
 
                             lightProbe = new LightProbe();
@@ -153,8 +167,8 @@ public class Main extends NhgEntry implements InputListener {
     }
 
     @Override
-    public void engineUpdate(float delta) {
-        super.engineUpdate(delta);
+    public void onUpdate(float delta) {
+        super.onUpdate(delta);
         world.update();
 
         /*if (cameraComponent != null) {
@@ -166,6 +180,11 @@ public class Main extends NhgEntry implements InputListener {
             cubeMesh.render(simpleCubemapShader, GL20.GL_TRIANGLES);
             simpleCubemapShader.end();
         }*/
+    }
+
+    @Override
+    public void onResize(int width, int height) {
+        super.onResize(width, height);
     }
 
     @Override

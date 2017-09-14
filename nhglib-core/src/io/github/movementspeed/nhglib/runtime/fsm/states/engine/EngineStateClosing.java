@@ -16,7 +16,7 @@ public class EngineStateClosing implements State<NhgEntry> {
     @Override
     public void enter(NhgEntry nhgEntry) {
         NhgLogger.log(this, "Engine is closing.");
-        nhgEntry.engineClosing();
+        nhgEntry.onClose();
 
         ImmutableBag<BaseSystem> systems = nhgEntry.nhg.entities.getEntitySystems();
         for (BaseSystem bs : systems) {

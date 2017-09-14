@@ -14,7 +14,7 @@ public class EngineStateInitialized implements State<NhgEntry> {
     public void enter(NhgEntry nhgEntry) {
         NhgLogger.log(this, "Engine is initialized.");
 
-        nhgEntry.engineInitialized();
+        nhgEntry.onInitialized();
         nhgEntry.getFsm().changeState(EngineStates.RUNNING);
     }
 

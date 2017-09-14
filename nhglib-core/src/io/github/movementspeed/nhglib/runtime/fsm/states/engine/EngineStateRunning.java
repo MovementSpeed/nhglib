@@ -39,7 +39,7 @@ public class EngineStateRunning implements State<NhgEntry> {
         nhgEntry.nhg.assets.update();
         nhgEntry.nhg.entities.update(delta);
 
-        nhgEntry.engineUpdate(delta);
+        nhgEntry.onUpdate(delta);
     }
 
     @Override

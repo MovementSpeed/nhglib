@@ -4,13 +4,15 @@ package io.github.movementspeed.nhglib.runtime.fsm.interfaces;
  * Created by Fausto Napoli on 02/11/2016.
  */
 public interface EngineStateListener {
-    void engineStarted();
+    void onStart();
 
-    void engineInitialized();
+    void onInitialized();
 
-    void engineUpdate(float delta);
+    void onUpdate(float delta);
 
-    void enginePaused();
+    void onPause();
 
-    void engineClosing();
+    void onClose();
+
+    void onResize(int width, int height);
 }

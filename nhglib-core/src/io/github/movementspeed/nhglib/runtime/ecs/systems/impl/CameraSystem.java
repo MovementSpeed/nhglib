@@ -31,13 +31,20 @@ public class CameraSystem extends NhgIteratingSystem {
         NodeComponent nodeComponent = nodeMapper.get(entityId);
 
         Camera camera = cameraComponent.camera;
-        camera.position.set(nodeComponent.getTranslation());
+        camera.position.set(0, 0, 0);
+        camera.direction.set(0, 0, -1);
+        camera.up.set(0, 1, 0);
+        camera.transform(nodeComponent.getTransform());
 
-        camera.direction.rotate(camera.up, nodeComponent.getYRotationDelta());
-        camera.up.rotate(camera.direction, nodeComponent.getZRotationDelta());
+        /*camera.position.set(nodeComponent.getTranslation());
+
+        Quaternion rotation = nodeComponent.getRotationQuaternion();
+
+        camera.direction.rotate(camera.up, -rotation.getYaw());
+        camera.up.rotate(camera.direction, rotation.getRoll());
 
         vec.set(camera.direction).crs(camera.up).nor();
-        camera.direction.rotate(vec, nodeComponent.getXRotationDelta());
+        camera.direction.rotate(vec, rotation.getPitch());*/
 
         camera.update();
 

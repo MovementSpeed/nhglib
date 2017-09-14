@@ -12,7 +12,7 @@ public class EngineStatePaused implements State<NhgEntry> {
     @Override
     public void enter(final NhgEntry nhgEntry) {
         NhgLogger.log(this, "Engine is paused.");
-        nhgEntry.enginePaused();
+        nhgEntry.onPause();
     }
 
     @Override

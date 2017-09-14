@@ -13,28 +13,33 @@ public class NhgEntry extends BaseGame {
     }
 
     @Override
-    public void engineStarted() {
-        super.engineStarted();
+    public void onStart() {
+        super.onStart();
     }
 
     @Override
-    public void engineInitialized() {
-        super.engineInitialized();
+    public void onInitialized() {
+        super.onInitialized();
     }
 
     @Override
-    public void engineUpdate(float delta) {
-        super.engineUpdate(delta);
+    public void onUpdate(float delta) {
+        super.onUpdate(delta);
     }
 
     @Override
-    public void enginePaused() {
-        super.enginePaused();
+    public void onPause() {
+        super.onPause();
     }
 
     @Override
-    public void engineClosing() {
-        super.engineClosing();
+    public void onClose() {
+        super.onClose();
+    }
+
+    @Override
+    public void onResize(int width, int height) {
+        super.onResize(width, height);
     }
 
     @Override
