@@ -20,6 +20,7 @@ import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.IBLAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
+import io.github.movementspeed.nhglib.runtime.ecs.systems.impl.RenderingSystem;
 import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils;
 
 /**
@@ -51,15 +52,15 @@ public class PBRShader extends BaseShader {
     private LightGrid lightGrid;
     private ShaderProgram shaderProgram;
 
-    private Array<IntArray> lightsFrustum;
-    private Array<NhgLight> lights;
-
     private IntArray lightTypes;
     private FloatArray lightIntensities;
     private FloatArray lightInnerAngles;
     private FloatArray lightOuterAngles;
     private FloatArray lightPositions;
     private FloatArray lightDirections;
+
+    private Array<IntArray> lightsFrustum;
+    private Array<NhgLight> lights;
 
     public PBRShader(Renderable renderable, Environment environment, Params params) {
         this.renderable = renderable;
@@ -104,14 +105,14 @@ public class PBRShader extends BaseShader {
         register("u_graphicsWidth", new GlobalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, Gdx.graphics.getWidth());
+                shader.set(inputID, RenderingSystem.renderWidth);
             }
         });
 
         register("u_graphicsHeight", new GlobalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, Gdx.graphics.getHeight());
+                shader.set(inputID, RenderingSystem.renderHeight);
             }
         });
 

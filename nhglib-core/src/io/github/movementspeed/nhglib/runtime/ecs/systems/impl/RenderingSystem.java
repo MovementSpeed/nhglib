@@ -20,6 +20,9 @@ import io.github.movementspeed.nhglib.utils.graphics.GLUtils;
  * Created by Fausto Napoli on 08/12/2016.
  */
 public class RenderingSystem extends BaseSystem implements Disposable {
+    public static int renderWidth;
+    public static int renderHeight;
+
     // Injected references
     private CameraSystem cameraSystem;
 
@@ -90,7 +93,10 @@ public class RenderingSystem extends BaseSystem implements Disposable {
         if (renderScale < 0f) renderScale = 0f;
         if (renderScale > 1f) renderScale = 1f;
 
-        updateFramebuffer(Math.round(Gdx.graphics.getWidth() * renderScale), Math.round(Gdx.graphics.getHeight() * renderScale));
+        renderWidth = Math.round(Gdx.graphics.getWidth() * renderScale);
+        renderHeight = Math.round(Gdx.graphics.getHeight() * renderScale);
+
+        updateFramebuffer(renderWidth, renderHeight);
     }
 
     public void setClearColor(Color clearColor) {
