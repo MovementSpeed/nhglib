@@ -92,7 +92,7 @@ public class Main extends NhgEntry implements InputListener {
 
         renderingSystem = nhg.entities.getEntitySystem(RenderingSystem.class);
         renderingSystem.setClearColor(Color.GRAY);
-        renderingSystem.setRenderScale(0.25f);
+        renderingSystem.setRenderScale(0.75f);
 
         environment = renderingSystem.getEnvironment();
 

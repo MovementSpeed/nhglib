@@ -90,9 +90,7 @@ public class RenderingSystem extends BaseSystem implements Disposable {
         if (renderScale < 0f) renderScale = 0f;
         if (renderScale > 1f) renderScale = 1f;
 
-        int rs = Math.round(1f / renderScale);
-
-        updateFramebuffer(Gdx.graphics.getWidth() / rs, Gdx.graphics.getHeight() / rs);
+        updateFramebuffer(Math.round(Gdx.graphics.getWidth() * renderScale), Math.round(Gdx.graphics.getHeight() * renderScale));
     }
 
     public void setClearColor(Color clearColor) {
