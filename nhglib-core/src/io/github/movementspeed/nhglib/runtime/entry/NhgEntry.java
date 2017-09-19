@@ -43,6 +43,11 @@ public class NhgEntry extends BaseGame {
     }
 
     @Override
+    public void onDispose() {
+        super.onDispose();
+    }
+
+    @Override
     public Array<BaseSystem> onConfigureEntitySystems() {
         return super.onConfigureEntitySystems();
     }

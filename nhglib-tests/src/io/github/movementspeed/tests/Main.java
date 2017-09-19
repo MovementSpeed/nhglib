@@ -4,18 +4,22 @@ import com.artemis.BaseSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.assets.Asset;
 import io.github.movementspeed.nhglib.files.HDRData;
@@ -32,7 +36,6 @@ import io.github.movementspeed.nhglib.input.interfaces.InputListener;
 import io.github.movementspeed.nhglib.input.models.NhgInput;
 import io.github.movementspeed.nhglib.runtime.ecs.components.graphics.CameraComponent;
 import io.github.movementspeed.nhglib.runtime.ecs.components.scenes.NodeComponent;
-import io.github.movementspeed.nhglib.runtime.ecs.systems.impl.CameraSystem;
 import io.github.movementspeed.nhglib.runtime.ecs.systems.impl.RenderingSystem;
 import io.github.movementspeed.nhglib.runtime.entry.NhgEntry;
 import io.github.movementspeed.nhglib.runtime.messaging.Message;
@@ -53,10 +56,12 @@ public class Main extends NhgEntry implements InputListener {
     private RenderingSystem renderingSystem;
     private Environment environment;
 
-    private ShaderProgram simpleCubemapShader;
     private LightProbe lightProbe;
     private Mesh cubeMesh;
-    FitViewport fitViewport;
+
+    private Stage stage;
+    private Table table;
+    private Skin skin;
 
     @Override
     public void onStart() {
@@ -65,26 +70,44 @@ public class Main extends NhgEntry implements InputListener {
         Nhg.debugDrawPhysics = false;
         ParticleShader.softParticles = false;
 
-        simpleCubemapShader = new ShaderProgram(
-                Gdx.files.internal("shaders/simple_cubemap.vert"),
-                Gdx.files.internal("shaders/simple_cubemap.frag"));
-
         ModelBuilder mb = new ModelBuilder();
         Model cube = mb.createBox(1, 1, 1, new Material(),
                 VertexAttributes.Usage.Position |
                         VertexAttributes.Usage.Normal |
                         VertexAttributes.Usage.TextureCoordinates);
         cubeMesh = cube.meshes.first();
+
+        skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+
+        table = new Table(skin);
+        table.setFillParent(true);
+
+        stage = new Stage();
+        stage.addActor(table);
+
+        table.setDebug(true);
+
+        final TextButton button = new TextButton("Jump", skin);
+        table.add(button);
+        table.align(Align.topLeft);
+
+        button.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                super.clicked(event, x, y);
+                button.setText("x: " + x + " y: " + y);
+            }
+        });
     }
 
     @Override
     public void onInitialized() {
         super.onInitialized();
-
         world = new NhgWorld(nhg.messaging, nhg.entities, nhg.assets,
                 new DefaultWorldStrategy(),
                 new Bounds(2f, 2f, 2f));
 
+        nhg.input.addInputProcessor(stage);
         nhg.input.addListener(this);
 
         nhg.assets.queueAsset(new Asset("scene", "myscene.nhs", Scene.class));
@@ -92,7 +115,7 @@ public class Main extends NhgEntry implements InputListener {
 
         renderingSystem = nhg.entities.getEntitySystem(RenderingSystem.class);
         renderingSystem.setClearColor(Color.GRAY);
-        renderingSystem.setRenderScale(0.75f);
+        renderingSystem.setRenderScale(1.0f);
 
         environment = renderingSystem.getEnvironment();
 
@@ -137,14 +160,6 @@ public class Main extends NhgEntry implements InputListener {
                         } else if (message.is(Strings.Events.sceneLoaded)) {
                             NhgLogger.log(this, "Scene loaded");
 
-                            CameraSystem cameraSystem = nhg.entities.getEntitySystem(CameraSystem.class);
-                            PerspectiveCamera perspectiveCamera = (PerspectiveCamera) cameraSystem.cameras.first();
-                            perspectiveCamera.viewportWidth = 960;
-                            perspectiveCamera.viewportHeight = 540;
-
-                            /*fitViewport = new FitViewport(640, 360, perspectiveCamera);
-                            fitViewport.update(1280, 720);*/
-
                             HDRData data = nhg.assets.get("newport_loft");
 
                             lightProbe = new LightProbe();
@@ -170,21 +185,21 @@ public class Main extends NhgEntry implements InputListener {
     public void onUpdate(float delta) {
         super.onUpdate(delta);
         world.update();
-
-        /*if (cameraComponent != null) {
-            lightProbe.getEnvironment().bind(0);
-            simpleCubemapShader.begin();
-            simpleCubemapShader.setUniformMatrix("u_view", cameraComponent.camera.view);
-            simpleCubemapShader.setUniformMatrix("u_projection", cameraComponent.camera.projection);
-            simpleCubemapShader.setUniformi("u_environmentMap", 0);
-            cubeMesh.render(simpleCubemapShader, GL20.GL_TRIANGLES);
-            simpleCubemapShader.end();
-        }*/
+        stage.act(delta);
+        stage.draw();
     }
 
     @Override
     public void onResize(int width, int height) {
         super.onResize(width, height);
+        stage.getViewport().update(width, height, true);
+    }
+
+    @Override
+    public void onDispose() {
+        super.onDispose();
+        stage.dispose();
+        skin.dispose();
     }
 
     @Override

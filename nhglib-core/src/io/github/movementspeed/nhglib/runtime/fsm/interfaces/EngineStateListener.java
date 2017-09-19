@@ -15,4 +15,6 @@ public interface EngineStateListener {
     void onClose();
 
     void onResize(int width, int height);
+
+    void onDispose();
 }

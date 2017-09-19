@@ -21,6 +21,8 @@ abstract class BaseGame implements
         EngineConfigurationListener {
 
     public Nhg nhg;
+
+    private int width, height;
     private DefaultStateMachine<NhgEntry, EngineStates> fsm;
 
     @Override
@@ -31,7 +33,8 @@ abstract class BaseGame implements
 
     @Override
     public final void resize(int width, int height) {
-        onResize(width, height);
+        this.width = width;
+        this.height = height;
     }
 
     @Override
@@ -52,6 +55,7 @@ abstract class BaseGame implements
     @Override
     public final void dispose() {
         nhg.messaging.send(new Message(Strings.Events.engineDestroy));
+        onDispose();
     }
 
     @Override
@@ -60,6 +64,7 @@ abstract class BaseGame implements
 
     @Override
     public void onInitialized() {
+        onResize(width, height);
     }
 
     @Override
@@ -77,6 +82,11 @@ abstract class BaseGame implements
 
     @Override
     public void onResize(int width, int height) {
+
+    }
+
+    @Override
+    public void onDispose() {
 
     }
 

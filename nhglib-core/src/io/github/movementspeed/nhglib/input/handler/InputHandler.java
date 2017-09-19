@@ -1,6 +1,7 @@
 package io.github.movementspeed.nhglib.input.handler;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
@@ -34,6 +35,7 @@ import io.github.movementspeed.nhglib.utils.debug.NhgLogger;
  */
 public class InputHandler implements ControllerListener, InputProcessor {
     private InputConfigurations config;
+    private InputMultiplexer inputMultiplexer;
     private Vector2 tempVec;
 
     private Array<InputContext> activeContexts;
@@ -66,7 +68,9 @@ public class InputHandler implements ControllerListener, InputProcessor {
         mouseInputsMap = new ArrayMap<>();
 
         Controllers.addListener(this);
-        Gdx.input.setInputProcessor(this);
+
+        inputMultiplexer = new InputMultiplexer(this);
+        Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
     // ControllerListener interface --------------------------------------
@@ -135,7 +139,7 @@ public class InputHandler implements ControllerListener, InputProcessor {
             }
         }
 
-        return true;
+        return false;
     }
 
     @Override
@@ -151,7 +155,7 @@ public class InputHandler implements ControllerListener, InputProcessor {
             activeKeyCodes.removeKey(keycode);
         }
 
-        return true;
+        return false;
     }
 
     @Override
@@ -175,7 +179,7 @@ public class InputHandler implements ControllerListener, InputProcessor {
             activeMouseInputs.put(sourceType, mouseInput);
         }
 
-        return true;
+        return false;
     }
 
     @Override
@@ -193,7 +197,7 @@ public class InputHandler implements ControllerListener, InputProcessor {
             mouseInput.setInputAction(InputAction.UP);
         }
 
-        return true;
+        return false;
     }
 
     @Override
@@ -206,7 +210,7 @@ public class InputHandler implements ControllerListener, InputProcessor {
         NhgInput input = mouseInputsMap.get(MouseSourceType.MOUSE_XY);
         activeMouseInputs.put(MouseSourceType.MOUSE_XY, input);
 
-        return true;
+        return false;
     }
 
     @Override
@@ -239,6 +243,10 @@ public class InputHandler implements ControllerListener, InputProcessor {
         if (context != null) {
             inputContexts.put(context.getName(), context);
         }
+    }
+
+    public void addInputProcessor(InputProcessor inputProcessor) {
+        inputMultiplexer.addProcessor(inputProcessor);
     }
 
     public void fromJson(JsonValue jsonValue) {
