@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ShaderProvider;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.utils.Array;
@@ -66,16 +67,19 @@ public class RenderingSystem extends BaseSystem implements Disposable {
 
             renderer.begin(camera);
             for (RenderingSystemInterface rsi : renderingInterfaces) {
-                renderer.render(rsi.getRenderableProviders(), environment);
-                rsi.clearRenderableProviders();
+                Array<RenderableProvider> providers = rsi.getRenderableProviders();
+
+                if (providers.size > 0) {
+                    renderer.render(providers, environment);
+                    rsi.clearRenderableProviders();
+                }
             }
             renderer.end();
             frameBuffer.end();
 
             spriteBatch.begin();
             spriteBatch.draw(frameBuffer.getColorBufferTexture(),
-                    0, 0,
-                    Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),
+                    0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),
                     0, 0, 1, 1);
             spriteBatch.end();
         }

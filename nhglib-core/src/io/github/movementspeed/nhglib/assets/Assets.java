@@ -181,6 +181,10 @@ public class Assets implements Updatable, AssetErrorListener {
         assetQueue.removeValue(asset, true);
     }
 
+    public void clear() {
+        assetManager.clear();
+    }
+
     public void unloadAsset(String alias) {
         unloadAsset(getAsset(alias));
     }

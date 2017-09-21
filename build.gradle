@@ -24,6 +24,7 @@ allprojects {
 
     ext {
         gdxVersion = '1.9.6'
+        stageBuilderVersion = 'v3.25.0'
     }
 
     repositories {
@@ -31,6 +32,7 @@ allprojects {
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+        maven { url "https://jitpack.io" }
     }
 }
 
@@ -69,6 +71,7 @@ project(":nhglib-core") {
         compile "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
         compile "net.onedaybeard.artemis:artemis-odb:2.0.0"
         compile 'io.reactivex.rxjava2:rxjava:2.0.2'
+        compile 'com.github.peakgames.libgdx-stagebuilder:stagebuilder-core:v3.25.0'
     }
 }
 
