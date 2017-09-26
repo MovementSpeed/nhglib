@@ -92,7 +92,7 @@ public class VehicleBuilder {
         this.chassisModel = model;
 
         ModelComponent modelComponent = entities.createComponent(vehicleEntity, ModelComponent.class);
-        modelComponent.initWithModel(model);
+        modelComponent.buildWithModel(model);
 
         return this;
     }
@@ -102,7 +102,7 @@ public class VehicleBuilder {
 
         for (int i = 0; i < wheelEntities.length; i++) {
             ModelComponent wheelModel = entities.createComponent(wheelEntities[i], ModelComponent.class);
-            wheelModel.initWithModel(model);
+            wheelModel.buildWithModel(model);
         }
 
         return this;

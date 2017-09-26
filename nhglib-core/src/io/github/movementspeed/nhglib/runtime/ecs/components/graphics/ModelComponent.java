@@ -35,11 +35,11 @@ public class ModelComponent extends Component {
         type = Type.DYNAMIC;
     }
 
-    public void initWithModel(Model m) {
-        initWithModel(new ModelInstance(m));
+    public void buildWithModel(Model m) {
+        buildWithModel(new ModelInstance(m));
     }
 
-    public void initWithModel(ModelInstance m) {
+    public void buildWithModel(ModelInstance m) {
         model = m;
         boundingBox = new BoundingBox();
         model.calculateBoundingBox(boundingBox);
@@ -54,7 +54,7 @@ public class ModelComponent extends Component {
         }
     }
 
-    public void initWithAsset(String asset) {
+    public void buildWithAsset(String asset) {
         this.asset = asset;
         this.state = State.NOT_INITIALIZED;
     }

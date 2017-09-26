@@ -68,6 +68,23 @@
             "fieldOfView":67,
             "nearPlane":0.01,
             "farPlane":10.0
+          },
+          {
+            "type":"ui",
+            "fileName":"test.xml",
+            "dependencies":
+            [
+              {
+                "alias":"common",
+                "source":"common.atlas",
+                "classAlias":"textureAtlas"
+              },
+              {
+                "alias":"defFont",
+                "source":"default_font.fnt",
+                "classAlias":"bitmapFont"
+              }
+            ]
           }
         ]
       },

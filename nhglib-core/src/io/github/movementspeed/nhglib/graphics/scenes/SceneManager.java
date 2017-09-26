@@ -2,6 +2,8 @@ package io.github.movementspeed.nhglib.graphics.scenes;
 
 import com.artemis.ComponentMapper;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.model.NodePart;
@@ -69,11 +71,14 @@ public class SceneManager {
         SceneUtils.addComponentJsonMapping("vehicle", VehicleComponentJson.class);
         SceneUtils.addComponentJsonMapping("wheel", WheelComponentJson.class);
         SceneUtils.addComponentJsonMapping("particleEffect", ParticleEffectComponentJson.class);
+        SceneUtils.addComponentJsonMapping("ui", UiComponentJson.class);
 
         SceneUtils.addAssetClassMapping("model", Model.class);
         SceneUtils.addAssetClassMapping("texture", Texture.class);
         SceneUtils.addAssetClassMapping("particleEffect", ParticleEffect.class);
         SceneUtils.addAssetClassMapping("hdr", HDRData.class);
+        SceneUtils.addAssetClassMapping("textureAtlas", TextureAtlas.class);
+        SceneUtils.addAssetClassMapping("bitmapFont", BitmapFont.class);
     }
 
     public void loadScene(final Scene scene) {
@@ -164,7 +169,7 @@ public class SceneManager {
 
         if (load) {
             Model model = assets.get(modelComponent.asset);
-            modelComponent.initWithModel(model);
+            modelComponent.buildWithModel(model);
 
             for (PbrMaterial pbrMaterial : modelComponent.pbrMaterials) {
                 if (!pbrMaterial.albedo.isEmpty()) {

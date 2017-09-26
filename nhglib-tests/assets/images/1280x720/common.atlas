@@ -1,0 +1,226 @@
+common.png
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+accept_button
+  rotate: false
+  xy: 1410, 266
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+androidlogo
+  rotate: false
+  xy: 804, 269
+  size: 200, 235
+  orig: 200, 235
+  offset: 0, 0
+  index: -1
+back_button
+  rotate: false
+  xy: 1856, 399
+  size: 55, 53
+  orig: 55, 53
+  offset: 0, 0
+  index: -1
+back_buttonH
+  rotate: false
+  xy: 1913, 399
+  size: 55, 53
+  orig: 55, 53
+  offset: 0, 0
+  index: -1
+background
+  rotate: false
+  xy: 2, 24
+  size: 800, 480
+  orig: 800, 480
+  offset: 0, 0
+  index: -1
+black_square
+  rotate: false
+  xy: 1540, 136
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+cancel_button
+  rotate: false
+  xy: 1410, 136
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+cursor
+  rotate: false
+  xy: 2016, 501
+  size: 3, 3
+  orig: 3, 3
+  offset: 0, 0
+  index: -1
+facebook_logo
+  rotate: false
+  xy: 804, 67
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+google_plus_logo
+  rotate: false
+  xy: 1006, 266
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+green_button
+  rotate: false
+  xy: 1410, 451
+  size: 260, 53
+  orig: 260, 53
+  offset: 0, 0
+  index: -1
+green_buttonH
+  rotate: false
+  xy: 1410, 396
+  size: 260, 53
+  orig: 260, 53
+  offset: 0, 0
+  index: -1
+instagram_logo
+  rotate: false
+  xy: 1006, 64
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+linkedin_logo
+  rotate: false
+  xy: 1208, 266
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+loading_circle_background
+  rotate: false
+  xy: 1540, 288
+  size: 106, 106
+  orig: 106, 106
+  offset: 0, 0
+  index: -1
+loading_circle_foreground
+  rotate: false
+  xy: 1540, 182
+  size: 105, 104
+  orig: 105, 104
+  offset: 0, 0
+  index: -1
+ninepatch_bg
+  rotate: false
+  xy: 1393, 491
+  size: 13, 13
+  orig: 13, 13
+  offset: 0, 0
+  index: -1
+peaklogo
+  rotate: false
+  xy: 1672, 406
+  size: 182, 98
+  orig: 182, 98
+  offset: 0, 0
+  index: -1
+progressbar_background
+  rotate: false
+  xy: 1006, 468
+  size: 385, 36
+  orig: 385, 36
+  offset: 0, 0
+  index: -1
+progressbar_foreground
+  rotate: false
+  xy: 1648, 358
+  size: 16, 36
+  orig: 16, 36
+  offset: 0, 0
+  index: -1
+selection
+  rotate: false
+  xy: 1410, 81
+  size: 3, 3
+  orig: 3, 3
+  offset: 0, 0
+  index: -1
+star
+  rotate: false
+  xy: 804, 36
+  size: 29, 29
+  orig: 29, 29
+  offset: 0, 0
+  index: -1
+textFieldBackground
+  rotate: false
+  xy: 2, 2
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+toggle_background
+  rotate: false
+  xy: 1856, 454
+  size: 158, 50
+  orig: 158, 50
+  offset: 0, 0
+  index: -1
+toggle_handle
+  rotate: false
+  xy: 1410, 86
+  size: 76, 48
+  orig: 76, 48
+  offset: 0, 0
+  index: -1
+twitter_logo
+  rotate: false
+  xy: 1208, 64
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+
+common2.png
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+large_images/bg1
+  rotate: false
+  xy: 2, 484
+  size: 800, 480
+  orig: 800, 480
+  offset: 0, 0
+  index: -1
+large_images/bg1-large
+  rotate: false
+  xy: 2, 966
+  size: 1280, 768
+  orig: 1280, 768
+  offset: 0, 0
+  index: -1
+large_images/bg2
+  rotate: false
+  xy: 2, 2
+  size: 800, 480
+  orig: 800, 480
+  offset: 0, 0
+  index: -1
+large_images/bg3
+  rotate: false
+  xy: 804, 484
+  size: 800, 480
+  orig: 800, 480
+  offset: 0, 0
+  index: -1
+large_images/bg4
+  rotate: false
+  xy: 804, 2
+  size: 800, 480
+  orig: 800, 480
+  offset: 0, 0
+  index: -1

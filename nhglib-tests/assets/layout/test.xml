@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<group>
+    <!--<image name="background_image" atlas="common.atlas" frame="background" type="background"/>-->
+    <textbutton name="external_group_screen" atlas="common.atlas" frameUp="green_button" frameDown="green_buttonH"
+                x="70" y="220" width="250" text="Including (files) Groups" fontName="default_font.fnt"/>
+    <textbutton name="list_widget_screen" atlas="common.atlas" frameUp="green_button" frameDown="green_buttonH" x="470"
+                y="220" width="250" text="List Widget" fontName="default_font.fnt"/>
+    <textbutton name="layout_screen" atlas="common.atlas" frameUp="green_button" frameDown="green_buttonH" x="470"
+                y="160" width="250" text="Layout Screen" fontName="default_font.fnt"/>
+    <textbutton name="asenkron_asset_loading_screen" atlas="common.atlas" frameUp="green_button"
+                frameDown="green_buttonH" x="470" y="280" width="250" text="Async Asset Loading"
+                fontName="default_font.fnt"/>
+    <textbutton name="custom_widget_screen" atlas="common.atlas" frameUp="green_button" frameDown="green_buttonH" x="70"
+                y="280" width="250" text="Custom Widgets" fontName="default_font.fnt"/>
+    <textbutton name="label_screen" atlas="common.atlas" frameUp="green_button" frameDown="green_buttonH" x="470"
+                y="340" width="250" text="Labels" fontName="default_font.fnt"/>
+    <textbutton name="textField_screen" atlas="common.atlas" frameUp="green_button" frameDown="green_buttonH" x="70"
+                y="340" width="250" text="TextField" fontName="default_font.fnt"/>
+    <textbutton name="image_screen" atlas="common.atlas" frameUp="green_button" frameDown="green_buttonH" x="470"
+                y="400" width="250" text="Image" fontName="default_font.fnt"/>
+    <textbutton name="button_screen" atlas="common.atlas" frameUp="green_button" frameDown="green_buttonH" x="70"
+                y="400" width="250" text="Button - TextButton" fontName="default_font.fnt"/>
+    <textbutton name="replace_top_screen" atlas="common.atlas" frameUp="green_button" frameDown="green_buttonH" x="70"
+                y="160" width="250" text="Replace Top Screen Demo" fontName="default_font.fnt"/>
+
+    <!-- This custom widget is used as an indicator for async asset loading. Before loading assets visibility is set to true,
+         after loading assets visibility is set back to false -->
+    <net.peakgames.libgdx.stagebuilder.core.widgets.LoadingWidget
+            name="loading_widget"
+            fullScreen="true"
+            alpha="0.5"
+            text="loading"
+            fontName="default_font.fnt"
+            backgroundFrame="loading_circle_background"
+            foregroundFrame="loading_circle_foreground"
+            atlasName="common.atlas"/>
+</group>

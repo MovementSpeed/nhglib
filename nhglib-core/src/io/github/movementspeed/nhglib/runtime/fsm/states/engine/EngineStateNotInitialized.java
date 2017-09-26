@@ -58,6 +58,12 @@ public class EngineStateNotInitialized implements State<NhgEntry> {
             NhgLogger.log(this, "ModelRenderingSystem already registered, ignoring registration.");
         }
 
+        if (!hasSystemClass(UiRenderingSystem.class, entitySystems)) {
+            entitySystems.add(new UiRenderingSystem(nhgEntry.nhg.entities, nhgEntry.nhg.input));
+        } else {
+            NhgLogger.log(this, "ModelRenderingSystem already registered, ignoring registration.");
+        }
+
         if (!hasSystemClass(DebugRenderingSystem.class, entitySystems)) {
             entitySystems.add(new DebugRenderingSystem(nhgEntry.nhg.entities));
         } else {

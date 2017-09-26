@@ -185,8 +185,8 @@ public class Main extends NhgEntry implements InputListener {
     public void onUpdate(float delta) {
         super.onUpdate(delta);
         world.update();
-        stage.act(delta);
-        stage.draw();
+        /*stage.act(delta);
+        stage.draw();*/
     }
 
     @Override

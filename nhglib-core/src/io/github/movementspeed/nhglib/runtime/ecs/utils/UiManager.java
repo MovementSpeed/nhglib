@@ -3,7 +3,9 @@ package io.github.movementspeed.nhglib.runtime.ecs.utils;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import io.github.movementspeed.nhglib.assets.Asset;
 import io.github.movementspeed.nhglib.input.handler.InputHandler;
 import net.peakgames.libgdx.stagebuilder.core.assets.Assets;
 import net.peakgames.libgdx.stagebuilder.core.assets.ResolutionHelper;
@@ -25,6 +27,7 @@ public class UiManager {
     private int virtualHeight;
 
     private Stage stage;
+    private String fileName;
     private Assets assets;
     private StageBuilderFileHandleResolver fileHandleResolver;
     private InputHandler inputHandler;
@@ -34,15 +37,16 @@ public class UiManager {
 
     private List<Vector2> supportedResolutions;
 
-    public UiManager(InputHandler inputHandler, List<Vector2> supportedResolutions) {
-        this(false, inputHandler, supportedResolutions);
+    public UiManager(String fileName, InputHandler inputHandler, List<Vector2> supportedResolutions) {
+        this(fileName, false, inputHandler, supportedResolutions);
     }
 
-    public UiManager(boolean changesOrientation, InputHandler inputHandler, List<Vector2> supportedResolutions) {
-        this(changesOrientation, false, inputHandler, supportedResolutions);
+    public UiManager(String fileName, boolean changesOrientation, InputHandler inputHandler, List<Vector2> supportedResolutions) {
+        this(fileName, changesOrientation, false, inputHandler, supportedResolutions);
     }
 
-    public UiManager(boolean changesOrientation, boolean initiallyEmptyStage, InputHandler inputHandler, List<Vector2> supportedResolutions) {
+    public UiManager(String fileName, boolean changesOrientation, boolean initiallyEmptyStage, InputHandler inputHandler, List<Vector2> supportedResolutions) {
+        this.fileName = fileName;
         this.changesOrientation = changesOrientation;
         this.initiallyEmptyStage = initiallyEmptyStage;
         this.supportedResolutions = supportedResolutions;
@@ -56,7 +60,7 @@ public class UiManager {
         });
     }
 
-    public void init(float virtualWidth, float virtualHeight, float width, float height) {
+    public void init(float virtualWidth, float virtualHeight, float width, float height, Array<Asset> dependencies) {
         this.width = (int) width;
         this.height = (int) height;
         this.virtualWidth = (int) virtualWidth;
@@ -71,6 +75,12 @@ public class UiManager {
 
         fileHandleResolver = new StageBuilderFileHandleResolver(this.width, supportedResolutions);
         this.assets = new Assets(fileHandleResolver, resolutionHelper);
+
+        for (Asset dependency : dependencies) {
+            assets.addAssetConfiguration(fileName, dependency.source, dependency.assetClass);
+        }
+
+        assets.loadAssetsSync(fileName);
 
         this.stageBuilder = new StageBuilder(assets, resolutionHelper, localizationService);
         createStage(initiallyEmptyStage);
@@ -133,17 +143,15 @@ public class UiManager {
         return null;
     }
 
-    protected String getFileName() {
-        return this.getClass().getSimpleName() + ".xml";
-    }
-
     private void createStage(boolean initiallyEmptyStage) {
         if (initiallyEmptyStage) {
             stage = new Stage();
             stage.addActor(stageBuilder.createRootGroup(null));
         } else {
-            stage = stageBuilder.build(getFileName(), new ExtendViewport(width, height));
+            stage = stageBuilder.build(fileName, new ExtendViewport(width, height));
         }
+
+        stage.setDebugAll(true);
 
         inputHandler.addInputProcessor(stage);
     }

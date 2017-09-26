@@ -61,6 +61,10 @@ public class RenderingSystem extends BaseSystem implements Disposable {
         if (cameraSystem.cameras.size > 0) {
             Camera camera = cameraSystem.cameras.first();
 
+            for (RenderingSystemInterface rsi : renderingInterfaces) {
+                rsi.onPreRender();
+            }
+
             frameBuffer.begin();
             Gdx.gl.glViewport(0, 0, frameBuffer.getWidth(), frameBuffer.getHeight());
             GLUtils.clearScreen(clearColor);
@@ -71,6 +75,7 @@ public class RenderingSystem extends BaseSystem implements Disposable {
 
                 if (providers.size > 0) {
                     renderer.render(providers, environment);
+                    rsi.onRender();
                     rsi.clearRenderableProviders();
                 }
             }
@@ -79,9 +84,12 @@ public class RenderingSystem extends BaseSystem implements Disposable {
 
             spriteBatch.begin();
             spriteBatch.draw(frameBuffer.getColorBufferTexture(),
-                    0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),
-                    0, 0, 1, 1);
+                    0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), 0, 0, 1, 1);
             spriteBatch.end();
+
+            for (RenderingSystemInterface rsi : renderingInterfaces) {
+                rsi.onPostRender();
+            }
         }
     }
 
@@ -135,5 +143,9 @@ public class RenderingSystem extends BaseSystem implements Disposable {
         }
 
         frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, true);
+
+        for (RenderingSystemInterface rsi : renderingInterfaces) {
+            rsi.onUpdatedRenderer(width, height);
+        }
     }
 }
