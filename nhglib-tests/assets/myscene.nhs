@@ -68,23 +68,6 @@
             "fieldOfView":67,
             "nearPlane":0.01,
             "farPlane":10.0
-          },
-          {
-            "type":"ui",
-            "fileName":"test.xml",
-            "dependencies":
-            [
-              {
-                "alias":"common",
-                "source":"common.atlas",
-                "classAlias":"textureAtlas"
-              },
-              {
-                "alias":"defFont",
-                "source":"default_font.fnt",
-                "classAlias":"bitmapFont"
-              }
-            ]
           }
         ]
       },
@@ -137,6 +120,51 @@
         ],
         "entities":
         [
+        ]
+      },
+      {
+        "id":"plane",
+        "transform":
+        {
+          "rotation":
+          {
+            "x":0.0,
+            "y":180.0,
+            "z":0.0,
+          }
+        },
+        "components":
+        [
+          {
+            "type":"model",
+            "enabled":true,
+            "graphicsType":"dynamic",
+            "asset":"quad",
+            "materials":
+            [
+              {
+                "albedo":"mat2_albedo"
+              }
+            ]
+          },
+          {
+            "type":"ui",
+            "uiType":"panel",
+            "fileName":"test.xml",
+            "dependencies":
+            [
+              {
+                "alias":"common",
+                "source":"common.atlas",
+                "classAlias":"textureAtlas"
+              },
+              {
+                "alias":"defFont",
+                "source":"default_font.fnt",
+                "classAlias":"bitmapFont"
+              }
+            ]
+          }
         ]
       },
       {

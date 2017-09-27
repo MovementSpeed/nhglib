@@ -3,11 +3,12 @@ package io.github.movementspeed.nhglib.runtime.ecs.systems.impl;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g3d.RenderableProvider;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import io.github.movementspeed.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
 import io.github.movementspeed.nhglib.input.handler.InputHandler;
+import io.github.movementspeed.nhglib.runtime.ecs.components.graphics.ModelComponent;
 import io.github.movementspeed.nhglib.runtime.ecs.components.graphics.UiComponent;
 import io.github.movementspeed.nhglib.runtime.ecs.systems.base.BaseRenderingSystem;
 import io.github.movementspeed.nhglib.runtime.ecs.utils.Entities;
@@ -16,7 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UiRenderingSystem extends BaseRenderingSystem {
-    private ComponentMapper<UiComponent> uiComponentMapper;
+    private ComponentMapper<UiComponent> uiMapper;
+    private ComponentMapper<ModelComponent> modelMapper;
 
     private InputHandler inputHandler;
     private List<Vector2> supportedRes;
@@ -37,14 +39,8 @@ public class UiRenderingSystem extends BaseRenderingSystem {
     public void onPostRender() {
         super.onPostRender();
         for (UiComponent uiComponent : uiComponents) {
-            switch (uiComponent.type) {
-                case SCREEN:
-                    uiComponent.uiManager.renderUi(Gdx.graphics.getDeltaTime());
-                    break;
-
-                case PANEL:
-                    Texture texture = uiComponent.uiManager.renderUiToTexture(Gdx.graphics.getDeltaTime());
-                    break;
+            if (uiComponent.type == UiComponent.Type.SCREEN) {
+                uiComponent.uiManager.renderUi(Gdx.graphics.getDeltaTime());
             }
         }
 
@@ -62,21 +58,32 @@ public class UiRenderingSystem extends BaseRenderingSystem {
 
     @Override
     protected void process(int entityId) {
-        UiComponent uiComponent = uiComponentMapper.get(entityId);
+        UiComponent uiComponent = uiMapper.get(entityId);
 
         switch (uiComponent.state) {
             case READY:
-                uiComponents.add(uiComponent);
+                switch (uiComponent.type) {
+                    case SCREEN:
+                        uiComponents.add(uiComponent);
+                        break;
+
+                    case PANEL:
+                        ModelComponent modelComponent = modelMapper.get(entityId);
+
+                        if (modelComponent != null && modelComponent.state == ModelComponent.State.READY) {
+                            TextureRegion texture = uiComponent.uiManager.renderUiToTexture(Gdx.graphics.getDeltaTime());
+                            PbrTextureAttribute textureAttribute = (PbrTextureAttribute) modelComponent.model.materials
+                                    .first().get(PbrTextureAttribute.Albedo);
+
+                            textureAttribute.set(texture);
+                        }
+                        break;
+                }
                 break;
 
             case NOT_INITIALIZED:
                 uiComponent.build(inputHandler, supportedRes);
                 break;
         }
-    }
-
-    @Override
-    public Array<RenderableProvider> getRenderableProviders() {
-        return super.getRenderableProviders();
     }
 }

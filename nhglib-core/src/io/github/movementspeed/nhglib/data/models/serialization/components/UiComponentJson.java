@@ -12,6 +12,14 @@ public class UiComponentJson extends ComponentJson {
         UiComponent uiComponent = nhg.entities.createComponent(entity, UiComponent.class);
         uiComponent.fileName = jsonValue.getString("fileName", "");
 
+        String uiType = jsonValue.getString("uiType", "screen").toLowerCase();
+
+        if (uiType.contentEquals("screen")) {
+            uiComponent.type = UiComponent.Type.SCREEN;
+        } else if (uiType.contentEquals("panel")) {
+            uiComponent.type = UiComponent.Type.PANEL;
+        }
+
         JsonValue dependenciesJson = jsonValue.get("dependencies");
 
         for (int i = 0; i < dependenciesJson.size; i++) {

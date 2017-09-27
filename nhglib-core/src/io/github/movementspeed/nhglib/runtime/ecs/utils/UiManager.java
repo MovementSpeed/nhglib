@@ -1,6 +1,8 @@
 package io.github.movementspeed.nhglib.runtime.ecs.utils;
 
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
@@ -34,6 +36,8 @@ public class UiManager {
     private StageBuilder stageBuilder;
     private ResolutionHelper resolutionHelper;
     private NhgLocalizationService localizationService;
+    private FrameBuffer frameBuffer;
+    private TextureRegion textureRegion;
 
     private List<Vector2> supportedResolutions;
 
@@ -139,8 +143,19 @@ public class UiManager {
         return supportedResolutions.get(bestResIndex);
     }
 
-    public Texture renderUiToTexture(float delta) {
-        return null;
+    public TextureRegion renderUiToTexture(float delta) {
+        if (frameBuffer == null) {
+            frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false);
+            textureRegion = new TextureRegion(frameBuffer.getColorBufferTexture());
+        }
+
+        frameBuffer.begin();
+        renderUi(delta);
+        frameBuffer.end();
+
+        textureRegion.setRegion(frameBuffer.getColorBufferTexture());
+        //textureRegion.flip(true, true);
+        return textureRegion;
     }
 
     private void createStage(boolean initiallyEmptyStage) {
