@@ -15,16 +15,20 @@ public class UiComponent extends Component {
     public State state;
     public Type type;
     public UiManager uiManager;
+
+    public Array<String> actorNames;
     public Array<Asset> dependencies;
 
     public UiComponent() {
         state = State.NOT_INITIALIZED;
         type = Type.SCREEN;
         dependencies = new Array<>();
+        actorNames = new Array<>();
     }
 
     public void build(InputHandler inputHandler, List<Vector2> supportedRes) {
         uiManager = new UiManager(fileName, inputHandler, supportedRes);
+        uiManager.setActorNames(actorNames);
         uiManager.init(
                 Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),
                 Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),

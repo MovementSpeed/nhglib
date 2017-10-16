@@ -4,11 +4,20 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import io.github.movementspeed.nhglib.assets.Asset;
+import io.github.movementspeed.nhglib.input.enums.InputAction;
 import io.github.movementspeed.nhglib.input.handler.InputHandler;
+import io.github.movementspeed.nhglib.input.models.InputSource;
+import io.github.movementspeed.nhglib.input.models.InputType;
+import io.github.movementspeed.nhglib.input.models.NhgInput;
+import io.github.movementspeed.nhglib.utils.debug.NhgLogger;
 import net.peakgames.libgdx.stagebuilder.core.assets.Assets;
 import net.peakgames.libgdx.stagebuilder.core.assets.ResolutionHelper;
 import net.peakgames.libgdx.stagebuilder.core.assets.StageBuilderFileHandleResolver;
@@ -39,6 +48,7 @@ public class UiManager {
     private FrameBuffer frameBuffer;
     private TextureRegion textureRegion;
 
+    private Array<String> actorNames;
     private List<Vector2> supportedResolutions;
 
     public UiManager(String fileName, InputHandler inputHandler, List<Vector2> supportedResolutions) {
@@ -125,6 +135,10 @@ public class UiManager {
         stage.dispose();
     }
 
+    public void setActorNames(Array<String> actorNames) {
+        this.actorNames = actorNames;
+    }
+
     /**
      * @return the resolution which has the the closest width value.
      */
@@ -158,7 +172,11 @@ public class UiManager {
         return textureRegion;
     }
 
-    private void createStage(boolean initiallyEmptyStage) {
+    public Stage getStage() {
+        return stage;
+    }
+
+    private void createStage(final boolean initiallyEmptyStage) {
         if (initiallyEmptyStage) {
             stage = new Stage();
             stage.addActor(stageBuilder.createRootGroup(null));
@@ -167,8 +185,36 @@ public class UiManager {
         }
 
         stage.setDebugAll(true);
-
+        listenToActorEvents();
         inputHandler.addInputProcessor(stage);
+    }
+
+    private void listenToActorEvents() {
+        Group root = stage.getRoot();
+
+        for (final String actorName : actorNames) {
+            Actor actor = root.findActor(actorName);
+
+            if (actor != null) {
+                actor.addListener(new ClickListener() {
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        NhgInput input = new NhgInput(actorName);
+                        input.setInputAction(InputAction.DOWN);
+                        input.setType(InputType.POINTER);
+
+                        InputSource inputSource = new InputSource();
+                        inputSource.setName("coords");
+                        inputSource.setValue(new Vector2(x, y));
+                        input.setInputSource(inputSource);
+
+                        inputHandler.dispatchPointerInput(input);
+                    }
+                });
+            } else {
+                NhgLogger.log("Warning", "Can't find actor with name \"%s\".", actorName);
+            }
+        }
     }
 
     public class NhgLocalizationService implements LocalizationService {

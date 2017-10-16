@@ -12,10 +12,10 @@
                 fontName="default_font.fnt"/>
     <textbutton name="custom_widget_screen" atlas="common.atlas" frameUp="green_button" frameDown="green_buttonH" x="70"
                 y="280" width="250" text="Custom Widgets" fontName="default_font.fnt"/>
-    <textbutton name="label_screen" atlas="common.atlas" frameUp="green_button" frameDown="green_buttonH" x="470"
-                y="340" width="250" text="Labels" fontName="default_font.fnt"/>
-    <textbutton name="textField_screen" atlas="common.atlas" frameUp="green_button" frameDown="green_buttonH" x="70"
-                y="340" width="250" text="TextField" fontName="default_font.fnt"/>
+    <textbutton name="jump" atlas="common.atlas" frameUp="green_button" frameDown="green_buttonH" x="470"
+                y="340" width="250" text="Jump" fontName="default_font.fnt"/>
+    <textbutton name="throw" atlas="common.atlas" frameUp="green_button" frameDown="green_buttonH" x="70"
+                y="340" width="250" text="Throw" fontName="default_font.fnt"/>
     <textbutton name="image_screen" atlas="common.atlas" frameUp="green_button" frameDown="green_buttonH" x="470"
                 y="400" width="250" text="Image" fontName="default_font.fnt"/>
     <textbutton name="button_screen" atlas="common.atlas" frameUp="green_button" frameDown="green_buttonH" x="70"

@@ -149,8 +149,13 @@
           },
           {
             "type":"ui",
-            "uiType":"panel",
+            "uiType":"screen",
             "fileName":"test.xml",
+            "actors":
+            [
+              "jump",
+              "throw"
+            ],
             "dependencies":
             [
               {

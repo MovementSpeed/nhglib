@@ -292,6 +292,14 @@ public class Main extends NhgEntry implements InputListener {
                     cameraNode.rotate(verticalAxis, horizontalAxis, 0);
                     cameraNode.applyTransforms();
                     break;
+
+                case "throw":
+                    NhgLogger.log(this, "Throw!");
+                    break;
+
+                case "jump":
+                    NhgLogger.log(this, "Jump!");
+                    break;
             }
         }
     }

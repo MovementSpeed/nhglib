@@ -30,6 +30,13 @@ public class UiComponentJson extends ComponentJson {
             uiComponent.dependencies.add(dependency);
         }
 
+        JsonValue actorNamesJson = jsonValue.get("actors");
+
+        for (int i = 0; i < actorNamesJson.size; i++) {
+            String actor = actorNamesJson.getString(i);
+            uiComponent.actorNames.add(actor);
+        }
+
         output = uiComponent;
     }
 }

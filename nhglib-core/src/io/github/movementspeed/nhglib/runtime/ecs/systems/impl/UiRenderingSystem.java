@@ -68,6 +68,7 @@ public class UiRenderingSystem extends BaseRenderingSystem {
                         break;
 
                     case PANEL:
+                        // Currently not used, not completely implemented.
                         ModelComponent modelComponent = modelMapper.get(entityId);
 
                         if (modelComponent != null && modelComponent.state == ModelComponent.State.READY) {

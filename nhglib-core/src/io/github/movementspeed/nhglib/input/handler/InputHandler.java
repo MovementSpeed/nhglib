@@ -281,6 +281,30 @@ public class InputHandler implements ControllerListener, InputProcessor {
         }
     }
 
+    public void dispatchKeyInput(NhgInput input) {
+        for (InputListener inputListener : inputListeners) {
+            inputListener.onKeyInput(input);
+        }
+    }
+
+    public void dispatchStickInput(NhgInput input) {
+        for (InputListener inputListener : inputListeners) {
+            inputListener.onStickInput(input);
+        }
+    }
+
+    public void dispatchPointerInput(NhgInput input) {
+        for (InputListener inputListener : inputListeners) {
+            inputListener.onPointerInput(input);
+        }
+    }
+
+    public void dispatchMouseInput(NhgInput input) {
+        for (InputListener inputListener : inputListeners) {
+            inputListener.onMouseInput(input);
+        }
+    }
+
     public boolean isActive(String contextName) {
         boolean res = false;
         InputContext inputContext = inputContexts.get(contextName);
@@ -460,30 +484,6 @@ public class InputHandler implements ControllerListener, InputProcessor {
 
                 activeMouseInputs.removeKey(MouseSourceType.MOUSE_XY);
             }
-        }
-    }
-
-    private void dispatchKeyInput(NhgInput input) {
-        for (InputListener inputListener : inputListeners) {
-            inputListener.onKeyInput(input);
-        }
-    }
-
-    private void dispatchStickInput(NhgInput input) {
-        for (InputListener inputListener : inputListeners) {
-            inputListener.onStickInput(input);
-        }
-    }
-
-    private void dispatchPointerInput(NhgInput input) {
-        for (InputListener inputListener : inputListeners) {
-            inputListener.onPointerInput(input);
-        }
-    }
-
-    private void dispatchMouseInput(NhgInput input) {
-        for (InputListener inputListener : inputListeners) {
-            inputListener.onMouseInput(input);
         }
     }
 
