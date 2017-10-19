@@ -10,9 +10,9 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import io.github.movementspeed.nhglib.assets.Asset;
-import io.github.movementspeed.nhglib.input.enums.InputAction;
 import io.github.movementspeed.nhglib.input.handler.InputHandler;
 import io.github.movementspeed.nhglib.input.models.InputSource;
 import io.github.movementspeed.nhglib.input.models.InputType;
@@ -50,6 +50,7 @@ public class UiManager {
 
     private Array<String> actorNames;
     private List<Vector2> supportedResolutions;
+    private ArrayMap<String, NhgInput> actorInputs;
 
     public UiManager(String fileName, InputHandler inputHandler, List<Vector2> supportedResolutions) {
         this(fileName, false, inputHandler, supportedResolutions);
@@ -137,6 +138,16 @@ public class UiManager {
 
     public void setActorNames(Array<String> actorNames) {
         this.actorNames = actorNames;
+
+        if (actorInputs == null) {
+            actorInputs = new ArrayMap<>();
+        } else {
+            actorInputs.clear();
+        }
+
+        for (String actorName : this.actorNames) {
+            actorInputs.put(actorName, new NhgInput(actorName));
+        }
     }
 
     /**
@@ -198,9 +209,8 @@ public class UiManager {
             if (actor != null) {
                 actor.addListener(new ClickListener() {
                     @Override
-                    public void clicked(InputEvent event, float x, float y) {
-                        NhgInput input = new NhgInput(actorName);
-                        input.setInputAction(InputAction.DOWN);
+                    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                        NhgInput input = actorInputs.get(actorName);
                         input.setType(InputType.POINTER);
 
                         InputSource inputSource = new InputSource();
@@ -208,7 +218,21 @@ public class UiManager {
                         inputSource.setValue(new Vector2(x, y));
                         input.setInputSource(inputSource);
 
-                        inputHandler.dispatchPointerInput(input);
+                        inputHandler.touchDownPointer(input, pointer);
+                        return true;
+                    }
+
+                    @Override
+                    public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                        NhgInput input = actorInputs.get(actorName);
+                        input.setType(InputType.POINTER);
+
+                        InputSource inputSource = new InputSource();
+                        inputSource.setName("coords");
+                        inputSource.setValue(new Vector2(x, y));
+                        input.setInputSource(inputSource);
+
+                        inputHandler.touchUpPointer(input);
                     }
                 });
             } else {

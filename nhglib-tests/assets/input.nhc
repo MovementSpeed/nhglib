@@ -70,14 +70,6 @@
           "type":"mouse"
         },
         {
-          "name":"fire",
-          "type":"mouse"
-        },
-        {
-          "name":"aim",
-          "type":"mouse"
-        },
-        {
           "name":"throttleForward",
           "type":"key"
         },
@@ -242,16 +234,6 @@
         "sourceType":"mouseXY",
         "horizontalSensitivity":0.2,
         "verticalSensitivity":0.2
-      },
-      {
-        "name":"fire",
-        "sourceType":"mouseLeft",
-        "inputMode":"repeat"
-      },
-      {
-        "name":"aim",
-        "sourceType":"mouseRight",
-        "inputMode":"single"
       }
     ]
   }

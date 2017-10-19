@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
 import io.github.movementspeed.nhglib.input.handler.InputHandler;
+import io.github.movementspeed.nhglib.input.models.InputContext;
 import io.github.movementspeed.nhglib.runtime.ecs.components.graphics.ModelComponent;
 import io.github.movementspeed.nhglib.runtime.ecs.components.graphics.UiComponent;
 import io.github.movementspeed.nhglib.runtime.ecs.systems.base.BaseRenderingSystem;
@@ -16,7 +17,7 @@ import io.github.movementspeed.nhglib.runtime.ecs.utils.Entities;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UiRenderingSystem extends BaseRenderingSystem {
+public class UiSystem extends BaseRenderingSystem {
     private ComponentMapper<UiComponent> uiMapper;
     private ComponentMapper<ModelComponent> modelMapper;
 
@@ -24,7 +25,7 @@ public class UiRenderingSystem extends BaseRenderingSystem {
     private List<Vector2> supportedRes;
     private Array<UiComponent> uiComponents;
 
-    public UiRenderingSystem(Entities entities, InputHandler inputHandler) {
+    public UiSystem(Entities entities, InputHandler inputHandler) {
         super(Aspect.all(UiComponent.class), entities);
         this.inputHandler = inputHandler;
 
@@ -33,6 +34,9 @@ public class UiRenderingSystem extends BaseRenderingSystem {
         supportedRes.add(new Vector2(1920, 1080));
 
         uiComponents = new Array<>();
+
+        this.inputHandler.addContext(new InputContext("nhg.input.ui"));
+        this.inputHandler.setActiveContext("nhg.input.ui", true);
     }
 
     @Override

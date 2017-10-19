@@ -6,6 +6,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.assets.Asset;
 import io.github.movementspeed.nhglib.input.handler.InputHandler;
+import io.github.movementspeed.nhglib.input.models.InputContext;
+import io.github.movementspeed.nhglib.input.models.NhgInput;
 import io.github.movementspeed.nhglib.runtime.ecs.utils.UiManager;
 
 import java.util.List;
@@ -33,6 +35,12 @@ public class UiComponent extends Component {
                 Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),
                 Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),
                 dependencies);
+
+        InputContext inputContext = inputHandler.getContext("nhg.input.ui");
+
+        for (String actorName : actorNames) {
+            inputContext.addInput(new NhgInput(actorName));
+        }
 
         state = State.READY;
     }

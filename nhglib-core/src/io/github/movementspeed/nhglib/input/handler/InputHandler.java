@@ -1,5 +1,6 @@
 package io.github.movementspeed.nhglib.input.handler;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
@@ -127,34 +128,14 @@ public class InputHandler implements ControllerListener, InputProcessor {
     @Override
     public boolean keyDown(int keycode) {
         NhgInput input = keyInputsMap.get(keycode);
-
-        if (input != null) {
-            input.setInputAction(InputAction.DOWN);
-            KeyInputConfiguration conf = config.getKeyConfiguration(input.getName());
-
-            if (conf.getInputMode() == InputMode.REPEAT) {
-                activeKeyCodes.put(keycode, input);
-            } else {
-                dispatchKeyInput(input);
-            }
-        }
-
+        keyDown(input, keycode);
         return false;
     }
 
     @Override
     public boolean keyUp(int keycode) {
         NhgInput input = keyInputsMap.get(keycode);
-
-        if (input != null) {
-            input.setInputAction(InputAction.UP);
-            dispatchKeyInput(input);
-        }
-
-        if (activeKeyCodes.containsKey(keycode)) {
-            activeKeyCodes.removeKey(keycode);
-        }
-
+        keyUp(input, keycode);
         return false;
     }
 
@@ -165,18 +146,20 @@ public class InputHandler implements ControllerListener, InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        NhgInput input = pointerInputsMap.get(pointer);
+        Application.ApplicationType type = Gdx.app.getType();
 
-        if (input != null) {
-            input.setInputAction(InputAction.DOWN);
-            activePointers.put(pointer, input);
-        }
+        switch (type) {
+            case Android:
+            case iOS:
+                NhgInput input = pointerInputsMap.get(pointer);
+                touchDownPointer(input, pointer);
+                break;
 
-        MouseSourceType sourceType = MouseSourceType.fromButtonCode(button);
-        NhgInput mouseInput = mouseInputsMap.get(sourceType);
-
-        if (mouseInput != null) {
-            activeMouseInputs.put(sourceType, mouseInput);
+            case Desktop:
+                MouseSourceType sourceType = MouseSourceType.fromButtonCode(button);
+                NhgInput mouseInput = mouseInputsMap.get(sourceType);
+                touchDownMouse(mouseInput, sourceType);
+                break;
         }
 
         return false;
@@ -184,17 +167,20 @@ public class InputHandler implements ControllerListener, InputProcessor {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        NhgInput input = pointerInputsMap.get(pointer);
+        Application.ApplicationType type = Gdx.app.getType();
 
-        if (input != null) {
-            input.setInputAction(InputAction.UP);
-        }
+        switch (type) {
+            case Android:
+            case iOS:
+                NhgInput input = pointerInputsMap.get(pointer);
+                touchUpPointer(input);
+                break;
 
-        MouseSourceType sourceType = MouseSourceType.fromButtonCode(button);
-        NhgInput mouseInput = mouseInputsMap.get(sourceType);
-
-        if (mouseInput != null) {
-            mouseInput.setInputAction(InputAction.UP);
+            case Desktop:
+                MouseSourceType sourceType = MouseSourceType.fromButtonCode(button);
+                NhgInput mouseInput = mouseInputsMap.get(sourceType);
+                touchUpMouse(mouseInput);
+                break;
         }
 
         return false;
@@ -208,8 +194,7 @@ public class InputHandler implements ControllerListener, InputProcessor {
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
         NhgInput input = mouseInputsMap.get(MouseSourceType.MOUSE_XY);
-        activeMouseInputs.put(MouseSourceType.MOUSE_XY, input);
-
+        mouseMoved(input);
         return false;
     }
 
@@ -281,28 +266,61 @@ public class InputHandler implements ControllerListener, InputProcessor {
         }
     }
 
-    public void dispatchKeyInput(NhgInput input) {
-        for (InputListener inputListener : inputListeners) {
-            inputListener.onKeyInput(input);
+    public void buttonDown(NhgInput input) {
+
+    }
+
+    public void keyDown(NhgInput input, int keycode) {
+        if (input != null) {
+            input.setInputAction(InputAction.DOWN);
+            KeyInputConfiguration conf = config.getKeyConfiguration(input.getName());
+
+            if (conf.getInputMode() == InputMode.REPEAT) {
+                activeKeyCodes.put(keycode, input);
+            } else {
+                dispatchKeyInput(input);
+            }
         }
     }
 
-    public void dispatchStickInput(NhgInput input) {
-        for (InputListener inputListener : inputListeners) {
-            inputListener.onStickInput(input);
+    public void keyUp(NhgInput input, int keycode) {
+        if (input != null) {
+            input.setInputAction(InputAction.UP);
+            dispatchKeyInput(input);
+        }
+
+        if (activeKeyCodes.containsKey(keycode)) {
+            activeKeyCodes.removeKey(keycode);
         }
     }
 
-    public void dispatchPointerInput(NhgInput input) {
-        for (InputListener inputListener : inputListeners) {
-            inputListener.onPointerInput(input);
+    public void touchDownMouse(NhgInput input, MouseSourceType sourceType) {
+        if (input != null) {
+            activeMouseInputs.put(sourceType, input);
         }
     }
 
-    public void dispatchMouseInput(NhgInput input) {
-        for (InputListener inputListener : inputListeners) {
-            inputListener.onMouseInput(input);
+    public void touchDownPointer(NhgInput input, int pointer) {
+        if (input != null) {
+            input.setInputAction(InputAction.DOWN);
+            activePointers.put(pointer, input);
         }
+    }
+
+    public void touchUpMouse(NhgInput input) {
+        if (input != null) {
+            input.setInputAction(InputAction.UP);
+        }
+    }
+
+    public void touchUpPointer(NhgInput input) {
+        if (input != null) {
+            input.setInputAction(InputAction.UP);
+        }
+    }
+
+    public void mouseMoved(NhgInput input) {
+        activeMouseInputs.put(MouseSourceType.MOUSE_XY, input);
     }
 
     public boolean isActive(String contextName) {
@@ -322,6 +340,30 @@ public class InputHandler implements ControllerListener, InputProcessor {
 
     public Array<InputContext> getActiveContexts() {
         return activeContexts;
+    }
+
+    private void dispatchKeyInput(NhgInput input) {
+        for (InputListener inputListener : inputListeners) {
+            inputListener.onKeyInput(input);
+        }
+    }
+
+    private void dispatchStickInput(NhgInput input) {
+        for (InputListener inputListener : inputListeners) {
+            inputListener.onStickInput(input);
+        }
+    }
+
+    private void dispatchPointerInput(NhgInput input) {
+        for (InputListener inputListener : inputListeners) {
+            inputListener.onPointerInput(input);
+        }
+    }
+
+    private void dispatchMouseInput(NhgInput input) {
+        for (InputListener inputListener : inputListeners) {
+            inputListener.onMouseInput(input);
+        }
     }
 
     private void mapKeyInputs() {
@@ -453,20 +495,22 @@ public class InputHandler implements ControllerListener, InputProcessor {
         if (config != null) {
             PointerInputConfiguration conf = config.getPointerConfiguration(input.getName());
 
-            switch (conf.getPointerSourceType()) {
-                case POINTER_DELTA_XY:
-                    tempVec.set(Gdx.input.getDeltaX(pointer), Gdx.input.getDeltaY(pointer));
-                    tempVec.scl(conf.getHorizontalSensitivity(), conf.getVerticalSensitivity());
-                    break;
+            if (conf != null) {
+                switch (conf.getPointerSourceType()) {
+                    case POINTER_DELTA_XY:
+                        tempVec.set(Gdx.input.getDeltaX(pointer), Gdx.input.getDeltaY(pointer));
+                        tempVec.scl(conf.getHorizontalSensitivity(), conf.getVerticalSensitivity());
+                        break;
 
-                case POINTER_XY:
-                    tempVec.set(Gdx.input.getX(pointer), Gdx.input.getY(pointer));
-                    break;
+                    case POINTER_XY:
+                        tempVec.set(Gdx.input.getX(pointer), Gdx.input.getY(pointer));
+                        break;
+                }
+
+                InputSource inputSource = input.getInputSource();
+                inputSource.setName(input.getName());
+                inputSource.setValue(tempVec);
             }
-
-            InputSource inputSource = input.getInputSource();
-            inputSource.setName(input.getName());
-            inputSource.setValue(tempVec);
         }
     }
 
@@ -474,15 +518,17 @@ public class InputHandler implements ControllerListener, InputProcessor {
         if (config != null) {
             MouseInputConfiguration conf = config.getMouseConfiguration(input.getName());
 
-            if (conf.getMouseSourceType() == MouseSourceType.MOUSE_XY) {
-                tempVec.set(Gdx.input.getDeltaX(), Gdx.input.getDeltaY());
-                tempVec.scl(conf.getHorizontalSensitivity(), conf.getVerticalSensitivity());
+            if (conf != null) {
+                if (conf.getMouseSourceType() == MouseSourceType.MOUSE_XY) {
+                    tempVec.set(Gdx.input.getDeltaX(), Gdx.input.getDeltaY());
+                    tempVec.scl(conf.getHorizontalSensitivity(), conf.getVerticalSensitivity());
 
-                InputSource inputSource = input.getInputSource();
-                inputSource.setName(input.getName());
-                inputSource.setValue(tempVec);
+                    InputSource inputSource = input.getInputSource();
+                    inputSource.setName(input.getName());
+                    inputSource.setValue(tempVec);
 
-                activeMouseInputs.removeKey(MouseSourceType.MOUSE_XY);
+                    activeMouseInputs.removeKey(MouseSourceType.MOUSE_XY);
+                }
             }
         }
     }
@@ -570,6 +616,7 @@ public class InputHandler implements ControllerListener, InputProcessor {
         for (InputContext context : activeContexts) {
             if (context.getInput(input.getName()) != null) {
                 validInput = true;
+                break;
             }
         }
 
