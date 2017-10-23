@@ -4,7 +4,6 @@ import io.github.movementspeed.nhglib.assets.Assets;
 import io.github.movementspeed.nhglib.core.ecs.utils.Entities;
 import io.github.movementspeed.nhglib.core.messaging.Messaging;
 import io.github.movementspeed.nhglib.core.threading.Threading;
-import io.github.movementspeed.nhglib.input.handler.InputHandlerOld;
 
 /**
  * Created by Fausto Napoli on 17/10/2016.
@@ -13,7 +12,6 @@ import io.github.movementspeed.nhglib.input.handler.InputHandlerOld;
 public class Nhg {
     public Assets assets;
     public Messaging messaging;
-    public InputHandlerOld input;
     public Threading threading;
     public Entities entities;
 
@@ -25,7 +23,6 @@ public class Nhg {
         messaging = new Messaging();
         entities = new Entities();
         assets = new Assets();
-        input = new InputHandlerOld();
         threading = new Threading();
     }
 

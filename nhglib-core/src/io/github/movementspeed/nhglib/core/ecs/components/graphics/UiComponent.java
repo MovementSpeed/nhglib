@@ -6,9 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.assets.Asset;
 import io.github.movementspeed.nhglib.core.ecs.utils.UiManager;
-import io.github.movementspeed.nhglib.input.handler.InputHandlerOld;
-import io.github.movementspeed.nhglib.input.models.InputContext;
-import io.github.movementspeed.nhglib.input.models.base.NhgInput;
+import io.github.movementspeed.nhglib.input.handler.InputProxy;
 
 import java.util.List;
 
@@ -28,19 +26,14 @@ public class UiComponent extends Component {
         actorNames = new Array<>();
     }
 
-    public void build(InputHandlerOld inputHandler, List<Vector2> supportedRes) {
-        uiManager = new UiManager(fileName, inputHandler, supportedRes);
-        uiManager.setActorNames(actorNames);
+    public void build(InputProxy inputProxy, List<Vector2> supportedRes) {
+        uiManager = new UiManager(fileName, supportedRes);
         uiManager.init(
                 Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),
                 Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),
                 dependencies);
 
-        InputContext inputContext = inputHandler.getContext("nhg.input.ui");
-
-        for (String actorName : actorNames) {
-            inputContext.addInput(new NhgInput(actorName));
-        }
+        inputProxy.getVirtualInputHandler().addStage(fileName, uiManager.getStage());
 
         state = State.READY;
     }

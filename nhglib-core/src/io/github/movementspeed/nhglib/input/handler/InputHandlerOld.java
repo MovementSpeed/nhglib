@@ -345,25 +345,25 @@ public class InputHandlerOld implements ControllerListener, InputProcessor {
 
     private void dispatchKeyInput(NhgInput input) {
         for (InputListener inputListener : inputListeners) {
-            inputListener.onKeyInput(input);
+            //inputListener.onKeyInput(input);
         }
     }
 
     private void dispatchStickInput(NhgInput input) {
         for (InputListener inputListener : inputListeners) {
-            inputListener.onStickInput(input);
+            //inputListener.onStickInput(input);
         }
     }
 
     private void dispatchPointerInput(NhgInput input) {
         for (InputListener inputListener : inputListeners) {
-            inputListener.onPointerInput(input);
+            //inputListener.onPointerInput(input);
         }
     }
 
     private void dispatchMouseInput(NhgInput input) {
         for (InputListener inputListener : inputListeners) {
-            inputListener.onMouseInput(input);
+            //inputListener.onMouseInput(input);
         }
     }
 
@@ -486,9 +486,9 @@ public class InputHandlerOld implements ControllerListener, InputProcessor {
 
             tempVec.scl(horizontalSensitivity, verticalSensitivity);
 
-            InputSource inputSource = input.getSource();
+            /*InputSource inputSource = input.getSource();
             inputSource.setName(controller.getName());
-            inputSource.setValue(tempVec);
+            inputSource.setValue(tempVec);*/
         }
     }
 
@@ -508,9 +508,9 @@ public class InputHandlerOld implements ControllerListener, InputProcessor {
                         break;
                 }
 
-                InputSource inputSource = input.getSource();
+                /*InputSource inputSource = input.getSource();
                 inputSource.setName(input.getName());
-                inputSource.setValue(tempVec);
+                inputSource.setValue(tempVec);*/
             }
         }
     }
@@ -524,9 +524,9 @@ public class InputHandlerOld implements ControllerListener, InputProcessor {
                     tempVec.set(Gdx.input.getDeltaX(), Gdx.input.getDeltaY());
                     tempVec.scl(conf.getHorizontalSensitivity(), conf.getVerticalSensitivity());
 
-                    InputSource inputSource = input.getSource();
+                    /*InputSource inputSource = input.getSource();
                     inputSource.setName(input.getName());
-                    inputSource.setValue(tempVec);
+                    inputSource.setValue(tempVec);*/
 
                     activeMouseInputs.removeKey(MouseSourceType.MOUSE_XY);
                 }

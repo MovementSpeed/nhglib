@@ -28,6 +28,12 @@ public class EngineStateNotInitialized implements State<NhgEntry> {
         // Configure the most important systems last, especially RenderingSystem which
         // should be the last because it renders all the changes happened in all other
         // systems.
+        if (!hasSystemClass(InputSystem.class, entitySystems)) {
+            entitySystems.add(new InputSystem());
+        } else {
+            NhgLogger.log(this, "InputSystem already registered, ignoring registration.");
+        }
+
         if (!hasSystemClass(PhysicsSystem.class, entitySystems)) {
             entitySystems.add(new PhysicsSystem());
         } else {
@@ -59,7 +65,7 @@ public class EngineStateNotInitialized implements State<NhgEntry> {
         }
 
         if (!hasSystemClass(UiSystem.class, entitySystems)) {
-            entitySystems.add(new UiSystem(nhgEntry.nhg.entities, nhgEntry.nhg.input));
+            entitySystems.add(new UiSystem(nhgEntry.nhg.entities));
         } else {
             NhgLogger.log(this, "ModelRenderingSystem already registered, ignoring registration.");
         }

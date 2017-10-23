@@ -1,7 +1,6 @@
 package io.github.movementspeed.tests;
 
 import com.artemis.BaseSystem;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.VertexAttributes;
@@ -10,20 +9,13 @@ import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.assets.Asset;
 import io.github.movementspeed.nhglib.core.ecs.components.graphics.CameraComponent;
 import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
+import io.github.movementspeed.nhglib.core.ecs.systems.impl.InputSystem;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
 import io.github.movementspeed.nhglib.core.entry.NhgEntry;
 import io.github.movementspeed.nhglib.core.messaging.Message;
@@ -59,10 +51,6 @@ public class Main extends NhgEntry implements InputListener {
     private LightProbe lightProbe;
     private Mesh cubeMesh;
 
-    private Stage stage;
-    private Table table;
-    private Skin skin;
-
     @Override
     public void onStart() {
         super.onStart();
@@ -76,28 +64,6 @@ public class Main extends NhgEntry implements InputListener {
                         VertexAttributes.Usage.Normal |
                         VertexAttributes.Usage.TextureCoordinates);
         cubeMesh = cube.meshes.first();
-
-        skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
-
-        table = new Table(skin);
-        table.setFillParent(true);
-
-        stage = new Stage();
-        stage.addActor(table);
-
-        table.setDebug(true);
-
-        final TextButton button = new TextButton("Jump", skin);
-        table.add(button);
-        table.align(Align.topLeft);
-
-        button.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                super.clicked(event, x, y);
-                button.setText("x: " + x + " y: " + y);
-            }
-        });
     }
 
     @Override
@@ -107,11 +73,11 @@ public class Main extends NhgEntry implements InputListener {
                 new DefaultWorldStrategy(),
                 new Bounds(2f, 2f, 2f));
 
-        nhg.input.addInputProcessor(stage);
-        nhg.input.addListener(this);
-
         nhg.assets.queueAsset(new Asset("scene", "myscene.nhs", Scene.class));
         nhg.assets.queueAsset(new Asset("inputMap", "input.nhc", JsonValue.class));
+
+        InputSystem inputSystem = nhg.entities.getEntitySystem(InputSystem.class);
+        inputSystem.addInputListener(this);
 
         renderingSystem = nhg.entities.getEntitySystem(RenderingSystem.class);
         renderingSystem.setClearColor(Color.GRAY);
@@ -153,9 +119,9 @@ public class Main extends NhgEntry implements InputListener {
 
                                 cameraComponent = nhg.entities.getComponent(cameraEntity, CameraComponent.class);
                             } else if (asset.is("inputMap")) {
-                                nhg.input.fromJson((JsonValue) nhg.assets.get(asset));
+                                /*nhg.input.fromJson((JsonValue) nhg.assets.get(asset));
                                 nhg.input.setActiveContext("game", true);
-                                nhg.input.setActiveContext("global", true);
+                                nhg.input.setActiveContext("global", true);*/
                             }
                         } else if (message.is(Strings.Events.sceneLoaded)) {
                             NhgLogger.log(this, "Scene loaded");
@@ -185,21 +151,16 @@ public class Main extends NhgEntry implements InputListener {
     public void onUpdate(float delta) {
         super.onUpdate(delta);
         world.update();
-        /*stage.act(delta);
-        stage.draw();*/
     }
 
     @Override
     public void onResize(int width, int height) {
         super.onResize(width, height);
-        stage.getViewport().update(width, height, true);
     }
 
     @Override
     public void onDispose() {
         super.onDispose();
-        stage.dispose();
-        skin.dispose();
     }
 
     @Override
@@ -211,6 +172,11 @@ public class Main extends NhgEntry implements InputListener {
     }
 
     @Override
+    public void onInput(NhgInput input) {
+
+    }
+
+    /*@Override
     public void onKeyInput(NhgInput input) {
         if (scene != null) {
             NodeComponent nodeComponent = cameraNode;
@@ -327,5 +293,5 @@ public class Main extends NhgEntry implements InputListener {
                     break;
             }
         }
-    }
+    }*/
 }

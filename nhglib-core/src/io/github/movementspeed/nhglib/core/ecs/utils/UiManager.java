@@ -4,20 +4,12 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import io.github.movementspeed.nhglib.assets.Asset;
-import io.github.movementspeed.nhglib.input.handler.InputHandlerOld;
-import io.github.movementspeed.nhglib.input.models.InputSource;
-import io.github.movementspeed.nhglib.input.models.InputType;
 import io.github.movementspeed.nhglib.input.models.base.NhgInput;
-import io.github.movementspeed.nhglib.utils.debug.NhgLogger;
 import net.peakgames.libgdx.stagebuilder.core.assets.Assets;
 import net.peakgames.libgdx.stagebuilder.core.assets.ResolutionHelper;
 import net.peakgames.libgdx.stagebuilder.core.assets.StageBuilderFileHandleResolver;
@@ -41,7 +33,6 @@ public class UiManager {
     private String fileName;
     private Assets assets;
     private StageBuilderFileHandleResolver fileHandleResolver;
-    private InputHandlerOld inputHandler;
     private StageBuilder stageBuilder;
     private ResolutionHelper resolutionHelper;
     private NhgLocalizationService localizationService;
@@ -52,20 +43,19 @@ public class UiManager {
     private List<Vector2> supportedResolutions;
     private ArrayMap<String, NhgInput> actorInputs;
 
-    public UiManager(String fileName, InputHandlerOld inputHandler, List<Vector2> supportedResolutions) {
-        this(fileName, false, inputHandler, supportedResolutions);
+    public UiManager(String fileName, List<Vector2> supportedResolutions) {
+        this(fileName, false, supportedResolutions);
     }
 
-    public UiManager(String fileName, boolean changesOrientation, InputHandlerOld inputHandler, List<Vector2> supportedResolutions) {
-        this(fileName, changesOrientation, false, inputHandler, supportedResolutions);
+    public UiManager(String fileName, boolean changesOrientation, List<Vector2> supportedResolutions) {
+        this(fileName, changesOrientation, false, supportedResolutions);
     }
 
-    public UiManager(String fileName, boolean changesOrientation, boolean initiallyEmptyStage, InputHandlerOld inputHandler, List<Vector2> supportedResolutions) {
+    public UiManager(String fileName, boolean changesOrientation, boolean initiallyEmptyStage, List<Vector2> supportedResolutions) {
         this.fileName = fileName;
         this.changesOrientation = changesOrientation;
         this.initiallyEmptyStage = initiallyEmptyStage;
         this.supportedResolutions = supportedResolutions;
-        this.inputHandler = inputHandler;
 
         Collections.sort(this.supportedResolutions, new Comparator<Vector2>() {
             @Override
@@ -136,20 +126,6 @@ public class UiManager {
         stage.dispose();
     }
 
-    public void setActorNames(Array<String> actorNames) {
-        this.actorNames = actorNames;
-
-        if (actorInputs == null) {
-            actorInputs = new ArrayMap<>();
-        } else {
-            actorInputs.clear();
-        }
-
-        for (String actorName : this.actorNames) {
-            actorInputs.put(actorName, new NhgInput(actorName));
-        }
-    }
-
     /**
      * @return the resolution which has the the closest width value.
      */
@@ -196,49 +172,6 @@ public class UiManager {
         }
 
         stage.setDebugAll(true);
-        listenToActorEvents();
-        inputHandler.addInputProcessor(stage);
-    }
-
-    private void listenToActorEvents() {
-        Group root = stage.getRoot();
-
-        for (final String actorName : actorNames) {
-            Actor actor = root.findActor(actorName);
-
-            if (actor != null) {
-                actor.addListener(new ClickListener() {
-                    @Override
-                    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                        NhgInput input = actorInputs.get(actorName);
-                        input.setType(InputType.TOUCH);
-
-                        InputSource inputSource = new InputSource();
-                        inputSource.setName("coords");
-                        inputSource.setValue(new Vector2(x, y));
-                        input.setSource(inputSource);
-
-                        inputHandler.touchDownPointer(input, pointer);
-                        return true;
-                    }
-
-                    @Override
-                    public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                        NhgInput input = actorInputs.get(actorName);
-                        input.setType(InputType.TOUCH);
-
-                        InputSource inputSource = new InputSource();
-                        inputSource.setName("coords");
-                        inputSource.setValue(new Vector2(x, y));
-                        input.setSource(inputSource);
-
-                        inputHandler.touchUpPointer(input);
-                    }
-                });
-            } else {
-                NhgLogger.log("Warning", "Can't find actor with name \"%s\".", actorName);
-            }
-        }
     }
 
     public class NhgLocalizationService implements LocalizationService {

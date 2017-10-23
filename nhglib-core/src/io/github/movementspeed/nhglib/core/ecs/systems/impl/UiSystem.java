@@ -11,32 +11,26 @@ import io.github.movementspeed.nhglib.core.ecs.components.graphics.UiComponent;
 import io.github.movementspeed.nhglib.core.ecs.systems.base.BaseRenderingSystem;
 import io.github.movementspeed.nhglib.core.ecs.utils.Entities;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
-import io.github.movementspeed.nhglib.input.handler.InputHandlerOld;
-import io.github.movementspeed.nhglib.input.models.InputContext;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class UiSystem extends BaseRenderingSystem {
+    private InputSystem inputSystem;
     private ComponentMapper<UiComponent> uiMapper;
     private ComponentMapper<ModelComponent> modelMapper;
 
-    private InputHandlerOld inputHandler;
     private List<Vector2> supportedRes;
     private Array<UiComponent> uiComponents;
 
-    public UiSystem(Entities entities, InputHandlerOld inputHandler) {
+    public UiSystem(Entities entities) {
         super(Aspect.all(UiComponent.class), entities);
-        this.inputHandler = inputHandler;
 
         supportedRes = new ArrayList<>();
         supportedRes.add(new Vector2(1280, 720));
         supportedRes.add(new Vector2(1920, 1080));
 
         uiComponents = new Array<>();
-
-        this.inputHandler.addContext(new InputContext("nhg.input.ui"));
-        this.inputHandler.setActiveContext("nhg.input.ui", true);
     }
 
     @Override
@@ -87,7 +81,7 @@ public class UiSystem extends BaseRenderingSystem {
                 break;
 
             case NOT_INITIALIZED:
-                uiComponent.build(inputHandler, supportedRes);
+                uiComponent.build(inputSystem.getInputProxy(), supportedRes);
                 break;
         }
     }

@@ -46,9 +46,9 @@ public class InputJson implements JsonParseable<Array<InputContext>> {
 
         InputType inputType = InputType.fromString(inputTypeString);
 
-        NhgInput input = new NhgInput(inputName);
-        input.setType(inputType);
+        /*NhgInput input = new NhgInput(inputName);
+        input.setType(inputType);*/
 
-        return input;
+        return null;
     }
 }
