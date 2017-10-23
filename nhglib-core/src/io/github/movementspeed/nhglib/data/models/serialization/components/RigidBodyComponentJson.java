@@ -1,9 +1,9 @@
 package io.github.movementspeed.nhglib.data.models.serialization.components;
 
 import com.badlogic.gdx.utils.JsonValue;
+import io.github.movementspeed.nhglib.core.ecs.components.physics.RigidBodyComponent;
 import io.github.movementspeed.nhglib.data.models.serialization.ComponentJson;
 import io.github.movementspeed.nhglib.data.models.serialization.physics.shapes.ShapeJson;
-import io.github.movementspeed.nhglib.runtime.ecs.components.physics.RigidBodyComponent;
 
 /**
  * Created by Fausto Napoli on 16/05/2017.

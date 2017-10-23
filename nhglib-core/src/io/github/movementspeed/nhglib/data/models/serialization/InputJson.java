@@ -4,7 +4,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.movementspeed.nhglib.input.models.InputContext;
 import io.github.movementspeed.nhglib.input.models.InputType;
-import io.github.movementspeed.nhglib.input.models.NhgInput;
+import io.github.movementspeed.nhglib.input.models.base.NhgInput;
 import io.github.movementspeed.nhglib.interfaces.JsonParseable;
 
 /**

@@ -22,6 +22,11 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.assets.Asset;
+import io.github.movementspeed.nhglib.core.ecs.components.graphics.CameraComponent;
+import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
+import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
+import io.github.movementspeed.nhglib.core.entry.NhgEntry;
+import io.github.movementspeed.nhglib.core.messaging.Message;
 import io.github.movementspeed.nhglib.files.HDRData;
 import io.github.movementspeed.nhglib.graphics.lights.LightProbe;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
@@ -33,12 +38,7 @@ import io.github.movementspeed.nhglib.graphics.shaders.particles.ParticleShader;
 import io.github.movementspeed.nhglib.graphics.worlds.NhgWorld;
 import io.github.movementspeed.nhglib.graphics.worlds.strategies.impl.DefaultWorldStrategy;
 import io.github.movementspeed.nhglib.input.interfaces.InputListener;
-import io.github.movementspeed.nhglib.input.models.NhgInput;
-import io.github.movementspeed.nhglib.runtime.ecs.components.graphics.CameraComponent;
-import io.github.movementspeed.nhglib.runtime.ecs.components.scenes.NodeComponent;
-import io.github.movementspeed.nhglib.runtime.ecs.systems.impl.RenderingSystem;
-import io.github.movementspeed.nhglib.runtime.entry.NhgEntry;
-import io.github.movementspeed.nhglib.runtime.messaging.Message;
+import io.github.movementspeed.nhglib.input.models.base.NhgInput;
 import io.github.movementspeed.nhglib.utils.data.Bounds;
 import io.github.movementspeed.nhglib.utils.data.Strings;
 import io.github.movementspeed.nhglib.utils.debug.NhgLogger;
@@ -254,7 +254,7 @@ public class Main extends NhgEntry implements InputListener {
         if (scene != null) {
             NodeComponent nodeComponent = cameraNode;
 
-            Vector2 stickVector = (Vector2) input.getInputSource().getValue();
+            Vector2 stickVector = (Vector2) input.getSource().getValue();
 
             if (stickVector != null) {
                 switch (input.getName()) {
@@ -281,7 +281,7 @@ public class Main extends NhgEntry implements InputListener {
 
     @Override
     public void onPointerInput(NhgInput input) {
-        Vector2 pointerVector = (Vector2) input.getInputSource().getValue();
+        Vector2 pointerVector = (Vector2) input.getSource().getValue();
 
         if (pointerVector != null) {
             switch (input.getName()) {
@@ -306,7 +306,7 @@ public class Main extends NhgEntry implements InputListener {
 
     @Override
     public void onMouseInput(NhgInput input) {
-        Vector2 pointerVector = (Vector2) input.getInputSource().getValue();
+        Vector2 pointerVector = (Vector2) input.getSource().getValue();
 
         if (pointerVector != null) {
             float horizontalAxis = pointerVector.x;

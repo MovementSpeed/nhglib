@@ -3,10 +3,10 @@ package io.github.movementspeed.tests.systems;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.badlogic.gdx.utils.Array;
-import io.github.movementspeed.nhglib.runtime.ecs.components.common.MessageComponent;
-import io.github.movementspeed.nhglib.runtime.ecs.components.scenes.NodeComponent;
-import io.github.movementspeed.nhglib.runtime.ecs.systems.base.NhgIteratingSystem;
-import io.github.movementspeed.nhglib.runtime.messaging.Message;
+import io.github.movementspeed.nhglib.core.ecs.components.common.MessageComponent;
+import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
+import io.github.movementspeed.nhglib.core.ecs.systems.base.NhgIteratingSystem;
+import io.github.movementspeed.nhglib.core.messaging.Message;
 import io.github.movementspeed.nhglib.utils.debug.NhgLogger;
 
 /**

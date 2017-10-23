@@ -7,13 +7,13 @@ import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import io.github.movementspeed.nhglib.assets.Asset;
 import io.github.movementspeed.nhglib.assets.Assets;
+import io.github.movementspeed.nhglib.core.ecs.components.graphics.ModelComponent;
+import io.github.movementspeed.nhglib.core.ecs.components.physics.VehicleComponent;
+import io.github.movementspeed.nhglib.core.ecs.components.physics.WheelComponent;
+import io.github.movementspeed.nhglib.core.ecs.systems.impl.PhysicsSystem;
+import io.github.movementspeed.nhglib.core.ecs.utils.Entities;
 import io.github.movementspeed.nhglib.graphics.scenes.Scene;
 import io.github.movementspeed.nhglib.graphics.scenes.SceneGraph;
-import io.github.movementspeed.nhglib.runtime.ecs.components.graphics.ModelComponent;
-import io.github.movementspeed.nhglib.runtime.ecs.components.physics.VehicleComponent;
-import io.github.movementspeed.nhglib.runtime.ecs.components.physics.WheelComponent;
-import io.github.movementspeed.nhglib.runtime.ecs.systems.impl.PhysicsSystem;
-import io.github.movementspeed.nhglib.runtime.ecs.utils.Entities;
 
 /**
  * Created by Fausto Napoli on 11/06/2017.

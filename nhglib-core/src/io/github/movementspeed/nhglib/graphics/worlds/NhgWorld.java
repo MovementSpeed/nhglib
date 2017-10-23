@@ -2,12 +2,12 @@ package io.github.movementspeed.nhglib.graphics.worlds;
 
 import com.badlogic.gdx.utils.ArrayMap;
 import io.github.movementspeed.nhglib.assets.Assets;
+import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
+import io.github.movementspeed.nhglib.core.ecs.utils.Entities;
+import io.github.movementspeed.nhglib.core.messaging.Messaging;
 import io.github.movementspeed.nhglib.graphics.scenes.Scene;
 import io.github.movementspeed.nhglib.graphics.scenes.SceneManager;
 import io.github.movementspeed.nhglib.graphics.worlds.strategies.base.WorldStrategy;
-import io.github.movementspeed.nhglib.runtime.ecs.components.scenes.NodeComponent;
-import io.github.movementspeed.nhglib.runtime.ecs.utils.Entities;
-import io.github.movementspeed.nhglib.runtime.messaging.Messaging;
 import io.github.movementspeed.nhglib.utils.data.Bounds;
 
 /**

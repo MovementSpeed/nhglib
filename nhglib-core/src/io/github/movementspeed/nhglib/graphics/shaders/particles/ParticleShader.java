@@ -15,7 +15,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import io.github.movementspeed.nhglib.runtime.ecs.systems.impl.RenderingSystem;
+import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
 
 /**
  * This is a custom shader to render the particles. Usually is not required, because the {@link DefaultShader} will be used

@@ -4,7 +4,7 @@ import com.artemis.Archetype;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import io.github.movementspeed.nhglib.Nhg;
-import io.github.movementspeed.nhglib.runtime.ecs.components.scenes.NodeComponent;
+import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
 
 /**
  * Created by Fausto Napoli on 08/12/2016.

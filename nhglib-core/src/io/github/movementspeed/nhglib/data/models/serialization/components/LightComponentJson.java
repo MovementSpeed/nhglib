@@ -3,12 +3,12 @@ package io.github.movementspeed.nhglib.data.models.serialization.components;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.utils.JsonValue;
+import io.github.movementspeed.nhglib.core.ecs.components.graphics.LightComponent;
+import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
 import io.github.movementspeed.nhglib.data.models.serialization.ComponentJson;
 import io.github.movementspeed.nhglib.enums.LightType;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
-import io.github.movementspeed.nhglib.runtime.ecs.components.graphics.LightComponent;
-import io.github.movementspeed.nhglib.runtime.ecs.systems.impl.RenderingSystem;
 
 /**
  * Created by Fausto Napoli on 19/12/2016.

@@ -1,10 +1,10 @@
 package io.github.movementspeed.nhglib.data.models.serialization.components;
 
 import com.badlogic.gdx.utils.JsonValue;
+import io.github.movementspeed.nhglib.core.ecs.components.physics.VehicleComponent;
 import io.github.movementspeed.nhglib.data.models.serialization.ComponentJson;
 import io.github.movementspeed.nhglib.data.models.serialization.physics.shapes.ShapeJson;
 import io.github.movementspeed.nhglib.data.models.serialization.physics.vehicles.VehicleTuningJson;
-import io.github.movementspeed.nhglib.runtime.ecs.components.physics.VehicleComponent;
 
 /**
  * Created by Fausto Napoli on 11/06/2017.

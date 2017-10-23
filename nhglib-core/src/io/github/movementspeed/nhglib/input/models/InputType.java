@@ -4,34 +4,39 @@ package io.github.movementspeed.nhglib.input.models;
  * Created by Fausto Napoli on 08/01/2017.
  */
 public enum InputType {
-    POINTER,
-    KEY,
-    BUTTON,
-    STICK,
-    MOUSE;
+    TOUCH,
+    KEYBOARD_BUTTON,
+    CONTROLLER_BUTTON,
+    VIRTUAL_BUTTON,
+    CONTROLLER_STICK,
+    MOUSE_BUTTON;
 
     public static InputType fromString(String value) {
         InputType res = null;
 
         switch (value) {
-            case "pointer":
-                res = POINTER;
+            case "touch":
+                res = TOUCH;
                 break;
 
-            case "key":
-                res = KEY;
+            case "keyboardButton":
+                res = KEYBOARD_BUTTON;
                 break;
 
-            case "button":
-                res = BUTTON;
+            case "controllerButton":
+                res = CONTROLLER_BUTTON;
                 break;
 
-            case "stick":
-                res = STICK;
+            case "virtualButton":
+                res = VIRTUAL_BUTTON;
                 break;
 
-            case "mouse":
-                res = MOUSE;
+            case "controllerStick":
+                res = CONTROLLER_STICK;
+                break;
+
+            case "mouseButton":
+                res = MOUSE_BUTTON;
                 break;
         }
 

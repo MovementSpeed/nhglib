@@ -1,7 +1,7 @@
 package io.github.movementspeed.nhglib.graphics.worlds.strategies.base;
 
+import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
 import io.github.movementspeed.nhglib.graphics.scenes.Scene;
-import io.github.movementspeed.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.movementspeed.nhglib.utils.data.Bounds;
 
 /**

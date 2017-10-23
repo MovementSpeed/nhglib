@@ -2,9 +2,9 @@ package io.github.movementspeed.nhglib.data.models.serialization;
 
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.movementspeed.nhglib.Nhg;
+import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
 import io.github.movementspeed.nhglib.graphics.scenes.SceneGraph;
 import io.github.movementspeed.nhglib.interfaces.JsonParseable;
-import io.github.movementspeed.nhglib.runtime.ecs.components.scenes.NodeComponent;
 import io.github.movementspeed.nhglib.utils.scenes.SceneUtils;
 
 /**

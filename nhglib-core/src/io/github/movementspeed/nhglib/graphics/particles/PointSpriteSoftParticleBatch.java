@@ -36,8 +36,8 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
+import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
 import io.github.movementspeed.nhglib.graphics.shaders.particles.ParticleShader;
-import io.github.movementspeed.nhglib.runtime.ecs.systems.impl.RenderingSystem;
 
 /**
  * This class is used to draw particles as point sprites.

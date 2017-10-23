@@ -2,9 +2,9 @@ package io.github.movementspeed.nhglib.data.models.serialization.components;
 
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.movementspeed.nhglib.assets.Asset;
+import io.github.movementspeed.nhglib.core.ecs.components.graphics.UiComponent;
 import io.github.movementspeed.nhglib.data.models.serialization.AssetJson;
 import io.github.movementspeed.nhglib.data.models.serialization.ComponentJson;
-import io.github.movementspeed.nhglib.runtime.ecs.components.graphics.UiComponent;
 
 public class UiComponentJson extends ComponentJson {
     @Override
