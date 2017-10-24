@@ -2,10 +2,10 @@ package io.github.movementspeed.nhglib.input.models.impls.virtual;
 
 import io.github.movementspeed.nhglib.input.models.base.NhgInput;
 
-public class NhgVirtualInput extends NhgInput {
+public class NhgVirtualButtonInput extends NhgInput {
     private String actorName;
 
-    public NhgVirtualInput(String name) {
+    public NhgVirtualButtonInput(String name) {
         super(name);
     }
 

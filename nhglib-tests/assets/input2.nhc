@@ -1,0 +1,29 @@
+{
+	"inputContexts":
+	[
+		{
+			"name":"game",
+			"inputs":
+			[
+				{
+					"inputType":"keyboardButton",
+					"inputName":"testKeyboardButton",
+					"inputMode":"repeat",
+					"key":"a"
+				},
+				{
+					"inputType":"virtualButton",
+					"inputName":"testVirtualButton",
+					"inputMode":"repeat",
+					"actorName":"button_a"
+				},
+				{
+					"inputType":"touch",
+					"inputName":"testTouch",
+					"inputMode":"once",
+					"pointerNumber":0
+				}
+			]
+		}
+	]
+}

@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import io.github.movementspeed.nhglib.input.enums.InputAction;
 import io.github.movementspeed.nhglib.input.interfaces.InputHandler;
 import io.github.movementspeed.nhglib.input.models.base.NhgInput;
-import io.github.movementspeed.nhglib.input.models.impls.virtual.NhgVirtualInput;
+import io.github.movementspeed.nhglib.input.models.impls.virtual.NhgVirtualButtonInput;
 
 public class VirtualInputHandler implements InputHandler {
     private Interface virtualInputInterface;
@@ -22,7 +22,7 @@ public class VirtualInputHandler implements InputHandler {
 
     private Array<String> activeVirtualInputs;
     private Array<NhgInput> originalVirtualInputArray;
-    private ArrayMap<String, NhgVirtualInput> virtualInputs;
+    private ArrayMap<String, NhgVirtualButtonInput> virtualInputs;
     private ArrayMap<String, Stage> stages;
 
     public VirtualInputHandler(Interface virtualInputInterface, InputMultiplexer inputMultiplexer, Array<NhgInput> virtualInputArray) {
@@ -59,7 +59,7 @@ public class VirtualInputHandler implements InputHandler {
 
     private void processVirtualInputArray(Array<NhgInput> virtualInputArray) {
         for (NhgInput input : virtualInputArray) {
-            NhgVirtualInput virtualInput = ((NhgVirtualInput) input);
+            NhgVirtualButtonInput virtualInput = ((NhgVirtualButtonInput) input);
             String actorName = virtualInput.getActorName();
             virtualInputs.put(actorName, virtualInput);
         }
@@ -71,12 +71,12 @@ public class VirtualInputHandler implements InputHandler {
         for (Stage stage : stages.values()) {
             Group stageRoot = stage.getRoot();
 
-            for (ObjectMap.Entry<String, NhgVirtualInput> entry : virtualInputs.entries()) {
+            for (ObjectMap.Entry<String, NhgVirtualButtonInput> entry : virtualInputs.entries()) {
                 final String actorName = entry.key;
                 Actor actor = stageRoot.findActor(actorName);
 
                 if (actor != null) {
-                    final NhgVirtualInput virtualInput = entry.value;
+                    final NhgVirtualButtonInput virtualInput = entry.value;
 
                     actor.clearListeners();
                     actor.addListener(new ClickListener() {
@@ -121,6 +121,6 @@ public class VirtualInputHandler implements InputHandler {
     }
 
     public interface Interface {
-        void onVirtualInput(NhgVirtualInput input);
+        void onVirtualInput(NhgVirtualButtonInput input);
     }
 }

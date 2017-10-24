@@ -5,7 +5,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import io.github.movementspeed.nhglib.input.interfaces.InputHandler;
 import io.github.movementspeed.nhglib.input.interfaces.InputListener;
 import io.github.movementspeed.nhglib.input.models.base.NhgInput;
-import io.github.movementspeed.nhglib.input.models.impls.virtual.NhgVirtualInput;
+import io.github.movementspeed.nhglib.input.models.impls.virtual.NhgVirtualButtonInput;
 import io.github.movementspeed.nhglib.interfaces.Updatable;
 
 public class InputProxy implements SystemInputHandler.Interface, VirtualInputHandler.Interface, Updatable {
@@ -14,9 +14,7 @@ public class InputProxy implements SystemInputHandler.Interface, VirtualInputHan
     private InputHandler systemInputHandler;
     private InputHandler virtualInputHandler;
 
-    public InputProxy(InputListener inputListener) {
-        this.inputListener = inputListener;
-
+    public InputProxy() {
         inputMultiplexer = new InputMultiplexer();
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
@@ -33,8 +31,12 @@ public class InputProxy implements SystemInputHandler.Interface, VirtualInputHan
     }
 
     @Override
-    public void onVirtualInput(NhgVirtualInput input) {
+    public void onVirtualInput(NhgVirtualButtonInput input) {
         inputListener.onInput(input);
+    }
+
+    public void setInputListener(InputListener inputListener) {
+        this.inputListener = inputListener;
     }
 
     public void build() {
