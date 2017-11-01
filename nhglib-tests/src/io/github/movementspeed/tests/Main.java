@@ -29,6 +29,7 @@ import io.github.movementspeed.nhglib.graphics.shaders.attributes.IBLAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.particles.ParticleShader;
 import io.github.movementspeed.nhglib.graphics.worlds.NhgWorld;
 import io.github.movementspeed.nhglib.graphics.worlds.strategies.impl.DefaultWorldStrategy;
+import io.github.movementspeed.nhglib.input.enums.InputAction;
 import io.github.movementspeed.nhglib.input.handler.InputProxy;
 import io.github.movementspeed.nhglib.input.interfaces.InputListener;
 import io.github.movementspeed.nhglib.input.models.base.NhgInput;
@@ -170,7 +171,15 @@ public class Main extends NhgEntry implements InputListener {
 
     @Override
     public void onInput(NhgInput input) {
-        NhgLogger.log(this, "You pressed %s", input.getName());
+        InputAction action = input.getAction();
+
+        if (action == InputAction.DOWN) {
+            NhgLogger.log(this, "You pressed %s", input.getName());
+
+            if (input.is("exit")) {
+                nhg.messaging.send(new Message(Strings.Events.engineDestroy));
+            }
+        }
     }
 
     /*@Override

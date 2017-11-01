@@ -8,13 +8,19 @@
 				{
 					"inputType":"keyboardButton",
 					"inputName":"testKeyboardButton",
-					"inputMode":"repeat",
+					"inputMode":"once",
 					"key":"a"
+				},
+				{
+				    "inputType":"keyboardButton",
+				    "inputName":"exit",
+				    "inputMode":"once",
+				    "key":"escape"
 				},
 				{
 					"inputType":"virtualButton",
 					"inputName":"testVirtualButton",
-					"inputMode":"once",
+					"inputMode":"repeat",
 					"actorName":"jump"
 				},
 				{
