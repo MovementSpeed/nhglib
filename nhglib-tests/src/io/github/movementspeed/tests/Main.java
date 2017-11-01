@@ -29,6 +29,7 @@ import io.github.movementspeed.nhglib.graphics.shaders.attributes.IBLAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.particles.ParticleShader;
 import io.github.movementspeed.nhglib.graphics.worlds.NhgWorld;
 import io.github.movementspeed.nhglib.graphics.worlds.strategies.impl.DefaultWorldStrategy;
+import io.github.movementspeed.nhglib.input.handler.InputProxy;
 import io.github.movementspeed.nhglib.input.interfaces.InputListener;
 import io.github.movementspeed.nhglib.input.models.base.NhgInput;
 import io.github.movementspeed.nhglib.utils.data.Bounds;
@@ -74,9 +75,9 @@ public class Main extends NhgEntry implements InputListener {
                 new Bounds(2f, 2f, 2f));
 
         nhg.assets.queueAsset(new Asset("scene", "myscene.nhs", Scene.class));
-        nhg.assets.queueAsset(new Asset("inputMap", "input.nhc", JsonValue.class));
 
         InputSystem inputSystem = nhg.entities.getEntitySystem(InputSystem.class);
+        inputSystem.loadMapping(nhg.assets, "input2.nhc");
         inputSystem.addInputListener(this);
 
         renderingSystem = nhg.entities.getEntitySystem(RenderingSystem.class);
@@ -118,10 +119,6 @@ public class Main extends NhgEntry implements InputListener {
                                         cameraEntity, NodeComponent.class);
 
                                 cameraComponent = nhg.entities.getComponent(cameraEntity, CameraComponent.class);
-                            } else if (asset.is("inputMap")) {
-                                /*nhg.input.fromJson((JsonValue) nhg.assets.get(asset));
-                                nhg.input.setActiveContext("game", true);
-                                nhg.input.setActiveContext("global", true);*/
                             }
                         } else if (message.is(Strings.Events.sceneLoaded)) {
                             NhgLogger.log(this, "Scene loaded");
@@ -173,7 +170,7 @@ public class Main extends NhgEntry implements InputListener {
 
     @Override
     public void onInput(NhgInput input) {
-
+        NhgLogger.log(this, "You pressed %s", input.getName());
     }
 
     /*@Override

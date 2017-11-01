@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.JsonValue;
 /**
  * Created by Fausto Napoli on 19/12/2016.
  */
-public abstract class JsonLoader extends AsynchronousAssetLoader<JsonValue, JsonLoader.JsonParameter> {
+public class JsonLoader extends AsynchronousAssetLoader<JsonValue, JsonLoader.JsonParameter> {
     public JsonLoader(FileHandleResolver resolver) {
         super(resolver);
     }

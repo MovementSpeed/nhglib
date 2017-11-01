@@ -39,12 +39,12 @@ public class InputLoader extends AsynchronousAssetLoader<InputProxy, InputLoader
 
         for (JsonValue inputContextJson : inputContextsJsonArray) {
             String inputContextName = inputContextJson.getString("name");
-            JsonValue inputsJsonArray = jsonValue.get("inputs");
+            JsonValue inputsJsonArray = inputContextJson.get("inputs");
 
             for (JsonValue inputJson : inputsJsonArray) {
                 InputType inputType = InputType.fromString(inputJson.getString("inputType"));
                 String inputName = inputJson.getString("inputName");
-                InputMode inputMode = InputMode.fromString("inputMode");
+                InputMode inputMode = InputMode.fromString(inputJson.getString("inputMode"));
 
                 switch (inputType) {
                     case TOUCH:
@@ -60,7 +60,7 @@ public class InputLoader extends AsynchronousAssetLoader<InputProxy, InputLoader
                         break;
 
                     case KEYBOARD_BUTTON:
-                        String key = inputJson.getString("key");
+                        String key = inputJson.getString("key").toUpperCase();
 
                         NhgKeyboardButtonInput keyboardButtonInput = new NhgKeyboardButtonInput(inputName);
                         keyboardButtonInput.setMode(inputMode);
@@ -77,11 +77,10 @@ public class InputLoader extends AsynchronousAssetLoader<InputProxy, InputLoader
                         virtualInputs.add(virtualButtonInput);
                         break;
                 }
-
-
             }
         }
 
+        inputProxy.build(virtualInputs, systemInputs);
         return inputProxy;
     }
 

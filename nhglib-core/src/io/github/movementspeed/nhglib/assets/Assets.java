@@ -5,6 +5,7 @@ import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetErrorListener;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -13,14 +14,12 @@ import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.UBJsonReader;
 import io.github.movementspeed.nhglib.Nhg;
-import io.github.movementspeed.nhglib.assets.loaders.HDRLoader;
-import io.github.movementspeed.nhglib.assets.loaders.JsonLoader;
-import io.github.movementspeed.nhglib.assets.loaders.NhgG3dModelLoader;
-import io.github.movementspeed.nhglib.assets.loaders.SceneLoader;
+import io.github.movementspeed.nhglib.assets.loaders.*;
 import io.github.movementspeed.nhglib.core.fsm.base.AssetsStates;
 import io.github.movementspeed.nhglib.core.messaging.Message;
 import io.github.movementspeed.nhglib.files.HDRData;
 import io.github.movementspeed.nhglib.graphics.scenes.Scene;
+import io.github.movementspeed.nhglib.input.handler.InputProxy;
 import io.github.movementspeed.nhglib.interfaces.Updatable;
 import io.github.movementspeed.nhglib.utils.data.Bundle;
 import io.github.movementspeed.nhglib.utils.data.Strings;
@@ -33,6 +32,7 @@ import io.reactivex.functions.Consumer;
 public class Assets implements Updatable, AssetErrorListener {
     public DefaultStateMachine<Assets, AssetsStates> fsm;
     public AssetManager assetManager;
+    public AssetManager syncAssetManager;
 
     private Nhg nhg;
 
@@ -44,14 +44,27 @@ public class Assets implements Updatable, AssetErrorListener {
         fsm = new DefaultStateMachine<>(this, AssetsStates.IDLE);
 
         assetManager = new AssetManager();
-        assetManager.setLoader(Scene.class, new SceneLoader(nhg, assetManager.getFileHandleResolver()));
-        assetManager.setLoader(JsonValue.class, new JsonLoader(assetManager.getFileHandleResolver()));
-        assetManager.setLoader(HDRData.class, new HDRLoader(assetManager.getFileHandleResolver()));
+        syncAssetManager = new AssetManager();
 
+        FileHandleResolver resolver = assetManager.getFileHandleResolver();
+        FileHandleResolver syncResolver = syncAssetManager.getFileHandleResolver();
+
+        assetManager.setLoader(Scene.class, new SceneLoader(nhg, resolver));
+        assetManager.setLoader(InputProxy.class, new InputLoader(resolver));
+        assetManager.setLoader(JsonValue.class, new JsonLoader(resolver));
+        assetManager.setLoader(HDRData.class, new HDRLoader(resolver));
         assetManager.setLoader(Model.class, ".g3db", new NhgG3dModelLoader(this,
-                new UBJsonReader(), assetManager.getFileHandleResolver()));
+                new UBJsonReader(), resolver));
+
+        syncAssetManager.setLoader(Scene.class, new SceneLoader(nhg, syncResolver));
+        syncAssetManager.setLoader(InputProxy.class, new InputLoader(syncResolver));
+        syncAssetManager.setLoader(JsonValue.class, new JsonLoader(syncResolver));
+        syncAssetManager.setLoader(HDRData.class, new HDRLoader(syncResolver));
+        syncAssetManager.setLoader(Model.class, ".g3db", new NhgG3dModelLoader(this,
+                new UBJsonReader(), syncResolver));
 
         assetManager.setErrorListener(this);
+        syncAssetManager.setErrorListener(this);
 
         assetQueue = new Array<>();
         assetCache = new ArrayMap<>();
@@ -175,6 +188,32 @@ public class Assets implements Updatable, AssetErrorListener {
                 queueAsset(asset);
             }
         }
+    }
+
+    public <T> T loadAssetSync(Asset asset) {
+        T t = null;
+        assetCache.put(asset.alias, asset);
+
+        if (!syncAssetManager.isLoaded(asset.source)) {
+            FileHandle fileHandle = Gdx.files.internal(asset.source);
+
+            if (fileHandle.exists()) {
+                if (asset.parameters == null) {
+                    syncAssetManager.load(asset.source, asset.assetClass);
+                } else {
+                    syncAssetManager.load(asset.source, asset.assetClass, asset.parameters);
+                }
+
+                syncAssetManager.finishLoading();
+                t = syncAssetManager.get(asset.source);
+            } else {
+                NhgLogger.log(this, Strings.Messages.cannotQueueAssetFileNotFound, asset.source);
+            }
+        } else {
+            t = syncAssetManager.get(asset.source);
+        }
+
+        return t;
     }
 
     public void dequeueAsset(Asset asset) {

@@ -14,8 +14,8 @@
 				{
 					"inputType":"virtualButton",
 					"inputName":"testVirtualButton",
-					"inputMode":"repeat",
-					"actorName":"button_a"
+					"inputMode":"once",
+					"actorName":"jump"
 				},
 				{
 					"inputType":"touch",

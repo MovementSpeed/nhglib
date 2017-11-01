@@ -81,7 +81,9 @@ public class UiSystem extends BaseRenderingSystem {
                 break;
 
             case NOT_INITIALIZED:
-                uiComponent.build(inputSystem.getInputProxy(), supportedRes);
+                if (inputSystem.getInputProxy() != null) {
+                    uiComponent.build(inputSystem.getInputProxy(), supportedRes);
+                }
                 break;
         }
     }

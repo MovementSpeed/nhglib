@@ -33,6 +33,7 @@ public class VirtualInputHandler implements InputHandler {
         vec0 = new Vector2();
         activeVirtualInputs = new Array<>();
         stages = new ArrayMap<>();
+        virtualInputs = new ArrayMap<>();
 
         processVirtualInputArray(originalVirtualInputArray);
     }

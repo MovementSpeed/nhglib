@@ -20,9 +20,9 @@ public class SystemInputHandler implements InputHandler {
     private Interface systemInputInterface;
     private Vector2 vec0;
 
-    private IntArray activeKeyboardButtonInputs;
-    private IntArray activeMouseButtonInputs;
-    private IntArray activeTouchInputs;
+    private Array<Integer> activeKeyboardButtonInputs;
+    private Array<Integer> activeMouseButtonInputs;
+    private Array<Integer> activeTouchInputs;
 
     private IntMap<NhgKeyboardButtonInput> keyboardButtonInputs;
     private IntMap<NhgMouseButtonInput> mouseButtonInputs;
@@ -32,9 +32,14 @@ public class SystemInputHandler implements InputHandler {
         this.systemInputInterface = systemInputInterface;
 
         vec0 = new Vector2();
-        activeKeyboardButtonInputs = new IntArray();
-        activeMouseButtonInputs = new IntArray();
-        activeTouchInputs = new IntArray();
+
+        keyboardButtonInputs = new IntMap<>();
+        mouseButtonInputs = new IntMap<>();
+        touchInputs = new IntMap<>();
+
+        activeKeyboardButtonInputs = new Array<>();
+        activeMouseButtonInputs = new Array<>();
+        activeTouchInputs = new Array<>();
 
         mapSystemInput(systemInputArray);
         handleSystemInput(inputMultiplexer);
@@ -42,15 +47,15 @@ public class SystemInputHandler implements InputHandler {
 
     @Override
     public void update() {
-        for (int pointer : activeTouchInputs.items) {
+        for (Integer pointer : activeTouchInputs) {
             systemInputInterface.onSystemInput(touchInputs.get(pointer));
         }
 
-        for (int keyCode : activeKeyboardButtonInputs.items) {
+        for (Integer keyCode : activeKeyboardButtonInputs) {
             systemInputInterface.onSystemInput(keyboardButtonInputs.get(keyCode));
         }
 
-        for (int button : activeMouseButtonInputs.items) {
+        for (Integer button : activeMouseButtonInputs) {
             systemInputInterface.onSystemInput(mouseButtonInputs.get(button));
         }
     }
@@ -61,30 +66,18 @@ public class SystemInputHandler implements InputHandler {
 
             switch (inputType) {
                 case KEYBOARD_BUTTON:
-                    if (keyboardButtonInputs == null) {
-                        keyboardButtonInputs = new IntMap<>();
-                    }
-
                     NhgKeyboardButtonInput keyboardButtonInput = ((NhgKeyboardButtonInput) nhgInput);
                     int keyCode = keyboardButtonInput.getKeyCode();
                     keyboardButtonInputs.put(keyCode, keyboardButtonInput);
                     break;
 
                 case MOUSE_BUTTON:
-                    if (mouseButtonInputs == null) {
-                        mouseButtonInputs = new IntMap<>();
-                    }
-
                     NhgMouseButtonInput mouseButtonInput = ((NhgMouseButtonInput) nhgInput);
                     int buttonCode = mouseButtonInput.getButtonCode();
                     mouseButtonInputs.put(buttonCode, mouseButtonInput);
                     break;
 
                 case TOUCH:
-                    if (touchInputs == null) {
-                        touchInputs = new IntMap<>();
-                    }
-
                     NhgTouchInput touchInput = ((NhgTouchInput) nhgInput);
                     int pointerNumber = touchInput.getPointerNumber();
                     touchInputs.put(pointerNumber, touchInput);
@@ -98,36 +91,44 @@ public class SystemInputHandler implements InputHandler {
             @Override
             public boolean keyDown(int keyCode) {
                 NhgKeyboardButtonInput input = keyboardButtonInputs.get(keyCode);
-                input.setAction(InputAction.DOWN);
 
-                switch (input.getMode()) {
-                    case REPEAT:
-                        if (!activeKeyboardButtonInputs.contains(keyCode)) {
-                            activeKeyboardButtonInputs.add(keyCode);
-                        }
-                        break;
+                if (input != null) {
+                    input.setAction(InputAction.DOWN);
 
-                    default:
-                        systemInputInterface.onSystemInput(input);
-                        break;
+                    switch (input.getMode()) {
+                        case REPEAT:
+                            if (!activeKeyboardButtonInputs.contains(keyCode, true)) {
+                                activeKeyboardButtonInputs.add(keyCode);
+                            }
+                            break;
+
+                        default:
+                            systemInputInterface.onSystemInput(input);
+                            break;
+                    }
                 }
+
                 return false;
             }
 
             @Override
             public boolean keyUp(int keyCode) {
                 NhgKeyboardButtonInput input = keyboardButtonInputs.get(keyCode);
-                input.setAction(InputAction.UP);
 
-                switch (input.getMode()) {
-                    case REPEAT:
-                        activeKeyboardButtonInputs.removeValue(keyCode);
-                        break;
+                if (input != null) {
+                    input.setAction(InputAction.UP);
 
-                    default:
-                        systemInputInterface.onSystemInput(input);
-                        break;
+                    switch (input.getMode()) {
+                        case REPEAT:
+                            activeKeyboardButtonInputs.removeValue(keyCode, true);
+                            break;
+
+                        default:
+                            systemInputInterface.onSystemInput(input);
+                            break;
+                    }
                 }
+
                 return false;
             }
 
@@ -143,35 +144,42 @@ public class SystemInputHandler implements InputHandler {
                 if (isDesktop()) {
                     input = mouseButtonInputs.get(button);
 
-                    switch (input.getMode()) {
-                        case REPEAT:
-                            if (!activeMouseButtonInputs.contains(button)) {
-                                activeMouseButtonInputs.add(button);
-                            }
-                            break;
+                    if (input != null) {
+                        switch (input.getMode()) {
+                            case REPEAT:
+                                if (!activeMouseButtonInputs.contains(button, true)) {
+                                    activeMouseButtonInputs.add(button);
+                                }
+                                break;
 
-                        default:
-                            systemInputInterface.onSystemInput(input);
-                            break;
+                            default:
+                                systemInputInterface.onSystemInput(input);
+                                break;
+                        }
                     }
                 } else {
                     input = touchInputs.get(pointer);
 
-                    switch (input.getMode()) {
-                        case REPEAT:
-                            if (!activeTouchInputs.contains(pointer)) {
-                                activeTouchInputs.add(pointer);
-                            }
-                            break;
+                    if (input != null) {
+                        switch (input.getMode()) {
+                            case REPEAT:
+                                if (!activeTouchInputs.contains(pointer, true)) {
+                                    activeTouchInputs.add(pointer);
+                                }
+                                break;
 
-                        default:
-                            systemInputInterface.onSystemInput(input);
-                            break;
+                            default:
+                                systemInputInterface.onSystemInput(input);
+                                break;
+                        }
                     }
                 }
 
-                input.setAction(InputAction.DOWN);
-                input.setValue(vec0.set(screenX, screenY));
+                if (input != null) {
+                    input.setAction(InputAction.DOWN);
+                    input.setValue(vec0.set(screenX, screenY));
+                }
+
                 return false;
             }
 
@@ -182,31 +190,38 @@ public class SystemInputHandler implements InputHandler {
                 if (isDesktop()) {
                     input = mouseButtonInputs.get(button);
 
-                    switch (input.getMode()) {
-                        case REPEAT:
-                            activeMouseButtonInputs.removeValue(button);
-                            break;
+                    if (input != null) {
+                        switch (input.getMode()) {
+                            case REPEAT:
+                                activeMouseButtonInputs.removeValue(button, true);
+                                break;
 
-                        default:
-                            systemInputInterface.onSystemInput(input);
-                            break;
+                            default:
+                                systemInputInterface.onSystemInput(input);
+                                break;
+                        }
                     }
                 } else {
                     input = touchInputs.get(pointer);
 
-                    switch (input.getMode()) {
-                        case REPEAT:
-                            activeTouchInputs.removeValue(pointer);
-                            break;
+                    if (input != null) {
+                        switch (input.getMode()) {
+                            case REPEAT:
+                                activeTouchInputs.removeValue(pointer, true);
+                                break;
 
-                        default:
-                            systemInputInterface.onSystemInput(input);
-                            break;
+                            default:
+                                systemInputInterface.onSystemInput(input);
+                                break;
+                        }
                     }
                 }
 
-                input.setAction(InputAction.UP);
-                input.setValue(vec0.set(screenX, screenY));
+                if (input != null) {
+                    input.setAction(InputAction.UP);
+                    input.setValue(vec0.set(screenX, screenY));
+                }
+
                 return false;
             }
 

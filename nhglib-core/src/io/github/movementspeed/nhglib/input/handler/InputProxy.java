@@ -2,6 +2,7 @@ package io.github.movementspeed.nhglib.input.handler;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.input.interfaces.InputHandler;
 import io.github.movementspeed.nhglib.input.interfaces.InputListener;
 import io.github.movementspeed.nhglib.input.models.base.NhgInput;
@@ -39,12 +40,12 @@ public class InputProxy implements SystemInputHandler.Interface, VirtualInputHan
         this.inputListener = inputListener;
     }
 
-    public void build() {
+    public void build(Array<NhgInput> virtualInputArray, Array<NhgInput> systemInputArray) {
         virtualInputHandler = new VirtualInputHandler(
-                this, inputMultiplexer, null);
+                this, inputMultiplexer, virtualInputArray);
 
         systemInputHandler = new SystemInputHandler(
-                this, inputMultiplexer, null);
+                this, inputMultiplexer, systemInputArray);
     }
 
     public VirtualInputHandler getVirtualInputHandler() {
