@@ -1,6 +1,7 @@
 package io.github.movementspeed.nhglib.input.models.base;
 
 import io.github.movementspeed.nhglib.input.enums.InputAction;
+import io.github.movementspeed.nhglib.input.models.InputContext;
 import io.github.movementspeed.nhglib.input.models.InputMode;
 import io.github.movementspeed.nhglib.input.models.InputType;
 
@@ -14,11 +15,11 @@ public abstract class NhgInput {
     private InputType type;
     private InputMode mode;
     private InputAction action;
+    private InputContext context;
 
     public NhgInput(String name) {
         this.name = name;
-
-        handled = false;
+        this.handled = false;
     }
 
     public void setHandled(boolean handled) {
@@ -41,12 +42,20 @@ public abstract class NhgInput {
         this.action = action;
     }
 
+    public void setContext(InputContext context) {
+        this.context = context;
+    }
+
     public boolean is(String name) {
         return this.name.contentEquals(name);
     }
 
     public boolean isHandled() {
         return handled;
+    }
+
+    public boolean isValid() {
+        return context.isEnabled();
     }
 
     public Object getValue() {
@@ -67,6 +76,10 @@ public abstract class NhgInput {
 
     public InputAction getAction() {
         return action;
+    }
+
+    public InputContext getContext() {
+        return context;
     }
 
     protected void setType(InputType type) {

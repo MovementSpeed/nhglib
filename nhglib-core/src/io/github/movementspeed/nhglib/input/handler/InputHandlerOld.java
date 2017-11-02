@@ -215,7 +215,7 @@ public class InputHandlerOld implements ControllerListener, InputProcessor {
         InputContext inputContext = inputContexts.get(contextName);
 
         if (inputContext != null) {
-            inputContext.setActive(active);
+            //inputContext.setActive(active);
 
             if (active) {
                 activeContexts.add(inputContext);
@@ -227,7 +227,7 @@ public class InputHandlerOld implements ControllerListener, InputProcessor {
 
     public void addContext(InputContext context) {
         if (context != null) {
-            inputContexts.put(context.getName(), context);
+            //inputContexts.put(context.getName(), context);
         }
     }
 
@@ -329,7 +329,7 @@ public class InputHandlerOld implements ControllerListener, InputProcessor {
         InputContext inputContext = inputContexts.get(contextName);
 
         if (inputContext != null) {
-            res = inputContext.isActive();
+            //res = inputContext.isActive();
         }
 
         return res;
@@ -615,10 +615,10 @@ public class InputHandlerOld implements ControllerListener, InputProcessor {
         boolean validInput = false;
 
         for (InputContext context : activeContexts) {
-            if (context.getInput(input.getName()) != null) {
+            /*if (context.getInput(input.getName()) != null) {
                 validInput = true;
                 break;
-            }
+            }*/
         }
 
         return validInput;
@@ -628,7 +628,7 @@ public class InputHandlerOld implements ControllerListener, InputProcessor {
         NhgInput res = null;
 
         for (InputContext context : inputContexts.values()) {
-            ArrayMap.Values<NhgInput> inputs = context.getInputs();
+            /*ArrayMap.Values<NhgInput> inputs = context.getInputs();
 
             for (NhgInput in : inputs) {
                 KeyInputConfiguration conf = config.getKeyConfiguration(in.getName());
@@ -637,7 +637,7 @@ public class InputHandlerOld implements ControllerListener, InputProcessor {
                     res = in;
                     break;
                 }
-            }
+            }*/
         }
 
         return res;
@@ -647,7 +647,7 @@ public class InputHandlerOld implements ControllerListener, InputProcessor {
         NhgInput res = null;
 
         for (InputContext context : inputContexts.values()) {
-            ArrayMap.Values<NhgInput> inputs = context.getInputs();
+            /*ArrayMap.Values<NhgInput> inputs = context.getInputs();
 
             for (NhgInput in : inputs) {
                 PointerInputConfiguration conf = config.getPointerConfiguration(in.getName());
@@ -656,7 +656,7 @@ public class InputHandlerOld implements ControllerListener, InputProcessor {
                     res = in;
                     break;
                 }
-            }
+            }*/
         }
 
         return res;
@@ -666,7 +666,7 @@ public class InputHandlerOld implements ControllerListener, InputProcessor {
         NhgInput res = null;
 
         for (InputContext context : inputContexts.values()) {
-            ArrayMap.Values<NhgInput> inputs = context.getInputs();
+            /*ArrayMap.Values<NhgInput> inputs = context.getInputs();
 
             for (NhgInput in : inputs) {
                 MouseInputConfiguration conf = config.getMouseConfiguration(in.getName());
@@ -675,7 +675,7 @@ public class InputHandlerOld implements ControllerListener, InputProcessor {
                     res = in;
                     break;
                 }
-            }
+            }*/
         }
 
         return res;
@@ -685,7 +685,7 @@ public class InputHandlerOld implements ControllerListener, InputProcessor {
         Array<NhgInput> res = new Array<>();
 
         for (InputContext context : inputContexts.values()) {
-            ArrayMap.Values<NhgInput> inputs = context.getInputs();
+            /*ArrayMap.Values<NhgInput> inputs = context.getInputs();
 
             for (NhgInput in : inputs) {
                 StickInputConfiguration conf = config.getStickConfiguration(in.getName());
@@ -693,7 +693,7 @@ public class InputHandlerOld implements ControllerListener, InputProcessor {
                 if (in.getType() == InputType.CONTROLLER_STICK && conf.getControllerId() == id) {
                     res.add(in);
                 }
-            }
+            }*/
         }
 
         return res;

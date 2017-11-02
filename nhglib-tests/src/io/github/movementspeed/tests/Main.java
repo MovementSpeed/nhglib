@@ -1,6 +1,7 @@
 package io.github.movementspeed.tests;
 
 import com.artemis.BaseSystem;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.VertexAttributes;
@@ -9,6 +10,7 @@ import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.movementspeed.nhglib.Nhg;
@@ -51,7 +53,6 @@ public class Main extends NhgEntry implements InputListener {
     private Environment environment;
 
     private LightProbe lightProbe;
-    private Mesh cubeMesh;
 
     @Override
     public void onStart() {
@@ -59,13 +60,6 @@ public class Main extends NhgEntry implements InputListener {
         Nhg.debugLogs = true;
         Nhg.debugDrawPhysics = false;
         ParticleShader.softParticles = false;
-
-        ModelBuilder mb = new ModelBuilder();
-        Model cube = mb.createBox(1, 1, 1, new Material(),
-                VertexAttributes.Usage.Position |
-                        VertexAttributes.Usage.Normal |
-                        VertexAttributes.Usage.TextureCoordinates);
-        cubeMesh = cube.meshes.first();
     }
 
     @Override
@@ -75,10 +69,12 @@ public class Main extends NhgEntry implements InputListener {
                 new DefaultWorldStrategy(),
                 new Bounds(2f, 2f, 2f));
 
-        nhg.assets.queueAsset(new Asset("scene", "myscene.nhs", Scene.class));
+        nhg.assets.queueAsset(new Asset("scene", "scenes/scene.json", Scene.class));
 
         InputSystem inputSystem = nhg.entities.getEntitySystem(InputSystem.class);
-        inputSystem.loadMapping(nhg.assets, "input2.nhc");
+        inputSystem.loadMapping("input/input.json");
+        inputSystem.setEnableContext("game", true);
+        inputSystem.setEnableContext("menu", true);
         inputSystem.addInputListener(this);
 
         renderingSystem = nhg.entities.getEntitySystem(RenderingSystem.class);
@@ -173,7 +169,7 @@ public class Main extends NhgEntry implements InputListener {
     public void onInput(NhgInput input) {
         InputAction action = input.getAction();
 
-        if (action == InputAction.DOWN) {
+        if (action != null && action == InputAction.DOWN) {
             NhgLogger.log(this, "You pressed %s", input.getName());
 
             if (input.is("exit")) {
@@ -181,123 +177,4 @@ public class Main extends NhgEntry implements InputListener {
             }
         }
     }
-
-    /*@Override
-    public void onKeyInput(NhgInput input) {
-        if (scene != null) {
-            NodeComponent nodeComponent = cameraNode;
-
-            switch (input.getName()) {
-                case "strafeRight":
-                    nodeComponent.translate(0.5f * Gdx.graphics.getDeltaTime(), 0, 0);
-                    break;
-
-                case "strafeLeft":
-                    nodeComponent.translate(-0.5f * Gdx.graphics.getDeltaTime(), 0, 0);
-                    break;
-
-                case "forward":
-                    nodeComponent.translate(0, 0, -0.5f * Gdx.graphics.getDeltaTime());
-                    break;
-
-                case "backward":
-                    nodeComponent.translate(0, 0, 0.5f * Gdx.graphics.getDeltaTime());
-                    break;
-
-                case "jump":
-                    cameraNode.rotate(0, 0, 0.1f);
-                    break;
-
-                case "sprint":
-                    cameraNode.rotate(0, 0, -0.1f);
-                    break;
-
-                case "exit":
-                    nhg.messaging.send(new Message(Strings.Events.engineDestroy));
-                    break;
-            }
-
-            nodeComponent.applyTransforms();
-        }
-    }
-
-    @Override
-    public void onStickInput(NhgInput input) {
-        if (scene != null) {
-            NodeComponent nodeComponent = cameraNode;
-
-            Vector2 stickVector = (Vector2) input.getSource().getValue();
-
-            if (stickVector != null) {
-                switch (input.getName()) {
-                    case "movementStick":
-                        nodeComponent.translate(
-                                stickVector.x * Gdx.graphics.getDeltaTime(),
-                                0,
-                                stickVector.y * Gdx.graphics.getDeltaTime(),
-                                true);
-                        break;
-
-                    case "rotationStick":
-                        nodeComponent.rotate(
-                                stickVector.y * Gdx.graphics.getDeltaTime(),
-                                stickVector.x * Gdx.graphics.getDeltaTime(),
-                                0,
-                                true
-                        );
-                        break;
-                }
-            }
-        }
-    }
-
-    @Override
-    public void onPointerInput(NhgInput input) {
-        Vector2 pointerVector = (Vector2) input.getSource().getValue();
-
-        if (pointerVector != null) {
-            switch (input.getName()) {
-                case "look":
-                    float horizontalAxis = pointerVector.x;
-                    float verticalAxis = pointerVector.y;
-
-                    cameraNode.rotate(verticalAxis, horizontalAxis, 0);
-                    cameraNode.applyTransforms();
-                    break;
-
-                case "throw":
-                    NhgLogger.log(this, "Throw!");
-                    break;
-
-                case "jump":
-                    NhgLogger.log(this, "Jump!");
-                    break;
-            }
-        }
-    }
-
-    @Override
-    public void onMouseInput(NhgInput input) {
-        Vector2 pointerVector = (Vector2) input.getSource().getValue();
-
-        if (pointerVector != null) {
-            float horizontalAxis = pointerVector.x;
-            float verticalAxis = pointerVector.y;
-
-            cameraNode.rotate(verticalAxis, horizontalAxis, 0);
-            cameraNode.applyTransforms();
-        }
-
-        if (!input.getName().contentEquals("mouseLook")) {
-            switch (input.getName()) {
-                case "throw":
-                    NhgLogger.log(this, "Throw!");
-                    break;
-
-                case "jump":
-                    NhgLogger.log(this, "Jump!");
-                    break;
-            }
-        }
-    }*/
 }

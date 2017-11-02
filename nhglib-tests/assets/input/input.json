@@ -1,0 +1,44 @@
+{
+  "inputContexts": [
+    {
+      "name": "game",
+      "inputs": [
+        {
+          "inputType": "keyboardButton",
+          "inputName": "testKeyboardButton",
+          "inputMode": "once",
+          "key": "a"
+        },
+        {
+          "inputType": "keyboardButton",
+          "inputName": "exit",
+          "inputMode": "once",
+          "key": "escape"
+        },
+        {
+          "inputType": "virtualButton",
+          "inputName": "testVirtualButton",
+          "inputMode": "repeat",
+          "actorName": "jump"
+        },
+        {
+          "inputType": "touch",
+          "inputName": "testTouch",
+          "inputMode": "once",
+          "pointerNumber": 0
+        }
+      ]
+    },
+    {
+      "name":"menu",
+      "inputs": [
+        {
+          "inputType":"virtualButton",
+          "inputName":"throwButton",
+          "inputMode":"once",
+          "actorName":"throw"
+        }
+      ]
+    }
+  ]
+}

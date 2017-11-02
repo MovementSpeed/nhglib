@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.movementspeed.nhglib.input.handler.InputProxy;
+import io.github.movementspeed.nhglib.input.models.InputContext;
 import io.github.movementspeed.nhglib.input.models.InputMode;
 import io.github.movementspeed.nhglib.input.models.InputType;
 import io.github.movementspeed.nhglib.input.models.base.NhgInput;
@@ -17,6 +18,7 @@ import io.github.movementspeed.nhglib.input.models.impls.system.NhgKeyboardButto
 import io.github.movementspeed.nhglib.input.models.impls.system.NhgTouchInput;
 import io.github.movementspeed.nhglib.input.models.impls.virtual.NhgVirtualButtonInput;
 import io.github.movementspeed.nhglib.input.utils.InputUtil;
+import io.github.movementspeed.nhglib.utils.debug.NhgLogger;
 
 public class InputLoader extends AsynchronousAssetLoader<InputProxy, InputLoader.InputProxyParameter> {
     public InputLoader(FileHandleResolver resolver) {
@@ -36,14 +38,20 @@ public class InputLoader extends AsynchronousAssetLoader<InputProxy, InputLoader
 
         Array<NhgInput> systemInputs = new Array<>();
         Array<NhgInput> virtualInputs = new Array<>();
+        Array<InputContext> inputContexts = new Array<>();
 
         for (JsonValue inputContextJson : inputContextsJsonArray) {
             String inputContextName = inputContextJson.getString("name");
             JsonValue inputsJsonArray = inputContextJson.get("inputs");
 
+            InputContext inputContext = new InputContext(inputContextName);
+            inputContexts.add(inputContext);
+
             for (JsonValue inputJson : inputsJsonArray) {
-                InputType inputType = InputType.fromString(inputJson.getString("inputType"));
+                NhgInput nhgInput = null;
+
                 String inputName = inputJson.getString("inputName");
+                InputType inputType = InputType.fromString(inputJson.getString("inputType"));
                 InputMode inputMode = InputMode.fromString(inputJson.getString("inputMode"));
 
                 switch (inputType) {
@@ -51,9 +59,9 @@ public class InputLoader extends AsynchronousAssetLoader<InputProxy, InputLoader
                         int pointerNumber = inputJson.getInt("pointerNumber");
 
                         NhgTouchInput touchInput = new NhgTouchInput(inputName);
-                        touchInput.setMode(inputMode);
                         touchInput.setPointerNumber(pointerNumber);
-                        systemInputs.add(touchInput);
+                        nhgInput = touchInput;
+                        systemInputs.add(nhgInput);
                         break;
 
                     case MOUSE_BUTTON:
@@ -63,24 +71,31 @@ public class InputLoader extends AsynchronousAssetLoader<InputProxy, InputLoader
                         String key = inputJson.getString("key").toUpperCase();
 
                         NhgKeyboardButtonInput keyboardButtonInput = new NhgKeyboardButtonInput(inputName);
-                        keyboardButtonInput.setMode(inputMode);
                         keyboardButtonInput.setKeyCode(InputUtil.keyCodeFromName(key));
-                        systemInputs.add(keyboardButtonInput);
+                        nhgInput = keyboardButtonInput;
+                        systemInputs.add(nhgInput);
                         break;
 
                     case VIRTUAL_BUTTON:
                         String actorName = inputJson.getString("actorName");
 
                         NhgVirtualButtonInput virtualButtonInput = new NhgVirtualButtonInput(inputName);
-                        virtualButtonInput.setMode(inputMode);
                         virtualButtonInput.setActorName(actorName);
-                        virtualInputs.add(virtualButtonInput);
+                        nhgInput = virtualButtonInput;
+                        virtualInputs.add(nhgInput);
                         break;
+                }
+
+                if (nhgInput != null) {
+                    nhgInput.setMode(inputMode);
+                    nhgInput.setContext(inputContext);
+                } else {
+                    NhgLogger.log("InputLoader", "ignored input \"%s\"", inputName);
                 }
             }
         }
 
-        inputProxy.build(virtualInputs, systemInputs);
+        inputProxy.build(inputContexts, systemInputs, virtualInputs);
         return inputProxy;
     }
 

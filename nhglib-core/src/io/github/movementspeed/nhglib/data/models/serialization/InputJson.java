@@ -28,7 +28,7 @@ public class InputJson implements JsonParseable<Array<InputContext>> {
             InputContext inputContext = new InputContext(name);
 
             for (JsonValue inputJson : inputsJson) {
-                inputContext.addInput(inputFromJson(inputJson));
+                //inputContext.addInput(inputFromJson(inputJson));
             }
 
             inputContexts.add(inputContext);

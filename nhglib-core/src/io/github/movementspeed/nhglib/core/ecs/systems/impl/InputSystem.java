@@ -10,16 +10,17 @@ import io.github.movementspeed.nhglib.input.handler.InputProxy;
 import io.github.movementspeed.nhglib.input.interfaces.InputListener;
 import io.github.movementspeed.nhglib.input.models.base.NhgInput;
 import io.github.movementspeed.nhglib.utils.data.Strings;
+import io.github.movementspeed.nhglib.utils.debug.NhgLogger;
 import io.reactivex.functions.Consumer;
 
 public class InputSystem extends BaseSystem implements InputListener {
+    private Assets assets;
     private InputProxy inputProxy;
     private Array<InputListener> inputListeners;
 
-    public InputSystem() {
+    public InputSystem(Assets assets) {
+        this.assets = assets;
         inputListeners = new Array<>();
-        /*inputProxy = new InputProxy();
-        inputProxy.setInputListener(this);*/
     }
 
     @Override
@@ -40,9 +41,17 @@ public class InputSystem extends BaseSystem implements InputListener {
         inputListeners.add(inputListener);
     }
 
-    public void loadMapping(Assets assets, String fileName) {
+    public void loadMapping(String fileName) {
         inputProxy = assets.loadAssetSync(new Asset("nhgInputMap", fileName, InputProxy.class));
         inputProxy.setInputListener(this);
+    }
+
+    public void setEnableContext(String name, boolean enable) {
+        if (inputProxy != null) {
+            inputProxy.setEnableContext(name, enable);
+        } else {
+            NhgLogger.log(this, "Can't enable context \"%s\", first load an input mapping json.");
+        }
     }
 
     public InputProxy getInputProxy() {

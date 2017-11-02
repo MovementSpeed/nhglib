@@ -16,8 +16,8 @@ import io.github.movementspeed.nhglib.input.models.base.NhgInput;
 import io.github.movementspeed.nhglib.input.models.impls.virtual.NhgVirtualButtonInput;
 
 public class VirtualInputHandler implements InputHandler {
-    private Interface virtualInputInterface;
     private Vector2 vec0;
+    private InputProxy inputProxy;
     private InputMultiplexer inputMultiplexer;
 
     private Array<String> activeVirtualInputs;
@@ -25,8 +25,8 @@ public class VirtualInputHandler implements InputHandler {
     private ArrayMap<String, NhgVirtualButtonInput> virtualInputs;
     private ArrayMap<String, Stage> stages;
 
-    public VirtualInputHandler(Interface virtualInputInterface, InputMultiplexer inputMultiplexer, Array<NhgInput> virtualInputArray) {
-        this.virtualInputInterface = virtualInputInterface;
+    public VirtualInputHandler(InputProxy inputProxy, InputMultiplexer inputMultiplexer, Array<NhgInput> virtualInputArray) {
+        this.inputProxy = inputProxy;
         this.inputMultiplexer = inputMultiplexer;
         this.originalVirtualInputArray = virtualInputArray;
 
@@ -41,7 +41,7 @@ public class VirtualInputHandler implements InputHandler {
     @Override
     public void update() {
         for (String actorName : activeVirtualInputs) {
-            virtualInputInterface.onVirtualInput(virtualInputs.get(actorName));
+            inputProxy.onInput(virtualInputs.get(actorName));
         }
     }
 
@@ -83,45 +83,46 @@ public class VirtualInputHandler implements InputHandler {
                     actor.addListener(new ClickListener() {
                         @Override
                         public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                            virtualInput.setAction(InputAction.DOWN);
-                            virtualInput.setValue(vec0.set(x, y));
+                            if (virtualInput.isValid()) {
+                                virtualInput.setAction(InputAction.DOWN);
+                                virtualInput.setValue(vec0.set(x, y));
 
-                            switch (virtualInput.getMode()) {
-                                case REPEAT:
-                                    if (!activeVirtualInputs.contains(actorName, false)) {
-                                        activeVirtualInputs.add(actorName);
-                                    }
-                                    break;
+                                switch (virtualInput.getMode()) {
+                                    case REPEAT:
+                                        if (!activeVirtualInputs.contains(actorName, false)) {
+                                            activeVirtualInputs.add(actorName);
+                                        }
+                                        break;
 
-                                default:
-                                    virtualInputInterface.onVirtualInput(virtualInput);
-                                    break;
+                                    default:
+                                        inputProxy.onInput(virtualInput);
+                                        break;
+                                }
                             }
-                            return true;
+
+                            return virtualInput.isValid();
                         }
 
                         @Override
                         public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                            virtualInput.setAction(InputAction.UP);
-                            virtualInput.setValue(vec0.set(x, y));
+                            if (virtualInput.isValid()) {
+                                virtualInput.setAction(InputAction.UP);
+                                virtualInput.setValue(vec0.set(x, y));
 
-                            switch (virtualInput.getMode()) {
-                                case REPEAT:
-                                    activeVirtualInputs.removeValue(actorName, false);
-                                    break;
+                                switch (virtualInput.getMode()) {
+                                    case REPEAT:
+                                        activeVirtualInputs.removeValue(actorName, false);
+                                        break;
 
-                                default:
-                                    virtualInputInterface.onVirtualInput(virtualInput);
-                                    break;
+                                    default:
+                                        inputProxy.onInput(virtualInput);
+                                        break;
+                                }
                             }
                         }
                     });
                 }
             }
         }
-    }
-
-    public interface Interface {
-        void onVirtualInput(NhgVirtualButtonInput input);
     }
 }

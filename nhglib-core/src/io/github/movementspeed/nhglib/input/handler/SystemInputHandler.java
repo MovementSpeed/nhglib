@@ -17,8 +17,8 @@ import io.github.movementspeed.nhglib.input.models.impls.system.NhgMouseButtonIn
 import io.github.movementspeed.nhglib.input.models.impls.system.NhgTouchInput;
 
 public class SystemInputHandler implements InputHandler {
-    private Interface systemInputInterface;
     private Vector2 vec0;
+    private InputProxy inputProxy;
 
     private Array<Integer> activeKeyboardButtonInputs;
     private Array<Integer> activeMouseButtonInputs;
@@ -28,8 +28,8 @@ public class SystemInputHandler implements InputHandler {
     private IntMap<NhgMouseButtonInput> mouseButtonInputs;
     private IntMap<NhgTouchInput> touchInputs;
 
-    public SystemInputHandler(Interface systemInputInterface, InputMultiplexer inputMultiplexer, Array<NhgInput> systemInputArray) {
-        this.systemInputInterface = systemInputInterface;
+    public SystemInputHandler(InputProxy inputProxy, InputMultiplexer inputMultiplexer, Array<NhgInput> systemInputArray) {
+        this.inputProxy = inputProxy;
 
         vec0 = new Vector2();
 
@@ -48,15 +48,15 @@ public class SystemInputHandler implements InputHandler {
     @Override
     public void update() {
         for (Integer pointer : activeTouchInputs) {
-            systemInputInterface.onSystemInput(touchInputs.get(pointer));
+            inputProxy.onInput(touchInputs.get(pointer));
         }
 
         for (Integer keyCode : activeKeyboardButtonInputs) {
-            systemInputInterface.onSystemInput(keyboardButtonInputs.get(keyCode));
+            inputProxy.onInput(keyboardButtonInputs.get(keyCode));
         }
 
         for (Integer button : activeMouseButtonInputs) {
-            systemInputInterface.onSystemInput(mouseButtonInputs.get(button));
+            inputProxy.onInput(mouseButtonInputs.get(button));
         }
     }
 
@@ -92,7 +92,7 @@ public class SystemInputHandler implements InputHandler {
             public boolean keyDown(int keyCode) {
                 NhgKeyboardButtonInput input = keyboardButtonInputs.get(keyCode);
 
-                if (input != null) {
+                if (input != null && input.isValid()) {
                     input.setAction(InputAction.DOWN);
 
                     switch (input.getMode()) {
@@ -103,7 +103,7 @@ public class SystemInputHandler implements InputHandler {
                             break;
 
                         default:
-                            systemInputInterface.onSystemInput(input);
+                            inputProxy.onInput(input);
                             break;
                     }
                 }
@@ -115,7 +115,7 @@ public class SystemInputHandler implements InputHandler {
             public boolean keyUp(int keyCode) {
                 NhgKeyboardButtonInput input = keyboardButtonInputs.get(keyCode);
 
-                if (input != null) {
+                if (input != null && input.isValid()) {
                     input.setAction(InputAction.UP);
 
                     switch (input.getMode()) {
@@ -124,7 +124,7 @@ public class SystemInputHandler implements InputHandler {
                             break;
 
                         default:
-                            systemInputInterface.onSystemInput(input);
+                            inputProxy.onInput(input);
                             break;
                     }
                 }
@@ -144,7 +144,7 @@ public class SystemInputHandler implements InputHandler {
                 if (isDesktop()) {
                     input = mouseButtonInputs.get(button);
 
-                    if (input != null) {
+                    if (input != null && input.isValid()) {
                         switch (input.getMode()) {
                             case REPEAT:
                                 if (!activeMouseButtonInputs.contains(button, true)) {
@@ -153,14 +153,14 @@ public class SystemInputHandler implements InputHandler {
                                 break;
 
                             default:
-                                systemInputInterface.onSystemInput(input);
+                                inputProxy.onInput(input);
                                 break;
                         }
                     }
                 } else {
                     input = touchInputs.get(pointer);
 
-                    if (input != null) {
+                    if (input != null && input.isValid()) {
                         switch (input.getMode()) {
                             case REPEAT:
                                 if (!activeTouchInputs.contains(pointer, true)) {
@@ -169,13 +169,13 @@ public class SystemInputHandler implements InputHandler {
                                 break;
 
                             default:
-                                systemInputInterface.onSystemInput(input);
+                                inputProxy.onInput(input);
                                 break;
                         }
                     }
                 }
 
-                if (input != null) {
+                if (input != null && input.isValid()) {
                     input.setAction(InputAction.DOWN);
                     input.setValue(vec0.set(screenX, screenY));
                 }
@@ -190,34 +190,34 @@ public class SystemInputHandler implements InputHandler {
                 if (isDesktop()) {
                     input = mouseButtonInputs.get(button);
 
-                    if (input != null) {
+                    if (input != null && input.isValid()) {
                         switch (input.getMode()) {
                             case REPEAT:
                                 activeMouseButtonInputs.removeValue(button, true);
                                 break;
 
                             default:
-                                systemInputInterface.onSystemInput(input);
+                                inputProxy.onInput(input);
                                 break;
                         }
                     }
                 } else {
                     input = touchInputs.get(pointer);
 
-                    if (input != null) {
+                    if (input != null && input.isValid()) {
                         switch (input.getMode()) {
                             case REPEAT:
                                 activeTouchInputs.removeValue(pointer, true);
                                 break;
 
                             default:
-                                systemInputInterface.onSystemInput(input);
+                                inputProxy.onInput(input);
                                 break;
                         }
                     }
                 }
 
-                if (input != null) {
+                if (input != null && input.isValid()) {
                     input.setAction(InputAction.UP);
                     input.setValue(vec0.set(screenX, screenY));
                 }
@@ -246,9 +246,5 @@ public class SystemInputHandler implements InputHandler {
 
     private boolean isDesktop() {
         return Gdx.app.getType() == Application.ApplicationType.Desktop;
-    }
-
-    public interface Interface {
-        void onSystemInput(NhgInput input);
     }
 }

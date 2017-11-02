@@ -29,7 +29,7 @@ public class EngineStateNotInitialized implements State<NhgEntry> {
         // should be the last because it renders all the changes happened in all other
         // systems.
         if (!hasSystemClass(InputSystem.class, entitySystems)) {
-            entitySystems.add(new InputSystem());
+            entitySystems.add(new InputSystem(nhgEntry.nhg.assets));
         } else {
             NhgLogger.log(this, "InputSystem already registered, ignoring registration.");
         }
