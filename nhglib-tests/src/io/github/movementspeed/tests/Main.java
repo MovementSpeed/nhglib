@@ -77,6 +77,8 @@ public class Main extends NhgEntry implements InputListener {
         inputSystem.setEnableContext("menu", true);
         inputSystem.addInputListener(this);
 
+        // For commit
+
         renderingSystem = nhg.entities.getEntitySystem(RenderingSystem.class);
         renderingSystem.setClearColor(Color.GRAY);
         renderingSystem.setRenderScale(1.0f);
