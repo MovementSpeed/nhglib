@@ -23,7 +23,7 @@ allprojects {
     version = '0.1.6'
 
     ext {
-        gdxVersion = '1.9.7-SNAPSHOT'
+        gdxVersion = '1.9.7'
         stageBuilderVersion = 'v3.25.0'
     }
 

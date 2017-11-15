@@ -8,12 +8,12 @@ import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.FrameBufferCubemap;
+import com.badlogic.gdx.graphics.glutils.GLFrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.UBJsonReader;
 import io.github.movementspeed.nhglib.files.HDRData;
-import io.github.movementspeed.nhglib.graphics.ogl.NhgFrameBufferCubemap;
 
 /**
  * Created by Fausto Napoli on 17/08/2017.
@@ -161,10 +161,11 @@ public class LightProbe {
 
         equirectangularTexture = data.toTexture();
 
-        NhgFrameBufferCubemap frameBufferCubemap = new NhgFrameBufferCubemap(Pixmap.Format.RGB888, (int) environmentWidth, (int) environmentHeight, true);
-        frameBufferCubemap.type = 0;
-        frameBufferCubemap.genMipMap = false;
-        frameBufferCubemap.buildFBO();
+        GLFrameBuffer.FrameBufferCubemapBuilder builder = new GLFrameBuffer.FrameBufferCubemapBuilder(
+                (int) environmentWidth, (int) environmentHeight);
+        builder.addColorTextureAttachment(GL30.GL_RGB8, GL30.GL_RGB, GL30.GL_UNSIGNED_BYTE);
+        builder.addDepthRenderBufferAttachment();
+        frameBufferCubemap = builder.build();
 
         equirectangularTexture.bind(0);
         equiToCubeShader.begin();
@@ -175,7 +176,7 @@ public class LightProbe {
             equiToCubeShader.setUniformMatrix("u_view", perspectiveCameras.get(i).view);
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
             cubeMesh.render(equiToCubeShader, GL20.GL_TRIANGLES);
-            frameBufferCubemap.nextSide(0);
+            frameBufferCubemap.nextSide();
         }
         frameBufferCubemap.end();
         equiToCubeShader.end();
@@ -192,7 +193,7 @@ public class LightProbe {
                 Gdx.files.internal("shaders/equi_to_cube_shader.vert"),
                 Gdx.files.internal("shaders/irradiance_shader.frag"));
 
-        frameBufferCubemap = new FrameBufferCubemap(Pixmap.Format.RGB888,
+        frameBufferCubemap = FrameBufferCubemap.createFrameBufferCubemap(Pixmap.Format.RGB888,
                 (int) irradianceWidth, (int) irradianceHeight, true);
 
         environmentCubemap.bind(0);
@@ -260,11 +261,15 @@ public class LightProbe {
         pc6.rotate(Vector3.X, 180);
         pc6.update();
 
-        NhgFrameBufferCubemap frameBufferCubemap = new NhgFrameBufferCubemap(Pixmap.Format.RGB888,
+        frameBufferCubemap = FrameBufferCubemap.createFrameBufferCubemap(Pixmap.Format.RGB888,
                 (int) prefilterWidth, (int) prefilterHeight, true);
-        frameBufferCubemap.genMipMap = true;
-        frameBufferCubemap.type = 0;
-        frameBufferCubemap.buildFBO();
+
+        Cubemap cubemap = frameBufferCubemap.getColorBufferTexture();
+        cubemap.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
+        cubemap.setWrap(Texture.TextureWrap.ClampToEdge, Texture.TextureWrap.ClampToEdge);
+
+        Gdx.gl.glBindTexture(cubemap.glTarget, cubemap.getTextureObjectHandle());
+        Gdx.gl.glGenerateMipmap(GL20.GL_TEXTURE_CUBE_MAP);
 
         prefilterShader.begin();
         prefilterShader.setUniformMatrix("u_projection", perspectiveCameras.first().projection);
@@ -291,7 +296,9 @@ public class LightProbe {
             for (int i = 0; i < 6; ++i) {
                 prefilterShader.setUniformMatrix("u_view", perspectiveCameras.get(i).view);
 
-                frameBufferCubemap.bindSide(i, mip);
+                Cubemap.CubemapSide side = Cubemap.CubemapSide.values()[i];
+                Gdx.gl20.glFramebufferTexture2D(GL20.GL_FRAMEBUFFER, GL20.GL_COLOR_ATTACHMENT0, side.glEnum,
+                        cubemap.getTextureObjectHandle(), mip);
 
                 Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
                 cubeMesh.render(prefilterShader, GL20.GL_TRIANGLES);
@@ -308,7 +315,7 @@ public class LightProbe {
                 Gdx.files.internal("shaders/brdf_shader.vert"),
                 Gdx.files.internal("shaders/brdf_shader.frag"));
 
-        FrameBuffer frameBuffer = new FrameBuffer(Pixmap.Format.RGB888, (int) brdfWidth, (int) brdfHeight, true);
+        FrameBuffer frameBuffer = FrameBuffer.createFrameBuffer(Pixmap.Format.RGB888, (int) brdfWidth, (int) brdfHeight, true);
 
         brdfShader.begin();
         frameBuffer.begin();

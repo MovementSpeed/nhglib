@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.lang.reflect.Field;
 
@@ -60,7 +59,7 @@ public class ParameterTweaker extends InputAdapter {
         }
 
         if (!(field.getType().equals(Float.TYPE) || field.getType().equals(Integer.TYPE)))
-            throw new NotImplementedException();
+            throw new RuntimeException();
 
         field.setAccessible(true);
 

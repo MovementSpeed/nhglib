@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ShaderProvider;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.glutils.GLFrameBuffer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import io.github.movementspeed.nhglib.Nhg;
@@ -142,7 +143,7 @@ public class RenderingSystem extends BaseSystem implements Disposable {
             frameBuffer.dispose();
         }
 
-        frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, true);
+        frameBuffer = FrameBuffer.createFrameBuffer(Pixmap.Format.RGBA8888, width, height, true);
 
         for (RenderingSystemInterface rsi : renderingInterfaces) {
             rsi.onUpdatedRenderer(width, height);

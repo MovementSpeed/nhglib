@@ -1,5 +1,6 @@
 package io.github.movementspeed.nhglib.utils.graphics;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -27,5 +28,9 @@ public class GLUtils {
 
     public static void setViewport(int width, int height) {
         setViewport(0, 0, width, height);
+    }
+
+    public static boolean isFloatTextureSupported() {
+        return !Gdx.graphics.supportsExtension("OES_texture_float") && Gdx.app.getType() != Application.ApplicationType.Desktop;
     }
 }
