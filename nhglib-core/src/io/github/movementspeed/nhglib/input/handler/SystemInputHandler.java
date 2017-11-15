@@ -117,16 +117,8 @@ public class SystemInputHandler implements InputHandler {
 
                 if (input != null && input.isValid()) {
                     input.setAction(InputAction.UP);
-
-                    switch (input.getMode()) {
-                        case REPEAT:
-                            activeKeyboardButtonInputs.removeValue(keyCode, true);
-                            break;
-
-                        default:
-                            inputProxy.onInput(input);
-                            break;
-                    }
+                    activeKeyboardButtonInputs.removeValue(keyCode, true);
+                    inputProxy.onInput(input);
                 }
 
                 return false;
@@ -145,6 +137,9 @@ public class SystemInputHandler implements InputHandler {
                     input = mouseButtonInputs.get(button);
 
                     if (input != null && input.isValid()) {
+                        input.setAction(InputAction.DOWN);
+                        input.setValue(vec0.set(screenX, screenY));
+
                         switch (input.getMode()) {
                             case REPEAT:
                                 if (!activeMouseButtonInputs.contains(button, true)) {
@@ -161,6 +156,9 @@ public class SystemInputHandler implements InputHandler {
                     input = touchInputs.get(pointer);
 
                     if (input != null && input.isValid()) {
+                        input.setAction(InputAction.DOWN);
+                        input.setValue(vec0.set(screenX, screenY));
+
                         switch (input.getMode()) {
                             case REPEAT:
                                 if (!activeTouchInputs.contains(pointer, true)) {
@@ -175,11 +173,6 @@ public class SystemInputHandler implements InputHandler {
                     }
                 }
 
-                if (input != null && input.isValid()) {
-                    input.setAction(InputAction.DOWN);
-                    input.setValue(vec0.set(screenX, screenY));
-                }
-
                 return false;
             }
 
@@ -191,35 +184,22 @@ public class SystemInputHandler implements InputHandler {
                     input = mouseButtonInputs.get(button);
 
                     if (input != null && input.isValid()) {
-                        switch (input.getMode()) {
-                            case REPEAT:
-                                activeMouseButtonInputs.removeValue(button, true);
-                                break;
+                        input.setAction(InputAction.UP);
+                        input.setValue(vec0.set(screenX, screenY));
 
-                            default:
-                                inputProxy.onInput(input);
-                                break;
-                        }
+                        activeMouseButtonInputs.removeValue(button, true);
+                        inputProxy.onInput(input);
                     }
                 } else {
                     input = touchInputs.get(pointer);
 
                     if (input != null && input.isValid()) {
-                        switch (input.getMode()) {
-                            case REPEAT:
-                                activeTouchInputs.removeValue(pointer, true);
-                                break;
+                        input.setAction(InputAction.UP);
+                        input.setValue(vec0.set(screenX, screenY));
 
-                            default:
-                                inputProxy.onInput(input);
-                                break;
-                        }
+                        activeTouchInputs.removeValue(pointer, true);
+                        inputProxy.onInput(input);
                     }
-                }
-
-                if (input != null && input.isValid()) {
-                    input.setAction(InputAction.UP);
-                    input.setValue(vec0.set(screenX, screenY));
                 }
 
                 return false;
