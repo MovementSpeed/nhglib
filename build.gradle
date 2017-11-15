@@ -27,6 +27,7 @@ allprojects {
         roboVMVersion = '2.3.0'
         aiVersion = '1.8.1'
         stageBuilderVersion = 'v3.25.0'
+        artemisVersion = '2.1.0'
     }
 
     repositories {
@@ -71,7 +72,7 @@ project(":nhglib-core") {
         compile "com.badlogicgames.gdx:gdx-ai:$aiVersion"
         compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
-        compile "net.onedaybeard.artemis:artemis-odb:2.0.0"
+        compile "net.onedaybeard.artemis:artemis-odb:$artemisVersion"
         compile 'io.reactivex.rxjava2:rxjava:2.0.2'
         compile 'com.github.peakgames.libgdx-stagebuilder:stagebuilder-core:v3.25.0'
     }
