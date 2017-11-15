@@ -24,6 +24,8 @@ allprojects {
 
     ext {
         gdxVersion = '1.9.7'
+        roboVMVersion = '2.3.0'
+        aiVersion = '1.8.1'
         stageBuilderVersion = 'v3.25.0'
     }
 
@@ -66,7 +68,7 @@ project(":nhglib-core") {
 
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx-ai:1.8.0"
+        compile "com.badlogicgames.gdx:gdx-ai:$aiVersion"
         compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
         compile "net.onedaybeard.artemis:artemis-odb:2.0.0"
