@@ -6,7 +6,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.FloatArray;
 import io.github.movementspeed.nhglib.graphics.ogl.NhgFloatTextureData;
+import io.github.movementspeed.nhglib.utils.graphics.GLUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -56,6 +58,8 @@ public class HDRData {
         lummax = 0;
         lummin = 0;
         texture.dispose();
+        texture = null;
+        System.gc();
     }
 
     public int getWidth() {
@@ -75,7 +79,7 @@ public class HDRData {
     }
 
     public float[] getFlatPixelArray() {
-        Array<Float> floats = new Array<>();
+        FloatArray floats = new FloatArray();
         flatPixelArray = new float[width * height * 3];
 
         for (int y = 0; y < height; y++) {
@@ -129,7 +133,7 @@ public class HDRData {
             }
         }
 
-        if (Gdx.app.getType() == Application.ApplicationType.Desktop || Gdx.graphics.supportsExtension("OES_texture_float")) {
+        if (GLUtils.isFloatTextureSupported()) {
             NhgFloatTextureData data = new NhgFloatTextureData(width, height, 3);
             data.prepare();
             data.getBuffer().put(rgb);
@@ -154,8 +158,10 @@ public class HDRData {
             }
 
             texture = new Texture(pixmap);
+            pixmap.dispose();
         }
 
+        System.gc();
         return texture;
     }
 
