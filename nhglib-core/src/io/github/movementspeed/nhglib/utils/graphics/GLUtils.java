@@ -31,6 +31,6 @@ public class GLUtils {
     }
 
     public static boolean isFloatTextureSupported() {
-        return !Gdx.graphics.supportsExtension("OES_texture_float") && Gdx.app.getType() != Application.ApplicationType.Desktop;
+        return Gdx.graphics.supportsExtension("OES_texture_float") || Gdx.app.getType() == Application.ApplicationType.Desktop;
     }
 }
