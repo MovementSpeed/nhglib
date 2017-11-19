@@ -34,12 +34,14 @@ public class LightProbe {
     private Cubemap environmentCubemap;
     private Cubemap irradianceCubemap;
     private Cubemap prefilteredCubemap;
+
     private Texture brdfTexture;
+
+    private Model quadModel;
+    private Model cubeModel;
 
     private Mesh quadMesh;
     private Mesh cubeMesh;
-
-    private FrameBufferCubemap frameBufferCubemap;
 
     private Array<PerspectiveCamera> perspectiveCameras;
 
@@ -69,9 +71,8 @@ public class LightProbe {
         prefilteredCubemap = renderPrefilter(environmentCubemap);
         brdfTexture = renderBRDF();
 
-        if (hdrData != null) {
-            hdrData.clear();
-        }
+        cubeModel.dispose();
+        quadModel.dispose();
     }
 
     public void build(float environmentWidth, float environmentHeight) {
@@ -101,15 +102,15 @@ public class LightProbe {
 
     private void createMeshes() {
         ModelBuilder mb = new ModelBuilder();
-        Model cube = mb.createBox(1, 1, 1, new Material(),
+        cubeModel = mb.createBox(1, 1, 1, new Material(),
                 VertexAttributes.Usage.Position |
                         VertexAttributes.Usage.Normal |
                         VertexAttributes.Usage.TextureCoordinates);
-        cubeMesh = cube.meshes.first();
+        cubeMesh = cubeModel.meshes.first();
 
         G3dModelLoader modelLoader = new G3dModelLoader(new UBJsonReader());
-        Model quad = modelLoader.loadModel(Gdx.files.internal("models/quad.g3db"));
-        quadMesh = quad.meshes.first();
+        quadModel = modelLoader.loadModel(Gdx.files.internal("models/quad.g3db"));
+        quadMesh = quadModel.meshes.first();
     }
 
     private void initCameras() {
@@ -165,7 +166,7 @@ public class LightProbe {
                 (int) environmentWidth, (int) environmentHeight);
         builder.addColorTextureAttachment(GL30.GL_RGB8, GL30.GL_RGB, GL30.GL_UNSIGNED_BYTE);
         builder.addDepthRenderBufferAttachment();
-        frameBufferCubemap = builder.build();
+        FrameBufferCubemap frameBufferCubemap = builder.build();
 
         equirectangularTexture.bind(0);
         equiToCubeShader.begin();
@@ -180,6 +181,7 @@ public class LightProbe {
         }
         frameBufferCubemap.end();
         equiToCubeShader.end();
+        equiToCubeShader.dispose();
 
         return frameBufferCubemap.getColorBufferTexture();
     }
@@ -193,7 +195,7 @@ public class LightProbe {
                 Gdx.files.internal("shaders/equi_to_cube_shader.vert"),
                 Gdx.files.internal("shaders/irradiance_shader.frag"));
 
-        frameBufferCubemap = FrameBufferCubemap.createFrameBufferCubemap(Pixmap.Format.RGB888,
+        FrameBufferCubemap frameBufferCubemap = FrameBufferCubemap.createFrameBufferCubemap(Pixmap.Format.RGB888,
                 (int) irradianceWidth, (int) irradianceHeight, true);
 
         environmentCubemap.bind(0);
@@ -209,6 +211,7 @@ public class LightProbe {
         }
         frameBufferCubemap.end();
         irradianceShader.end();
+        irradianceShader.dispose();
 
         return frameBufferCubemap.getColorBufferTexture();
     }
@@ -261,7 +264,7 @@ public class LightProbe {
         pc6.rotate(Vector3.X, 180);
         pc6.update();
 
-        frameBufferCubemap = FrameBufferCubemap.createFrameBufferCubemap(Pixmap.Format.RGB888,
+        FrameBufferCubemap frameBufferCubemap = FrameBufferCubemap.createFrameBufferCubemap(Pixmap.Format.RGB888,
                 (int) prefilterWidth, (int) prefilterHeight, true);
 
         Cubemap cubemap = frameBufferCubemap.getColorBufferTexture();
@@ -306,6 +309,7 @@ public class LightProbe {
         }
         frameBufferCubemap.end();
         prefilterShader.end();
+        prefilterShader.dispose();
 
         return frameBufferCubemap.getColorBufferTexture();
     }
@@ -324,6 +328,7 @@ public class LightProbe {
         quadMesh.render(brdfShader, GL20.GL_TRIANGLES);
         frameBuffer.end();
         brdfShader.end();
+        brdfShader.dispose();
 
         return frameBuffer.getColorBufferTexture();
     }

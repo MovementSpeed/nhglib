@@ -1,11 +1,8 @@
 package io.github.movementspeed.nhglib.files;
 
-import com.badlogic.gdx.Application;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.FloatArray;
 import io.github.movementspeed.nhglib.graphics.ogl.NhgFloatTextureData;
 import io.github.movementspeed.nhglib.utils.graphics.GLUtils;
@@ -15,9 +12,9 @@ import java.io.IOException;
 
 /**
  * @author Peng Chen
- *         http://aicp70.wixsite.com/aboutme/single-post/2015/10/29/1-HDR-file-and-its-readin-program-by-JAVA
- *         This class is used to convert a HDR format image into a three-dimension float array represents the
- *         RGB channels of the original image.
+ * http://aicp70.wixsite.com/aboutme/single-post/2015/10/29/1-HDR-file-and-its-readin-program-by-JAVA
+ * This class is used to convert a HDR format image into a three-dimension float array represents the
+ * RGB channels of the original image.
  */
 public class HDRData {
     //the width of the HDR image
@@ -57,8 +54,11 @@ public class HDRData {
         lummean = 0;
         lummax = 0;
         lummin = 0;
-        texture.dispose();
-        texture = null;
+
+        if (texture != null) {
+            texture.dispose();
+            texture = null;
+        }
     }
 
     public int getWidth() {
@@ -160,7 +160,6 @@ public class HDRData {
             pixmap.dispose();
         }
 
-        System.gc();
         return texture;
     }
 
