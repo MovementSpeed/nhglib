@@ -28,6 +28,14 @@ public class HDRData2 {
         float[][][] pixels = read(in);
         texture = toTexture(pixels);
         flatArray.clear();
+        flatArray = null;
+    }
+
+    public void dispose() {
+        if (texture != null) {
+            texture.dispose();
+            texture = null;
+        }
     }
 
     public Texture getTexture() {

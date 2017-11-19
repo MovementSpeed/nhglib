@@ -48,8 +48,9 @@ public class AssetStateIdle implements State<Assets> {
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
-                System.gc();
+                Runtime.getRuntime().gc();
+                NhgLogger.log("Assets", "gc()");
             }
-        }, 10, 5, 2);
+        }, 10, 10, 1);
     }
 }
