@@ -13,7 +13,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.UBJsonReader;
-import io.github.movementspeed.nhglib.files.HDRData;
+import io.github.movementspeed.nhglib.files.HDRData2;
 
 /**
  * Created by Fausto Napoli on 17/08/2017.
@@ -49,7 +49,7 @@ public class LightProbe {
         init();
     }
 
-    public void build(HDRData hdrData, float environmentWidth, float environmentHeight, float irradianceWidth, float irradianceHeight, float prefilterWidth, float prefilterHeight, float brdfWidth, float brdfHeight) {
+    public void build(HDRData2 hdrData, float environmentWidth, float environmentHeight, float irradianceWidth, float irradianceHeight, float prefilterWidth, float prefilterHeight, float brdfWidth, float brdfHeight) {
         this.environmentWidth = environmentWidth;
         this.environmentHeight = environmentHeight;
         this.irradianceWidth = irradianceWidth;
@@ -154,13 +154,13 @@ public class LightProbe {
         pc6.update();
     }
 
-    private Cubemap renderEnvironmentFromHDRData(HDRData data) {
+    private Cubemap renderEnvironmentFromHDRData(HDRData2 data) {
         Texture equirectangularTexture;
         ShaderProgram equiToCubeShader = new ShaderProgram(
                 Gdx.files.internal("shaders/equi_to_cube_shader.vert"),
                 Gdx.files.internal("shaders/equi_to_cube_shader.frag"));
 
-        equirectangularTexture = data.toTexture();
+        equirectangularTexture = data.getTexture();
 
         GLFrameBuffer.FrameBufferCubemapBuilder builder = new GLFrameBuffer.FrameBufferCubemapBuilder(
                 (int) environmentWidth, (int) environmentHeight);

@@ -21,7 +21,7 @@ import io.github.movementspeed.nhglib.core.ecs.systems.impl.InputSystem;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
 import io.github.movementspeed.nhglib.core.entry.NhgEntry;
 import io.github.movementspeed.nhglib.core.messaging.Message;
-import io.github.movementspeed.nhglib.files.HDRData;
+import io.github.movementspeed.nhglib.files.HDRData2;
 import io.github.movementspeed.nhglib.graphics.lights.LightProbe;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
@@ -122,7 +122,7 @@ public class Main extends NhgEntry implements InputListener {
                         } else if (message.is(Strings.Events.sceneLoaded)) {
                             NhgLogger.log(this, "Scene loaded");
 
-                            HDRData data = nhg.assets.get("newport_loft");
+                            HDRData2 data = nhg.assets.get("newport_loft");
 
                             lightProbe = new LightProbe();
                             lightProbe.build(data,
