@@ -1,6 +1,7 @@
 package io.github.movementspeed.nhglib.core.fsm.states.assets;
 
 import com.badlogic.gdx.ai.fsm.State;
+import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.assets.Asset;
@@ -25,6 +26,7 @@ public class AssetStateLoading implements State<Assets> {
     public void update(Assets assets) {
         if (assets.assetManager.update()) {
             assets.fsm.changeState(AssetsStates.IDLE);
+            MessageManager.getInstance().dispatchMessage(AssetsStates.ASSETS_GC);
 
             assets.assetLoadingFinished();
             publishLoadedAssets(assets);

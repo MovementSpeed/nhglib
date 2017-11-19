@@ -59,7 +59,6 @@ public class HDRData {
         lummin = 0;
         texture.dispose();
         texture = null;
-        System.gc();
     }
 
     public int getWidth() {

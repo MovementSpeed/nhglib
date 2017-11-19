@@ -13,6 +13,7 @@ public enum AssetsStates implements State<Assets> {
     IDLE(new AssetStateIdle()),
     LOADING(new AssetStateLoading());
 
+    public static final int ASSETS_GC = 0;
     private State<Assets> state;
 
     AssetsStates(State<Assets> state) {

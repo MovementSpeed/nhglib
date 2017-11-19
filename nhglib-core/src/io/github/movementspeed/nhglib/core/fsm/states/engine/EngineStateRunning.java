@@ -2,7 +2,9 @@ package io.github.movementspeed.nhglib.core.fsm.states.engine;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.State;
+import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.utils.Timer;
 import io.github.movementspeed.nhglib.core.entry.NhgEntry;
 import io.github.movementspeed.nhglib.core.fsm.base.EngineStates;
 import io.github.movementspeed.nhglib.core.messaging.Message;
@@ -35,6 +37,7 @@ public class EngineStateRunning implements State<NhgEntry> {
     public void update(NhgEntry nhgEntry) {
         float delta = Gdx.graphics.getDeltaTime();
 
+        MessageManager.getInstance().update();
         nhgEntry.nhg.assets.update();
         nhgEntry.nhg.entities.update(delta);
 

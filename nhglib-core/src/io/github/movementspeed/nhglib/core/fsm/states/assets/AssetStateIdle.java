@@ -1,7 +1,10 @@
 package io.github.movementspeed.nhglib.core.fsm.states.assets;
 
 import com.badlogic.gdx.ai.fsm.State;
+import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.ai.msg.Telegraph;
+import com.badlogic.gdx.utils.Timer;
 import io.github.movementspeed.nhglib.assets.Assets;
 import io.github.movementspeed.nhglib.core.fsm.base.AssetsStates;
 import io.github.movementspeed.nhglib.utils.debug.NhgLogger;
@@ -10,6 +13,16 @@ import io.github.movementspeed.nhglib.utils.debug.NhgLogger;
  * Created by Fausto Napoli on 08/12/2016.
  */
 public class AssetStateIdle implements State<Assets> {
+    public AssetStateIdle() {
+        MessageManager.getInstance().addListener(new Telegraph() {
+            @Override
+            public boolean handleMessage(Telegram msg) {
+                startGcTask();
+                return true;
+            }
+        }, AssetsStates.ASSETS_GC);
+    }
+
     @Override
     public void enter(Assets assets) {
         NhgLogger.log(this, "Asset manager is idle.");
@@ -29,5 +42,14 @@ public class AssetStateIdle implements State<Assets> {
     @Override
     public boolean onMessage(Assets entity, Telegram telegram) {
         return false;
+    }
+
+    private void startGcTask() {
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                System.gc();
+            }
+        }, 10, 5, 2);
     }
 }

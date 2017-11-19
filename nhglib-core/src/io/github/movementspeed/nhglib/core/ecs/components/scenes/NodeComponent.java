@@ -36,11 +36,16 @@ public class NodeComponent extends PooledComponent {
     private Vector3 translation;
     private Vector3 rotation;
     private Vector3 scale;
+    
+    private Vector3 localTranslation;
+    private Vector3 localRotation;
+    private Vector3 localScale;
 
     private Vector3 translationDelta;
     private Vector3 rotationDelta;
     private Vector3 scaleDelta;
 
+    private Quaternion localRotationQuaternion;
     private Quaternion rotationQuaternion;
 
     public NodeComponent() {
@@ -53,11 +58,16 @@ public class NodeComponent extends PooledComponent {
         translation = new Vector3();
         rotation = new Vector3();
         scale = new Vector3(1, 1, 1);
+        
+        localTranslation = new Vector3();
+        localRotation = new Vector3();
+        localScale = new Vector3(1, 1, 1);
 
         translationDelta = new Vector3();
         rotationDelta = new Vector3();
         scaleDelta = new Vector3();
 
+        localRotationQuaternion = new Quaternion();
         rotationQuaternion = new Quaternion();
     }
 
@@ -329,6 +339,42 @@ public class NodeComponent extends PooledComponent {
         node.calculateTransforms(recursive);
     }
 
+    public float getLocalX() {
+        return getLocalTranslation().x;
+    }
+
+    public float getLocalY() {
+        return getLocalTranslation().y;
+    }
+
+    public float getLocalZ() {
+        return getLocalTranslation().z;
+    }
+
+    public float getLocalXRotation() {
+        return getLocalRotation().x;
+    }
+
+    public float getLocalYRotation() {
+        return getLocalRotation().y;
+    }
+
+    public float getLocalZRotation() {
+        return getLocalRotation().z;
+    }
+
+    public float getLocalXScale() {
+        return getLocalScale().x;
+    }
+
+    public float getLocalYScale() {
+        return getLocalScale().y;
+    }
+
+    public float getLocalZScale() {
+        return getLocalScale().z;
+    }
+
     public float getX() {
         return getTranslation().x;
     }
@@ -418,14 +464,33 @@ public class NodeComponent extends PooledComponent {
         scaleDelta.z = 0;
         return res;
     }
+    
+    public Matrix4 getLocalTransform() {
+        return node.localTransform;
+    }
 
     public Matrix4 getTransform() {
         return node.globalTransform;
+    }
+    
+    public Vector3 getLocalTranslation() {
+        node.localTransform.getTranslation(localTranslation);
+        return localTranslation;
     }
 
     public Vector3 getTranslation() {
         node.globalTransform.getTranslation(translation);
         return translation;
+    }
+
+    public Vector3 getLocalRotation() {
+        node.localTransform.getRotation(localRotationQuaternion);
+        localRotation.set(
+                localRotationQuaternion.getPitch(),
+                localRotationQuaternion.getYaw(),
+                localRotationQuaternion.getRoll());
+
+        return localRotation;
     }
 
     public Vector3 getRotation() {
@@ -436,6 +501,11 @@ public class NodeComponent extends PooledComponent {
                 rotationQuaternion.getRoll());
 
         return rotation;
+    }
+
+    public Vector3 getLocalScale() {
+        node.localTransform.getScale(localScale);
+        return localScale;
     }
 
     public Vector3 getScale() {
@@ -462,6 +532,11 @@ public class NodeComponent extends PooledComponent {
         scaleDelta.set(Vector3.Zero);
 
         return res;
+    }
+
+    public Quaternion getLocalRotationQuaternion() {
+        getLocalRotation();
+        return localRotationQuaternion;
     }
 
     public Quaternion getRotationQuaternion() {
