@@ -39,6 +39,7 @@ public class RigidBodyComponent extends Component implements Disposable {
     private Vector3 translation;
     private Vector3 scale;
     private Quaternion rotation;
+    private Matrix4 initialTransform;
 
     public RigidBodyComponent() {
         state = State.NOT_INITIALIZED;
@@ -46,6 +47,7 @@ public class RigidBodyComponent extends Component implements Disposable {
         translation = new Vector3();
         scale = new Vector3();
         rotation = new Quaternion();
+        initialTransform = new Matrix4();
     }
 
     @Override
@@ -101,6 +103,7 @@ public class RigidBodyComponent extends Component implements Disposable {
 
     public void addToWorld(btDynamicsWorld world, Matrix4 transform) {
         if (body != null && !body.isInWorld()) {
+            initialTransform.set(transform);
             setTransform(transform);
             body.setMotionState(motionState);
 
@@ -114,8 +117,12 @@ public class RigidBodyComponent extends Component implements Disposable {
         }
     }
 
-    public void setTransform(Matrix4 transform) {
-        motionState.transform.set(transform);
+    public void setWorldTransform(Matrix4 transform) {
+        body.setWorldTransform(transform);
+    }
+
+    public void reset() {
+        setWorldTransform(initialTransform);
     }
 
     public boolean isAdded() {
@@ -140,6 +147,10 @@ public class RigidBodyComponent extends Component implements Disposable {
 
     public Quaternion getRotation() {
         return motionState.transform.getRotation(rotation);
+    }
+
+    private void setTransform(Matrix4 transform) {
+        motionState.transform.set(transform);
     }
 
     private void buildCollisionShape(Assets assets) {
