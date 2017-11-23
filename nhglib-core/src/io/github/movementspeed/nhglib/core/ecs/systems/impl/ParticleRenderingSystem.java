@@ -28,8 +28,6 @@ public class ParticleRenderingSystem extends BaseRenderingSystem {
         super(Aspect.all(NodeComponent.class, ParticleEffectComponent.class), entities);
         particleSystem = new ParticleSystem();
         particleEffectProvider = new ParticleEffectProvider();
-
-        renderableProviders.add(particleSystem);
     }
 
     @Override
@@ -55,6 +53,7 @@ public class ParticleRenderingSystem extends BaseRenderingSystem {
     protected void process(int entityId) {
         NodeComponent nodeComponent = nodeMapper.get(entityId);
         ParticleEffectComponent particleEffectComponent = particleEffectMapper.get(entityId);
+        renderableProviders.add(particleSystem);
 
         if (particleEffectComponent.state == ParticleEffectComponent.State.READY) {
             ParticleEffect particleEffect = particleEffectComponent.particleEffect;
