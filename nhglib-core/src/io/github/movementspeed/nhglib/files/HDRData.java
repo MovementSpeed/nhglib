@@ -10,164 +10,39 @@ import io.github.movementspeed.nhglib.utils.graphics.GLUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-/**
- * @author Peng Chen
- * http://aicp70.wixsite.com/aboutme/single-post/2015/10/29/1-HDR-file-and-its-readin-program-by-JAVA
- * This class is used to convert a HDR format image into a three-dimension float array represents the
- * RGB channels of the original image.
- */
 public class HDRData {
-    //the width of the HDR image
     private int width;
-    //the height of the HDR image
     private int height;
-    //This three-dimension float array is storing the three channels' information of the image.
-    //For example, pixels[2][3][1] presents the red channel[][][1] of row No.2 and col No.3 's pixel
-    private float[][][] pixels;
-    //This three-dimension int array is storing the four channels' information.
-    //[][][] the first and second is location information
-    //[][][] the third one is the R,G,B,E. which is its associated information.
-    private int[][][] buffers;
-    //This two-dimension float array is storing the luminance information of the pixel.
-    //We use the YUV format to calculate the luminance by lum=0.299*R+0.587*G+0.114*B
-    private float[][] lum;
 
-    private float[] flatPixelArray;
-
-    //The mean value of the lum[][]
     private float lummean;
-    //The maximum value of the lum[][]
     private float lummax;
-    //The minimum value of the lum[][]
     private float lummin;
 
     private Texture texture;
-    private Pixmap pixmap;
+    private FloatArray flatArray;
 
-    public void clear() {
-        pixels = null;
-        buffers = null;
-        lum = null;
-        flatPixelArray = null;
-        width = 0;
-        height = 0;
-        lummean = 0;
-        lummax = 0;
-        lummin = 0;
+    public HDRData(byte[] in) throws IOException {
+        if (in == null)
+            throw new NullPointerException();
 
+        float[][][] pixels = read(in);
+        texture = toTexture(pixels);
+        flatArray.clear();
+        flatArray = null;
+    }
+
+    public void dispose() {
         if (texture != null) {
             texture.dispose();
             texture = null;
         }
     }
 
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public float[][] getLumArray() {
-        return lum;
-    }
-
-    public float[][][] getPixelArray() {
-        return pixels;
-    }
-
-    public float[] getFlatPixelArray() {
-        FloatArray floats = new FloatArray();
-        flatPixelArray = new float[width * height * 3];
-
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                float r = pixels[y][x][0];
-                float g = pixels[y][x][1];
-                float b = pixels[y][x][2];
-
-                floats.addAll(r, g, b);
-            }
-        }
-
-        for (int i = 0; i < floats.size; i++) {
-            flatPixelArray[i] = floats.get(i);
-        }
-
-        floats.clear();
-
-        return flatPixelArray;
-    }
-
-    public float getLummax() {
-        return lummax;
-    }
-
-    public float getLummin() {
-        return lummin;
-    }
-
-    public float getLummean() {
-        return lummean;
-    }
-
-    //Construction method if the input is a file.
-    public HDRData(byte[] in) throws IOException {
-        if (in == null)
-            throw new NullPointerException();
-
-        read(in);
-    }
-
-    public Texture toTexture() {
-        float[] rgb = getFlatPixelArray();
-        float min = Float.MAX_VALUE, max = Float.MIN_VALUE;
-
-        for (float f : rgb) {
-            if (f < min) {
-                min = f;
-            }
-
-            if (f > max) {
-                max = f;
-            }
-        }
-
-        if (GLUtils.isFloatTextureSupported()) {
-            NhgFloatTextureData data = new NhgFloatTextureData(width, height, 3);
-            data.prepare();
-            data.getBuffer().put(rgb);
-            data.getBuffer().flip();
-
-            texture = new Texture(data);
-        } else {
-            pixmap = new Pixmap(width, height, Pixmap.Format.RGB888);
-
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    float r = pixels[y][x][0];
-                    float g = pixels[y][x][1];
-                    float b = pixels[y][x][2];
-
-                    r /= r + 1.0f;
-                    g /= g + 1.0f;
-                    b /= b + 1.0f;
-
-                    pixmap.drawPixel(x, y, Color.rgba8888(r, g, b, 1.0f));
-                }
-            }
-
-            texture = new Texture(pixmap);
-            pixmap.dispose();
-        }
-
+    public Texture getTexture() {
         return texture;
     }
 
-    //Construction method if the input is a InputStream.
-    //Parse the HDR file by its format. HDR format encode can be seen in Radiance HDR(.pic,.hdr) file format
-    private void read(byte[] in) throws IOException {
+    private float[][][] read(byte[] in) throws IOException {
         ByteCounter counter = new ByteCounter();
         //Parse HDR file's header line
         //readLine(InputStream in) method will be introduced later.
@@ -209,7 +84,7 @@ public class HDRData {
         //The pixel data may be stored uncompressed or using a straightforward run length encoding scheme.
 
         //DataInput din = new DataInputStream(in);
-        buffers = new int[height][width][4];
+        int[][][] buffers = new int[height][width][4];
 
         //We read the information row by row. In each row, the first four bytes store the column number information.
         //The first and second bytes store "2". And the third byte stores the higher 8 bits of col num, the fourth byte stores the lower 8 bits of col num.
@@ -279,8 +154,8 @@ public class HDRData {
 		 *By the way, we need generate the luminance of each pixel. By using the expressing:
 		 *Y=0.299*R+0.587*G+0.114*B;
 		 */
-        pixels = new float[height][width][3];
-        lum = new float[height][width];
+        float[][][] pixels = new float[height][width][3];
+        float[][] lum = new float[height][width];
         float lmax = 0.0F;     //This float value is storing the max value of FP32 (RGB) data.
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -295,11 +170,15 @@ public class HDRData {
                     pixels[i][j][0] = buffers[i][j][0] * exppart;
                     pixels[i][j][1] = buffers[i][j][1] * exppart;
                     pixels[i][j][2] = buffers[i][j][2] * exppart;
+
                     lum[i][j] = (float) (0.299 * pixels[i][j][0] + 0.587 * pixels[i][j][1] + 0.114 * pixels[i][j][2]);
+
                     if (lum[i][j] > lmax) {
                         lmax = lum[i][j];
                     }
                 }
+
+                flatArray.addAll(pixels[i][j][0], pixels[i][j][1], pixels[i][j][2]);
             }
         }
 
@@ -319,7 +198,60 @@ public class HDRData {
                 lumsum += lum[i][j];
             }
         }
+
         lummean = lumsum / (height * width);
+        return pixels;
+    }
+
+    private Texture toTexture(float[][][] pixels) {
+        Texture texture;
+
+        float[] rgb = new float[width * height * 3];
+        for (int i = 0; i < flatArray.size; i++) {
+            rgb[i] = flatArray.get(i);
+        }
+
+        float min = Float.MAX_VALUE, max = Float.MIN_VALUE;
+
+        for (float f : rgb) {
+            if (f < min) {
+                min = f;
+            }
+
+            if (f > max) {
+                max = f;
+            }
+        }
+
+        if (GLUtils.isFloatTextureSupported()) {
+            NhgFloatTextureData data = new NhgFloatTextureData(width, height, 3);
+            data.prepare();
+            data.getBuffer().put(rgb);
+            data.getBuffer().flip();
+
+            texture = new Texture(data);
+        } else {
+            Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGB888);
+
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    float r = pixels[y][x][0];
+                    float g = pixels[y][x][1];
+                    float b = pixels[y][x][2];
+
+                    r /= r + 1.0f;
+                    g /= g + 1.0f;
+                    b /= b + 1.0f;
+
+                    pixmap.drawPixel(x, y, Color.rgba8888(r, g, b, 1.0f));
+                }
+            }
+
+            texture = new Texture(pixmap);
+            pixmap.dispose();
+        }
+
+        return texture;
     }
 
     private String readLine(ByteCounter counter, byte[] bytes) throws IOException {

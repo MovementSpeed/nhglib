@@ -13,7 +13,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.UBJsonReader;
-import io.github.movementspeed.nhglib.files.HDRData2;
+import io.github.movementspeed.nhglib.files.HDRData;
 
 /**
  * Created by Fausto Napoli on 17/08/2017.
@@ -49,7 +49,36 @@ public class LightProbe {
         init();
     }
 
-    public void build(HDRData2 hdrData, float environmentWidth, float environmentHeight, float irradianceWidth, float irradianceHeight, float prefilterWidth, float prefilterHeight, float brdfWidth, float brdfHeight) {
+    public void build(Texture environment,
+                      float environmentWidth, float environmentHeight,
+                      float irradianceWidth, float irradianceHeight,
+                      float prefilterWidth, float prefilterHeight,
+                      float brdfWidth, float brdfHeight) {
+        this.environmentWidth = environmentWidth;
+        this.environmentHeight = environmentHeight;
+        this.irradianceWidth = irradianceWidth;
+        this.irradianceHeight = irradianceHeight;
+        this.prefilterWidth = prefilterWidth;
+        this.prefilterHeight = prefilterHeight;
+        this.brdfWidth = brdfWidth;
+        this.brdfHeight = brdfHeight;
+
+        initCameras();
+
+        environmentCubemap = renderEnvironmentFromTexture(environment);
+        irradianceCubemap = renderIrradiance(environmentCubemap);
+        prefilteredCubemap = renderPrefilter(environmentCubemap);
+        brdfTexture = renderBRDF();
+
+        cubeModel.dispose();
+        quadModel.dispose();
+    }
+
+    public void build(HDRData hdrData,
+                      float environmentWidth, float environmentHeight,
+                      float irradianceWidth, float irradianceHeight,
+                      float prefilterWidth, float prefilterHeight,
+                      float brdfWidth, float brdfHeight) {
         this.environmentWidth = environmentWidth;
         this.environmentHeight = environmentHeight;
         this.irradianceWidth = irradianceWidth;
@@ -76,7 +105,7 @@ public class LightProbe {
     }
 
     public void build(float environmentWidth, float environmentHeight) {
-        build(null, environmentWidth, environmentHeight, 32f, 32f,
+        build((HDRData) null, environmentWidth, environmentHeight, 32f, 32f,
                 128f, 128f, environmentWidth, environmentHeight);
     }
 
@@ -154,13 +183,42 @@ public class LightProbe {
         pc6.update();
     }
 
-    private Cubemap renderEnvironmentFromHDRData(HDRData2 data) {
+    private Cubemap renderEnvironmentFromHDRData(HDRData data) {
         Texture equirectangularTexture;
         ShaderProgram equiToCubeShader = new ShaderProgram(
                 Gdx.files.internal("shaders/equi_to_cube_shader.vert"),
                 Gdx.files.internal("shaders/equi_to_cube_shader.frag"));
 
         equirectangularTexture = data.getTexture();
+
+        GLFrameBuffer.FrameBufferCubemapBuilder builder = new GLFrameBuffer.FrameBufferCubemapBuilder(
+                (int) environmentWidth, (int) environmentHeight);
+        builder.addColorTextureAttachment(GL30.GL_RGB8, GL30.GL_RGB, GL30.GL_UNSIGNED_BYTE);
+        builder.addDepthRenderBufferAttachment();
+        FrameBufferCubemap frameBufferCubemap = builder.build();
+
+        equirectangularTexture.bind(0);
+        equiToCubeShader.begin();
+        equiToCubeShader.setUniformMatrix("u_projection", perspectiveCameras.first().projection);
+        equiToCubeShader.setUniformi("u_equirectangularMap", 0);
+        frameBufferCubemap.begin();
+        for (int i = 0; i < 6; i++) {
+            equiToCubeShader.setUniformMatrix("u_view", perspectiveCameras.get(i).view);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+            cubeMesh.render(equiToCubeShader, GL20.GL_TRIANGLES);
+            frameBufferCubemap.nextSide();
+        }
+        frameBufferCubemap.end();
+        equiToCubeShader.end();
+        equiToCubeShader.dispose();
+
+        return frameBufferCubemap.getColorBufferTexture();
+    }
+
+    private Cubemap renderEnvironmentFromTexture(Texture equirectangularTexture) {
+        ShaderProgram equiToCubeShader = new ShaderProgram(
+                Gdx.files.internal("shaders/equi_to_cube_shader.vert"),
+                Gdx.files.internal("shaders/equi_to_cube_shader.frag"));
 
         GLFrameBuffer.FrameBufferCubemapBuilder builder = new GLFrameBuffer.FrameBufferCubemapBuilder(
                 (int) environmentWidth, (int) environmentHeight);

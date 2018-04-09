@@ -22,7 +22,7 @@ import io.github.movementspeed.nhglib.core.ecs.utils.Entities;
 import io.github.movementspeed.nhglib.core.messaging.Message;
 import io.github.movementspeed.nhglib.core.messaging.Messaging;
 import io.github.movementspeed.nhglib.data.models.serialization.components.*;
-import io.github.movementspeed.nhglib.files.HDRData2;
+import io.github.movementspeed.nhglib.files.HDRData;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
 import io.github.movementspeed.nhglib.graphics.utils.PbrMaterial;
 import io.github.movementspeed.nhglib.physics.models.BvhTriangleMeshRigidBodyShape;
@@ -73,7 +73,7 @@ public class SceneManager {
         SceneUtils.addAssetClassMapping("model", Model.class);
         SceneUtils.addAssetClassMapping("texture", Texture.class);
         SceneUtils.addAssetClassMapping("particleEffect", ParticleEffect.class);
-        SceneUtils.addAssetClassMapping("hdr", HDRData2.class);
+        SceneUtils.addAssetClassMapping("hdr", HDRData.class);
         SceneUtils.addAssetClassMapping("textureAtlas", TextureAtlas.class);
         SceneUtils.addAssetClassMapping("bitmapFont", BitmapFont.class);
     }

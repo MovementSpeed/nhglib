@@ -17,7 +17,7 @@ import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.assets.loaders.*;
 import io.github.movementspeed.nhglib.core.fsm.base.AssetsStates;
 import io.github.movementspeed.nhglib.core.messaging.Message;
-import io.github.movementspeed.nhglib.files.HDRData2;
+import io.github.movementspeed.nhglib.files.HDRData;
 import io.github.movementspeed.nhglib.graphics.scenes.Scene;
 import io.github.movementspeed.nhglib.input.handler.InputProxy;
 import io.github.movementspeed.nhglib.interfaces.Updatable;
@@ -52,14 +52,14 @@ public class Assets implements Updatable, AssetErrorListener {
         assetManager.setLoader(Scene.class, new SceneLoader(nhg, resolver));
         assetManager.setLoader(InputProxy.class, new InputLoader(resolver));
         assetManager.setLoader(JsonValue.class, new JsonLoader(resolver));
-        assetManager.setLoader(HDRData2.class, new HDRLoader(resolver));
+        assetManager.setLoader(HDRData.class, new HDRLoader(resolver));
         assetManager.setLoader(Model.class, ".g3db", new NhgG3dModelLoader(this,
                 new UBJsonReader(), resolver));
 
         syncAssetManager.setLoader(Scene.class, new SceneLoader(nhg, syncResolver));
         syncAssetManager.setLoader(InputProxy.class, new InputLoader(syncResolver));
         syncAssetManager.setLoader(JsonValue.class, new JsonLoader(syncResolver));
-        syncAssetManager.setLoader(HDRData2.class, new HDRLoader(syncResolver));
+        syncAssetManager.setLoader(HDRData.class, new HDRLoader(syncResolver));
         syncAssetManager.setLoader(Model.class, ".g3db", new NhgG3dModelLoader(this,
                 new UBJsonReader(), syncResolver));
 
