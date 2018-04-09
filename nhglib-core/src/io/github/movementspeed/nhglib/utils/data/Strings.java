@@ -15,6 +15,7 @@ public class Strings {
     public static class Defaults {
         public final static String modelsPath = "models/";
         public final static String assetKey = "nhg_asset";
+        public final static String assetPackageKey = "nhg_asset_package";
         public final static String inputKey = "nhg_input";
         public final static String sceneKey = "nhg_scene";
     }

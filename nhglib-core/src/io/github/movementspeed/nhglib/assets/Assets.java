@@ -222,7 +222,10 @@ public class Assets implements Updatable, AssetErrorListener {
                             Asset asset = (Asset) message.data.get(Strings.Defaults.assetKey);
                             if (assetPackage.containsAsset(asset.alias)) {
                                 if (assetPackage.decreaseAndCheckRemaining()) {
-                                    nhg.messaging.send(new Message(Strings.Events.assetPackageLoaded));
+                                    Bundle bundle = new Bundle();
+                                    bundle.put(Strings.Defaults.assetPackageKey, assetPackage);
+
+                                    nhg.messaging.send(new Message(Strings.Events.assetPackageLoaded, bundle));
                                     dispose();
                                 }
                             }
