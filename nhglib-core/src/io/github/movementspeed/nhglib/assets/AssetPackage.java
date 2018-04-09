@@ -23,6 +23,18 @@ public class AssetPackage {
         addAsset(new Asset(alias, source, assetClass));
     }
 
+    public void addAssets(Asset ... assets) {
+        for (Asset asset : assets) {
+            addAsset(asset);
+        }
+    }
+
+    public void addAssets(Array<Asset> assets) {
+        for (Asset asset : assets) {
+            addAsset(asset);
+        }
+    }
+
     public boolean decreaseAndCheckRemaining() {
         remainingAssets--;
         return remainingAssets == 0;
@@ -39,6 +51,14 @@ public class AssetPackage {
         }
 
         return contained;
+    }
+
+    public boolean is(String alias) {
+        return alias != null && this.alias.contentEquals(alias);
+    }
+
+    public boolean is(AssetPackage assetPackage) {
+        return assetPackage != null && this.alias.contentEquals(assetPackage.alias);
     }
 
     public Array<Asset> getAssets() {

@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffectLoader;
 import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.assets.Asset;
+import io.github.movementspeed.nhglib.assets.AssetPackage;
 import io.github.movementspeed.nhglib.assets.Assets;
 import io.github.movementspeed.nhglib.core.ecs.components.graphics.ModelComponent;
 import io.github.movementspeed.nhglib.core.ecs.components.graphics.ParticleEffectComponent;
@@ -39,8 +40,6 @@ import io.reactivex.functions.Consumer;
  * Created by Fausto Napoli on 08/12/2016.
  */
 public class SceneManager {
-    private int assetsToLoad;
-
     private Scene currentScene;
     private Messaging messaging;
     private Entities entities;
@@ -83,32 +82,26 @@ public class SceneManager {
 
     public void loadScene(final Scene scene) {
         currentScene = scene;
-
         processAssets(scene.assets);
-        assets.queueAssets(scene.assets);
 
-        assetsToLoad = scene.assets.size;
+        AssetPackage assetPackage = new AssetPackage(scene.name);
+        assetPackage.addAssets(scene.assets);
+        assets.queueAssetPackage(assetPackage);
 
-        messaging.get(Strings.Events.assetLoadingFinished, Strings.Events.assetLoaded)
+        messaging.get(Strings.Events.assetPackageLoaded)
                 .subscribe(new Consumer<Message>() {
                     @Override
-                    public void accept(Message message) throws Exception {
-                        if (message.is(Strings.Events.assetLoadingFinished)) {
+                    public void accept(Message message) {
+                        AssetPackage assetPackage = (AssetPackage) message.data.get(Strings.Defaults.assetPackageKey);
+
+                        if (assetPackage.is(scene.name)) {
                             for (int entity : scene.sceneGraph.getEntities()) {
                                 processEntityAssets(entity, true);
                             }
-                        } else if (message.is(Strings.Events.assetLoaded)) {
-                            Asset asset = (Asset) message.data.get(Strings.Defaults.assetKey);
 
-                            if (scene.assets.contains(asset, true)) {
-                                assetsToLoad--;
-                            }
-
-                            if (assetsToLoad == 0) {
-                                Bundle messageBundle = new Bundle();
-                                messageBundle.put(Strings.Defaults.sceneKey, scene);
-                                messaging.send(new Message(Strings.Events.sceneLoaded, messageBundle));
-                            }
+                            Bundle messageBundle = new Bundle();
+                            messageBundle.put(Strings.Defaults.sceneKey, scene);
+                            messaging.send(new Message(Strings.Events.sceneLoaded, messageBundle));
                         }
                     }
                 });
