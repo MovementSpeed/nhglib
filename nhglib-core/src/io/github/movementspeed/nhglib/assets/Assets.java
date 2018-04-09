@@ -226,7 +226,6 @@ public class Assets implements Updatable, AssetErrorListener {
                                     bundle.put(Strings.Defaults.assetPackageKey, assetPackage);
 
                                     nhg.messaging.send(new Message(Strings.Events.assetPackageLoaded, bundle));
-                                    dispose();
                                 }
                             }
                         }
