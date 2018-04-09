@@ -7,7 +7,7 @@ import io.github.movementspeed.nhglib.utils.data.Strings;
  * Created by Fausto Napoli on 25/10/2016.
  */
 public class Asset {
-    public String alias;
+    public final String alias;
     public String source;
     public String dependenciesPath;
 

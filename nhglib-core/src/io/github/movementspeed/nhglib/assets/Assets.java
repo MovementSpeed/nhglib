@@ -212,6 +212,25 @@ public class Assets implements Updatable, AssetErrorListener {
         }
     }
 
+    public void queueAssetPackage(final AssetPackage assetPackage) {
+        if (assetPackage != null) {
+            queueAssets(assetPackage.getAssets());
+            nhg.messaging.get(Strings.Events.assetLoaded)
+                    .subscribe(new Consumer<Message>() {
+                        @Override
+                        public void accept(Message message) {
+                            Asset asset = (Asset) message.data.get(Strings.Defaults.assetKey);
+                            if (assetPackage.containsAsset(asset.alias)) {
+                                if (assetPackage.decreaseAndCheckRemaining()) {
+                                    nhg.messaging.send(new Message(Strings.Events.assetPackageLoaded));
+                                    dispose();
+                                }
+                            }
+                        }
+                    });
+        }
+    }
+
     public <T> T loadAssetSync(Asset asset) {
         T t = null;
 

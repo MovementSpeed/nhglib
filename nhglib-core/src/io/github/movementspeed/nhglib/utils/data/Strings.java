@@ -23,6 +23,7 @@ public class Strings {
         public final static String engineDestroy = "nhg_event_engine_destroy";
         public final static String assetLoadingFinished = "nhg_event_asset_loading_finished";
         public final static String assetLoaded = "nhg_event_asset_loaded";
+        public final static String assetPackageLoaded = "nhg_event_asset_package_loaded";
         public final static String assetUnloaded = "nhg_event_asset_unloaded";
         public final static String keyInputTriggered = "nhg_event_input_triggered";
         public final static String sceneLoaded = "nhg_event_scene_loaded";
