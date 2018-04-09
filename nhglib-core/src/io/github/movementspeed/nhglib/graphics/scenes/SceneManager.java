@@ -172,7 +172,7 @@ public class SceneManager {
             modelComponent.buildWithModel(model);
 
             for (PbrMaterial pbrMaterial : modelComponent.pbrMaterials) {
-                if (!pbrMaterial.albedo.isEmpty()) {
+                if (pbrMaterial.albedo != null && !pbrMaterial.albedo.isEmpty()) {
                     Texture albedo = assets.get(pbrMaterial.albedo);
 
                     if (albedo != null) {
@@ -180,7 +180,7 @@ public class SceneManager {
                     }
                 }
 
-                if (!pbrMaterial.ambientOcclusion.isEmpty()) {
+                if (pbrMaterial.ambientOcclusion != null && !pbrMaterial.ambientOcclusion.isEmpty()) {
                     Texture ambientOcclusion = assets.get(pbrMaterial.ambientOcclusion);
 
                     if (ambientOcclusion != null) {
@@ -188,7 +188,7 @@ public class SceneManager {
                     }
                 }
 
-                if (!pbrMaterial.metalness.isEmpty()) {
+                if (pbrMaterial.metalness != null && !pbrMaterial.metalness.isEmpty()) {
                     Texture metalness = assets.get(pbrMaterial.metalness);
 
                     if (metalness != null) {
@@ -196,7 +196,7 @@ public class SceneManager {
                     }
                 }
 
-                if (!pbrMaterial.normal.isEmpty()) {
+                if (pbrMaterial.normal != null && !pbrMaterial.normal.isEmpty()) {
                     Texture normal = assets.get(pbrMaterial.normal);
 
                     if (normal != null) {
@@ -204,7 +204,7 @@ public class SceneManager {
                     }
                 }
 
-                if (!pbrMaterial.roughness.isEmpty()) {
+                if (pbrMaterial.roughness != null && !pbrMaterial.roughness.isEmpty()) {
                     Texture roughness = assets.get(pbrMaterial.roughness);
 
                     if (roughness != null) {

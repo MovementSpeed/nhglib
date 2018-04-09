@@ -93,17 +93,21 @@ public class Assets implements Updatable, AssetErrorListener {
     }
 
     public void assetLoaded(Asset asset) {
-        Bundle bundle = new Bundle();
-        bundle.put(Strings.Defaults.assetKey, asset);
+        if (asset != null) {
+            Bundle bundle = new Bundle();
+            bundle.put(Strings.Defaults.assetKey, asset);
 
-        nhg.messaging.send(new Message(Strings.Events.assetLoaded, bundle));
+            nhg.messaging.send(new Message(Strings.Events.assetLoaded, bundle));
+        }
     }
 
     public void assetUnloaded(Asset asset) {
-        Bundle bundle = new Bundle();
-        bundle.put(Strings.Defaults.assetKey, asset);
+        if (asset != null) {
+            Bundle bundle = new Bundle();
+            bundle.put(Strings.Defaults.assetKey, asset);
 
-        nhg.messaging.send(new Message(Strings.Events.assetUnloaded, bundle));
+            nhg.messaging.send(new Message(Strings.Events.assetUnloaded, bundle));
+        }
     }
 
     public Array<Asset> getAssetQueue() {
@@ -111,13 +115,19 @@ public class Assets implements Updatable, AssetErrorListener {
     }
 
     public <T> T get(String alias) {
-        return get(assetCache.get(alias));
+        T t = null;
+
+        if (alias != null) {
+            t = get(assetCache.get(alias));
+        }
+
+        return t;
     }
 
     public <T> T get(Asset asset) {
         T t = null;
 
-        if (assetManager.isLoaded(asset.source)) {
+        if (asset != null && assetManager.isLoaded(asset.source)) {
             t = assetManager.get(asset.source);
         }
 
@@ -125,7 +135,13 @@ public class Assets implements Updatable, AssetErrorListener {
     }
 
     public Asset getAsset(String alias) {
-        return assetCache.get(alias);
+        return alias == null ? null : assetCache.get(alias);
+    }
+
+    public Asset createAsset(String alias, String source, Class assetClass) {
+        Asset asset = new Asset(alias, source, assetClass);
+        assetCache.put(alias, asset);
+        return asset;
     }
 
     public ArrayMap.Values<Asset> getCachedAssets() {
@@ -139,19 +155,23 @@ public class Assets implements Updatable, AssetErrorListener {
      * @param listener a listener for the asset loading.
      */
     public void loadAsset(final Asset asset, final AssetListener listener) {
-        queueAsset(asset);
+        if (asset != null) {
+            queueAsset(asset);
 
-        nhg.messaging.get(Strings.Events.assetLoaded)
-                .subscribe(new Consumer<Message>() {
-                    @Override
-                    public void accept(Message message) throws Exception {
-                        Asset loadedAsset = (Asset) message.data.get(Strings.Defaults.assetKey);
+            nhg.messaging.get(Strings.Events.assetLoaded)
+                    .subscribe(new Consumer<Message>() {
+                        @Override
+                        public void accept(Message message) throws Exception {
+                            Asset loadedAsset = (Asset) message.data.get(Strings.Defaults.assetKey);
 
-                        if (loadedAsset.is(asset)) {
-                            listener.onAssetLoaded(asset);
+                            if (loadedAsset.is(asset)) {
+                                if (listener != null) {
+                                    listener.onAssetLoaded(asset);
+                                }
+                            }
                         }
-                    }
-                });
+                    });
+        }
     }
 
     /**
@@ -161,24 +181,26 @@ public class Assets implements Updatable, AssetErrorListener {
      */
     @SuppressWarnings("unchecked")
     public void queueAsset(Asset asset) {
-        assetCache.put(asset.alias, asset);
+        if (asset != null) {
+            assetCache.put(asset.alias, asset);
 
-        if (!assetManager.isLoaded(asset.source)) {
-            FileHandle fileHandle = Gdx.files.internal(asset.source);
+            if (!assetManager.isLoaded(asset.source)) {
+                FileHandle fileHandle = Gdx.files.internal(asset.source);
 
-            if (fileHandle.exists()) {
-                if (asset.parameters == null) {
-                    assetManager.load(asset.source, asset.assetClass);
+                if (fileHandle.exists()) {
+                    if (asset.parameters == null) {
+                        assetManager.load(asset.source, asset.assetClass);
+                    } else {
+                        assetManager.load(asset.source, asset.assetClass, asset.parameters);
+                    }
+
+                    assetQueue.add(asset);
                 } else {
-                    assetManager.load(asset.source, asset.assetClass, asset.parameters);
+                    NhgLogger.log(this, Strings.Messages.cannotQueueAssetFileNotFound, asset.source);
                 }
-
-                assetQueue.add(asset);
             } else {
-                NhgLogger.log(this, Strings.Messages.cannotQueueAssetFileNotFound, asset.source);
+                assetLoaded(asset);
             }
-        } else {
-            assetLoaded(asset);
         }
     }
 
@@ -192,32 +214,37 @@ public class Assets implements Updatable, AssetErrorListener {
 
     public <T> T loadAssetSync(Asset asset) {
         T t = null;
-        assetCache.put(asset.alias, asset);
 
-        if (!syncAssetManager.isLoaded(asset.source)) {
-            FileHandle fileHandle = Gdx.files.internal(asset.source);
+        if (asset != null) {
+            assetCache.put(asset.alias, asset);
 
-            if (fileHandle.exists()) {
-                if (asset.parameters == null) {
-                    syncAssetManager.load(asset.source, asset.assetClass);
+            if (!syncAssetManager.isLoaded(asset.source)) {
+                FileHandle fileHandle = Gdx.files.internal(asset.source);
+
+                if (fileHandle.exists()) {
+                    if (asset.parameters == null) {
+                        syncAssetManager.load(asset.source, asset.assetClass);
+                    } else {
+                        syncAssetManager.load(asset.source, asset.assetClass, asset.parameters);
+                    }
+
+                    syncAssetManager.finishLoading();
+                    t = syncAssetManager.get(asset.source);
                 } else {
-                    syncAssetManager.load(asset.source, asset.assetClass, asset.parameters);
+                    NhgLogger.log(this, Strings.Messages.cannotQueueAssetFileNotFound, asset.source);
                 }
-
-                syncAssetManager.finishLoading();
-                t = syncAssetManager.get(asset.source);
             } else {
-                NhgLogger.log(this, Strings.Messages.cannotQueueAssetFileNotFound, asset.source);
+                t = syncAssetManager.get(asset.source);
             }
-        } else {
-            t = syncAssetManager.get(asset.source);
         }
 
         return t;
     }
 
     public void dequeueAsset(Asset asset) {
-        assetQueue.removeValue(asset, true);
+        if (asset != null) {
+            assetQueue.removeValue(asset, true);
+        }
     }
 
     public void clear() {
@@ -225,7 +252,9 @@ public class Assets implements Updatable, AssetErrorListener {
     }
 
     public void unloadAsset(String alias) {
-        unloadAsset(getAsset(alias));
+        if (alias != null && !alias.isEmpty()) {
+            unloadAsset(getAsset(alias));
+        }
     }
 
     public void unloadAsset(Asset asset) {
@@ -259,7 +288,7 @@ public class Assets implements Updatable, AssetErrorListener {
     }
 
     public boolean assetInQueue(Asset asset) {
-        return assetQueue.contains(asset, true);
+        return asset != null && assetQueue.contains(asset, true);
     }
 
     public interface AssetListener {
