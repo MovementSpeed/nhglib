@@ -5,8 +5,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.model.Node;
-import com.badlogic.gdx.graphics.g3d.model.NodePart;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffectLoader;
 import com.badlogic.gdx.utils.Array;
@@ -206,13 +204,9 @@ public class SceneManager {
                 }
 
                 if (pbrMaterial.targetNode != null && !pbrMaterial.targetNode.isEmpty()) {
-                    Node targetNode = modelComponent.model.getNode(pbrMaterial.targetNode);
-
-                    for (NodePart nodePart : targetNode.parts) {
-                        nodePart.material = pbrMaterial;
-                    }
+                    modelComponent.setPbrMaterial(pbrMaterial.targetNode, pbrMaterial);
                 } else {
-                    modelComponent.model.materials.first().set(pbrMaterial);
+                    modelComponent.setPbrMaterial(0, pbrMaterial);
                 }
             }
         } else {

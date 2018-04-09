@@ -3,6 +3,8 @@ package io.github.movementspeed.nhglib.core.ecs.components.graphics;
 import com.artemis.Component;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.model.Node;
+import com.badlogic.gdx.graphics.g3d.model.NodePart;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
@@ -57,6 +59,18 @@ public class ModelComponent extends Component {
     public void buildWithAsset(String asset) {
         this.asset = asset;
         this.state = State.NOT_INITIALIZED;
+    }
+
+    public void setPbrMaterial(int index, PbrMaterial material) {
+        model.materials.get(index).set(material);
+    }
+
+    public void setPbrMaterial(String nodeId, PbrMaterial material) {
+        Node targetNode = model.getNode(nodeId);
+
+        for (NodePart nodePart : targetNode.parts) {
+            nodePart.material = material;
+        }
     }
 
     public enum State {
