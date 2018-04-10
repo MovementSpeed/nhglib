@@ -133,7 +133,7 @@ public class SystemInputHandler implements InputHandler {
                     if (input0.hasTouchInputType(TouchInputType.PINCH)) {
                         float dS = Vector2.dst(initialPointer1.x, initialPointer1.y, initialPointer2.x, initialPointer2.y);
                         float dF = Vector2.dst(pointer1.x, pointer1.y, pointer2.x, pointer2.y);
-                        float value = Math.abs(dF - dS);
+                        float value = dF - dS;
 
                         input0.setAction(InputAction.PINCH);
                         input0.setValue(value);
