@@ -207,6 +207,8 @@ public class SystemInputHandler implements InputHandler {
             @Override
             public boolean touchDragged(int screenX, int screenY, int pointer) {
                 NhgInput input = touchInputs.get(pointer);
+                screenX = Gdx.input.getDeltaX(pointer);
+                screenY = Gdx.input.getDeltaY(pointer);
 
                 if (input != null && input.isValid()) {
                     input.setAction(InputAction.DRAG);
