@@ -37,16 +37,18 @@ public class EntityJson implements JsonParseable<Integer> {
 
         JsonValue componentsJson = jsonValue.get("components");
 
-        for (JsonValue componentJsonValue : componentsJson) {
-            String type = componentJsonValue.getString("type");
-            ComponentJson componentJson = SceneUtils.componentJsonFromType(type);
+        if (componentsJson != null) {
+            for (JsonValue componentJsonValue : componentsJson) {
+                String type = componentJsonValue.getString("type");
+                ComponentJson componentJson = SceneUtils.componentJsonFromType(type);
 
-            if (componentJson != null) {
-                componentJson.parentEntity = parentEntity;
-                componentJson.entity = entity;
-                componentJson.nhg = nhg;
-                componentJson.sceneGraph = sceneGraph;
-                componentJson.parse(componentJsonValue);
+                if (componentJson != null) {
+                    componentJson.parentEntity = parentEntity;
+                    componentJson.entity = entity;
+                    componentJson.nhg = nhg;
+                    componentJson.sceneGraph = sceneGraph;
+                    componentJson.parse(componentJsonValue);
+                }
             }
         }
 
