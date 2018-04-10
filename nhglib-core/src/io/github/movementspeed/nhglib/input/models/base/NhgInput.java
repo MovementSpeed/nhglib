@@ -1,9 +1,9 @@
 package io.github.movementspeed.nhglib.input.models.base;
 
 import io.github.movementspeed.nhglib.input.enums.InputAction;
+import io.github.movementspeed.nhglib.input.enums.InputMode;
+import io.github.movementspeed.nhglib.input.enums.InputType;
 import io.github.movementspeed.nhglib.input.models.InputContext;
-import io.github.movementspeed.nhglib.input.models.InputMode;
-import io.github.movementspeed.nhglib.input.models.InputType;
 
 /**
  * Created by Fausto Napoli on 08/01/2017.

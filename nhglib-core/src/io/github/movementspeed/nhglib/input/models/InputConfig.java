@@ -1,5 +1,8 @@
 package io.github.movementspeed.nhglib.input.models;
 
+import io.github.movementspeed.nhglib.input.enums.InputMode;
+import io.github.movementspeed.nhglib.input.enums.StickType;
+
 /**
  * Created by Fausto Napoli on 08/01/2017.
  */

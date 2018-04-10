@@ -25,6 +25,7 @@
           "inputType": "touch",
           "inputName": "testTouch",
           "inputMode": "once",
+          "touchInputTypes": "tap|drag|pinch",
           "pointerNumber": 0
         }
       ]

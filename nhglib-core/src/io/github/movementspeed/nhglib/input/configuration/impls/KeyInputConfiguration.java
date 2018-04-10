@@ -1,7 +1,7 @@
 package io.github.movementspeed.nhglib.input.configuration.impls;
 
 import io.github.movementspeed.nhglib.input.configuration.base.InputConfiguration;
-import io.github.movementspeed.nhglib.input.models.InputMode;
+import io.github.movementspeed.nhglib.input.enums.InputMode;
 
 /**
  * Created by Fausto Napoli on 24/01/2017.

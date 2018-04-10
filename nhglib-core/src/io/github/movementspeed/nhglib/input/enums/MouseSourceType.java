@@ -1,4 +1,4 @@
-package io.github.movementspeed.nhglib.input.models;
+package io.github.movementspeed.nhglib.input.enums;
 
 import com.badlogic.gdx.Input;
 

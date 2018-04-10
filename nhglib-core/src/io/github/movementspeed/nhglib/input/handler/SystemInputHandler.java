@@ -4,12 +4,14 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import io.github.movementspeed.nhglib.input.enums.InputAction;
+import io.github.movementspeed.nhglib.input.enums.InputType;
+import io.github.movementspeed.nhglib.input.enums.TouchInputType;
 import io.github.movementspeed.nhglib.input.interfaces.InputHandler;
-import io.github.movementspeed.nhglib.input.models.InputType;
 import io.github.movementspeed.nhglib.input.models.base.NhgInput;
 import io.github.movementspeed.nhglib.input.models.impls.system.NhgKeyboardButtonInput;
 import io.github.movementspeed.nhglib.input.models.impls.system.NhgMouseButtonInput;
@@ -86,7 +88,70 @@ public class SystemInputHandler implements InputHandler {
     }
 
     private void handleSystemInput(InputMultiplexer inputMultiplexer) {
-        InputProcessor ip = new InputProcessor() {
+        InputProcessor highLevelInput = new GestureDetector(new GestureDetector.GestureListener() {
+            @Override
+            public boolean touchDown(float x, float y, int pointer, int button) {
+                // pass through to low level handler
+                return false;
+            }
+
+            @Override
+            public boolean tap(float x, float y, int count, int button) {
+                return false;
+            }
+
+            @Override
+            public boolean longPress(float x, float y) {
+                return false;
+            }
+
+            @Override
+            public boolean fling(float velocityX, float velocityY, int button) {
+                return false;
+            }
+
+            @Override
+            public boolean pan(float x, float y, float deltaX, float deltaY) {
+                return false;
+            }
+
+            @Override
+            public boolean panStop(float x, float y, int pointer, int button) {
+                return false;
+            }
+
+            @Override
+            public boolean zoom(float initialDistance, float distance) {
+                return false;
+            }
+
+            @Override
+            public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+                NhgTouchInput input0 = touchInputs.get(0);
+
+                if (input0 != null && input0.isValid()) {
+                    if (input0.hasTouchInputType(TouchInputType.PINCH)) {
+                        float dS = Vector2.dst(initialPointer1.x, initialPointer1.y, initialPointer2.x, initialPointer2.y);
+                        float dF = Vector2.dst(pointer1.x, pointer1.y, pointer2.x, pointer2.y);
+                        float value = Math.abs(dF - dS);
+
+                        input0.setAction(InputAction.PINCH);
+                        input0.setValue(value);
+
+                        inputProxy.onInput(input0);
+                    }
+                }
+
+                return true;
+            }
+
+            @Override
+            public void pinchStop() {
+
+            }
+        });
+
+        InputProcessor lowLevelInput = new InputProcessor() {
             @Override
             public boolean keyDown(int keyCode) {
                 NhgKeyboardButtonInput input = keyboardButtonInputs.get(keyCode);
@@ -152,22 +217,24 @@ public class SystemInputHandler implements InputHandler {
                         }
                     }
                 } else {
-                    input = touchInputs.get(pointer);
+                    NhgTouchInput touchInput = touchInputs.get(pointer);
 
-                    if (input != null && input.isValid()) {
-                        input.setAction(InputAction.DOWN);
-                        input.setValue(vec0.set(screenX, screenY));
+                    if (touchInput != null && touchInput.isValid()) {
+                        if (touchInput.hasTouchInputType(TouchInputType.TAP)) {
+                            touchInput.setAction(InputAction.DOWN);
+                            touchInput.setValue(vec0.set(screenX, screenY));
 
-                        switch (input.getMode()) {
-                            case REPEAT:
-                                if (!activeTouchInputs.contains(pointer, true)) {
-                                    activeTouchInputs.add(pointer);
-                                }
-                                break;
+                            switch (touchInput.getMode()) {
+                                case REPEAT:
+                                    if (!activeTouchInputs.contains(pointer, true)) {
+                                        activeTouchInputs.add(pointer);
+                                    }
+                                    break;
 
-                            default:
-                                inputProxy.onInput(input);
-                                break;
+                                default:
+                                    inputProxy.onInput(touchInput);
+                                    break;
+                            }
                         }
                     }
                 }
@@ -190,14 +257,16 @@ public class SystemInputHandler implements InputHandler {
                         inputProxy.onInput(input);
                     }
                 } else {
-                    input = touchInputs.get(pointer);
+                    NhgTouchInput touchInput = touchInputs.get(pointer);
 
-                    if (input != null && input.isValid()) {
-                        input.setAction(InputAction.UP);
-                        input.setValue(vec0.set(screenX, screenY));
+                    if (touchInput != null && touchInput.isValid()) {
+                        if (touchInput.hasTouchInputType(TouchInputType.TAP)) {
+                            touchInput.setAction(InputAction.UP);
+                            touchInput.setValue(vec0.set(screenX, screenY));
 
-                        activeTouchInputs.removeValue(pointer, true);
-                        inputProxy.onInput(input);
+                            activeTouchInputs.removeValue(pointer, true);
+                            inputProxy.onInput(touchInput);
+                        }
                     }
                 }
 
@@ -206,14 +275,18 @@ public class SystemInputHandler implements InputHandler {
 
             @Override
             public boolean touchDragged(int screenX, int screenY, int pointer) {
-                NhgInput input = touchInputs.get(pointer);
-                screenX = Gdx.input.getDeltaX(pointer);
-                screenY = Gdx.input.getDeltaY(pointer);
+                NhgTouchInput input = touchInputs.get(pointer);
 
                 if (input != null && input.isValid()) {
-                    input.setAction(InputAction.DRAG);
-                    input.setValue(vec0.set(screenX, screenY));
-                    inputProxy.onInput(input);
+                    if (input.hasTouchInputType(TouchInputType.DRAG)) {
+                        screenX = Gdx.input.getDeltaX(pointer);
+                        screenY = Gdx.input.getDeltaY(pointer);
+
+                        input.setAction(InputAction.DRAG);
+                        input.setValue(vec0.set(screenX, screenY));
+
+                        inputProxy.onInput(input);
+                    }
                 }
 
                 return false;
@@ -230,7 +303,8 @@ public class SystemInputHandler implements InputHandler {
             }
         };
 
-        inputMultiplexer.addProcessor(ip);
+        inputMultiplexer.addProcessor(highLevelInput);
+        inputMultiplexer.addProcessor(lowLevelInput);
     }
 
     private boolean isDesktop() {

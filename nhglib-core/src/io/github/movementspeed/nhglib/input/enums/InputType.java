@@ -1,4 +1,4 @@
-package io.github.movementspeed.nhglib.input.models;
+package io.github.movementspeed.nhglib.input.enums;
 
 /**
  * Created by Fausto Napoli on 08/01/2017.

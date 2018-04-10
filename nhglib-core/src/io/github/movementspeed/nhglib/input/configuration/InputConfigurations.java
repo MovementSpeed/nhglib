@@ -6,7 +6,7 @@ import io.github.movementspeed.nhglib.input.configuration.impls.MouseInputConfig
 import io.github.movementspeed.nhglib.input.configuration.impls.PointerInputConfiguration;
 import io.github.movementspeed.nhglib.input.configuration.impls.StickInputConfiguration;
 import io.github.movementspeed.nhglib.input.controllers.ControllerConfiguration;
-import io.github.movementspeed.nhglib.input.models.MouseSourceType;
+import io.github.movementspeed.nhglib.input.enums.MouseSourceType;
 
 /**
  * Created by Fausto Napoli on 25/01/2017.

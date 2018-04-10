@@ -6,5 +6,6 @@ package io.github.movementspeed.nhglib.input.enums;
 public enum InputAction {
     DOWN,
     UP,
-    DRAG
+    DRAG,
+    PINCH
 }

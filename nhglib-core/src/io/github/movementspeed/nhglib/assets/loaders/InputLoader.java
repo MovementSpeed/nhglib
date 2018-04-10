@@ -9,10 +9,11 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import io.github.movementspeed.nhglib.input.enums.InputMode;
+import io.github.movementspeed.nhglib.input.enums.InputType;
+import io.github.movementspeed.nhglib.input.enums.TouchInputType;
 import io.github.movementspeed.nhglib.input.handler.InputProxy;
 import io.github.movementspeed.nhglib.input.models.InputContext;
-import io.github.movementspeed.nhglib.input.models.InputMode;
-import io.github.movementspeed.nhglib.input.models.InputType;
 import io.github.movementspeed.nhglib.input.models.base.NhgInput;
 import io.github.movementspeed.nhglib.input.models.impls.system.NhgKeyboardButtonInput;
 import io.github.movementspeed.nhglib.input.models.impls.system.NhgTouchInput;
@@ -57,9 +58,26 @@ public class InputLoader extends AsynchronousAssetLoader<InputProxy, InputLoader
                 switch (inputType) {
                     case TOUCH:
                         int pointerNumber = inputJson.getInt("pointerNumber");
+                        Array<TouchInputType> touchInputTypes = new Array<>();
+
+                        if (inputJson.has("touchInputTypes")) {
+                            String inputTypes = inputJson.getString("touchInputTypes");
+                            String[] inputTypesArray = inputTypes.split("\\|");
+
+                            for (String touchInputType : inputTypesArray) {
+                                touchInputTypes.add(TouchInputType.fromString(touchInputType));
+                            }
+                        }
+
+                        if (touchInputTypes.size == 0) {
+                            TouchInputType touchInputType = TouchInputType.TAP;
+                            touchInputTypes.add(touchInputType);
+                        }
 
                         NhgTouchInput touchInput = new NhgTouchInput(inputName);
                         touchInput.setPointerNumber(pointerNumber);
+                        touchInput.setTouchInputTypes(touchInputTypes);
+
                         nhgInput = touchInput;
                         systemInputs.add(nhgInput);
                         break;

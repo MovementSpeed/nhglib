@@ -1,6 +1,6 @@
 package io.github.movementspeed.nhglib.input.models.impls.system;
 
-import io.github.movementspeed.nhglib.input.models.InputType;
+import io.github.movementspeed.nhglib.input.enums.InputType;
 import io.github.movementspeed.nhglib.input.models.base.NhgInput;
 
 public class NhgMouseButtonInput extends NhgInput {
