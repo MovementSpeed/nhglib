@@ -6,7 +6,6 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.IntMap;
 import io.github.movementspeed.nhglib.input.enums.InputAction;
 import io.github.movementspeed.nhglib.input.interfaces.InputHandler;
@@ -207,6 +206,14 @@ public class SystemInputHandler implements InputHandler {
 
             @Override
             public boolean touchDragged(int screenX, int screenY, int pointer) {
+                NhgInput input = touchInputs.get(pointer);
+
+                if (input != null && input.isValid()) {
+                    input.setAction(InputAction.DRAG);
+                    input.setValue(vec0.set(screenX, screenY));
+                    inputProxy.onInput(input);
+                }
+
                 return false;
             }
 

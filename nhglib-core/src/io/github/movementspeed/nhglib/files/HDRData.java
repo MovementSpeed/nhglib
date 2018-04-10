@@ -25,6 +25,7 @@ public class HDRData {
         if (in == null)
             throw new NullPointerException();
 
+        flatArray = new FloatArray();
         float[][][] pixels = read(in);
         texture = toTexture(pixels);
         flatArray.clear();
