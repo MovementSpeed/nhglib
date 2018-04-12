@@ -129,13 +129,13 @@ void main() {
     #ifdef defMetalness
         LOWP float metalness = texture(u_metalness, v_texCoord).r;
     #else
-        LOWP float metalness = 0.8;
+        LOWP float metalness = 0.0;
     #endif
 
     #ifdef defRoughness
         LOWP float roughness = texture(u_roughness, v_texCoord).r;
     #else
-        LOWP float roughness = 0.25;
+        LOWP float roughness = 0.6;
     #endif
 
     #ifdef defAmbientOcclusion

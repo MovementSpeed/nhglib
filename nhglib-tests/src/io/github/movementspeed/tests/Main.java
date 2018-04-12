@@ -3,7 +3,6 @@ package io.github.movementspeed.tests;
 import com.artemis.BaseSystem;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.assets.Asset;
@@ -13,13 +12,11 @@ import io.github.movementspeed.nhglib.core.ecs.systems.impl.InputSystem;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
 import io.github.movementspeed.nhglib.core.entry.NhgEntry;
 import io.github.movementspeed.nhglib.core.messaging.Message;
-import io.github.movementspeed.nhglib.files.HDRData;
 import io.github.movementspeed.nhglib.graphics.lights.LightProbe;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.movementspeed.nhglib.graphics.scenes.Scene;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.GammaCorrectionAttribute;
-import io.github.movementspeed.nhglib.graphics.shaders.attributes.IBLAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.particles.ParticleShader;
 import io.github.movementspeed.nhglib.graphics.worlds.NhgWorld;
 import io.github.movementspeed.nhglib.graphics.worlds.strategies.impl.DefaultWorldStrategy;
@@ -78,11 +75,9 @@ public class Main extends NhgEntry implements InputListener {
 
         NhgLightsAttribute lightsAttribute = new NhgLightsAttribute();
 
-        for (int i = 0; i < 10; i++) {
-            NhgLight light = NhgLight.point(10, 10, new Color(Color.rgba8888(MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), 1f)));
-            light.position.set(MathUtils.random(-5f, 5f), MathUtils.random(-5f, 5f), MathUtils.random(-5f, 5f));
-            lightsAttribute.lights.add(light);
-        }
+        NhgLight sun = NhgLight.directional(10, Color.WHITE);
+        sun.direction.set(1, -1, 1);
+        lightsAttribute.lights.add(sun);
 
         GammaCorrectionAttribute gammaCorrectionAttribute = new GammaCorrectionAttribute();
         gammaCorrectionAttribute.gammaCorrection = true;
@@ -111,7 +106,7 @@ public class Main extends NhgEntry implements InputListener {
                                 cameraComponent = nhg.entities.getComponent(cameraEntity, CameraComponent.class);
                             }
                         } else if (message.is(Strings.Events.sceneLoaded)) {
-                            NhgLogger.log(this, "Scene loaded");
+                            /*NhgLogger.log(this, "Scene loaded");
 
                             HDRData data = nhg.assets.get("newport_loft");
 
@@ -128,7 +123,7 @@ public class Main extends NhgEntry implements InputListener {
 
                             environment.set(irradianceAttribute);
                             environment.set(prefilterAttribute);
-                            environment.set(brdfAttribute);
+                            environment.set(brdfAttribute);*/
                         }
                     }
                 });

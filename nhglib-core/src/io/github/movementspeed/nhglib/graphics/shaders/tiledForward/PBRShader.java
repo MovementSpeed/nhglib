@@ -368,7 +368,14 @@ public class PBRShader extends BaseShader {
 
         for (int i = 0; i < lights.size; i++) {
             NhgLight l = lights.get(i);
-            lightGrid.checkFrustums(l.position, l.radius, lightsFrustum, i);
+
+            if (l.type != LightType.DIRECTIONAL_LIGHT) {
+                lightGrid.checkFrustums(l.position, l.radius, lightsFrustum, i);
+            } else {
+                for (IntArray intArray : lightsFrustum) {
+                    intArray.add(i);
+                }
+            }
         }
 
         for (int i = 0; i < lights.size; i++) {
