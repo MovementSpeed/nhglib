@@ -129,7 +129,7 @@ void main() {
     #ifdef defMetalness
         LOWP float metalness = texture(u_metalness, v_texCoord).r;
     #else
-        LOWP float metalness = 0.0;
+        LOWP float metalness = 0.2;
     #endif
 
     #ifdef defRoughness
@@ -166,6 +166,8 @@ void main() {
     LOWP vec3 Lo = vec3(0.0);
     LOWP vec3 F0 = vec3(0.04);
     F0 = mix(F0, albedo, metalness);
+
+    //vec3 color = vec3(0.0);
 
     #ifdef lights
         LOWP int tileX = int(gl_FragCoord.x) / (u_graphicsWidth / 10);
@@ -208,12 +210,19 @@ void main() {
             LOWP vec3 L = normalize(lightDirection);
             LOWP vec3 H = normalize(V + L);
 
-            LOWP vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
+            //LOWP vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
+            float cosTheta = max(dot(H, V), 0.0);
+            vec3 f0min = (1.0 - F0);
+            float cosThetaMin = 1.0 - cosTheta;
+            float powCos = pow(cosThetaMin, 5.0);
+            vec3 f0MinByPowCos = f0min * powCos;
+            LOWP vec3 F = max(min(F0 + f0MinByPowCos, 1.0), 0.0);
+
             LOWP float NDF = distributionGGX(N, H, roughness);
             LOWP float G = geometrySmith(N, V, L, roughness);
 
             LOWP vec3 nominator = NDF * G * F;
-            LOWP float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.001;
+            LOWP float denominator = max(4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0), 0.001);
             LOWP vec3 brdf = nominator / denominator;
 
             LOWP vec3 kS = F;
@@ -223,6 +232,8 @@ void main() {
 
             LOWP float NdotL = max(dot(N, L), 0.0) * u_lightIntensities[lightId];
             Lo += (kD * albedo / M_PI + brdf) * radiance * NdotL * lightAttenuation;
+
+            //color = vec3(F);
         }
     #endif
 

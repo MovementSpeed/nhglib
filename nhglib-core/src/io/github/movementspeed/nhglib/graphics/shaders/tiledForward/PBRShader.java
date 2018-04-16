@@ -380,7 +380,15 @@ public class PBRShader extends BaseShader {
 
         for (int i = 0; i < lights.size; i++) {
             NhgLight l = lights.get(i);
-            color.set(l.color.r, l.color.g, l.color.b, l.radius / 255);
+
+            float r = l.color.r;
+            float g = l.color.g;
+            float b = l.color.b;
+            float a = l.radius / 255f;
+
+            Gdx.app.log("a", a + "");
+
+            color.set(r, g, b, a);
             lightInfoPixmap.setColor(color);
             lightInfoPixmap.drawPixel(0, i);
         }
@@ -390,8 +398,9 @@ public class PBRShader extends BaseShader {
         for (int row = 0; row < 100; row++) {
             int col = 0;
             float r = lightsFrustum.get(row).size;
+            float r255 = r / 255;
 
-            color.set(r / 255, 0, 0, 0);
+            color.set(r255, 0, 0, 0);
             lightPixmap.setColor(color);
             lightPixmap.drawPixel(col, row);
 
@@ -399,8 +408,9 @@ public class PBRShader extends BaseShader {
 
             for (int i = 0; i < lightsFrustum.get(row).size; i++) {
                 int j = lightsFrustum.get(row).get(i);
+                float j255 = ((float) j) / 255;
 
-                color.set(((float) j) / 255, 0, 0, 0);
+                color.set(j255, 0, 0, 0);
                 lightPixmap.setColor(color);
                 lightPixmap.drawPixel(col, row);
                 col++;
