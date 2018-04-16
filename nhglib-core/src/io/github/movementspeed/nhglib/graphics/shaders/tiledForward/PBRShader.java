@@ -369,13 +369,13 @@ public class PBRShader extends BaseShader {
         for (int i = 0; i < lights.size; i++) {
             NhgLight l = lights.get(i);
 
-            if (l.type != LightType.DIRECTIONAL_LIGHT) {
+            /*if (l.type != LightType.DIRECTIONAL_LIGHT) {
                 lightGrid.checkFrustums(l.position, l.radius, lightsFrustum, i);
-            } else {
+            } else {*/
                 for (IntArray intArray : lightsFrustum) {
                     intArray.add(i);
                 }
-            }
+            //}
         }
 
         for (int i = 0; i < lights.size; i++) {
@@ -385,8 +385,6 @@ public class PBRShader extends BaseShader {
             float g = l.color.g;
             float b = l.color.b;
             float a = l.radius / 255f;
-
-            Gdx.app.log("a", a + "");
 
             color.set(r, g, b, a);
             lightInfoPixmap.setColor(color);

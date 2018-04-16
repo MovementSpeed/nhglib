@@ -13,6 +13,7 @@ import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
 import io.github.movementspeed.nhglib.core.entry.NhgEntry;
 import io.github.movementspeed.nhglib.core.messaging.Message;
 import io.github.movementspeed.nhglib.graphics.lights.LightProbe;
+import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.movementspeed.nhglib.graphics.scenes.Scene;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.GammaCorrectionAttribute;
@@ -74,12 +75,13 @@ public class Main extends NhgEntry implements InputListener {
 
         NhgLightsAttribute lightsAttribute = new NhgLightsAttribute();
 
-        /*NhgLight sun = NhgLight.directional(10, Color.WHITE);
+        NhgLight sun = NhgLight.directional(10, Color.WHITE);
         sun.direction.set(0.953f, -0.987f, 0.945f);
-        lightsAttribute.lights.add(sun);*/
+        sun.radius = 5;
+        lightsAttribute.lights.add(sun);
 
         GammaCorrectionAttribute gammaCorrectionAttribute = new GammaCorrectionAttribute();
-        gammaCorrectionAttribute.gammaCorrection = true;
+        gammaCorrectionAttribute.gammaCorrection = false;
 
         environment.set(lightsAttribute);
         environment.set(gammaCorrectionAttribute);
