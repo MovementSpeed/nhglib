@@ -81,7 +81,7 @@ public class Main extends NhgEntry implements InputListener {
         lightsAttribute.lights.add(sun);
 
         GammaCorrectionAttribute gammaCorrectionAttribute = new GammaCorrectionAttribute();
-        gammaCorrectionAttribute.gammaCorrection = false;
+        gammaCorrectionAttribute.gammaCorrection = true;
 
         environment.set(lightsAttribute);
         environment.set(gammaCorrectionAttribute);
