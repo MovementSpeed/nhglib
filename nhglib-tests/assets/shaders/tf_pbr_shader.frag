@@ -21,6 +21,7 @@
 #endif
 
 #define M_PI 3.14159265359
+#define MAX_REFLECTION_LOD 4.0
 
 out vec4 fragmentColor;
 
@@ -76,7 +77,7 @@ in LOWP vec3 v_normal;
 
 vec3 fresnelSchlick(float cosTheta, vec3 F0)
 {
-    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+    return max(min(F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0), 1.0), 0.0);
 }
 
 vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
@@ -129,13 +130,13 @@ void main() {
     #ifdef defMetalness
         LOWP float metalness = texture(u_metalness, v_texCoord).r;
     #else
-        LOWP float metalness = 0.2;
+        LOWP float metalness = 0.0;
     #endif
 
     #ifdef defRoughness
         LOWP float roughness = texture(u_roughness, v_texCoord).r;
     #else
-        LOWP float roughness = 0.6;
+        LOWP float roughness = 0.4;
     #endif
 
     #ifdef defAmbientOcclusion
@@ -167,8 +168,6 @@ void main() {
     LOWP vec3 F0 = vec3(0.04);
     F0 = mix(F0, albedo, metalness);
 
-    //vec3 color = vec3(0.0);
-
     #ifdef lights
         LOWP int tileX = int(gl_FragCoord.x) / (u_graphicsWidth / 10);
         LOWP int tileY = int(gl_FragCoord.y) / (u_graphicsHeight / 10);
@@ -188,7 +187,9 @@ void main() {
             LOWP vec3 lightDirection = u_lightPositions[lightId] - v_position;
             LOWP float lightDistance = length(lightDirection);
 
-            LOWP float lightAttenuation = clamp(1.0 - (lightDistance / lightRadius), 0.0, 1.0);
+            LOWP float distanceAndRadius = lightDistance / lightRadius;
+            LOWP float oneMinusDistanceAndRadius = 1.0 - distanceAndRadius;
+            LOWP float lightAttenuation = clamp(oneMinusDistanceAndRadius, 0.0, 1.0);
             lightAttenuation *= lightAttenuation;
 
             LOWP vec3 radiance = lightInfo.rgb;
@@ -210,13 +211,7 @@ void main() {
             LOWP vec3 L = normalize(lightDirection);
             LOWP vec3 H = normalize(V + L);
 
-            //LOWP vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
-            float cosTheta = max(dot(H, V), 0.0);
-            vec3 f0min = (1.0 - F0);
-            float cosThetaMin = 1.0 - cosTheta;
-            float powCos = pow(cosThetaMin, 5.0);
-            vec3 f0MinByPowCos = f0min * powCos;
-            LOWP vec3 F = max(min(F0 + f0MinByPowCos, 1.0), 0.0);
+            LOWP vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
 
             LOWP float NDF = distributionGGX(N, H, roughness);
             LOWP float G = geometrySmith(N, V, L, roughness);
@@ -232,8 +227,6 @@ void main() {
 
             LOWP float NdotL = max(dot(N, L), 0.0) * u_lightIntensities[lightId];
             Lo += (kD * albedo / M_PI + brdf) * radiance * NdotL * lightAttenuation;
-
-            //color = vec3(F);
         }
     #endif
 
@@ -246,8 +239,6 @@ void main() {
 
         LOWP vec3 irradiance = texture(u_irradiance, N).rgb;
         LOWP vec3 diffuse = irradiance * albedo;
-
-        const float MAX_REFLECTION_LOD = 4.0;
 
         LOWP vec3 prefilteredColor = textureLod(u_prefilter, R, roughness * MAX_REFLECTION_LOD).rgb;
         LOWP vec2 brdf = texture(u_brdf, vec2(max(dot(N, V), 0.0), roughness)).rg;
