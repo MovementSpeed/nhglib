@@ -304,7 +304,6 @@ public class PBRShader extends BaseShader {
         lightGrid.setFrustums(((PerspectiveCamera) camera));
         makeLightTexture();
 
-        super.begin(camera, context);
         shaderProgram.setUniform3fv("u_lightPositions", getLightPositions(float3Array), 0, lights.size * 3);
         shaderProgram.setUniform3fv("u_lightDirections", getLightDirections(float3Array), 0, lights.size * 3);
         shaderProgram.setUniform1fv("u_lightIntensities", getLightIntensities(floatArray), 0, lights.size);
@@ -315,6 +314,8 @@ public class PBRShader extends BaseShader {
             NhgLight light = lights.get(i);
             shaderProgram.setUniformi("u_lightTypes[" + i + "]", light.type.ordinal());
         }
+
+        super.begin(camera, context);
     }
 
     @Override
