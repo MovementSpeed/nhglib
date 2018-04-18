@@ -5,7 +5,7 @@ import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
 import io.github.movementspeed.nhglib.graphics.scenes.SceneGraph;
 import io.github.movementspeed.nhglib.interfaces.JsonParseable;
-import io.github.movementspeed.nhglib.utils.scenes.SceneUtils;
+import io.github.movementspeed.nhglib.utils.scenes.SceneMappings;
 
 /**
  * Created by Fausto Napoli on 19/12/2016.
@@ -40,7 +40,7 @@ public class EntityJson implements JsonParseable<Integer> {
         if (componentsJson != null) {
             for (JsonValue componentJsonValue : componentsJson) {
                 String type = componentJsonValue.getString("type");
-                ComponentJson componentJson = SceneUtils.componentJsonFromType(type);
+                ComponentJson componentJson = SceneMappings.componentJsonFromType(type);
 
                 if (componentJson != null) {
                     componentJson.parentEntity = parentEntity;

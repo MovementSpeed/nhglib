@@ -31,7 +31,7 @@ import io.github.movementspeed.nhglib.physics.models.ConvexTriangleMeshRigidBody
 import io.github.movementspeed.nhglib.physics.models.RigidBodyShape;
 import io.github.movementspeed.nhglib.utils.data.Bundle;
 import io.github.movementspeed.nhglib.utils.data.Strings;
-import io.github.movementspeed.nhglib.utils.scenes.SceneUtils;
+import io.github.movementspeed.nhglib.utils.scenes.SceneMappings;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -60,22 +60,22 @@ public class SceneManager {
         vehicleWheelMapper = entities.getMapper(WheelComponent.class);
         particleEffectMapper = entities.getMapper(ParticleEffectComponent.class);
 
-        SceneUtils.addComponentJsonMapping("message", MessageComponentJson.class);
-        SceneUtils.addComponentJsonMapping("camera", CameraComponentJson.class);
-        SceneUtils.addComponentJsonMapping("light", LightComponentJson.class);
-        SceneUtils.addComponentJsonMapping("model", ModelComponentJson.class);
-        SceneUtils.addComponentJsonMapping("rigidBody", RigidBodyComponentJson.class);
-        SceneUtils.addComponentJsonMapping("vehicle", VehicleComponentJson.class);
-        SceneUtils.addComponentJsonMapping("wheel", WheelComponentJson.class);
-        SceneUtils.addComponentJsonMapping("particleEffect", ParticleEffectComponentJson.class);
-        SceneUtils.addComponentJsonMapping("ui", UiComponentJson.class);
+        SceneMappings.addComponentJsonMapping("message", MessageComponentJson.class);
+        SceneMappings.addComponentJsonMapping("camera", CameraComponentJson.class);
+        SceneMappings.addComponentJsonMapping("light", LightComponentJson.class);
+        SceneMappings.addComponentJsonMapping("model", ModelComponentJson.class);
+        SceneMappings.addComponentJsonMapping("rigidBody", RigidBodyComponentJson.class);
+        SceneMappings.addComponentJsonMapping("vehicle", VehicleComponentJson.class);
+        SceneMappings.addComponentJsonMapping("wheel", WheelComponentJson.class);
+        SceneMappings.addComponentJsonMapping("particleEffect", ParticleEffectComponentJson.class);
+        SceneMappings.addComponentJsonMapping("ui", UiComponentJson.class);
 
-        SceneUtils.addAssetClassMapping("model", Model.class);
-        SceneUtils.addAssetClassMapping("texture", Texture.class);
-        SceneUtils.addAssetClassMapping("particleEffect", ParticleEffect.class);
-        SceneUtils.addAssetClassMapping("hdr", HDRData.class);
-        SceneUtils.addAssetClassMapping("textureAtlas", TextureAtlas.class);
-        SceneUtils.addAssetClassMapping("bitmapFont", BitmapFont.class);
+        SceneMappings.addAssetClassMapping("model", Model.class);
+        SceneMappings.addAssetClassMapping("texture", Texture.class);
+        SceneMappings.addAssetClassMapping("particleEffect", ParticleEffect.class);
+        SceneMappings.addAssetClassMapping("hdr", HDRData.class);
+        SceneMappings.addAssetClassMapping("textureAtlas", TextureAtlas.class);
+        SceneMappings.addAssetClassMapping("bitmapFont", BitmapFont.class);
     }
 
     public void loadScene(final Scene scene) {

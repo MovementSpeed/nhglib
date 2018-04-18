@@ -7,12 +7,12 @@ import java.util.HashMap;
 /**
  * Created by Fausto Napoli on 20/12/2016.
  */
-public class SceneUtils {
+public class SceneMappings {
     private static HashMap<String, Class<?>> assetClassesMapping = new HashMap<>();
     private static HashMap<String, Class<? extends ComponentJson>> componentJsonClassesMapping = new HashMap<>();
 
-    public static void addAssetClassMapping(String type, Class<?> componentClass) {
-        assetClassesMapping.put(type, componentClass);
+    public static void addAssetClassMapping(String type, Class<?> assetClass) {
+        assetClassesMapping.put(type, assetClass);
     }
 
     public static void addComponentJsonMapping(String type, Class<? extends ComponentJson> componentClass) {
