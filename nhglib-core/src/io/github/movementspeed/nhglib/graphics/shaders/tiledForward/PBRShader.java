@@ -304,20 +304,35 @@ public class PBRShader extends BaseShader {
         lightGrid.setFrustums(((PerspectiveCamera) camera));
         makeLightTexture();
 
-        shaderProgram.begin();
-        shaderProgram.setUniform3fv("u_lightPositions", getLightPositions(float3Array), 0, lights.size * 3);
-        shaderProgram.setUniform3fv("u_lightDirections", getLightDirections(float3Array), 0, lights.size * 3);
-        shaderProgram.setUniform1fv("u_lightIntensities", getLightIntensities(floatArray), 0, lights.size);
-        shaderProgram.setUniform1fv("u_lightInnerAngles", getLightInnerAngles(floatArray), 0, lights.size);
-        shaderProgram.setUniform1fv("u_lightOuterAngles", getLightOuterAngles(floatArray), 0, lights.size);
+        super.begin(camera, context);
+        if (shaderProgram.hasUniform("u_lightPositions")) {
+            shaderProgram.setUniform3fv("u_lightPositions", getLightPositions(float3Array), 0, lights.size * 3);
+        }
+
+        if (shaderProgram.hasUniform("u_lightPositions")) {
+            shaderProgram.setUniform3fv("u_lightDirections", getLightDirections(float3Array), 0, lights.size * 3);
+        }
+
+        if (shaderProgram.hasUniform("u_lightPositions")) {
+            shaderProgram.setUniform1fv("u_lightIntensities", getLightIntensities(floatArray), 0, lights.size);
+        }
+
+        if (shaderProgram.hasUniform("u_lightPositions")) {
+            shaderProgram.setUniform1fv("u_lightInnerAngles", getLightInnerAngles(floatArray), 0, lights.size);
+        }
+
+        if (shaderProgram.hasUniform("u_lightPositions")) {
+            shaderProgram.setUniform1fv("u_lightOuterAngles", getLightOuterAngles(floatArray), 0, lights.size);
+        }
 
         for (int i = 0; i < lights.size; i++) {
             NhgLight light = lights.get(i);
-            shaderProgram.setUniformi("u_lightTypes[" + i + "]", light.type.ordinal());
-        }
-        shaderProgram.end();
+            String lightTypeUniform = "u_lightTypes[" + i + "]";
 
-        super.begin(camera, context);
+            if (shaderProgram.hasUniform(lightTypeUniform)) {
+                shaderProgram.setUniformi(lightTypeUniform, light.type.ordinal());
+            }
+        }
     }
 
     @Override
@@ -343,7 +358,14 @@ public class PBRShader extends BaseShader {
 
         for (int i = 0; i < lights.size; i++) {
             NhgLight l = lights.get(i);
-            lightGrid.checkFrustums(l.position, l.radius, lightsFrustum, i);
+
+            if (l.type != LightType.DIRECTIONAL_LIGHT) {
+                lightGrid.checkFrustums(l.position, l.radius, lightsFrustum, i);
+            } else {
+                for (int j = 0; j < 100; j++) {
+                    lightsFrustum.get(j).add(i);
+                }
+            }
         }
 
         for (int i = 0; i < lights.size; i++) {
