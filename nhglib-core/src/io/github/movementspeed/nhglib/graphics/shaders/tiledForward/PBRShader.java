@@ -305,23 +305,23 @@ public class PBRShader extends BaseShader {
         makeLightTexture();
 
         super.begin(camera, context);
-        if (shaderProgram.hasUniform("u_lightPositions")) {
+        if (shaderProgram.hasUniform("u_lightPositions[0]")) {
             shaderProgram.setUniform3fv("u_lightPositions", getLightPositions(float3Array), 0, lights.size * 3);
         }
 
-        if (shaderProgram.hasUniform("u_lightPositions")) {
+        if (shaderProgram.hasUniform("u_lightDirections[0]")) {
             shaderProgram.setUniform3fv("u_lightDirections", getLightDirections(float3Array), 0, lights.size * 3);
         }
 
-        if (shaderProgram.hasUniform("u_lightPositions")) {
+        if (shaderProgram.hasUniform("u_lightIntensities[0]")) {
             shaderProgram.setUniform1fv("u_lightIntensities", getLightIntensities(floatArray), 0, lights.size);
         }
 
-        if (shaderProgram.hasUniform("u_lightPositions")) {
+        if (shaderProgram.hasUniform("u_lightInnerAngles[0]")) {
             shaderProgram.setUniform1fv("u_lightInnerAngles", getLightInnerAngles(floatArray), 0, lights.size);
         }
 
-        if (shaderProgram.hasUniform("u_lightPositions")) {
+        if (shaderProgram.hasUniform("u_lightOuterAngles[0]")) {
             shaderProgram.setUniform1fv("u_lightOuterAngles", getLightOuterAngles(floatArray), 0, lights.size);
         }
 
