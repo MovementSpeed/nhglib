@@ -64,7 +64,7 @@ public class PBRShader extends BaseShader {
         String vert = prefix + Gdx.files.internal("shaders/tf_pbr_shader.vert").readString();
         String frag = prefix + Gdx.files.internal("shaders/tf_pbr_shader.frag").readString();
 
-        ShaderProgram.pedantic = false;
+        ShaderProgram.pedantic = true;
         shaderProgram = new ShaderProgram(vert, frag);
 
         String shaderLog = shaderProgram.getLog();
