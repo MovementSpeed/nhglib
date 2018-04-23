@@ -15,7 +15,9 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
+import io.github.movementspeed.nhglib.enums.OpenGLVersion;
 
 /**
  * This is a custom shader to render the particles. Usually is not required, because the {@link DefaultShader} will be used
@@ -213,7 +215,11 @@ public class ParticleShader extends BaseShader {
     }
 
     public static String createPrefix(final Renderable renderable, final Config config) {
-        String prefix = "#version 300 es\n";
+        String prefix = "";
+
+        if (Nhg.version == OpenGLVersion.VERSION_3) {
+            prefix = "#version 300 es\n";
+        }
 
         if (config.type == ParticleType.Billboard) {
             prefix += "#define billboard\n";
