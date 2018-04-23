@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.UBJsonReader;
+import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.files.HDRData;
 
 /**
@@ -185,9 +186,18 @@ public class LightProbe {
 
     private Cubemap renderEnvironmentFromHDRData(HDRData data) {
         Texture equirectangularTexture;
+
+        String folder = "shaders/gl3/";
+
+        switch (Nhg.version) {
+            case VERSION_2:
+                folder = "shaders/gl2/";
+                break;
+        }
+
         ShaderProgram equiToCubeShader = new ShaderProgram(
-                Gdx.files.internal("shaders/equi_to_cube_shader.vert"),
-                Gdx.files.internal("shaders/equi_to_cube_shader.frag"));
+                Gdx.files.internal(folder + "equi_to_cube_shader.vert"),
+                Gdx.files.internal(folder + "equi_to_cube_shader.frag"));
 
         equirectangularTexture = data.getTexture();
 
@@ -216,9 +226,17 @@ public class LightProbe {
     }
 
     private Cubemap renderEnvironmentFromTexture(Texture equirectangularTexture) {
+        String folder = "shaders/gl3/";
+
+        switch (Nhg.version) {
+            case VERSION_2:
+                folder = "shaders/gl2/";
+                break;
+        }
+
         ShaderProgram equiToCubeShader = new ShaderProgram(
-                Gdx.files.internal("shaders/equi_to_cube_shader.vert"),
-                Gdx.files.internal("shaders/equi_to_cube_shader.frag"));
+                Gdx.files.internal(folder + "equi_to_cube_shader.vert"),
+                Gdx.files.internal(folder + "equi_to_cube_shader.frag"));
 
         GLFrameBuffer.FrameBufferCubemapBuilder builder = new GLFrameBuffer.FrameBufferCubemapBuilder(
                 (int) environmentWidth, (int) environmentHeight);
@@ -249,9 +267,17 @@ public class LightProbe {
     }
 
     private Cubemap renderIrradiance(Cubemap environmentCubemap) {
+        String folder = "shaders/gl3/";
+
+        switch (Nhg.version) {
+            case VERSION_2:
+                folder = "shaders/gl2/";
+                break;
+        }
+
         ShaderProgram irradianceShader = new ShaderProgram(
-                Gdx.files.internal("shaders/equi_to_cube_shader.vert"),
-                Gdx.files.internal("shaders/irradiance_shader.frag"));
+                Gdx.files.internal(folder + "equi_to_cube_shader.vert"),
+                Gdx.files.internal(folder + "irradiance_shader.frag"));
 
         FrameBufferCubemap frameBufferCubemap = FrameBufferCubemap.createFrameBufferCubemap(Pixmap.Format.RGB888,
                 (int) irradianceWidth, (int) irradianceHeight, true);
@@ -275,9 +301,17 @@ public class LightProbe {
     }
 
     private Cubemap renderPrefilter(Cubemap environmentCubemap) {
+        String folder = "shaders/gl3/";
+
+        switch (Nhg.version) {
+            case VERSION_2:
+                folder = "shaders/gl2/";
+                break;
+        }
+
         ShaderProgram prefilterShader = new ShaderProgram(
-                Gdx.files.internal("shaders/equi_to_cube_shader.vert"),
-                Gdx.files.internal("shaders/prefilter_shader.frag"));
+                Gdx.files.internal(folder + "equi_to_cube_shader.vert"),
+                Gdx.files.internal(folder + "prefilter_shader.frag"));
 
         Array<PerspectiveCamera> perspectiveCameras = new Array<>();
 
@@ -373,9 +407,17 @@ public class LightProbe {
     }
 
     private Texture renderBRDF() {
+        String folder = "shaders/gl3/";
+
+        switch (Nhg.version) {
+            case VERSION_2:
+                folder = "shaders/gl2/";
+                break;
+        }
+
         ShaderProgram brdfShader = new ShaderProgram(
-                Gdx.files.internal("shaders/brdf_shader.vert"),
-                Gdx.files.internal("shaders/brdf_shader.frag"));
+                Gdx.files.internal(folder + "brdf_shader.vert"),
+                Gdx.files.internal(folder + "brdf_shader.frag"));
 
         FrameBuffer frameBuffer = FrameBuffer.createFrameBuffer(Pixmap.Format.RGB888, (int) brdfWidth, (int) brdfHeight, true);
 

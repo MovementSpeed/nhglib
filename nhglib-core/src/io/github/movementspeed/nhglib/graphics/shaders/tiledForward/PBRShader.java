@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.IntArray;
+import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
 import io.github.movementspeed.nhglib.enums.LightType;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
@@ -60,9 +61,16 @@ public class PBRShader extends BaseShader {
         this.params = params;
 
         String prefix = createPrefix(renderable);
+        String folder = "shaders/gl3/";
 
-        String vert = prefix + Gdx.files.internal("shaders/tf_pbr_shader.vert").readString();
-        String frag = prefix + Gdx.files.internal("shaders/tf_pbr_shader.frag").readString();
+        switch (Nhg.version) {
+            case VERSION_2:
+                folder = "shaders/gl2/";
+                break;
+        }
+
+        String vert = prefix + Gdx.files.internal(folder + "tf_pbr_shader.vert").readString();
+        String frag = prefix + Gdx.files.internal(folder + "tf_pbr_shader.frag").readString();
 
         ShaderProgram.pedantic = true;
         shaderProgram = new ShaderProgram(vert, frag);
@@ -396,7 +404,13 @@ public class PBRShader extends BaseShader {
     }
 
     private String createPrefix(Renderable renderable) {
-        String prefix = "#version 300 es\n";
+        String prefix = "";
+
+        switch (Nhg.version) {
+            case VERSION_3:
+                prefix = "#version 300 es\n";
+                break;
+        }
 
         if (params.useBones) {
             prefix += "#define numBones " + 12 + "\n";

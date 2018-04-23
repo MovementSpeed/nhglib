@@ -2,6 +2,8 @@ package io.github.movementspeed.tests.launchers;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import io.github.movementspeed.nhglib.Nhg;
+import io.github.movementspeed.nhglib.enums.OpenGLVersion;
 import io.github.movementspeed.tests.Main;
 
 /**
@@ -12,7 +14,8 @@ public class DesktopLauncher {
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
         config.width = 1280;
         config.height = 720;
-        config.useGL30 = true;
+        config.useGL30 = false;
+        Nhg.version = OpenGLVersion.VERSION_2;
 
         new LwjglApplication(new Main(), config);
     }
