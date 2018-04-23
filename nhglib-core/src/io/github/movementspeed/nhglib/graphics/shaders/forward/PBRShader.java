@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g3d.shaders.BaseShader;
 import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import io.github.movementspeed.nhglib.Nhg;
@@ -72,6 +73,7 @@ public class PBRShader extends BaseShader {
     private int bonesLoc;
     private float bones[];
 
+    private Vector3 vec3;
     private Matrix4 idtMatrix;
 
     private Params params;
@@ -89,6 +91,8 @@ public class PBRShader extends BaseShader {
         this.renderable = renderable;
         this.environment = environment;
         this.params = params;
+
+        vec3 = new Vector3();
 
         this.directionalLights = new NhgLight[params.lit ? 2 : 0];
         for (int i = 0; i < directionalLights.length; i++) {
@@ -525,10 +529,10 @@ public class PBRShader extends BaseShader {
                         directionalLights[i].color.g,
                         directionalLights[i].color.b);
 
-                program.setUniformf(idx + dirLightsDirectionOffset,
-                        directionalLights[i].direction.x,
-                        directionalLights[i].direction.y,
-                        directionalLights[i].direction.z);
+                vec3.set(directionalLights[i].direction)
+                        .rot(camera.view);
+
+                program.setUniformf(idx + dirLightsDirectionOffset, vec3.x, vec3.y, vec3.z);
 
                 if (dirLightsIntensityOffset >= 0) {
                     program.setUniformf(idx + dirLightsIntensityOffset, directionalLights[i].intensity);
@@ -555,14 +559,14 @@ public class PBRShader extends BaseShader {
                 int idx = pointLightsLoc + i * pointLightsSize;
 
                 program.setUniformf(idx + pointLightsColorOffset,
-                        pointLights[i].color.r * pointLights[i].intensity,
-                        pointLights[i].color.g * pointLights[i].intensity,
-                        pointLights[i].color.b * pointLights[i].intensity);
+                        pointLights[i].color.r,
+                        pointLights[i].color.g,
+                        pointLights[i].color.b);
 
-                program.setUniformf(idx + pointLightsPositionOffset,
-                        pointLights[i].position.x,
-                        pointLights[i].position.y,
-                        pointLights[i].position.z);
+                vec3.set(pointLights[i].position);
+                vec3.mul(camera.view);
+
+                program.setUniformf(idx + pointLightsPositionOffset, vec3.x, vec3.y, vec3.z);
 
                 if (pointLightsIntensityOffset >= 0) {
                     program.setUniformf(idx + pointLightsIntensityOffset, pointLights[i].intensity);
@@ -595,12 +599,19 @@ public class PBRShader extends BaseShader {
                 int idx = spotLightsLoc + i * spotLightsSize;
 
                 program.setUniformf(idx + spotLightsColorOffset,
-                        spotLights[i].color.r * spotLights[i].intensity,
-                        spotLights[i].color.g * spotLights[i].intensity,
-                        spotLights[i].color.b * spotLights[i].intensity);
+                        spotLights[i].color.r,
+                        spotLights[i].color.g,
+                        spotLights[i].color.b);
 
-                program.setUniformf(idx + spotLightsPositionOffset, spotLights[i].position);
-                program.setUniformf(idx + spotLightsDirectionOffset, spotLights[i].direction);
+                vec3.set(pointLights[i].position);
+                vec3.mul(camera.view);
+
+                program.setUniformf(idx + spotLightsPositionOffset, vec3);
+
+                vec3.set(directionalLights[i].direction)
+                        .rot(camera.view);
+
+                program.setUniformf(idx + spotLightsDirectionOffset, vec3);
                 program.setUniformf(idx + spotLightsInnerAngleOffset, spotLights[i].innerAngle);
                 program.setUniformf(idx + spotLightsOuterAngleOffset, spotLights[i].outerAngle);
 

@@ -71,6 +71,7 @@ public class NhgLight extends BaseLight<NhgLight> {
         this.radius = light.radius;
         this.position.set(light.position);
         this.direction.set(light.direction);
+        this.color.set(light.color);
     }
 
     public void setTransform(Matrix4 transform) {

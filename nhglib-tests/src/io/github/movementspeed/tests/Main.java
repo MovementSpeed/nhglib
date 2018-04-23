@@ -78,8 +78,7 @@ public class Main extends NhgEntry implements InputListener {
         NhgLightsAttribute lightsAttribute = new NhgLightsAttribute();
 
         NhgLight sun = NhgLight.directional(10, Color.WHITE);
-        sun.direction.set(0.953f, -0.987f, 0.945f);
-        sun.radius = 5;
+        sun.direction.set(-1, -1, -1);
         lightsAttribute.lights.add(sun);
 
         GammaCorrectionAttribute gammaCorrectionAttribute = new GammaCorrectionAttribute();

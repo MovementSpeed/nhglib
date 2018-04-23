@@ -79,31 +79,7 @@
           }
         ],
         "entities": [
-          {
-            "id":"spot",
-            "transform": {
-              "position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-              }
-            },
-            "components": [
-              {
-                "type": "light",
-                "enabled": false,
-                "lightType": "pointLight",
-                "range":5,
-                "intensity": 5,
-                "color": {
-                  "r": 0.9372,
-                  "g": 0.9137,
-                  "b": 0.6,
-                  "a": 1
-                }
-              }
-            ]
-          }
+
         ]
       },
       {
@@ -186,26 +162,27 @@
         ],
         "entities": [
           {
-            "id": "light",
+            "id":"goodPoint",
             "transform": {
               "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
-              },
-              "rotation": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-              },
-              "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
               }
             },
             "components": [
-
+              {
+                "type": "light",
+                "lightType": "pointLight",
+                "range":100,
+                "intensity": 1,
+                "color": {
+                  "r": 0.9372,
+                  "g": 0.9137,
+                  "b": 0.6,
+                  "a": 1
+                }
+              }
             ]
           },
           {
