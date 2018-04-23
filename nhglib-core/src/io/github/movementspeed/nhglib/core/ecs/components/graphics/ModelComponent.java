@@ -1,6 +1,7 @@
 package io.github.movementspeed.nhglib.core.ecs.components.graphics;
 
 import com.artemis.Component;
+import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.model.Node;
@@ -59,6 +60,12 @@ public class ModelComponent extends Component {
     public void buildWithAsset(String asset) {
         this.asset = asset;
         this.state = State.NOT_INITIALIZED;
+    }
+
+    public void setPbrMaterial(PbrMaterial material) {
+        for (Material m : model.materials) {
+            m.set(material);
+        }
     }
 
     public void setPbrMaterial(int index, PbrMaterial material) {

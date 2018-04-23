@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.GammaCorrectionAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.IBLAttribute;
+import io.github.movementspeed.nhglib.graphics.shaders.attributes.PbrColorAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
 
 /**
@@ -138,6 +139,17 @@ public class ShaderUtils {
         return res;
     }
 
+    public static boolean hasAlbedoColor(Renderable renderable) {
+        boolean res = false;
+        PbrColorAttribute attribute = (PbrColorAttribute) renderable.material.get(PbrColorAttribute.AlbedoColor);
+
+        if (attribute != null) {
+            res = true;
+        }
+
+        return res;
+    }
+
     public static boolean hasMetalness(Renderable renderable) {
         boolean res = false;
         PbrTextureAttribute attribute = (PbrTextureAttribute) renderable.material.get(PbrTextureAttribute.Metalness);
@@ -149,11 +161,33 @@ public class ShaderUtils {
         return res;
     }
 
+    public static boolean hasMetalnessValue(Renderable renderable) {
+        boolean res = false;
+        PbrColorAttribute attribute = (PbrColorAttribute) renderable.material.get(PbrColorAttribute.MetalnessValue);
+
+        if (attribute != null) {
+            res = true;
+        }
+
+        return res;
+    }
+
     public static boolean hasRoughness(Renderable renderable) {
         boolean res = false;
         PbrTextureAttribute attribute = (PbrTextureAttribute) renderable.material.get(PbrTextureAttribute.Roughness);
 
         if (attribute != null && attribute.textureDescription.texture != null) {
+            res = true;
+        }
+
+        return res;
+    }
+
+    public static boolean hasRoughnessValue(Renderable renderable) {
+        boolean res = false;
+        PbrColorAttribute attribute = (PbrColorAttribute) renderable.material.get(PbrColorAttribute.RoughnessValue);
+
+        if (attribute != null) {
             res = true;
         }
 

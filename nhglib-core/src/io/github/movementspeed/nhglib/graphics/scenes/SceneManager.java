@@ -1,10 +1,13 @@
 package io.github.movementspeed.nhglib.graphics.scenes;
 
 import com.artemis.ComponentMapper;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffectLoader;
 import com.badlogic.gdx.utils.Array;
@@ -163,11 +166,52 @@ public class SceneManager {
             modelComponent.buildWithModel(model);
 
             for (PbrMaterial pbrMaterial : modelComponent.pbrMaterials) {
+                if (pbrMaterial.albedoColor != null) {
+                    Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGB888);
+                    pixmap.setColor(pbrMaterial.albedoColor);
+                    pixmap.drawPixel(0, 0);
+                    Texture albedo = new Texture(pixmap);
+
+                    pbrMaterial.set(PbrTextureAttribute.createAlbedo(albedo));
+                }
+
+                if (pbrMaterial.metalnessValue > 0 && pbrMaterial.metalnessValue <= 1) {
+                    Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGB888);
+                    pixmap.setColor(pbrMaterial.metalnessValue, pbrMaterial.metalnessValue, pbrMaterial.metalnessValue, 1.0f);
+                    pixmap.drawPixel(0, 0);
+                    Texture metalness = new Texture(pixmap);
+
+                    pbrMaterial.set(PbrTextureAttribute.createMetalness(metalness));
+                }
+
+                if (pbrMaterial.roughnessValue > 0 && pbrMaterial.roughnessValue <= 1) {
+                    Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGB888);
+                    pixmap.setColor(pbrMaterial.roughnessValue, pbrMaterial.roughnessValue, pbrMaterial.roughnessValue, 1.0f);
+                    pixmap.drawPixel(0, 0);
+                    Texture roughness = new Texture(pixmap);
+
+                    pbrMaterial.set(PbrTextureAttribute.createRoughness(roughness));
+                }
+
                 if (pbrMaterial.albedo != null && !pbrMaterial.albedo.isEmpty()) {
                     Texture albedo = assets.get(pbrMaterial.albedo);
 
                     if (albedo != null) {
                         pbrMaterial.set(PbrTextureAttribute.createAlbedo(albedo));
+                    }
+                } else {
+                    Material material = modelComponent.model.materials.first();
+
+                    if (material != null) {
+                        TextureAttribute textureAttribute = (TextureAttribute) material.get(TextureAttribute.Diffuse);
+
+                        if (textureAttribute != null) {
+                            Texture albedo = textureAttribute.textureDescription.texture;
+
+                            if (albedo != null) {
+                                pbrMaterial.set(PbrTextureAttribute.createAlbedo(albedo));
+                            }
+                        }
                     }
                 }
 
@@ -203,10 +247,15 @@ public class SceneManager {
                     }
                 }
 
+                // Clear other attributes in model's own materials
+                for (Material m : modelComponent.model.materials) {
+                    m.clear();
+                }
+
                 if (pbrMaterial.targetNode != null && !pbrMaterial.targetNode.isEmpty()) {
                     modelComponent.setPbrMaterial(pbrMaterial.targetNode, pbrMaterial);
                 } else {
-                    modelComponent.setPbrMaterial(0, pbrMaterial);
+                    modelComponent.setPbrMaterial(pbrMaterial);
                 }
             }
         } else {

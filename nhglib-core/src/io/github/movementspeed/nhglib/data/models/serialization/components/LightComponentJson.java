@@ -64,6 +64,8 @@ public class LightComponentJson extends ComponentJson {
 
         if (light == null) return;
 
+        light.enabled = jsonValue.getBoolean("enabled", true);
+
         Environment environment = renderingSystem.getEnvironment();
         NhgLightsAttribute attribute = (NhgLightsAttribute) environment
                 .get(NhgLightsAttribute.Type);

@@ -39,7 +39,7 @@
       },
       {
         "alias": "newport_loft",
-        "source": "textures/newport_loft.hdr",
+        "source": "textures/tears_of_steel_bridge_2k.hdr",
         "classAlias": "hdr"
       },
       {
@@ -60,7 +60,7 @@
           },
           "rotation": {
             "x": 0.0,
-            "y": 140.0,
+            "y": 180.0,
             "z": 0.0
           },
           "scale": {
@@ -80,34 +80,6 @@
         ],
         "entities": [
           {
-            "id":"uterus",
-            "transform": {
-              "position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-              },
-              "scale": {
-                "x": 2,
-                "y": 2,
-                "z": 2
-              }
-            },
-            "components": [
-              {
-                "type": "model",
-                "enabled": true,
-                "graphicsType": "dynamic",
-                "asset": "sphere",
-                "materials": [
-                  {
-                    "albedo": "background"
-                  }
-                ]
-              }
-            ]
-          },
-          {
             "id":"spot",
             "transform": {
               "position": {
@@ -119,6 +91,7 @@
             "components": [
               {
                 "type": "light",
+                "enabled": false,
                 "lightType": "pointLight",
                 "range":5,
                 "intensity": 5,
@@ -165,12 +138,7 @@
             "type": "model",
             "enabled": true,
             "graphicsType": "dynamic",
-            "asset": "trackAsset",
-            "materials": [
-              {
-                "albedo": "mat2_albedo"
-              }
-            ]
+            "asset": "trackAsset"
           }
         ],
         "entities": [

@@ -77,7 +77,7 @@ in LOWP vec3 v_normal;
 
 vec3 fresnelSchlick(float cosTheta, vec3 F0)
 {
-    return max(min(F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0), 1.0), 0.0);
+    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
 vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
@@ -121,22 +121,25 @@ float geometrySmith(vec3 N, vec3 V, vec3 L, float rough) {
 }
 
 void main() {
+    // Nota: NON SETTARE MAI METALNESS O ROUGHNESS A 0.0
+    LOWP vec3 color;
+
     #ifdef defAlbedo
         LOWP vec3 albedo = texture(u_albedo, v_texCoord).rgb;
     #else
-        LOWP vec3 albedo = vec3(0.5);
+        LOWP vec3 albedo = vec3(1.0);
     #endif
 
     #ifdef defMetalness
         LOWP float metalness = texture(u_metalness, v_texCoord).r;
     #else
-        LOWP float metalness = 0.0;
+        LOWP float metalness = 0.5;
     #endif
 
     #ifdef defRoughness
         LOWP float roughness = texture(u_roughness, v_texCoord).r;
     #else
-        LOWP float roughness = 0.4;
+        LOWP float roughness = 0.1;
     #endif
 
     #ifdef defAmbientOcclusion
@@ -187,9 +190,7 @@ void main() {
             LOWP vec3 lightDirection = u_lightPositions[lightId] - v_position;
             LOWP float lightDistance = length(lightDirection);
 
-            LOWP float distanceAndRadius = lightDistance / lightRadius;
-            LOWP float oneMinusDistanceAndRadius = 1.0 - distanceAndRadius;
-            LOWP float lightAttenuation = clamp(oneMinusDistanceAndRadius, 0.0, 1.0);
+            LOWP float lightAttenuation = 1.0 - (lightDistance / lightRadius);
             lightAttenuation *= lightAttenuation;
 
             LOWP vec3 radiance = lightInfo.rgb;
@@ -226,6 +227,7 @@ void main() {
             kD *= 1.0 - metalness;
 
             LOWP float NdotL = max(dot(N, L), 0.0) * u_lightIntensities[lightId];
+
             Lo += (kD * albedo / M_PI + brdf) * radiance * NdotL * lightAttenuation;
         }
     #endif
@@ -249,7 +251,7 @@ void main() {
         LOWP vec3 ambient = vec3(0.03) * albedo;
     #endif
 
-    LOWP vec3 color = ambient + Lo;
+    color = ambient + Lo;
 
     #ifdef defGammaCorrection
         color = color / (color + vec3(1.0));

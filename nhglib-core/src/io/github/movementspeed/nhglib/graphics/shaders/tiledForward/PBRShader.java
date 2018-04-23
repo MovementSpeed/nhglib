@@ -275,7 +275,7 @@ public class PBRShader extends BaseShader {
 
     @Override
     public boolean canRender(Renderable instance) {
-        boolean diffuse = ShaderUtils.hasAlbedo(instance) == params.albedo;
+        boolean albedo = ShaderUtils.hasAlbedo(instance) == params.albedo;
         boolean metalness = ShaderUtils.hasMetalness(instance) == params.metalness;
         boolean roughness = ShaderUtils.hasRoughness(instance) == params.roughness;
         boolean normal = ShaderUtils.hasPbrNormal(instance) == params.normal;
@@ -285,8 +285,8 @@ public class PBRShader extends BaseShader {
         boolean gammaCorrection = ShaderUtils.useGammaCorrection(instance.environment) == params.gammaCorrection;
         boolean imageBasedLighting = ShaderUtils.useImageBasedLighting(instance.environment) == params.imageBasedLighting;
 
-        return diffuse && metalness && roughness && normal && ambientOcclusion && bones &&
-                lit && gammaCorrection && imageBasedLighting;
+        return albedo && metalness && roughness && normal &&
+                ambientOcclusion && bones && lit && gammaCorrection && imageBasedLighting;
     }
 
     @Override
@@ -305,25 +305,12 @@ public class PBRShader extends BaseShader {
         makeLightTexture();
 
         super.begin(camera, context);
-        if (shaderProgram.hasUniform("u_lightPositions[0]")) {
-            shaderProgram.setUniform3fv("u_lightPositions", getLightPositions(float3Array), 0, lights.size * 3);
-        }
 
-        if (shaderProgram.hasUniform("u_lightDirections[0]")) {
-            shaderProgram.setUniform3fv("u_lightDirections", getLightDirections(float3Array), 0, lights.size * 3);
-        }
-
-        if (shaderProgram.hasUniform("u_lightIntensities[0]")) {
-            shaderProgram.setUniform1fv("u_lightIntensities", getLightIntensities(floatArray), 0, lights.size);
-        }
-
-        if (shaderProgram.hasUniform("u_lightInnerAngles[0]")) {
-            shaderProgram.setUniform1fv("u_lightInnerAngles", getLightInnerAngles(floatArray), 0, lights.size);
-        }
-
-        if (shaderProgram.hasUniform("u_lightOuterAngles[0]")) {
-            shaderProgram.setUniform1fv("u_lightOuterAngles", getLightOuterAngles(floatArray), 0, lights.size);
-        }
+        shaderProgram.setUniform3fv("u_lightPositions", getLightPositions(float3Array), 0, lights.size * 3);
+        shaderProgram.setUniform3fv("u_lightDirections", getLightDirections(float3Array), 0, lights.size * 3);
+        shaderProgram.setUniform1fv("u_lightIntensities", getLightIntensities(floatArray), 0, lights.size);
+        shaderProgram.setUniform1fv("u_lightInnerAngles", getLightInnerAngles(floatArray), 0, lights.size);
+        shaderProgram.setUniform1fv("u_lightOuterAngles", getLightOuterAngles(floatArray), 0, lights.size);
 
         for (int i = 0; i < lights.size; i++) {
             NhgLight light = lights.get(i);
@@ -472,7 +459,9 @@ public class PBRShader extends BaseShader {
         int i = 0;
 
         for (int k = 0; k < lights.size; k++) {
-            vec1.set(lights.get(k).position);
+            NhgLight light = lights.get(k);
+
+            vec1.set(light.position);
             vec1.mul(camera.view);
 
             res[i++] = vec1.x;
@@ -504,7 +493,8 @@ public class PBRShader extends BaseShader {
 
     private float[] getLightIntensities(float[] res) {
         for (int i = 0; i < lights.size; i++) {
-            res[i] = lights.get(i).intensity;
+            NhgLight light = lights.get(i);
+            res[i] = light.intensity;
         }
 
         return res;
@@ -512,7 +502,8 @@ public class PBRShader extends BaseShader {
 
     private float[] getLightInnerAngles(float[] res) {
         for (int i = 0; i < lights.size; i++) {
-            res[i] = lights.get(i).innerAngle;
+            NhgLight light = lights.get(i);
+            res[i] = light.innerAngle;
         }
 
         return res;
@@ -520,7 +511,8 @@ public class PBRShader extends BaseShader {
 
     private float[] getLightOuterAngles(float[] res) {
         for (int i = 0; i < lights.size; i++) {
-            res[i] = lights.get(i).outerAngle;
+            NhgLight light = lights.get(i);
+            res[i] = light.outerAngle;
         }
 
         return res;

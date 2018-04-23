@@ -29,23 +29,26 @@ public class LightingSystem extends IteratingSystem {
 
     @Override
     protected void process(int entityId) {
-        NodeComponent node = nodeMapper.get(entityId);
         LightComponent light = lightMapper.get(entityId);
 
-        light.light.position.set(node.getTranslation());
-        light.light.setTransform(node.getTransform());
+        if (light.light.enabled) {
+            NodeComponent node = nodeMapper.get(entityId);
 
-        switch (light.type) {
-            case SPOT_LIGHT:
-            case DIRECTIONAL_LIGHT:
-                tempMat.set(node.getTransform());
-                tempMat.translate(0f, 1f, 0f);
+            light.light.position.set(node.getTranslation());
+            light.light.setTransform(node.getTransform());
 
-                tempVec1.set(light.light.position)
-                        .sub(tempMat.getTranslation(tempVec2));
+            switch (light.type) {
+                case SPOT_LIGHT:
+                case DIRECTIONAL_LIGHT:
+                    tempMat.set(node.getTransform());
+                    tempMat.translate(0f, 1f, 0f);
 
-                light.light.direction.set(tempVec1);
-                break;
+                    tempVec1.set(light.light.position)
+                            .sub(tempMat.getTranslation(tempVec2));
+
+                    light.light.direction.set(tempVec1);
+                    break;
+            }
         }
     }
 }
