@@ -62,6 +62,17 @@ public class NhgLight extends BaseLight<NhgLight> {
         return light;
     }
 
+    public void set(NhgLight light) {
+        this.type = light.type;
+        this.enabled = light.enabled;
+        this.outerAngle = light.outerAngle;
+        this.innerAngle = light.innerAngle;
+        this.intensity = light.intensity;
+        this.radius = light.radius;
+        this.position.set(light.position);
+        this.direction.set(light.direction);
+    }
+
     public void setTransform(Matrix4 transform) {
         this.transform.set(transform);
     }

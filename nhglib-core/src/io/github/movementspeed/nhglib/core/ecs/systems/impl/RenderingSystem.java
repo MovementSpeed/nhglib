@@ -9,13 +9,12 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ShaderProvider;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.graphics.glutils.GLFrameBuffer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.core.ecs.interfaces.RenderingSystemInterface;
 import io.github.movementspeed.nhglib.core.ecs.systems.base.BaseRenderingSystem;
-import io.github.movementspeed.nhglib.graphics.shaders.tiledForward.PBRShaderProvider;
+import io.github.movementspeed.nhglib.graphics.shaders.forward.PBRShaderProvider;
 import io.github.movementspeed.nhglib.utils.graphics.GLUtils;
 
 /**
