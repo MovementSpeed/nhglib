@@ -43,7 +43,7 @@ public class RenderingSystem extends BaseSystem implements Disposable {
         fpsLogger = new FPSLogger();
         environment = new Environment();
 
-        shaderProvider = new PBRShaderProvider(environment);
+        shaderProvider = new PBRShaderProvider();
         renderer = new ModelBatch(shaderProvider);
 
         renderingInterfaces = new Array<>();

@@ -1,5 +1,7 @@
 package io.github.movementspeed.nhglib.graphics.shaders.attributes;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Attribute;
@@ -30,6 +32,14 @@ public class PbrTextureAttribute extends Attribute {
         return (mask & Mask) != 0;
     }
 
+    public static PbrTextureAttribute createAlbedo(final Color color) {
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGB888);
+        pixmap.setColor(color);
+        pixmap.drawPixel(0, 0);
+        Texture texture = new Texture(pixmap);
+        return new PbrTextureAttribute(Albedo, texture);
+    }
+
     public static PbrTextureAttribute createAlbedo(final Texture texture) {
         return new PbrTextureAttribute(Albedo, texture);
     }
@@ -38,12 +48,28 @@ public class PbrTextureAttribute extends Attribute {
         return new PbrTextureAttribute(Albedo, region);
     }
 
+    public static PbrTextureAttribute createMetalness(final float metalness) {
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGB888);
+        pixmap.setColor(metalness, metalness, metalness, 1.0f);
+        pixmap.drawPixel(0, 0);
+        Texture texture = new Texture(pixmap);
+        return new PbrTextureAttribute(Metalness, texture);
+    }
+
     public static PbrTextureAttribute createMetalness(final Texture texture) {
         return new PbrTextureAttribute(Metalness, texture);
     }
 
     public static PbrTextureAttribute createMetalness(final TextureRegion region) {
         return new PbrTextureAttribute(Metalness, region);
+    }
+
+    public static PbrTextureAttribute createRoughness(final float roughness) {
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGB888);
+        pixmap.setColor(roughness, roughness, roughness, 1.0f);
+        pixmap.drawPixel(0, 0);
+        Texture texture = new Texture(pixmap);
+        return new PbrTextureAttribute(Roughness, texture);
     }
 
     public static PbrTextureAttribute createRoughness(final Texture texture) {

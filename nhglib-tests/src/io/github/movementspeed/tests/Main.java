@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.assets.Asset;
 import io.github.movementspeed.nhglib.core.ecs.components.graphics.CameraComponent;
+import io.github.movementspeed.nhglib.core.ecs.components.graphics.ModelComponent;
 import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.InputSystem;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
@@ -26,6 +27,7 @@ import io.github.movementspeed.nhglib.input.enums.InputAction;
 import io.github.movementspeed.nhglib.input.interfaces.InputListener;
 import io.github.movementspeed.nhglib.input.models.base.NhgInput;
 import io.github.movementspeed.nhglib.utils.data.Bounds;
+import io.github.movementspeed.nhglib.utils.data.Bundle;
 import io.github.movementspeed.nhglib.utils.data.Strings;
 import io.github.movementspeed.nhglib.utils.debug.NhgLogger;
 import io.github.movementspeed.tests.systems.TestNodeSystem;
@@ -109,6 +111,12 @@ public class Main extends NhgEntry implements InputListener {
                             }
                         } else if (message.is(Strings.Events.sceneLoaded)) {
                             NhgLogger.log(this, "Scene loaded");
+                            int kart = scene.sceneGraph.getSceneEntity("kart");
+                            ModelComponent kartModel = nhg.entities.getComponent(kart, ModelComponent.class);
+
+                            Bundle bundle = new Bundle();
+                            bundle.put(Strings.RenderingSettings.forceUnlitKey, true);
+                            kartModel.model.userData = bundle;
 
                             HDRData data = nhg.assets.get("newport_loft");
 

@@ -1,21 +1,18 @@
 package io.github.movementspeed.nhglib.graphics.shaders.forward;
 
-import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.Shader;
 import com.badlogic.gdx.graphics.g3d.utils.BaseShaderProvider;
-import com.badlogic.gdx.utils.GdxRuntimeException;
+import io.github.movementspeed.nhglib.utils.data.Bundle;
+import io.github.movementspeed.nhglib.utils.data.Strings;
 import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils;
 
 /**
  * Created by Fausto Napoli on 20/03/2017.
  */
 public class PBRShaderProvider extends BaseShaderProvider {
-    private Environment environment;
 
-    public PBRShaderProvider(Environment environment) {
-        if (environment == null) throw new GdxRuntimeException("Environment parameter should not be null.");
-        this.environment = environment;
+    public PBRShaderProvider() {
     }
 
     @Override
@@ -27,10 +24,20 @@ public class PBRShaderProvider extends BaseShaderProvider {
         params.normal = ShaderUtils.hasPbrNormal(renderable);
         params.ambientOcclusion = ShaderUtils.hasAmbientOcclusion(renderable);
         params.useBones = ShaderUtils.useBones(renderable);
-        params.lit = ShaderUtils.hasLights(environment);
-        params.gammaCorrection = ShaderUtils.useGammaCorrection(environment);
-        params.imageBasedLighting = ShaderUtils.useImageBasedLighting(environment);
+        params.lit = ShaderUtils.hasLights(renderable.environment);
+        params.gammaCorrection = ShaderUtils.useGammaCorrection(renderable.environment);
+        params.imageBasedLighting = ShaderUtils.useImageBasedLighting(renderable.environment);
 
-        return new PBRShader(renderable, environment, params);
+        if (renderable.userData != null) {
+            Bundle bundle = (Bundle) renderable.userData;
+            boolean forceUnlit = bundle.getBoolean(Strings.RenderingSettings.forceUnlitKey, false);
+
+            if (forceUnlit) {
+                params.lit = false;
+                params.imageBasedLighting = false;
+            }
+        }
+
+        return new PBRShader(renderable, renderable.environment, params);
     }
 }

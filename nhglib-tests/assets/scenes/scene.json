@@ -157,7 +157,19 @@
             "type": "model",
             "enabled": true,
             "graphicsType": "dynamic",
-            "asset": "chassisAsset"
+            "asset": "chassisAsset",
+            "materials": [
+              {
+                "albedoColor": {
+                  "r": 1,
+                  "g": 0.86,
+                  "b": 0.23,
+                  "a": 1
+                },
+                "metalnessValue": 1,
+                "roughnessValue": 0.1
+              }
+            ]
           }
         ],
         "entities": [

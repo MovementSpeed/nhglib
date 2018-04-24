@@ -1,7 +1,6 @@
 package io.github.movementspeed.nhglib.graphics.scenes;
 
 import com.artemis.ComponentMapper;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -166,39 +165,14 @@ public class SceneManager {
             modelComponent.buildWithModel(model);
 
             for (PbrMaterial pbrMaterial : modelComponent.pbrMaterials) {
-                if (pbrMaterial.albedoColor != null) {
-                    Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGB888);
-                    pixmap.setColor(pbrMaterial.albedoColor);
-                    pixmap.drawPixel(0, 0);
-                    Texture albedo = new Texture(pixmap);
-
-                    pbrMaterial.set(PbrTextureAttribute.createAlbedo(albedo));
-                }
-
-                if (pbrMaterial.metalnessValue > 0 && pbrMaterial.metalnessValue <= 1) {
-                    Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGB888);
-                    pixmap.setColor(pbrMaterial.metalnessValue, pbrMaterial.metalnessValue, pbrMaterial.metalnessValue, 1.0f);
-                    pixmap.drawPixel(0, 0);
-                    Texture metalness = new Texture(pixmap);
-
-                    pbrMaterial.set(PbrTextureAttribute.createMetalness(metalness));
-                }
-
-                if (pbrMaterial.roughnessValue > 0 && pbrMaterial.roughnessValue <= 1) {
-                    Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGB888);
-                    pixmap.setColor(pbrMaterial.roughnessValue, pbrMaterial.roughnessValue, pbrMaterial.roughnessValue, 1.0f);
-                    pixmap.drawPixel(0, 0);
-                    Texture roughness = new Texture(pixmap);
-
-                    pbrMaterial.set(PbrTextureAttribute.createRoughness(roughness));
-                }
-
                 if (pbrMaterial.albedo != null && !pbrMaterial.albedo.isEmpty()) {
                     Texture albedo = assets.get(pbrMaterial.albedo);
 
                     if (albedo != null) {
                         pbrMaterial.set(PbrTextureAttribute.createAlbedo(albedo));
                     }
+                } else if (pbrMaterial.albedoColor != null) {
+                    pbrMaterial.set(PbrTextureAttribute.createAlbedo(pbrMaterial.albedoColor));
                 } else {
                     Material material = modelComponent.model.materials.first();
 
@@ -229,6 +203,8 @@ public class SceneManager {
                     if (metalness != null) {
                         pbrMaterial.set(PbrTextureAttribute.createMetalness(metalness));
                     }
+                } else if (pbrMaterial.metalnessValue > 0 && pbrMaterial.metalnessValue <= 1) {
+                    pbrMaterial.set(PbrTextureAttribute.createMetalness(pbrMaterial.metalnessValue));
                 }
 
                 if (pbrMaterial.normal != null && !pbrMaterial.normal.isEmpty()) {
@@ -245,6 +221,8 @@ public class SceneManager {
                     if (roughness != null) {
                         pbrMaterial.set(PbrTextureAttribute.createRoughness(roughness));
                     }
+                } else if (pbrMaterial.roughnessValue > 0 && pbrMaterial.roughnessValue <= 1) {
+                    pbrMaterial.set(PbrTextureAttribute.createRoughness(pbrMaterial.roughnessValue));
                 }
 
                 // Clear other attributes in model's own materials

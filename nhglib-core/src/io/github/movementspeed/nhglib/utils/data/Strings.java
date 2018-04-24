@@ -13,7 +13,6 @@ public class Strings {
     }
 
     public static class Defaults {
-        public final static String modelsPath = "models/";
         public final static String assetKey = "nhg_asset";
         public final static String assetPackageKey = "nhg_asset_package";
         public final static String inputKey = "nhg_input";
@@ -28,5 +27,9 @@ public class Strings {
         public final static String assetUnloaded = "nhg_event_asset_unloaded";
         public final static String keyInputTriggered = "nhg_event_input_triggered";
         public final static String sceneLoaded = "nhg_event_scene_loaded";
+    }
+
+    public static class RenderingSettings {
+        public final static String forceUnlitKey = "nhg_force_unlit";
     }
 }
