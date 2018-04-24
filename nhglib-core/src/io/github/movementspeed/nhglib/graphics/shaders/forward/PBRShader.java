@@ -19,6 +19,8 @@ import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.IBLAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
+import io.github.movementspeed.nhglib.utils.data.Bundle;
+import io.github.movementspeed.nhglib.utils.data.Strings;
 import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils;
 
 /**
@@ -327,6 +329,16 @@ public class PBRShader extends BaseShader {
         boolean lit = ShaderUtils.hasLights(instance.environment) == params.lit;
         boolean gammaCorrection = ShaderUtils.useGammaCorrection(instance.environment) == params.gammaCorrection;
         boolean imageBasedLighting = ShaderUtils.useImageBasedLighting(instance.environment) == params.imageBasedLighting;
+
+        if (renderable.userData != null) {
+            Bundle bundle = (Bundle) renderable.userData;
+            boolean forceUnlit = bundle.getBoolean(Strings.RenderingSettings.forceUnlitKey, false);
+
+            if (forceUnlit) {
+                lit = true;
+                imageBasedLighting = true;
+            }
+        }
 
         return albedo && metalness && roughness && normal &&
                 ambientOcclusion && bones && lit && gammaCorrection && imageBasedLighting;
