@@ -150,11 +150,15 @@ public class Assets implements Updatable, AssetErrorListener {
         T t = null;
 
         if (asset != null && isAssetLoaded(asset)) {
-            t = assetManager.get(asset.source);
+            if (assetManager.isLoaded(asset.source)) {
+                t = assetManager.get(asset.source);
+            }
 
             if (t == null) {
                 for (ObjectMap.Entry<String, AssetManager> entry : customAssetManagers) {
-                    t = entry.value.get(asset.source);
+                    if (entry.value.isLoaded(asset.source)) {
+                        t = entry.value.get(asset.source);
+                    }
 
                     if (t != null) {
                         break;
