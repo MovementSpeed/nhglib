@@ -30,7 +30,7 @@ public class AssetStateIdle implements State<Assets> {
 
     @Override
     public void update(Assets assets) {
-        if (!assets.assetManager.update()) {
+        if (!assets.updateAssetManagers()) {
             assets.fsm.changeState(AssetsStates.LOADING);
         }
     }
