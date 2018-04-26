@@ -41,32 +41,18 @@ public class Assets implements Updatable, AssetErrorListener {
         this.nhg = nhg;
         fsm = new DefaultStateMachine<>(this, AssetsStates.IDLE);
 
-        assetManager = new AssetManager();
-        syncAssetManager = new AssetManager();
-
-        FileHandleResolver resolver = assetManager.getFileHandleResolver();
-        FileHandleResolver syncResolver = syncAssetManager.getFileHandleResolver();
-
-        assetManager.setLoader(Scene.class, new SceneLoader(nhg, resolver));
-        assetManager.setLoader(InputProxy.class, new InputLoader(resolver));
-        assetManager.setLoader(JsonValue.class, new JsonLoader(resolver));
-        assetManager.setLoader(HDRData.class, new HDRLoader(resolver));
-        assetManager.setLoader(Model.class, ".g3db", new NhgG3dModelLoader(this,
-                new UBJsonReader(), resolver));
-
-        syncAssetManager.setLoader(Scene.class, new SceneLoader(nhg, syncResolver));
-        syncAssetManager.setLoader(InputProxy.class, new InputLoader(syncResolver));
-        syncAssetManager.setLoader(JsonValue.class, new JsonLoader(syncResolver));
-        syncAssetManager.setLoader(HDRData.class, new HDRLoader(syncResolver));
-        syncAssetManager.setLoader(Model.class, ".g3db", new NhgG3dModelLoader(this,
-                new UBJsonReader(), syncResolver));
-
-        assetManager.setErrorListener(this);
-        syncAssetManager.setErrorListener(this);
-
         assetQueue = new Array<>();
         assetCache = new ArrayMap<>();
         customAssetManagers = new ArrayMap<>();
+
+        assetManager = new AssetManager();
+        syncAssetManager = new AssetManager();
+
+        setDefaultAssetLoaders(assetManager);
+        setDefaultAssetLoaders(syncAssetManager);
+
+        assetManager.setErrorListener(this);
+        syncAssetManager.setErrorListener(this);
 
         Texture.setAssetManager(assetManager);
     }
@@ -87,9 +73,11 @@ public class Assets implements Updatable, AssetErrorListener {
         }
     }
 
-    public void addAssetManager(String name, FileHandleResolver fileHandleResolver) {
+    public AssetManager addAssetManager(String name, FileHandleResolver fileHandleResolver) {
         AssetManager assetManager = new AssetManager(fileHandleResolver);
+        setDefaultAssetLoaders(assetManager);
         customAssetManagers.put(name, assetManager);
+        return assetManager;
     }
 
     public void assetLoadingFinished() {
@@ -138,6 +126,10 @@ public class Assets implements Updatable, AssetErrorListener {
         }
 
         return assetManager.isLoaded(asset.source) || res;
+    }
+
+    public AssetManager getAssetManager(String name) {
+        return customAssetManagers.get(name);
     }
 
     public Array<Asset> getAssetQueue() {
@@ -468,6 +460,22 @@ public class Assets implements Updatable, AssetErrorListener {
 
     public boolean assetInQueue(Asset asset) {
         return asset != null && assetQueue.contains(asset, true);
+    }
+
+    private void setDefaultAssetLoaders(AssetManager assetManager) {
+        FileHandleResolver resolver = assetManager.getFileHandleResolver();
+
+        SceneLoader sceneLoader = new SceneLoader(nhg, resolver);
+        InputLoader inputLoader = new InputLoader(resolver);
+        JsonLoader jsonLoader = new JsonLoader(resolver);
+        HDRLoader hdrLoader = new HDRLoader(resolver);
+        NhgG3dModelLoader nhgG3dModelLoader = new NhgG3dModelLoader(this, new UBJsonReader(), resolver);
+
+        assetManager.setLoader(Scene.class, sceneLoader);
+        assetManager.setLoader(InputProxy.class, inputLoader);
+        assetManager.setLoader(JsonValue.class, jsonLoader);
+        assetManager.setLoader(HDRData.class, hdrLoader);
+        assetManager.setLoader(Model.class, ".g3db", nhgG3dModelLoader);
     }
 
     public interface AssetListener {
