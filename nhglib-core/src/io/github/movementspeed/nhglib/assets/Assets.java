@@ -9,10 +9,7 @@ import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ArrayMap;
-import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.UBJsonReader;
+import com.badlogic.gdx.utils.*;
 import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.assets.loaders.*;
 import io.github.movementspeed.nhglib.core.fsm.base.AssetsStates;
@@ -38,6 +35,7 @@ public class Assets implements Updatable, AssetErrorListener {
 
     private Array<Asset> assetQueue;
     private ArrayMap<String, Asset> assetCache;
+    private ArrayMap<String, AssetManager> customAssetManagers;
 
     public void init(Nhg nhg) {
         this.nhg = nhg;
@@ -68,6 +66,7 @@ public class Assets implements Updatable, AssetErrorListener {
 
         assetQueue = new Array<>();
         assetCache = new ArrayMap<>();
+        customAssetManagers = new ArrayMap<>();
 
         Texture.setAssetManager(assetManager);
     }
@@ -86,6 +85,11 @@ public class Assets implements Updatable, AssetErrorListener {
         } catch (Throwable throwable1) {
             throwable1.printStackTrace();
         }
+    }
+
+    public void addAssetManager(String name, FileHandleResolver fileHandleResolver) {
+        AssetManager assetManager = new AssetManager(fileHandleResolver);
+        customAssetManagers.put(name, assetManager);
     }
 
     public void assetLoadingFinished() {
@@ -108,6 +112,32 @@ public class Assets implements Updatable, AssetErrorListener {
 
             nhg.messaging.send(new Message(Strings.Events.assetUnloaded, bundle));
         }
+    }
+
+    public boolean updateAssetManagers() {
+        boolean res = true;
+
+        for (ObjectMap.Entry<String, AssetManager> entry : customAssetManagers) {
+            if (!entry.value.update()) {
+                res = false;
+                break;
+            }
+        }
+
+        return assetManager.update() && res;
+    }
+
+    public boolean isAssetLoaded(Asset asset) {
+        boolean res = false;
+
+        for (ObjectMap.Entry<String, AssetManager> entry : customAssetManagers) {
+            if (entry.value.isLoaded(asset.source)) {
+                res = true;
+                break;
+            }
+        }
+
+        return assetManager.isLoaded(asset.source) || res;
     }
 
     public Array<Asset> getAssetQueue() {
@@ -175,6 +205,32 @@ public class Assets implements Updatable, AssetErrorListener {
     }
 
     /**
+     * Loads an asset with a direct callback.
+     *
+     * @param asset    the asset.
+     * @param listener a listener for the asset loading.
+     */
+    public void loadAsset(String assetManagerName, final Asset asset, final AssetListener listener) {
+        if (asset != null) {
+            queueAsset(assetManagerName, asset);
+
+            nhg.messaging.get(Strings.Events.assetLoaded)
+                    .subscribe(new Consumer<Message>() {
+                        @Override
+                        public void accept(Message message) {
+                            Asset loadedAsset = (Asset) message.data.get(Strings.Defaults.assetKey);
+
+                            if (loadedAsset.is(asset)) {
+                                if (listener != null) {
+                                    listener.onAssetLoaded(asset);
+                                }
+                            }
+                        }
+                    });
+        }
+    }
+
+    /**
      * Loads an asset in an asynchronous way.
      *
      * @param asset the asset.
@@ -204,10 +260,47 @@ public class Assets implements Updatable, AssetErrorListener {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public void queueAsset(String assetManagerName, Asset asset) {
+        if (asset != null && assetManagerName != null) {
+            AssetManager assetManager = customAssetManagers.get(assetManagerName);
+
+            if (assetManager != null) {
+                assetCache.put(asset.alias, asset);
+
+                if (!assetManager.isLoaded(asset.source)) {
+                    FileHandle fileHandle = assetManager.getFileHandleResolver().resolve(asset.source);
+
+                    if (fileHandle.exists()) {
+                        if (asset.parameters == null) {
+                            assetManager.load(asset.source, asset.assetClass);
+                        } else {
+                            assetManager.load(asset.source, asset.assetClass, asset.parameters);
+                        }
+
+                        assetQueue.add(asset);
+                    } else {
+                        NhgLogger.log(this, Strings.Messages.cannotQueueAssetFileNotFound, asset.source);
+                    }
+                } else {
+                    assetLoaded(asset);
+                }
+            }
+        }
+    }
+
     public void queueAssets(Array<Asset> assets) {
         if (assets != null) {
             for (Asset asset : assets) {
                 queueAsset(asset);
+            }
+        }
+    }
+
+    public void queueAssets(String assetManagerName, Array<Asset> assets) {
+        if (assets != null) {
+            for (Asset asset : assets) {
+                queueAsset(assetManagerName, asset);
             }
         }
     }
@@ -220,6 +313,29 @@ public class Assets implements Updatable, AssetErrorListener {
                         @Override
                         public void accept(Message message) {
                             Asset asset = (Asset) message.data.get(Strings.Defaults.assetKey);
+                            if (assetPackage.containsAsset(asset.alias)) {
+                                if (assetPackage.decreaseAndCheckRemaining()) {
+                                    Bundle bundle = new Bundle();
+                                    bundle.put(Strings.Defaults.assetPackageKey, assetPackage);
+
+                                    nhg.messaging.send(new Message(Strings.Events.assetPackageLoaded, bundle));
+                                }
+                            }
+                        }
+                    });
+        }
+    }
+
+    public void queueAssetPackage(String assetManagerName, final AssetPackage assetPackage) {
+        if (assetPackage != null) {
+            queueAssets(assetManagerName, assetPackage.getAssets());
+
+            nhg.messaging.get(Strings.Events.assetLoaded)
+                    .subscribe(new Consumer<Message>() {
+                        @Override
+                        public void accept(Message message) {
+                            Asset asset = (Asset) message.data.get(Strings.Defaults.assetKey);
+
                             if (assetPackage.containsAsset(asset.alias)) {
                                 if (assetPackage.decreaseAndCheckRemaining()) {
                                     Bundle bundle = new Bundle();
@@ -262,14 +378,43 @@ public class Assets implements Updatable, AssetErrorListener {
         return t;
     }
 
+    public <T> T loadAssetSync(String assetManagerName, Asset asset) {
+        T t = null;
+
+        if (asset != null && assetManagerName != null) {
+            AssetManager syncAssetManager = customAssetManagers.get(assetManagerName);
+
+            if (syncAssetManager != null) {
+                assetCache.put(asset.alias, asset);
+
+                if (!syncAssetManager.isLoaded(asset.source)) {
+                    FileHandle fileHandle = syncAssetManager.getFileHandleResolver().resolve(asset.source);
+
+                    if (fileHandle.exists()) {
+                        if (asset.parameters == null) {
+                            syncAssetManager.load(asset.source, asset.assetClass);
+                        } else {
+                            syncAssetManager.load(asset.source, asset.assetClass, asset.parameters);
+                        }
+
+                        syncAssetManager.finishLoading();
+                        t = syncAssetManager.get(asset.source);
+                    } else {
+                        NhgLogger.log(this, Strings.Messages.cannotQueueAssetFileNotFound, asset.source);
+                    }
+                } else {
+                    t = syncAssetManager.get(asset.source);
+                }
+            }
+        }
+
+        return t;
+    }
+
     public void dequeueAsset(Asset asset) {
         if (asset != null) {
             assetQueue.removeValue(asset, true);
         }
-    }
-
-    public void clear() {
-        assetManager.clear();
     }
 
     public void unloadAsset(String alias) {
@@ -306,6 +451,19 @@ public class Assets implements Updatable, AssetErrorListener {
             assetManager.dispose();
             assetManager = null;
         }
+
+        if (syncAssetManager != null) {
+            syncAssetManager.dispose();
+            syncAssetManager = null;
+        }
+
+        for (ObjectMap.Entry<String, AssetManager> entry : customAssetManagers) {
+            if (entry.value != null) {
+                entry.value.dispose();
+            }
+        }
+
+        customAssetManagers.clear();
     }
 
     public boolean assetInQueue(Asset asset) {

@@ -24,7 +24,7 @@ public class AssetStateLoading implements State<Assets> {
 
     @Override
     public void update(Assets assets) {
-        if (assets.assetManager.update()) {
+        if (assets.updateAssetManagers()) {
             assets.fsm.changeState(AssetsStates.IDLE);
             MessageManager.getInstance().dispatchMessage(AssetsStates.ASSETS_GC);
 
@@ -49,13 +49,13 @@ public class AssetStateLoading implements State<Assets> {
         Observable.fromIterable(assetsCopy)
                 .filter(new Predicate<Asset>() {
                     @Override
-                    public boolean test(Asset asset) throws Exception {
-                        return assets.assetManager.isLoaded(asset.source);
+                    public boolean test(Asset asset) {
+                        return assets.isAssetLoaded(asset);
                     }
                 })
                 .subscribe(new Consumer<Asset>() {
                     @Override
-                    public void accept(Asset asset) throws Exception {
+                    public void accept(Asset asset) {
                         NhgLogger.log(
                                 this,
                                 Strings.Messages.assetLoaded,
