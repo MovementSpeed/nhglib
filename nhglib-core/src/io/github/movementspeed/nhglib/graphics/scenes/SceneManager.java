@@ -25,7 +25,7 @@ import io.github.movementspeed.nhglib.core.messaging.Message;
 import io.github.movementspeed.nhglib.core.messaging.Messaging;
 import io.github.movementspeed.nhglib.data.models.serialization.components.*;
 import io.github.movementspeed.nhglib.files.HDRData;
-import io.github.movementspeed.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
+import io.github.movementspeed.nhglib.graphics.shaders.attributes.PBRTextureAttribute;
 import io.github.movementspeed.nhglib.graphics.utils.PbrMaterial;
 import io.github.movementspeed.nhglib.physics.models.BvhTriangleMeshRigidBodyShape;
 import io.github.movementspeed.nhglib.physics.models.ConvexHullRigidBodyShape;
@@ -169,10 +169,10 @@ public class SceneManager {
                     Texture albedo = assets.get(pbrMaterial.albedo);
 
                     if (albedo != null) {
-                        pbrMaterial.set(PbrTextureAttribute.createAlbedo(albedo));
+                        pbrMaterial.set(PBRTextureAttribute.createAlbedo(albedo));
                     }
                 } else if (pbrMaterial.albedoColor != null) {
-                    pbrMaterial.set(PbrTextureAttribute.createAlbedo(pbrMaterial.albedoColor));
+                    pbrMaterial.set(PBRTextureAttribute.createAlbedo(pbrMaterial.albedoColor));
                 } else {
                     Material material = modelComponent.model.materials.first();
 
@@ -183,7 +183,7 @@ public class SceneManager {
                             Texture albedo = textureAttribute.textureDescription.texture;
 
                             if (albedo != null) {
-                                pbrMaterial.set(PbrTextureAttribute.createAlbedo(albedo));
+                                pbrMaterial.set(PBRTextureAttribute.createAlbedo(albedo));
                             }
                         }
                     }
@@ -193,7 +193,7 @@ public class SceneManager {
                     Texture ambientOcclusion = assets.get(pbrMaterial.ambientOcclusion);
 
                     if (ambientOcclusion != null) {
-                        pbrMaterial.set(PbrTextureAttribute.createAmbientOcclusion(ambientOcclusion));
+                        pbrMaterial.set(PBRTextureAttribute.createAmbientOcclusion(ambientOcclusion));
                     }
                 }
 
@@ -201,17 +201,17 @@ public class SceneManager {
                     Texture metalness = assets.get(pbrMaterial.metalness);
 
                     if (metalness != null) {
-                        pbrMaterial.set(PbrTextureAttribute.createMetalness(metalness));
+                        pbrMaterial.set(PBRTextureAttribute.createMetalness(metalness));
                     }
                 } else if (pbrMaterial.metalnessValue > 0 && pbrMaterial.metalnessValue <= 1) {
-                    pbrMaterial.set(PbrTextureAttribute.createMetalness(pbrMaterial.metalnessValue));
+                    pbrMaterial.set(PBRTextureAttribute.createMetalness(pbrMaterial.metalnessValue));
                 }
 
                 if (pbrMaterial.normal != null && !pbrMaterial.normal.isEmpty()) {
                     Texture normal = assets.get(pbrMaterial.normal);
 
                     if (normal != null) {
-                        pbrMaterial.set(PbrTextureAttribute.createNormal(normal));
+                        pbrMaterial.set(PBRTextureAttribute.createNormal(normal));
                     }
                 }
 
@@ -219,10 +219,10 @@ public class SceneManager {
                     Texture roughness = assets.get(pbrMaterial.roughness);
 
                     if (roughness != null) {
-                        pbrMaterial.set(PbrTextureAttribute.createRoughness(roughness));
+                        pbrMaterial.set(PBRTextureAttribute.createRoughness(roughness));
                     }
                 } else if (pbrMaterial.roughnessValue > 0 && pbrMaterial.roughnessValue <= 1) {
-                    pbrMaterial.set(PbrTextureAttribute.createRoughness(pbrMaterial.roughnessValue));
+                    pbrMaterial.set(PBRTextureAttribute.createRoughness(pbrMaterial.roughnessValue));
                 }
 
                 // Clear other attributes in model's own materials

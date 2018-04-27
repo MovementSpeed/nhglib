@@ -12,8 +12,8 @@ import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.GammaCorrectionAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.IBLAttribute;
-import io.github.movementspeed.nhglib.graphics.shaders.attributes.PbrColorAttribute;
-import io.github.movementspeed.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
+import io.github.movementspeed.nhglib.graphics.shaders.attributes.PBRColorAttribute;
+import io.github.movementspeed.nhglib.graphics.shaders.attributes.PBRTextureAttribute;
 
 /**
  * Created by Fausto Napoli on 13/03/2017.
@@ -130,7 +130,7 @@ public class ShaderUtils {
 
     public static boolean hasAlbedo(Renderable renderable) {
         boolean res = false;
-        PbrTextureAttribute attribute = (PbrTextureAttribute) renderable.material.get(PbrTextureAttribute.Albedo);
+        PBRTextureAttribute attribute = (PBRTextureAttribute) renderable.material.get(PBRTextureAttribute.Albedo);
 
         if (attribute != null && attribute.textureDescription.texture != null) {
             res = true;
@@ -141,7 +141,7 @@ public class ShaderUtils {
 
     public static boolean hasAlbedoColor(Renderable renderable) {
         boolean res = false;
-        PbrColorAttribute attribute = (PbrColorAttribute) renderable.material.get(PbrColorAttribute.AlbedoColor);
+        PBRColorAttribute attribute = (PBRColorAttribute) renderable.material.get(PBRColorAttribute.AlbedoColor);
 
         if (attribute != null) {
             res = true;
@@ -152,7 +152,7 @@ public class ShaderUtils {
 
     public static boolean hasMetalness(Renderable renderable) {
         boolean res = false;
-        PbrTextureAttribute attribute = (PbrTextureAttribute) renderable.material.get(PbrTextureAttribute.Metalness);
+        PBRTextureAttribute attribute = (PBRTextureAttribute) renderable.material.get(PBRTextureAttribute.Metalness);
 
         if (attribute != null && attribute.textureDescription.texture != null) {
             res = true;
@@ -163,7 +163,7 @@ public class ShaderUtils {
 
     public static boolean hasMetalnessValue(Renderable renderable) {
         boolean res = false;
-        PbrColorAttribute attribute = (PbrColorAttribute) renderable.material.get(PbrColorAttribute.MetalnessValue);
+        PBRColorAttribute attribute = (PBRColorAttribute) renderable.material.get(PBRColorAttribute.MetalnessValue);
 
         if (attribute != null) {
             res = true;
@@ -174,7 +174,7 @@ public class ShaderUtils {
 
     public static boolean hasRoughness(Renderable renderable) {
         boolean res = false;
-        PbrTextureAttribute attribute = (PbrTextureAttribute) renderable.material.get(PbrTextureAttribute.Roughness);
+        PBRTextureAttribute attribute = (PBRTextureAttribute) renderable.material.get(PBRTextureAttribute.Roughness);
 
         if (attribute != null && attribute.textureDescription.texture != null) {
             res = true;
@@ -185,7 +185,7 @@ public class ShaderUtils {
 
     public static boolean hasRoughnessValue(Renderable renderable) {
         boolean res = false;
-        PbrColorAttribute attribute = (PbrColorAttribute) renderable.material.get(PbrColorAttribute.RoughnessValue);
+        PBRColorAttribute attribute = (PBRColorAttribute) renderable.material.get(PBRColorAttribute.RoughnessValue);
 
         if (attribute != null) {
             res = true;
@@ -196,7 +196,7 @@ public class ShaderUtils {
 
     public static boolean hasPbrNormal(Renderable renderable) {
         boolean res = false;
-        PbrTextureAttribute attribute = (PbrTextureAttribute) renderable.material.get(PbrTextureAttribute.Normal);
+        PBRTextureAttribute attribute = (PBRTextureAttribute) renderable.material.get(PBRTextureAttribute.Normal);
 
         if (attribute != null && attribute.textureDescription.texture != null) {
             res = true;
@@ -207,7 +207,7 @@ public class ShaderUtils {
 
     public static boolean hasAmbientOcclusion(Renderable renderable) {
         boolean res = false;
-        PbrTextureAttribute attribute = (PbrTextureAttribute) renderable.material.get(PbrTextureAttribute.AmbientOcclusion);
+        PBRTextureAttribute attribute = (PBRTextureAttribute) renderable.material.get(PBRTextureAttribute.AmbientOcclusion);
 
         if (attribute != null && attribute.textureDescription.texture != null) {
             res = true;

@@ -189,7 +189,7 @@ public class LightProbe {
 
         String folder = "shaders/gl3/";
 
-        switch (Nhg.version) {
+        switch (Nhg.glVersion) {
             case VERSION_2:
                 folder = "shaders/gl2/";
                 break;
@@ -228,7 +228,7 @@ public class LightProbe {
     private Cubemap renderEnvironmentFromTexture(Texture equirectangularTexture) {
         String folder = "shaders/gl3/";
 
-        switch (Nhg.version) {
+        switch (Nhg.glVersion) {
             case VERSION_2:
                 folder = "shaders/gl2/";
                 break;
@@ -269,7 +269,7 @@ public class LightProbe {
     private Cubemap renderIrradiance(Cubemap environmentCubemap) {
         String folder = "shaders/gl3/";
 
-        switch (Nhg.version) {
+        switch (Nhg.glVersion) {
             case VERSION_2:
                 folder = "shaders/gl2/";
                 break;
@@ -303,7 +303,7 @@ public class LightProbe {
     private Cubemap renderPrefilter(Cubemap environmentCubemap) {
         String folder = "shaders/gl3/";
 
-        switch (Nhg.version) {
+        switch (Nhg.glVersion) {
             case VERSION_2:
                 folder = "shaders/gl2/";
                 break;
@@ -409,7 +409,7 @@ public class LightProbe {
     private Texture renderBRDF() {
         String folder = "shaders/gl3/";
 
-        switch (Nhg.version) {
+        switch (Nhg.glVersion) {
             case VERSION_2:
                 folder = "shaders/gl2/";
                 break;

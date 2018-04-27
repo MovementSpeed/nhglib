@@ -23,6 +23,7 @@
 #define M_PI 3.14159265359
 #define MAX_REFLECTION_LOD 4.0
 
+uniform LOWP float u_ambient;
 uniform LOWP int u_graphicsWidth;
 uniform LOWP int u_graphicsHeight;
 uniform HIGHP mat4 u_viewMatrix;
@@ -297,7 +298,7 @@ void main() {
         #endif
     #endif
 
-    color = (vec3(0.03) * albedo) + Lo;
+    color = (vec3(u_ambient) * albedo) + Lo;
 
     #ifdef defGammaCorrection
         color = color / (color + vec3(1.0));

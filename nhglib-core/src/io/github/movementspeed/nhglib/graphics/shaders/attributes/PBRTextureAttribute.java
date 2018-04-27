@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.NumberUtils;
 /**
  * Created by Fausto Napoli on 23/03/2017.
  */
-public class PbrTextureAttribute extends Attribute {
+public class PBRTextureAttribute extends Attribute {
     public final static String AlbedoAlias = "albedoTexture";
     public final static String MetalnessAlias = "metalnessTexture";
     public final static String RoughnessAlias = "roughnessTexture";
@@ -32,68 +32,68 @@ public class PbrTextureAttribute extends Attribute {
         return (mask & Mask) != 0;
     }
 
-    public static PbrTextureAttribute createAlbedo(final Color color) {
+    public static PBRTextureAttribute createAlbedo(final Color color) {
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGB888);
         pixmap.setColor(color);
         pixmap.drawPixel(0, 0);
         Texture texture = new Texture(pixmap);
-        return new PbrTextureAttribute(Albedo, texture);
+        return new PBRTextureAttribute(Albedo, texture);
     }
 
-    public static PbrTextureAttribute createAlbedo(final Texture texture) {
-        return new PbrTextureAttribute(Albedo, texture);
+    public static PBRTextureAttribute createAlbedo(final Texture texture) {
+        return new PBRTextureAttribute(Albedo, texture);
     }
 
-    public static PbrTextureAttribute createAlbedo(final TextureRegion region) {
-        return new PbrTextureAttribute(Albedo, region);
+    public static PBRTextureAttribute createAlbedo(final TextureRegion region) {
+        return new PBRTextureAttribute(Albedo, region);
     }
 
-    public static PbrTextureAttribute createMetalness(final float metalness) {
+    public static PBRTextureAttribute createMetalness(final float metalness) {
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGB888);
         pixmap.setColor(metalness, metalness, metalness, 1.0f);
         pixmap.drawPixel(0, 0);
         Texture texture = new Texture(pixmap);
-        return new PbrTextureAttribute(Metalness, texture);
+        return new PBRTextureAttribute(Metalness, texture);
     }
 
-    public static PbrTextureAttribute createMetalness(final Texture texture) {
-        return new PbrTextureAttribute(Metalness, texture);
+    public static PBRTextureAttribute createMetalness(final Texture texture) {
+        return new PBRTextureAttribute(Metalness, texture);
     }
 
-    public static PbrTextureAttribute createMetalness(final TextureRegion region) {
-        return new PbrTextureAttribute(Metalness, region);
+    public static PBRTextureAttribute createMetalness(final TextureRegion region) {
+        return new PBRTextureAttribute(Metalness, region);
     }
 
-    public static PbrTextureAttribute createRoughness(final float roughness) {
+    public static PBRTextureAttribute createRoughness(final float roughness) {
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGB888);
         pixmap.setColor(roughness, roughness, roughness, 1.0f);
         pixmap.drawPixel(0, 0);
         Texture texture = new Texture(pixmap);
-        return new PbrTextureAttribute(Roughness, texture);
+        return new PBRTextureAttribute(Roughness, texture);
     }
 
-    public static PbrTextureAttribute createRoughness(final Texture texture) {
-        return new PbrTextureAttribute(Roughness, texture);
+    public static PBRTextureAttribute createRoughness(final Texture texture) {
+        return new PBRTextureAttribute(Roughness, texture);
     }
 
-    public static PbrTextureAttribute createRoughness(final TextureRegion region) {
-        return new PbrTextureAttribute(Roughness, region);
+    public static PBRTextureAttribute createRoughness(final TextureRegion region) {
+        return new PBRTextureAttribute(Roughness, region);
     }
 
-    public static PbrTextureAttribute createNormal(final Texture texture) {
-        return new PbrTextureAttribute(Normal, texture);
+    public static PBRTextureAttribute createNormal(final Texture texture) {
+        return new PBRTextureAttribute(Normal, texture);
     }
 
-    public static PbrTextureAttribute createNormal(final TextureRegion region) {
-        return new PbrTextureAttribute(Normal, region);
+    public static PBRTextureAttribute createNormal(final TextureRegion region) {
+        return new PBRTextureAttribute(Normal, region);
     }
 
-    public static PbrTextureAttribute createAmbientOcclusion(final Texture texture) {
-        return new PbrTextureAttribute(AmbientOcclusion, texture);
+    public static PBRTextureAttribute createAmbientOcclusion(final Texture texture) {
+        return new PBRTextureAttribute(AmbientOcclusion, texture);
     }
 
-    public static PbrTextureAttribute createAmbientOcclusion(final TextureRegion region) {
-        return new PbrTextureAttribute(AmbientOcclusion, region);
+    public static PBRTextureAttribute createAmbientOcclusion(final TextureRegion region) {
+        return new PBRTextureAttribute(AmbientOcclusion, region);
     }
 
     public final TextureDescriptor<Texture> textureDescription;
@@ -103,24 +103,24 @@ public class PbrTextureAttribute extends Attribute {
     public float scaleU = 1;
     public float scaleV = 1;
     /**
-     * The index of the texture coordinate vertex attribute to use for this PbrTextureAttribute. Whether this value is used, depends
+     * The index of the texture coordinate vertex attribute to use for this PBRTextureAttribute. Whether this value is used, depends
      * on the shader and {@link Attribute#type} value. For basic (model specific) types (e.g. {@link #Albedo},
      * etc.), this value is usually ignored and the first texture coordinate vertex attribute is used.
      */
     public int uvIndex = 0;
 
-    public PbrTextureAttribute(final long type) {
+    public PBRTextureAttribute(final long type) {
         super(type);
         if (!is(type)) throw new GdxRuntimeException("Invalid type specified");
         textureDescription = new TextureDescriptor<>();
     }
 
-    public <T extends Texture> PbrTextureAttribute(final long type, final TextureDescriptor<T> textureDescription) {
+    public <T extends Texture> PBRTextureAttribute(final long type, final TextureDescriptor<T> textureDescription) {
         this(type);
         this.textureDescription.set(textureDescription);
     }
 
-    public <T extends Texture> PbrTextureAttribute(final long type, final TextureDescriptor<T> textureDescription, float offsetU,
+    public <T extends Texture> PBRTextureAttribute(final long type, final TextureDescriptor<T> textureDescription, float offsetU,
                                                    float offsetV, float scaleU, float scaleV, int uvIndex) {
         this(type, textureDescription);
         this.offsetU = offsetU;
@@ -130,22 +130,22 @@ public class PbrTextureAttribute extends Attribute {
         this.uvIndex = uvIndex;
     }
 
-    public <T extends Texture> PbrTextureAttribute(final long type, final TextureDescriptor<T> textureDescription, float offsetU,
+    public <T extends Texture> PBRTextureAttribute(final long type, final TextureDescriptor<T> textureDescription, float offsetU,
                                                    float offsetV, float scaleU, float scaleV) {
         this(type, textureDescription, offsetU, offsetV, scaleU, scaleV, 0);
     }
 
-    public PbrTextureAttribute(final long type, final Texture texture) {
+    public PBRTextureAttribute(final long type, final Texture texture) {
         this(type);
         textureDescription.texture = texture;
     }
 
-    public PbrTextureAttribute(final long type, final TextureRegion region) {
+    public PBRTextureAttribute(final long type, final TextureRegion region) {
         this(type);
         set(region);
     }
 
-    public PbrTextureAttribute(final PbrTextureAttribute copyFrom) {
+    public PBRTextureAttribute(final PBRTextureAttribute copyFrom) {
         this(copyFrom.type, copyFrom.textureDescription, copyFrom.offsetU, copyFrom.offsetV, copyFrom.scaleU, copyFrom.scaleV,
                 copyFrom.uvIndex);
     }
@@ -160,7 +160,7 @@ public class PbrTextureAttribute extends Attribute {
 
     @Override
     public Attribute copy() {
-        return new PbrTextureAttribute(this);
+        return new PBRTextureAttribute(this);
     }
 
     @Override
@@ -178,7 +178,7 @@ public class PbrTextureAttribute extends Attribute {
     @Override
     public int compareTo(Attribute o) {
         if (type != o.type) return type < o.type ? -1 : 1;
-        PbrTextureAttribute other = (PbrTextureAttribute) o;
+        PBRTextureAttribute other = (PBRTextureAttribute) o;
         final int c = textureDescription.compareTo(other.textureDescription);
         if (c != 0) return c;
         if (uvIndex != other.uvIndex) return uvIndex - other.uvIndex;

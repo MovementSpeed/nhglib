@@ -10,7 +10,7 @@ import io.github.movementspeed.nhglib.core.ecs.components.graphics.ModelComponen
 import io.github.movementspeed.nhglib.core.ecs.components.graphics.UiComponent;
 import io.github.movementspeed.nhglib.core.ecs.systems.base.BaseRenderingSystem;
 import io.github.movementspeed.nhglib.core.ecs.utils.Entities;
-import io.github.movementspeed.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
+import io.github.movementspeed.nhglib.graphics.shaders.attributes.PBRTextureAttribute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,8 +71,8 @@ public class UiSystem extends BaseRenderingSystem {
 
                         if (modelComponent != null && modelComponent.state == ModelComponent.State.READY) {
                             TextureRegion texture = uiComponent.uiManager.renderUiToTexture(Gdx.graphics.getDeltaTime());
-                            PbrTextureAttribute textureAttribute = (PbrTextureAttribute) modelComponent.model.materials
-                                    .first().get(PbrTextureAttribute.Albedo);
+                            PBRTextureAttribute textureAttribute = (PBRTextureAttribute) modelComponent.model.materials
+                                    .first().get(PBRTextureAttribute.Albedo);
 
                             textureAttribute.set(texture);
                         }

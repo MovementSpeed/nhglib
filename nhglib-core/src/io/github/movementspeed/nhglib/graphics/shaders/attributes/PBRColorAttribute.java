@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Attribute;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
-public class PbrColorAttribute extends Attribute {
+public class PBRColorAttribute extends Attribute {
     public final static String AlbedoColorAlias = "albedoColor";
     public final static String MetalnessValueAlias = "metalnessValue";
     public final static String RoughnessValueAlias = "roughnessValue";
@@ -19,42 +19,42 @@ public class PbrColorAttribute extends Attribute {
         return (mask & Mask) != 0;
     }
 
-    public final static PbrColorAttribute createAlbedo(final Color color) {
-        return new PbrColorAttribute(AlbedoColor, color);
+    public final static PBRColorAttribute createAlbedo(final Color color) {
+        return new PBRColorAttribute(AlbedoColor, color);
     }
 
-    public final static PbrColorAttribute createMetalness(final float metalness) {
-        return new PbrColorAttribute(MetalnessValue, new Color(metalness, metalness, metalness, 1.0f));
+    public final static PBRColorAttribute createMetalness(final float metalness) {
+        return new PBRColorAttribute(MetalnessValue, new Color(metalness, metalness, metalness, 1.0f));
     }
 
-    public final static PbrColorAttribute createRoughness(final float roughness) {
-        return new PbrColorAttribute(RoughnessValue, new Color(roughness, roughness, roughness, 1.0f));
+    public final static PBRColorAttribute createRoughness(final float roughness) {
+        return new PBRColorAttribute(RoughnessValue, new Color(roughness, roughness, roughness, 1.0f));
     }
 
     public final Color color = new Color();
 
-    public PbrColorAttribute (final long type) {
+    public PBRColorAttribute(final long type) {
         super(type);
         if (!is(type)) throw new GdxRuntimeException("Invalid type specified");
     }
 
-    public PbrColorAttribute (final long type, final Color color) {
+    public PBRColorAttribute(final long type, final Color color) {
         this(type);
         if (color != null) this.color.set(color);
     }
 
-    public PbrColorAttribute (final long type, float r, float g, float b, float a) {
+    public PBRColorAttribute(final long type, float r, float g, float b, float a) {
         this(type);
         this.color.set(r, g, b, a);
     }
 
-    public PbrColorAttribute (final PbrColorAttribute copyFrom) {
+    public PBRColorAttribute(final PBRColorAttribute copyFrom) {
         this(copyFrom.type, copyFrom.color);
     }
 
     @Override
     public Attribute copy () {
-        return new PbrColorAttribute(this);
+        return new PBRColorAttribute(this);
     }
 
     @Override
@@ -67,6 +67,6 @@ public class PbrColorAttribute extends Attribute {
     @Override
     public int compareTo (Attribute o) {
         if (type != o.type) return (int)(type - o.type);
-        return ((PbrColorAttribute)o).color.toIntBits() - color.toIntBits();
+        return ((PBRColorAttribute)o).color.toIntBits() - color.toIntBits();
     }
 }

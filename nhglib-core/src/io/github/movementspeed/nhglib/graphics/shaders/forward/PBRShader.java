@@ -17,8 +17,9 @@ import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
+import io.github.movementspeed.nhglib.graphics.shaders.attributes.AmbientLightingAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.IBLAttribute;
-import io.github.movementspeed.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
+import io.github.movementspeed.nhglib.graphics.shaders.attributes.PBRTextureAttribute;
 import io.github.movementspeed.nhglib.utils.data.Bundle;
 import io.github.movementspeed.nhglib.utils.data.Strings;
 import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils;
@@ -114,7 +115,7 @@ public class PBRShader extends BaseShader {
         String prefix = createPrefix(renderable);
         String folder = "shaders/gl3/";
 
-        switch (Nhg.version) {
+        switch (Nhg.glVersion) {
             case VERSION_2:
                 folder = "shaders/gl2/";
                 break;
@@ -170,7 +171,7 @@ public class PBRShader extends BaseShader {
         register("u_albedo", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                PbrTextureAttribute textureAttribute = (PbrTextureAttribute) combinedAttributes.get(PbrTextureAttribute.Albedo);
+                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Albedo);
 
                 if (textureAttribute != null) {
                     shader.set(inputID, textureAttribute.textureDescription.texture);
@@ -181,7 +182,7 @@ public class PBRShader extends BaseShader {
         register("u_metalness", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                PbrTextureAttribute textureAttribute = (PbrTextureAttribute) combinedAttributes.get(PbrTextureAttribute.Metalness);
+                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Metalness);
 
                 if (textureAttribute != null) {
                     shader.set(inputID, textureAttribute.textureDescription.texture);
@@ -192,7 +193,7 @@ public class PBRShader extends BaseShader {
         register("u_roughness", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                PbrTextureAttribute textureAttribute = (PbrTextureAttribute) combinedAttributes.get(PbrTextureAttribute.Roughness);
+                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Roughness);
 
                 if (textureAttribute != null) {
                     shader.set(inputID, textureAttribute.textureDescription.texture);
@@ -203,7 +204,7 @@ public class PBRShader extends BaseShader {
         register("u_normal", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                PbrTextureAttribute textureAttribute = (PbrTextureAttribute) combinedAttributes.get(PbrTextureAttribute.Normal);
+                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Normal);
 
                 if (textureAttribute != null) {
                     shader.set(inputID, textureAttribute.textureDescription.texture);
@@ -214,7 +215,7 @@ public class PBRShader extends BaseShader {
         register("u_ambientOcclusion", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                PbrTextureAttribute textureAttribute = (PbrTextureAttribute) combinedAttributes.get(PbrTextureAttribute.AmbientOcclusion);
+                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.AmbientOcclusion);
 
                 if (textureAttribute != null) {
                     shader.set(inputID, textureAttribute.textureDescription.texture);
@@ -251,6 +252,19 @@ public class PBRShader extends BaseShader {
 
                 if (attribute != null) {
                     shader.set(inputID, attribute.textureDescription.texture);
+                }
+            }
+        });
+
+        register("u_ambient", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                AmbientLightingAttribute ambientLightingAttribute = (AmbientLightingAttribute) combinedAttributes.get(AmbientLightingAttribute.Type);
+
+                if (ambientLightingAttribute != null) {
+                    shader.set(inputID, ambientLightingAttribute.ambient);
+                } else {
+                    shader.set(inputID, 0.03f);
                 }
             }
         });
@@ -400,7 +414,7 @@ public class PBRShader extends BaseShader {
     private String createPrefix(Renderable renderable) {
         String prefix = "";
 
-        switch (Nhg.version) {
+        switch (Nhg.glVersion) {
             case VERSION_3:
                 prefix = "#version 300 es\n";
                 break;

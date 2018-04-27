@@ -25,6 +25,7 @@
 
 out vec4 fragmentColor;
 
+uniform LOWP float u_ambient;
 uniform LOWP int u_graphicsWidth;
 uniform LOWP int u_graphicsHeight;
 uniform HIGHP mat4 u_viewMatrix;
@@ -248,7 +249,7 @@ void main() {
 
         LOWP vec3 ambient = (kD * diffuse + specular) * ambientOcclusion;
     #else
-        LOWP vec3 ambient = vec3(0.03) * albedo;
+        LOWP vec3 ambient = vec3(u_ambient) * albedo;
     #endif
 
     color = ambient + Lo;

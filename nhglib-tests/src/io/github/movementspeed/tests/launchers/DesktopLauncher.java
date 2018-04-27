@@ -15,7 +15,7 @@ public class DesktopLauncher {
         config.width = 1280;
         config.height = 720;
         config.useGL30 = true;
-        Nhg.version = OpenGLVersion.VERSION_3;
+        Nhg.glVersion = OpenGLVersion.VERSION_3;
 
         new LwjglApplication(new Main(), config);
     }

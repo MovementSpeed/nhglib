@@ -20,7 +20,7 @@ import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;
 import io.github.movementspeed.nhglib.assets.Asset;
-import io.github.movementspeed.nhglib.graphics.shaders.attributes.PbrTextureAttribute;
+import io.github.movementspeed.nhglib.graphics.shaders.attributes.PBRTextureAttribute;
 
 import java.util.Iterator;
 
@@ -144,7 +144,7 @@ public abstract class NhgModelLoader<P extends NhgModelLoader.ModelParameters> e
             TextureAttribute textureAttribute = (TextureAttribute) material.get(TextureAttribute.Diffuse);
 
             if (textureAttribute != null) {
-                material.set(PbrTextureAttribute.createAlbedo(textureAttribute.textureDescription.texture));
+                material.set(PBRTextureAttribute.createAlbedo(textureAttribute.textureDescription.texture));
             }
         }
 

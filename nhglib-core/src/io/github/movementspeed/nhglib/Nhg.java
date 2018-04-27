@@ -19,7 +19,7 @@ public class Nhg {
     public static boolean debugLogs = false;
     public static boolean debugDrawPhysics = false;
     public static boolean debugFpsLogs = false;
-    public static OpenGLVersion version = OpenGLVersion.VERSION_3;
+    public static OpenGLVersion glVersion = OpenGLVersion.VERSION_3;
 
     public Nhg() {
         messaging = new Messaging();

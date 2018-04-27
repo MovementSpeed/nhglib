@@ -40,7 +40,7 @@ public class ParticleRenderingSystem extends BaseRenderingSystem {
 
             String folder = "shaders/gl3/";
 
-            switch (Nhg.version) {
+            switch (Nhg.glVersion) {
                 case VERSION_2:
                     folder = "shaders/gl2/";
                     break;

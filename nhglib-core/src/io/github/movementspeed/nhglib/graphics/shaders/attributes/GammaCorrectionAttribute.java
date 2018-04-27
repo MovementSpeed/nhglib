@@ -11,14 +11,14 @@ public class GammaCorrectionAttribute extends Attribute {
 
     public boolean gammaCorrection;
 
-    public GammaCorrectionAttribute() {
+    public GammaCorrectionAttribute(boolean gammaCorrection) {
         super(Type);
-        gammaCorrection = true;
+        this.gammaCorrection = gammaCorrection;
     }
 
     @Override
     public Attribute copy() {
-        return new GammaCorrectionAttribute();
+        return new GammaCorrectionAttribute(gammaCorrection);
     }
 
     @Override

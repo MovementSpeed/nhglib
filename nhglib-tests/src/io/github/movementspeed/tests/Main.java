@@ -18,6 +18,7 @@ import io.github.movementspeed.nhglib.graphics.lights.LightProbe;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.movementspeed.nhglib.graphics.scenes.Scene;
+import io.github.movementspeed.nhglib.graphics.shaders.attributes.AmbientLightingAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.GammaCorrectionAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.IBLAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.particles.ParticleShader;
@@ -83,11 +84,12 @@ public class Main extends NhgEntry implements InputListener {
         sun.direction.set(-1, -1, -1);
         lightsAttribute.lights.add(sun);
 
-        GammaCorrectionAttribute gammaCorrectionAttribute = new GammaCorrectionAttribute();
-        gammaCorrectionAttribute.gammaCorrection = true;
+        GammaCorrectionAttribute gammaCorrectionAttribute = new GammaCorrectionAttribute(true);
+        AmbientLightingAttribute ambientLightingAttribute = new AmbientLightingAttribute(1.0f);
 
         environment.set(lightsAttribute);
         environment.set(gammaCorrectionAttribute);
+        environment.set(ambientLightingAttribute);
 
         // Subscribe to asset events
         nhg.messaging.get(Strings.Events.assetLoaded, Strings.Events.assetLoadingFinished, Strings.Events.sceneLoaded)
