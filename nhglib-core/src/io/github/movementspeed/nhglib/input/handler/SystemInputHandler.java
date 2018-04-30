@@ -126,10 +126,10 @@ public class SystemInputHandler implements InputHandler {
 
                 if (input0 != null && input0.isValid()) {
                     if (input0.hasTouchInputType(TouchInputType.ZOOM)) {
-                        float ratio = initialDistance / distance;
+                        Vector2 values = vec0.set(initialDistance, distance);
 
                         input0.setAction(InputAction.ZOOM);
-                        input0.setValue(ratio);
+                        input0.setValue(values);
 
                         inputProxy.onInput(input0);
                         return true;
