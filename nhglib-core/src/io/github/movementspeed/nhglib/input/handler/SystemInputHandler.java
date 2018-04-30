@@ -122,6 +122,21 @@ public class SystemInputHandler implements InputHandler {
 
             @Override
             public boolean zoom(float initialDistance, float distance) {
+                NhgTouchInput input0 = touchInputs.get(0);
+
+                if (input0 != null && input0.isValid()) {
+                    if (input0.hasTouchInputType(TouchInputType.ZOOM)) {
+                        float ratio = initialDistance / distance;
+
+                        input0.setAction(InputAction.ZOOM);
+                        input0.setValue(ratio);
+
+                        inputProxy.onInput(input0);
+                        return true;
+                    }
+                }
+
+
                 return false;
             }
 
@@ -139,10 +154,11 @@ public class SystemInputHandler implements InputHandler {
                         input0.setValue(value);
 
                         inputProxy.onInput(input0);
+                        return true;
                     }
                 }
 
-                return true;
+                return false;
             }
 
             @Override

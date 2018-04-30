@@ -28,46 +28,46 @@ import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils;
  * Created by Fausto Napoli on 18/03/2017.
  */
 public class PBRShader extends BaseShader {
-    protected final int u_dirLights0color = register(new Uniform("u_dirLights[0].color"));
-    protected final int u_dirLights0direction = register(new Uniform("u_dirLights[0].direction"));
-    protected final int u_dirLights0intensity = register(new Uniform("u_dirLights[0].intensity"));
-    protected final int u_dirLights1color = register(new Uniform("u_dirLights[1].color"));
+    private final int u_dirLights0color = register(new Uniform("u_dirLights[0].color"));
+    private final int u_dirLights0direction = register(new Uniform("u_dirLights[0].direction"));
+    private final int u_dirLights0intensity = register(new Uniform("u_dirLights[0].intensity"));
+    private final int u_dirLights1color = register(new Uniform("u_dirLights[1].color"));
 
-    protected final int u_pointLights0color = register(new Uniform("u_pointLights[0].color"));
-    protected final int u_pointLights0position = register(new Uniform("u_pointLights[0].position"));
-    protected final int u_pointLights0intensity = register(new Uniform("u_pointLights[0].intensity"));
-    protected final int u_pointLights0radius = register(new Uniform("u_pointLights[0].radius"));
-    protected final int u_pointLights1color = register(new Uniform("u_pointLights[1].color"));
+    private final int u_pointLights0color = register(new Uniform("u_pointLights[0].color"));
+    private final int u_pointLights0position = register(new Uniform("u_pointLights[0].position"));
+    private final int u_pointLights0intensity = register(new Uniform("u_pointLights[0].intensity"));
+    private final int u_pointLights0radius = register(new Uniform("u_pointLights[0].radius"));
+    private final int u_pointLights1color = register(new Uniform("u_pointLights[1].color"));
 
-    protected final int u_spotLights0color = register(new Uniform("u_spotLights[0].color"));
-    protected final int u_spotLights0position = register(new Uniform("u_spotLights[0].position"));
-    protected final int u_spotLights0direction = register(new Uniform("u_spotLights[0].direction"));
-    protected final int u_spotLights0intensity = register(new Uniform("u_spotLights[0].intensity"));
-    protected final int u_spotLights0innerAngle = register(new Uniform("u_spotLights[0].innerAngle"));
-    protected final int u_spotLights0outerAngle = register(new Uniform("u_spotLights[0].outerAngle"));
-    protected final int u_spotLights1color = register(new Uniform("u_spotLights[1].color"));
+    private final int u_spotLights0color = register(new Uniform("u_spotLights[0].color"));
+    private final int u_spotLights0position = register(new Uniform("u_spotLights[0].position"));
+    private final int u_spotLights0direction = register(new Uniform("u_spotLights[0].direction"));
+    private final int u_spotLights0intensity = register(new Uniform("u_spotLights[0].intensity"));
+    private final int u_spotLights0innerAngle = register(new Uniform("u_spotLights[0].innerAngle"));
+    private final int u_spotLights0outerAngle = register(new Uniform("u_spotLights[0].outerAngle"));
+    private final int u_spotLights1color = register(new Uniform("u_spotLights[1].color"));
 
-    protected int dirLightsLoc;
-    protected int dirLightsColorOffset;
-    protected int dirLightsDirectionOffset;
-    protected int dirLightsIntensityOffset;
-    protected int dirLightsSize;
+    private int dirLightsLoc;
+    private int dirLightsColorOffset;
+    private int dirLightsDirectionOffset;
+    private int dirLightsIntensityOffset;
+    private int dirLightsSize;
 
-    protected int pointLightsLoc;
-    protected int pointLightsColorOffset;
-    protected int pointLightsPositionOffset;
-    protected int pointLightsIntensityOffset;
-    protected int pointLightsRadiusOffset;
-    protected int pointLightsSize;
+    private int pointLightsLoc;
+    private int pointLightsColorOffset;
+    private int pointLightsPositionOffset;
+    private int pointLightsIntensityOffset;
+    private int pointLightsRadiusOffset;
+    private int pointLightsSize;
 
-    protected int spotLightsLoc;
-    protected int spotLightsColorOffset;
-    protected int spotLightsPositionOffset;
-    protected int spotLightsDirectionOffset;
-    protected int spotLightsIntensityOffset;
-    protected int spotLightsInnerAngleOffset;
-    protected int spotLightsOuterAngleOffset;
-    protected int spotLightsSize;
+    private int spotLightsLoc;
+    private int spotLightsColorOffset;
+    private int spotLightsPositionOffset;
+    private int spotLightsDirectionOffset;
+    private int spotLightsIntensityOffset;
+    private int spotLightsInnerAngleOffset;
+    private int spotLightsOuterAngleOffset;
+    private int spotLightsSize;
 
     private boolean lightsSet;
 
@@ -86,9 +86,9 @@ public class PBRShader extends BaseShader {
 
     private NhgLightsAttribute lightsAttribute;
 
-    protected final NhgLight directionalLights[];
-    protected final NhgLight pointLights[];
-    protected final NhgLight spotLights[];
+    private final NhgLight directionalLights[];
+    private final NhgLight pointLights[];
+    private final NhgLight spotLights[];
 
     public PBRShader(Renderable renderable, Environment environment, Params params) {
         this.renderable = renderable;
@@ -507,7 +507,7 @@ public class PBRShader extends BaseShader {
         return prefix;
     }
 
-    protected void bindLights (final Renderable renderable) {
+    private void bindLights (final Renderable renderable) {
         lightsAttribute = (NhgLightsAttribute) renderable.environment.get(NhgLightsAttribute.Type);
         Array<NhgLight> lights = lightsAttribute.lights;
 
@@ -653,7 +653,6 @@ public class PBRShader extends BaseShader {
 
         lightsSet = true;
     }
-
 
     public static class Params {
         boolean useBones;

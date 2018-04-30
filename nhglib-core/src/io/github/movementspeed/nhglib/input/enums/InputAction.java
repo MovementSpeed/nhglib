@@ -7,5 +7,6 @@ public enum InputAction {
     DOWN,
     UP,
     DRAG,
-    PINCH
+    PINCH,
+    ZOOM
 }

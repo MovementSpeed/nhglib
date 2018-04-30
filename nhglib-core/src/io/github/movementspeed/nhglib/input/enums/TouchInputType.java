@@ -3,7 +3,8 @@ package io.github.movementspeed.nhglib.input.enums;
 public enum TouchInputType {
     TAP,
     DRAG,
-    PINCH;
+    PINCH,
+    ZOOM;
 
     public static TouchInputType fromString(String value) {
         TouchInputType res = TAP;
@@ -18,6 +19,10 @@ public enum TouchInputType {
 
             case "pinch":
                 res = PINCH;
+                break;
+
+            case "zoom":
+                res = ZOOM;
                 break;
         }
 
