@@ -13,6 +13,11 @@ import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils;
 public class PBRShaderProvider extends BaseShaderProvider {
     @Override
     protected Shader createShader(Renderable renderable) {
+        PBRShader.Params params = createShaderParams(renderable);
+        return createShader(renderable, params);
+    }
+
+    protected PBRShader.Params createShaderParams(Renderable renderable) {
         PBRShader.Params params = new PBRShader.Params();
         params.albedo = ShaderUtils.hasAlbedo(renderable);
         params.metalness = ShaderUtils.hasMetalness(renderable);
@@ -34,6 +39,10 @@ public class PBRShaderProvider extends BaseShaderProvider {
             }
         }
 
+        return params;
+    }
+
+    protected Shader createShader(Renderable renderable, PBRShader.Params params) {
         return new PBRShader(renderable, renderable.environment, params);
     }
 }
