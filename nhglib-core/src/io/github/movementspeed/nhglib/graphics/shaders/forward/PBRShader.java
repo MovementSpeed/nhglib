@@ -20,6 +20,7 @@ import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.AmbientLightingAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.IBLAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.PBRTextureAttribute;
+import io.github.movementspeed.nhglib.graphics.shaders.interfaces.ShaderParams;
 import io.github.movementspeed.nhglib.utils.data.Bundle;
 import io.github.movementspeed.nhglib.utils.data.Strings;
 import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils;
@@ -90,10 +91,10 @@ public class PBRShader extends BaseShader {
     private final NhgLight pointLights[];
     private final NhgLight spotLights[];
 
-    public PBRShader(Renderable renderable, Environment environment, Params params) {
+    public PBRShader(Renderable renderable, Environment environment, ShaderParams shaderParams) {
         this.renderable = renderable;
         this.environment = environment;
-        this.params = params;
+        this.params = (PBRShader.Params) shaderParams;
 
         vec3 = new Vector3();
 
@@ -654,7 +655,7 @@ public class PBRShader extends BaseShader {
         lightsSet = true;
     }
 
-    public static class Params {
+    public static class Params implements ShaderParams {
         boolean useBones;
         boolean albedo;
         boolean metalness;

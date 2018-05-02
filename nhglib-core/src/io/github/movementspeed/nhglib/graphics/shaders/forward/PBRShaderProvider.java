@@ -11,10 +11,6 @@ import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils;
  * Created by Fausto Napoli on 20/03/2017.
  */
 public class PBRShaderProvider extends BaseShaderProvider {
-
-    public PBRShaderProvider() {
-    }
-
     @Override
     protected Shader createShader(Renderable renderable) {
         PBRShader.Params params = new PBRShader.Params();

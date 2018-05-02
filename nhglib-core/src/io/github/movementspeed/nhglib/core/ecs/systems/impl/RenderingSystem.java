@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
+import com.badlogic.gdx.graphics.g3d.utils.BaseShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ShaderProvider;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.utils.Array;
@@ -99,6 +100,16 @@ public class RenderingSystem extends BaseSystem implements Disposable {
         shaderProvider.dispose();
         renderer.dispose();
         frameBuffer.dispose();
+    }
+
+    public void setShaderProvider(BaseShaderProvider shaderProvider) {
+        if (shaderProvider != null) {
+            this.shaderProvider.dispose();
+            this.renderer.dispose();
+
+            this.shaderProvider = shaderProvider;
+            renderer = new ModelBatch(this.shaderProvider);
+        }
     }
 
     public void setRenderScale(float renderScale) {
