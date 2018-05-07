@@ -3,6 +3,7 @@ package io.github.movementspeed.nhglib.graphics.shaders.particles;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.DepthTestAttribute;
@@ -35,6 +36,7 @@ public class ParticleShader extends BaseShader {
     private static final Vector3 TMP_VECTOR3 = new Vector3();
 
     public static boolean softParticles = false;
+    public static ParticleMode particleMode = ParticleMode.SOURCE_ALPHA;
 
     protected static long implementedFlags = BlendingAttribute.Type | TextureAttribute.Diffuse;
 
@@ -165,7 +167,6 @@ public class ParticleShader extends BaseShader {
         }
 
         bindMaterial(renderable);
-
         super.render(renderable);
     }
 
@@ -276,7 +277,7 @@ public class ParticleShader extends BaseShader {
             final long t = attr.type;
 
             if (BlendingAttribute.is(t)) {
-                context.setBlending(true, GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+                context.setBlending(true, particleMode.sFactor, particleMode.dFactor);
             } else if ((t & DepthTestAttribute.Type) == DepthTestAttribute.Type) {
                 DepthTestAttribute dta = (DepthTestAttribute) attr;
                 depthFunc = dta.depthFunc;
@@ -401,5 +402,17 @@ public class ParticleShader extends BaseShader {
 
     public enum AlignMode {
         Screen, ViewPoint
+    }
+
+    public enum ParticleMode {
+        ADDITIVE(GL30.GL_ONE, GL30.GL_ONE),
+        SOURCE_ALPHA(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        public int sFactor, dFactor;
+
+        ParticleMode(int sFactor, int dFactor) {
+            this.sFactor = sFactor;
+            this.dFactor = dFactor;
+        }
     }
 }
