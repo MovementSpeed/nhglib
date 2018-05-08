@@ -8,6 +8,7 @@ public class Strings {
         public final static String cannotQueueAssetFileNotFound = "Cannot queue asset \"%s\". File does not exist.";
         public final static String assetLoaded = "Asset \"%s\" has been loaded.";
         public final static String nullAssetSource = "Asset source cannot be null.";
+        public final static String nullOrEmptyAssetSource = "Asset source cannot be null or empty.";
         public final static String controllerConnected = "Controller %s connected.";
         public final static String controllerDisconnected = "Controller %s disconnected.";
     }

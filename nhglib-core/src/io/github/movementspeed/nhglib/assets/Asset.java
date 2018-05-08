@@ -1,6 +1,7 @@
 package io.github.movementspeed.nhglib.assets;
 
 import com.badlogic.gdx.assets.AssetLoaderParameters;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import io.github.movementspeed.nhglib.utils.data.Strings;
 
 /**
@@ -30,6 +31,10 @@ public class Asset {
             this.alias = source;
         } else {
             throw new NullPointerException(Strings.Messages.nullAssetSource);
+        }
+
+        if (source == null || source.isEmpty()) {
+            throw new GdxRuntimeException(Strings.Messages.nullOrEmptyAssetSource);
         }
 
         this.source = source;

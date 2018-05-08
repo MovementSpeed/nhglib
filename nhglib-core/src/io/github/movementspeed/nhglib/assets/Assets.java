@@ -106,13 +106,17 @@ public class Assets implements Updatable, AssetErrorListener {
         boolean res = true;
 
         for (ObjectMap.Entry<String, AssetManager> entry : customAssetManagers) {
-            if (!entry.value.update()) {
+            if (entry.value != null && !entry.value.update()) {
                 res = false;
                 break;
             }
         }
 
-        return assetManager.update() && res;
+        if (assetManager != null) {
+            res = res && assetManager.update();
+        }
+
+        return res;
     }
 
     public boolean isAssetLoaded(Asset asset) {
