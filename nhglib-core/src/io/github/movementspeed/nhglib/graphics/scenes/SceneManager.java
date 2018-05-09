@@ -18,6 +18,7 @@ import io.github.movementspeed.nhglib.core.ecs.components.graphics.ParticleEffec
 import io.github.movementspeed.nhglib.core.ecs.components.physics.RigidBodyComponent;
 import io.github.movementspeed.nhglib.core.ecs.components.physics.VehicleComponent;
 import io.github.movementspeed.nhglib.core.ecs.components.physics.WheelComponent;
+import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.ParticleRenderingSystem;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.PhysicsSystem;
 import io.github.movementspeed.nhglib.core.ecs.utils.Entities;
@@ -45,6 +46,7 @@ public class SceneManager {
     private Entities entities;
     private Assets assets;
 
+    private ComponentMapper<NodeComponent> nodeMapper;
     private ComponentMapper<ModelComponent> modelMapper;
     private ComponentMapper<RigidBodyComponent> rigidBodyMapper;
     private ComponentMapper<VehicleComponent> vehicleMapper;
@@ -56,6 +58,7 @@ public class SceneManager {
         this.entities = entities;
         this.assets = assets;
 
+        nodeMapper = entities.getMapper(NodeComponent.class);
         modelMapper = entities.getMapper(ModelComponent.class);
         rigidBodyMapper = entities.getMapper(RigidBodyComponent.class);
         vehicleMapper = entities.getMapper(VehicleComponent.class);
@@ -159,10 +162,11 @@ public class SceneManager {
 
     private void processModelComponent(int entity, boolean load) {
         ModelComponent modelComponent = modelMapper.get(entity);
+        NodeComponent nodeComponent = nodeMapper.get(entity);
 
         if (load) {
             Model model = assets.get(modelComponent.asset);
-            modelComponent.buildWithModel(model);
+            modelComponent.buildWithModel(nodeComponent.node.scale, model);
 
             for (PbrMaterial pbrMaterial : modelComponent.pbrMaterials) {
                 if (pbrMaterial.albedo != null && !pbrMaterial.albedo.isEmpty()) {

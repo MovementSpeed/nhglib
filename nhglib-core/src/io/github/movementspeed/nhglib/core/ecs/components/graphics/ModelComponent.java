@@ -42,12 +42,21 @@ public class ModelComponent extends Component {
         buildWithModel(new ModelInstance(m));
     }
 
+    public void buildWithModel(Vector3 nodeScale, Model m) {
+        buildWithModel(nodeScale, new ModelInstance(m));
+    }
+
     public void buildWithModel(ModelInstance m) {
+        buildWithModel(new Vector3(1, 1, 1), m);
+    }
+
+    public void buildWithModel(Vector3 nodeScale, ModelInstance m) {
         model = m;
         boundingBox = new BoundingBox();
         model.calculateBoundingBox(boundingBox);
 
         Vector3 dimensions = boundingBox.getDimensions(new Vector3());
+        dimensions.scl(nodeScale);
         radius = dimensions.len() / 2f;
 
         state = ModelComponent.State.READY;
