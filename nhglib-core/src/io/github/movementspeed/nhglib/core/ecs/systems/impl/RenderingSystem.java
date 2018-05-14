@@ -11,7 +11,9 @@ import com.badlogic.gdx.graphics.g3d.utils.BaseShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ShaderProvider;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.ScreenUtils;
 import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.core.ecs.interfaces.RenderingSystemInterface;
 import io.github.movementspeed.nhglib.core.ecs.systems.base.BaseRenderingSystem;
@@ -25,6 +27,8 @@ public class RenderingSystem extends BaseSystem implements Disposable {
     public static int renderWidth;
     public static int renderHeight;
 
+    private boolean saveScreenMode;
+
     // Injected references
     private CameraSystem cameraSystem;
 
@@ -34,10 +38,11 @@ public class RenderingSystem extends BaseSystem implements Disposable {
     private ModelBatch renderer;
     private FPSLogger fpsLogger;
     private FrameBuffer frameBuffer;
+    private SpriteBatch spriteBatch;
+
+    private Pixmap screenPixmap;
 
     private Array<RenderingSystemInterface> renderingInterfaces;
-
-    private SpriteBatch spriteBatch;
 
     public RenderingSystem() {
         clearColor = Color.BLACK;
@@ -81,11 +86,18 @@ public class RenderingSystem extends BaseSystem implements Disposable {
                 }
             }
             renderer.end();
+
+            if (saveScreenMode) {
+                screenPixmap = getScreenPixmapInternal(frameBuffer.getWidth(), frameBuffer.getHeight());
+                saveScreenMode = false;
+            }
+
             frameBuffer.end();
 
             spriteBatch.begin();
             spriteBatch.draw(frameBuffer.getColorBufferTexture(),
-                    0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), 0, 0, 1, 1);
+                    0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),
+                    0, 0, 1, 1);
             spriteBatch.end();
 
             for (RenderingSystemInterface rsi : renderingInterfaces) {
@@ -100,6 +112,19 @@ public class RenderingSystem extends BaseSystem implements Disposable {
         shaderProvider.dispose();
         renderer.dispose();
         frameBuffer.dispose();
+    }
+
+    public void beginScreenPixmap() {
+        saveScreenMode = true;
+    }
+
+    public Pixmap getScreenPixmap() {
+        return screenPixmap;
+    }
+
+    public void endScreenPixmap() {
+        screenPixmap.dispose();
+        screenPixmap = null;
     }
 
     public void setShaderProvider(BaseShaderProvider shaderProvider) {
@@ -168,5 +193,18 @@ public class RenderingSystem extends BaseSystem implements Disposable {
         for (RenderingSystemInterface rsi : renderingInterfaces) {
             rsi.onUpdatedRenderer(width, height);
         }
+    }
+
+    private Pixmap getScreenPixmapInternal(int width, int height) {
+        byte[] pixels = ScreenUtils.getFrameBufferPixels(0, 0, width, height, true);
+
+        // this loop makes sure the whole screenshot is opaque and looks exactly like what the user is seeing
+        for(int i = 4; i < pixels.length; i += 4) {
+            pixels[i - 1] = (byte) 255;
+        }
+
+        Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
+        BufferUtils.copy(pixels, 0, pixmap.getPixels(), pixels.length);
+        return pixmap;
     }
 }
