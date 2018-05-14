@@ -122,6 +122,16 @@ public class RenderingSystem extends BaseSystem implements Disposable {
         updateFramebuffer(renderWidth, renderHeight);
     }
 
+    public void setRenderResolution(int renderWidth, int renderHeight) {
+        if (renderWidth < 1) renderWidth = 1;
+        if (renderHeight < 1) renderHeight = 1;
+
+        RenderingSystem.renderWidth = renderWidth;
+        RenderingSystem.renderHeight = renderHeight;
+
+        updateFramebuffer(renderWidth, renderHeight);
+    }
+
     public void setClearColor(Color clearColor) {
         if (clearColor != null) {
             this.clearColor = clearColor;
