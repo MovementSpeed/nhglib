@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.MessageManager;
 import com.badlogic.gdx.ai.msg.Telegram;
-import com.badlogic.gdx.utils.Timer;
 import io.github.movementspeed.nhglib.core.entry.NhgEntry;
 import io.github.movementspeed.nhglib.core.fsm.base.EngineStates;
 import io.github.movementspeed.nhglib.core.messaging.Message;
@@ -20,13 +19,17 @@ public class EngineStateRunning implements State<NhgEntry> {
     public void enter(final NhgEntry nhgEntry) {
         NhgLogger.log(this, "Engine is running.");
 
-        nhgEntry.nhg.messaging.get(Strings.Events.engineDestroy)
+        nhgEntry.nhg.messaging.get(Strings.Events.engineDestroy, Strings.Events.enginePause)
                 .subscribe(new Consumer<Message>() {
                     @Override
                     public void accept(Message message) throws Exception {
                         if (message.is(Strings.Events.engineDestroy)) {
                             if (!nhgEntry.getFsm().isInState(EngineStates.CLOSING)) {
                                 nhgEntry.getFsm().changeState(EngineStates.CLOSING);
+                            }
+                        } else if (message.is(Strings.Events.enginePause)) {
+                            if (!nhgEntry.getFsm().isInState(EngineStates.PAUSED)) {
+                                nhgEntry.getFsm().changeState(EngineStates.PAUSED);
                             }
                         }
                     }

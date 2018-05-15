@@ -22,6 +22,8 @@ public class Strings {
 
     public static class Events {
         public final static String engineDestroy = "nhg_event_engine_destroy";
+        public final static String enginePause = "nhg_event_engine_pause";
+        public final static String engineResume = "nhg_event_engine_resume";
         public final static String assetLoadingFinished = "nhg_event_asset_loading_finished";
         public final static String assetLoaded = "nhg_event_asset_loaded";
         public final static String assetPackageLoaded = "nhg_event_asset_package_loaded";
