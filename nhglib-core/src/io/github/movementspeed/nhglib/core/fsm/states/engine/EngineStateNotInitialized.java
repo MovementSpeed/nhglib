@@ -9,15 +9,34 @@ import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.*;
 import io.github.movementspeed.nhglib.core.entry.NhgEntry;
 import io.github.movementspeed.nhglib.core.fsm.base.EngineStates;
+import io.github.movementspeed.nhglib.core.messaging.Message;
+import io.github.movementspeed.nhglib.utils.data.Strings;
 import io.github.movementspeed.nhglib.utils.debug.NhgLogger;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
  */
 public class EngineStateNotInitialized implements State<NhgEntry> {
     @Override
-    public void enter(NhgEntry nhgEntry) {
+    public void enter(final NhgEntry nhgEntry) {
         NhgLogger.log(this, "Engine is not initialized.");
+
+        nhgEntry.nhg.messaging.get(Strings.Events.enginePause, Strings.Events.engineResume)
+                .subscribe(new Consumer<Message>() {
+                    @Override
+                    public void accept(Message message) {
+                        if (message.is(Strings.Events.enginePause)) {
+                            if (!nhgEntry.getFsm().isInState(EngineStates.PAUSED)) {
+                                nhgEntry.getFsm().changeState(EngineStates.PAUSED);
+                            }
+                        } else if (message.is(Strings.Events.engineResume)) {
+                            if (!nhgEntry.getFsm().isInState(EngineStates.RUNNING)) {
+                                nhgEntry.getFsm().changeState(EngineStates.RUNNING);
+                            }
+                        }
+                    }
+                });
 
         // Setup the ECS world.
         WorldConfigurationBuilder configurationBuilder = new WorldConfigurationBuilder();
