@@ -19,17 +19,13 @@ public class EngineStateRunning implements State<NhgEntry> {
     public void enter(final NhgEntry nhgEntry) {
         NhgLogger.log(this, "Engine is running.");
 
-        nhgEntry.nhg.messaging.get(Strings.Events.engineDestroy, Strings.Events.enginePause)
+        nhgEntry.nhg.messaging.get(Strings.Events.engineDestroy)
                 .subscribe(new Consumer<Message>() {
                     @Override
                     public void accept(Message message) throws Exception {
                         if (message.is(Strings.Events.engineDestroy)) {
                             if (!nhgEntry.getFsm().isInState(EngineStates.CLOSING)) {
                                 nhgEntry.getFsm().changeState(EngineStates.CLOSING);
-                            }
-                        } else if (message.is(Strings.Events.enginePause)) {
-                            if (!nhgEntry.getFsm().isInState(EngineStates.PAUSED)) {
-                                nhgEntry.getFsm().changeState(EngineStates.PAUSED);
                             }
                         }
                     }
