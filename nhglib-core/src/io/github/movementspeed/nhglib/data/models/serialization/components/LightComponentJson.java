@@ -36,16 +36,6 @@ public class LightComponentJson extends ComponentJson {
         JsonValue colorJson = jsonValue.get("color");
         Color color = new Color(colorJson.getFloat("r"), colorJson.getFloat("g"), colorJson.getFloat("b"), colorJson.getFloat("a"));
 
-        /*JsonValue directionJson = jsonValue.get("direction");
-        Vector3 direction = VectorPool.getVector3();
-
-        if (directionJson != null) {
-            direction.set(
-                    directionJson.getFloat("x"),
-                    directionJson.getFloat("y"),
-                    directionJson.getFloat("z"));
-        }*/
-
         NhgLight light = null;
 
         switch (lightType) {
