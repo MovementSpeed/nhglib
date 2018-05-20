@@ -21,11 +21,9 @@
 #endif
 
 #define M_PI 3.14159265359
-#define MAX_REFLECTION_LOD 4.0
 
 out vec4 fragmentColor;
 
-uniform LOWP float u_ambient;
 uniform LOWP int u_graphicsWidth;
 uniform LOWP int u_graphicsHeight;
 uniform HIGHP mat4 u_viewMatrix;
@@ -122,25 +120,22 @@ float geometrySmith(vec3 N, vec3 V, vec3 L, float rough) {
 }
 
 void main() {
-    // Nota: NON SETTARE MAI METALNESS O ROUGHNESS A 0.0
-    LOWP vec3 color;
-
     #ifdef defAlbedo
         LOWP vec3 albedo = texture(u_albedo, v_texCoord).rgb;
     #else
-        LOWP vec3 albedo = vec3(1.0);
+        LOWP vec3 albedo = vec3(0.5);
     #endif
 
     #ifdef defMetalness
         LOWP float metalness = texture(u_metalness, v_texCoord).r;
     #else
-        LOWP float metalness = 0.5;
+        LOWP float metalness = 0.0;
     #endif
 
     #ifdef defRoughness
         LOWP float roughness = texture(u_roughness, v_texCoord).r;
     #else
-        LOWP float roughness = 0.1;
+        LOWP float roughness = 0.4;
     #endif
 
     #ifdef defAmbientOcclusion
@@ -191,7 +186,7 @@ void main() {
             LOWP vec3 lightDirection = u_lightPositions[lightId] - v_position;
             LOWP float lightDistance = length(lightDirection);
 
-            LOWP float lightAttenuation = 1.0 - (lightDistance / lightRadius);
+            LOWP float lightAttenuation = clamp(1.0 - (lightDistance / lightRadius), 0.0, 1.0);
             lightAttenuation *= lightAttenuation;
 
             LOWP vec3 radiance = lightInfo.rgb;
@@ -214,7 +209,6 @@ void main() {
             LOWP vec3 H = normalize(V + L);
 
             LOWP vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
-
             LOWP float NDF = distributionGGX(N, H, roughness);
             LOWP float G = geometrySmith(N, V, L, roughness);
 
@@ -228,7 +222,6 @@ void main() {
             kD *= 1.0 - metalness;
 
             LOWP float NdotL = max(dot(N, L), 0.0) * u_lightIntensities[lightId];
-
             Lo += (kD * albedo / M_PI + brdf) * radiance * NdotL * lightAttenuation;
         }
     #endif
@@ -243,16 +236,18 @@ void main() {
         LOWP vec3 irradiance = texture(u_irradiance, N).rgb;
         LOWP vec3 diffuse = irradiance * albedo;
 
+        const float MAX_REFLECTION_LOD = 4.0;
+
         LOWP vec3 prefilteredColor = textureLod(u_prefilter, R, roughness * MAX_REFLECTION_LOD).rgb;
         LOWP vec2 brdf = texture(u_brdf, vec2(max(dot(N, V), 0.0), roughness)).rg;
         LOWP vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
         LOWP vec3 ambient = (kD * diffuse + specular) * ambientOcclusion;
     #else
-        LOWP vec3 ambient = vec3(u_ambient) * albedo;
+        LOWP vec3 ambient = vec3(0.03) * albedo;
     #endif
 
-    color = ambient + Lo;
+    LOWP vec3 color = ambient + Lo;
 
     #ifdef defGammaCorrection
         color = color / (color + vec3(1.0));
