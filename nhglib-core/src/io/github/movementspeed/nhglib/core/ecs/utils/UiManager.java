@@ -146,7 +146,7 @@ public class UiManager {
 
     public TextureRegion renderUiToTexture(float delta) {
         if (frameBuffer == null) {
-            frameBuffer = FrameBuffer.createFrameBuffer(Pixmap.Format.RGBA8888, width, height, false);
+            frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false);
             textureRegion = new TextureRegion(frameBuffer.getColorBufferTexture());
         }
 

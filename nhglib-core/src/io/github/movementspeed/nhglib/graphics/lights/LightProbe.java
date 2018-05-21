@@ -209,7 +209,7 @@ public class LightProbe {
         GLFrameBuffer.FrameBufferCubemapBuilder builder = new GLFrameBuffer.FrameBufferCubemapBuilder(
                 (int) environmentWidth, (int) environmentHeight);
         builder.addColorTextureAttachment(GL30.GL_RGB8, GL30.GL_RGB, GL30.GL_UNSIGNED_BYTE);
-        builder.addDepthRenderBufferAttachment();
+        builder.addBasicDepthRenderBuffer();
         FrameBufferCubemap frameBufferCubemap = builder.build();
 
         equirectangularTexture.bind(0);
@@ -252,7 +252,7 @@ public class LightProbe {
         GLFrameBuffer.FrameBufferCubemapBuilder builder = new GLFrameBuffer.FrameBufferCubemapBuilder(
                 (int) environmentWidth, (int) environmentHeight);
         builder.addColorTextureAttachment(GL30.GL_RGB8, GL30.GL_RGB, GL30.GL_UNSIGNED_BYTE);
-        builder.addDepthRenderBufferAttachment();
+        builder.addBasicDepthRenderBuffer();
         FrameBufferCubemap frameBufferCubemap = builder.build();
 
         equirectangularTexture.bind(0);
@@ -296,7 +296,7 @@ public class LightProbe {
                 Gdx.files.internal(folder + "equi_to_cube_shader.vert"),
                 Gdx.files.internal(folder + "irradiance_shader.frag"));
 
-        FrameBufferCubemap frameBufferCubemap = FrameBufferCubemap.createFrameBufferCubemap(Pixmap.Format.RGB888,
+        FrameBufferCubemap frameBufferCubemap = new FrameBufferCubemap(Pixmap.Format.RGB888,
                 (int) irradianceWidth, (int) irradianceHeight, true);
 
         environmentCubemap.bind(0);
@@ -379,7 +379,7 @@ public class LightProbe {
         pc6.rotate(Vector3.X, 180);
         pc6.update();
 
-        FrameBufferCubemap frameBufferCubemap = FrameBufferCubemap.createFrameBufferCubemap(Pixmap.Format.RGB888,
+        FrameBufferCubemap frameBufferCubemap = new FrameBufferCubemap(Pixmap.Format.RGB888,
                 (int) prefilterWidth, (int) prefilterHeight, true);
 
         Cubemap cubemap = frameBufferCubemap.getColorBufferTexture();
@@ -448,7 +448,7 @@ public class LightProbe {
                 Gdx.files.internal(folder + "brdf_shader.vert"),
                 Gdx.files.internal(folder + "brdf_shader.frag"));
 
-        FrameBuffer frameBuffer = FrameBuffer.createFrameBuffer(Pixmap.Format.RGB888, (int) brdfWidth, (int) brdfHeight, true);
+        FrameBuffer frameBuffer = new FrameBuffer(Pixmap.Format.RGB888, (int) brdfWidth, (int) brdfHeight, true);
 
         brdfShader.begin();
         frameBuffer.begin();

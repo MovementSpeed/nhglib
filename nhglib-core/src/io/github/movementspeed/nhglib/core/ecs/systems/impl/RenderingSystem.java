@@ -189,9 +189,9 @@ public class RenderingSystem extends BaseSystem implements Disposable {
         }
 
         try {
-            frameBuffer = FrameBuffer.createFrameBuffer(Pixmap.Format.RGBA8888, width, height, true);
+            frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, true);
         } catch (IllegalStateException e) {
-            frameBuffer = FrameBuffer.createFrameBuffer(Pixmap.Format.RGB565, width, height, true);
+            frameBuffer = new FrameBuffer(Pixmap.Format.RGB565, width, height, true);
         }
 
         for (RenderingSystemInterface rsi : renderingInterfaces) {
