@@ -20,8 +20,6 @@ allprojects {
     apply plugin: "eclipse"
     apply plugin: "idea"
 
-    version = '0.1.6'
-
     ext {
         gdxVersion = '1.9.8'
         roboVMVersion = '2.3.1'
