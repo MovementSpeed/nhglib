@@ -187,7 +187,7 @@
                 "type": "light",
                 "lightType": "pointLight",
                 "range":100,
-                "intensity": 1,
+                "intensity": 10,
                 "color": {
                   "r": 0.9372,
                   "g": 0.9137,

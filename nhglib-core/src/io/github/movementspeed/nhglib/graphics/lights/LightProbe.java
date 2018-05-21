@@ -186,13 +186,18 @@ public class LightProbe {
 
     private Cubemap renderEnvironmentFromHDRData(HDRData data) {
         Texture equirectangularTexture;
+        String folder;
 
-        String folder = "shaders/gl3/";
+        if (Gdx.graphics.isGL30Available()) {
+            folder = "shaders/gl3/";
 
-        switch (Nhg.glVersion) {
-            case VERSION_2:
-                folder = "shaders/gl2/";
-                break;
+            switch (Nhg.glVersion) {
+                case VERSION_2:
+                    folder = "shaders/gl2/";
+                    break;
+            }
+        } else {
+            folder = "shaders/gl2/";
         }
 
         ShaderProgram equiToCubeShader = new ShaderProgram(
@@ -226,12 +231,18 @@ public class LightProbe {
     }
 
     private Cubemap renderEnvironmentFromTexture(Texture equirectangularTexture) {
-        String folder = "shaders/gl3/";
+        String folder;
 
-        switch (Nhg.glVersion) {
-            case VERSION_2:
-                folder = "shaders/gl2/";
-                break;
+        if (Gdx.graphics.isGL30Available()) {
+            folder = "shaders/gl3/";
+
+            switch (Nhg.glVersion) {
+                case VERSION_2:
+                    folder = "shaders/gl2/";
+                    break;
+            }
+        } else {
+            folder = "shaders/gl2/";
         }
 
         ShaderProgram equiToCubeShader = new ShaderProgram(
@@ -267,12 +278,18 @@ public class LightProbe {
     }
 
     private Cubemap renderIrradiance(Cubemap environmentCubemap) {
-        String folder = "shaders/gl3/";
+        String folder;
 
-        switch (Nhg.glVersion) {
-            case VERSION_2:
-                folder = "shaders/gl2/";
-                break;
+        if (Gdx.graphics.isGL30Available()) {
+            folder = "shaders/gl3/";
+
+            switch (Nhg.glVersion) {
+                case VERSION_2:
+                    folder = "shaders/gl2/";
+                    break;
+            }
+        } else {
+            folder = "shaders/gl2/";
         }
 
         ShaderProgram irradianceShader = new ShaderProgram(
@@ -301,12 +318,18 @@ public class LightProbe {
     }
 
     private Cubemap renderPrefilter(Cubemap environmentCubemap) {
-        String folder = "shaders/gl3/";
+        String folder;
 
-        switch (Nhg.glVersion) {
-            case VERSION_2:
-                folder = "shaders/gl2/";
-                break;
+        if (Gdx.graphics.isGL30Available()) {
+            folder = "shaders/gl3/";
+
+            switch (Nhg.glVersion) {
+                case VERSION_2:
+                    folder = "shaders/gl2/";
+                    break;
+            }
+        } else {
+            folder = "shaders/gl2/";
         }
 
         ShaderProgram prefilterShader = new ShaderProgram(
@@ -407,12 +430,18 @@ public class LightProbe {
     }
 
     private Texture renderBRDF() {
-        String folder = "shaders/gl3/";
+        String folder;
 
-        switch (Nhg.glVersion) {
-            case VERSION_2:
-                folder = "shaders/gl2/";
-                break;
+        if (Gdx.graphics.isGL30Available()) {
+            folder = "shaders/gl3/";
+
+            switch (Nhg.glVersion) {
+                case VERSION_2:
+                    folder = "shaders/gl2/";
+                    break;
+            }
+        } else {
+            folder = "shaders/gl2/";
         }
 
         ShaderProgram brdfShader = new ShaderProgram(

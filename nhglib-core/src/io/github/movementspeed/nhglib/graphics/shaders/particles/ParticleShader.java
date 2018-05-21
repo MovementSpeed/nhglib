@@ -218,7 +218,7 @@ public class ParticleShader extends BaseShader {
     public static String createPrefix(final Renderable renderable, final Config config) {
         String prefix = "";
 
-        if (Nhg.glVersion == OpenGLVersion.VERSION_3) {
+        if (Nhg.glVersion == OpenGLVersion.VERSION_3 && Gdx.graphics.isGL30Available()) {
             prefix = "#version 300 es\n";
         }
 

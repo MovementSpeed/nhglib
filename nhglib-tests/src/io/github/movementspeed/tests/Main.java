@@ -13,15 +13,14 @@ import io.github.movementspeed.nhglib.core.ecs.systems.impl.InputSystem;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
 import io.github.movementspeed.nhglib.core.entry.NhgEntry;
 import io.github.movementspeed.nhglib.core.messaging.Message;
-import io.github.movementspeed.nhglib.files.HDRData;
 import io.github.movementspeed.nhglib.graphics.lights.LightProbe;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.movementspeed.nhglib.graphics.scenes.Scene;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.AmbientLightingAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.GammaCorrectionAttribute;
-import io.github.movementspeed.nhglib.graphics.shaders.attributes.IBLAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.particles.ParticleShader;
+import io.github.movementspeed.nhglib.graphics.shaders.tiledForward.PBRShaderProvider;
 import io.github.movementspeed.nhglib.graphics.worlds.NhgWorld;
 import io.github.movementspeed.nhglib.graphics.worlds.strategies.impl.DefaultWorldStrategy;
 import io.github.movementspeed.nhglib.input.enums.InputAction;
@@ -70,11 +69,9 @@ public class Main extends NhgEntry implements InputListener {
         inputSystem.setEnableContext("menu", true);
         inputSystem.addInputListener(this);
 
-        // For commit
-
         renderingSystem = nhg.entities.getEntitySystem(RenderingSystem.class);
         renderingSystem.setClearColor(Color.GRAY);
-        renderingSystem.setRenderResolution(640, 360);
+        //renderingSystem.setRenderResolution(640, 360);
 
         environment = renderingSystem.getEnvironment();
 
@@ -84,12 +81,17 @@ public class Main extends NhgEntry implements InputListener {
         sun.direction.set(-1, -1, -1);
         lightsAttribute.lights.add(sun);
 
+        NhgLight other = NhgLight.point(10, 10, Color.WHITE);
+        lightsAttribute.lights.add(other);
+
         GammaCorrectionAttribute gammaCorrectionAttribute = new GammaCorrectionAttribute(true);
         AmbientLightingAttribute ambientLightingAttribute = new AmbientLightingAttribute(1.0f);
 
         environment.set(lightsAttribute);
         environment.set(gammaCorrectionAttribute);
         environment.set(ambientLightingAttribute);
+
+        renderingSystem.setShaderProvider(new PBRShaderProvider(environment));
 
         // Subscribe to asset events
         nhg.messaging.get(Strings.Events.assetLoaded, Strings.Events.assetLoadingFinished, Strings.Events.sceneLoaded)
@@ -120,7 +122,7 @@ public class Main extends NhgEntry implements InputListener {
                             bundle.put(Strings.RenderingSettings.forceUnlitKey, true);
                             kartModel.model.userData = bundle;
 
-                            HDRData data = nhg.assets.get("newport_loft");
+                            /*HDRData data = nhg.assets.get("newport_loft");
 
                             lightProbe = new LightProbe();
                             lightProbe.build(data,
@@ -135,7 +137,7 @@ public class Main extends NhgEntry implements InputListener {
 
                             environment.set(irradianceAttribute);
                             environment.set(prefilterAttribute);
-                            environment.set(brdfAttribute);
+                            environment.set(brdfAttribute);*/
                         }
                     }
                 });

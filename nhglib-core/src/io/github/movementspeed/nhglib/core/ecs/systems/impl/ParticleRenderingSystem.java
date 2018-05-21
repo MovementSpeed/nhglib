@@ -38,12 +38,18 @@ public class ParticleRenderingSystem extends BaseRenderingSystem {
         if (!initialized) {
             initialized = true;
 
-            String folder = "shaders/gl3/";
+            String folder;
 
-            switch (Nhg.glVersion) {
-                case VERSION_2:
-                    folder = "shaders/gl2/";
-                    break;
+            if (Gdx.graphics.isGL30Available()) {
+                folder = "shaders/gl3/";
+
+                switch (Nhg.glVersion) {
+                    case VERSION_2:
+                        folder = "shaders/gl2/";
+                        break;
+                }
+            } else {
+                folder = "shaders/gl2/";
             }
 
             ParticleShader.Config config = new ParticleShader.Config(
