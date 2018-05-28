@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.glutils.GLFrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.UBJsonReader;
 import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.files.HDRData;
@@ -204,6 +205,12 @@ public class LightProbe {
                 Gdx.files.internal(folder + "equi_to_cube_shader.vert"),
                 Gdx.files.internal(folder + "equi_to_cube_shader.frag"));
 
+        String shaderLog = equiToCubeShader.getLog();
+
+        if (!equiToCubeShader.isCompiled()) {
+            throw new GdxRuntimeException(shaderLog);
+        }
+
         equirectangularTexture = data.getTexture();
 
         GLFrameBuffer.FrameBufferCubemapBuilder builder = new GLFrameBuffer.FrameBufferCubemapBuilder(
@@ -248,6 +255,12 @@ public class LightProbe {
         ShaderProgram equiToCubeShader = new ShaderProgram(
                 Gdx.files.internal(folder + "equi_to_cube_shader.vert"),
                 Gdx.files.internal(folder + "equi_to_cube_shader.frag"));
+
+        String shaderLog = equiToCubeShader.getLog();
+
+        if (!equiToCubeShader.isCompiled()) {
+            throw new GdxRuntimeException(shaderLog);
+        }
 
         GLFrameBuffer.FrameBufferCubemapBuilder builder = new GLFrameBuffer.FrameBufferCubemapBuilder(
                 (int) environmentWidth, (int) environmentHeight);
@@ -296,8 +309,21 @@ public class LightProbe {
                 Gdx.files.internal(folder + "equi_to_cube_shader.vert"),
                 Gdx.files.internal(folder + "irradiance_shader.frag"));
 
-        FrameBufferCubemap frameBufferCubemap = new FrameBufferCubemap(Pixmap.Format.RGB888,
-                (int) irradianceWidth, (int) irradianceHeight, true);
+        String shaderLog = irradianceShader.getLog();
+
+        if (!irradianceShader.isCompiled()) {
+            throw new GdxRuntimeException(shaderLog);
+        }
+
+        FrameBufferCubemap frameBufferCubemap;
+
+        try {
+            frameBufferCubemap = new FrameBufferCubemap(Pixmap.Format.RGB888,
+                    (int) irradianceWidth, (int) irradianceHeight, true);
+        } catch (IllegalStateException e) {
+            frameBufferCubemap = new FrameBufferCubemap(Pixmap.Format.RGB565,
+                    (int) irradianceWidth, (int) irradianceHeight, true);
+        }
 
         environmentCubemap.bind(0);
         irradianceShader.begin();
@@ -335,6 +361,12 @@ public class LightProbe {
         ShaderProgram prefilterShader = new ShaderProgram(
                 Gdx.files.internal(folder + "equi_to_cube_shader.vert"),
                 Gdx.files.internal(folder + "prefilter_shader.frag"));
+
+        String shaderLog = prefilterShader.getLog();
+
+        if (!prefilterShader.isCompiled()) {
+            throw new GdxRuntimeException(shaderLog);
+        }
 
         Array<PerspectiveCamera> perspectiveCameras = new Array<>();
 
@@ -379,8 +411,15 @@ public class LightProbe {
         pc6.rotate(Vector3.X, 180);
         pc6.update();
 
-        FrameBufferCubemap frameBufferCubemap = new FrameBufferCubemap(Pixmap.Format.RGB888,
-                (int) prefilterWidth, (int) prefilterHeight, true);
+        FrameBufferCubemap frameBufferCubemap;
+
+        try {
+            frameBufferCubemap = new FrameBufferCubemap(Pixmap.Format.RGB888,
+                    (int) prefilterWidth, (int) prefilterHeight, true);
+        } catch (IllegalStateException e) {
+            frameBufferCubemap = new FrameBufferCubemap(Pixmap.Format.RGB565,
+                    (int) prefilterWidth, (int) prefilterHeight, true);
+        }
 
         Cubemap cubemap = frameBufferCubemap.getColorBufferTexture();
         cubemap.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
@@ -448,7 +487,19 @@ public class LightProbe {
                 Gdx.files.internal(folder + "brdf_shader.vert"),
                 Gdx.files.internal(folder + "brdf_shader.frag"));
 
-        FrameBuffer frameBuffer = new FrameBuffer(Pixmap.Format.RGB888, (int) brdfWidth, (int) brdfHeight, true);
+        String shaderLog = brdfShader.getLog();
+
+        if (!brdfShader.isCompiled()) {
+            throw new GdxRuntimeException(shaderLog);
+        }
+
+        FrameBuffer frameBuffer;
+
+        try {
+            frameBuffer = new FrameBuffer(Pixmap.Format.RGB888, (int) brdfWidth, (int) brdfHeight, true);
+        } catch (IllegalStateException e) {
+            frameBuffer = new FrameBuffer(Pixmap.Format.RGB565, (int) brdfWidth, (int) brdfHeight, true);
+        }
 
         brdfShader.begin();
         frameBuffer.begin();
