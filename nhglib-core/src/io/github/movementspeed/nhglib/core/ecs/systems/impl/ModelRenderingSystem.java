@@ -7,33 +7,35 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g3d.ModelCache;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.graphics.g3d.model.Node;
-import io.github.movementspeed.nhglib.assets.Asset;
+import io.github.movementspeed.nhglib.assets.Assets;
 import io.github.movementspeed.nhglib.core.ecs.components.graphics.ModelComponent;
 import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
 import io.github.movementspeed.nhglib.core.ecs.systems.base.BaseRenderingSystem;
 import io.github.movementspeed.nhglib.core.ecs.utils.Entities;
-import io.github.movementspeed.nhglib.core.messaging.Message;
 import io.github.movementspeed.nhglib.core.messaging.Messaging;
-import io.github.movementspeed.nhglib.utils.data.Strings;
-import io.reactivex.functions.Consumer;
+import io.github.movementspeed.nhglib.utils.debug.NhgLogger;
 
 public class ModelRenderingSystem extends BaseRenderingSystem {
+    private boolean buildingModelCache = false;
     private Messaging messaging;
+    private Assets assets;
     private ModelCache staticCache;
 
     private ComponentMapper<NodeComponent> nodeMapper;
     private ComponentMapper<ModelComponent> modelMapper;
 
-    public ModelRenderingSystem(Entities entities, Messaging messaging) {
+    public ModelRenderingSystem(Entities entities, Messaging messaging, Assets assets) {
         super(Aspect.all(NodeComponent.class, ModelComponent.class), entities);
         this.messaging = messaging;
+        this.assets = assets;
         staticCache = new ModelCache();
     }
 
     @Override
     protected void begin() {
         super.begin();
-        renderableProviders.add(staticCache);
+
+        if (!buildingModelCache) renderableProviders.add(staticCache);
     }
 
     @Override
@@ -41,8 +43,10 @@ public class ModelRenderingSystem extends BaseRenderingSystem {
         ModelComponent modelComponent = modelMapper.get(entityId);
         NodeComponent nodeComponent = nodeMapper.get(entityId);
 
-        if (modelComponent.enabled && cameras.size > 0 &&
-                modelComponent.type == ModelComponent.Type.DYNAMIC && modelComponent.model != null) {
+        if (modelComponent.enabled &&
+                cameras.size > 0 &&
+                modelComponent.state == ModelComponent.State.READY) {
+
             Camera camera = cameras.first();
 
             if (!modelComponent.nodeAdded) {
@@ -66,36 +70,23 @@ public class ModelRenderingSystem extends BaseRenderingSystem {
                 }
             }
 
-            modelComponent.model.calculateTransforms();
+            modelComponent.calculateTransforms();
 
-            if (camera.frustum.sphereInFrustum(nodeComponent.getTranslation(), modelComponent.radius)) {
-                if (modelComponent.animationController != null) {
-                    modelComponent.animationController.update(Gdx.graphics.getDeltaTime());
+            if (modelComponent.type == ModelComponent.Type.DYNAMIC) {
+                if (camera.frustum.sphereInFrustum(nodeComponent.getTranslation(), modelComponent.radius)) {
+                    if (modelComponent.animationController != null) {
+                        modelComponent.animationController.update(Gdx.graphics.getDeltaTime());
+                    }
+
+                    renderableProviders.add(modelComponent.model);
                 }
-
-                renderableProviders.add(modelComponent.model);
+            } else if (modelComponent.type == ModelComponent.Type.STATIC) {
+                if (!modelComponent.cached) {
+                    modelComponent.cached = true;
+                    rebuildCache(modelComponent.model);
+                }
             }
         }
-    }
-
-    @Override
-    protected void inserted(int entityId) {
-        super.inserted(entityId);
-        final ModelComponent modelComponent = modelMapper.get(entityId);
-
-        messaging.get(Strings.Events.assetLoaded)
-                .subscribe(new Consumer<Message>() {
-                    @Override
-                    public void accept(Message message) {
-                        if (modelComponent.type == ModelComponent.Type.STATIC) {
-                            Asset asset = (Asset) message.data.get(Strings.Defaults.assetKey);
-
-                            if (asset.is(modelComponent.asset)) {
-                                rebuildCache(modelComponent.model);
-                            }
-                        }
-                    }
-                });
     }
 
     @Override
@@ -106,6 +97,8 @@ public class ModelRenderingSystem extends BaseRenderingSystem {
 
     private void rebuildCache(RenderableProvider... renderableProviders) {
         if (cameras.size > 0) {
+            NhgLogger.log(this, "Rebuilding model cache.");
+            buildingModelCache = true;
             ModelCache previousCache = new ModelCache();
             Camera camera = cameras.first();
 
@@ -122,6 +115,7 @@ public class ModelRenderingSystem extends BaseRenderingSystem {
 
             staticCache.end();
             previousCache.dispose();
+            buildingModelCache = false;
         }
     }
 }

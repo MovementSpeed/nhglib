@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.model.NodePart;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
@@ -18,6 +19,7 @@ import io.github.movementspeed.nhglib.graphics.utils.PbrMaterial;
 public class ModelComponent extends Component {
     public boolean enabled;
     public boolean nodeAdded;
+    public boolean cached;
 
     public float radius;
 
@@ -30,12 +32,24 @@ public class ModelComponent extends Component {
 
     public Array<PbrMaterial> pbrMaterials;
 
+    private Vector3 translationBefore, translationAfter, scaleBefore, scaleAfter, rotationBefore, rotationAfter;
+    private Quaternion rotationQuaternionBefore, rotationQuaternionAfter;
+
     public ModelComponent() {
         pbrMaterials = new Array<>();
         enabled = true;
         nodeAdded = false;
         state = State.NOT_INITIALIZED;
         type = Type.DYNAMIC;
+
+        translationBefore = new Vector3();
+        translationAfter = new Vector3();
+        scaleBefore = new Vector3();
+        scaleAfter = new Vector3();
+        rotationBefore = new Vector3();
+        rotationAfter = new Vector3();
+        rotationQuaternionBefore = new Quaternion();
+        rotationQuaternionAfter = new Quaternion();
     }
 
     public void buildWithModel(Model m) {
@@ -63,6 +77,34 @@ public class ModelComponent extends Component {
 
         if (m.animations.size > 0) {
             animationController = new AnimationController(model);
+        }
+    }
+
+    public void calculateTransforms() {
+        if (type == Type.STATIC) {
+            model.transform.getTranslation(translationBefore);
+            model.transform.getScale(scaleBefore);
+            model.transform.getRotation(rotationQuaternionBefore);
+            rotationBefore.set(rotationQuaternionBefore.getPitch(), rotationQuaternionBefore.getYaw(), rotationQuaternionBefore.getRoll());
+        }
+
+        model.calculateTransforms();
+
+        if (type == Type.STATIC) {
+            model.transform.getTranslation(translationAfter);
+            model.transform.getScale(scaleAfter);
+            model.transform.getRotation(rotationQuaternionAfter);
+            rotationAfter.set(rotationQuaternionAfter.getPitch(), rotationQuaternionAfter.getYaw(), rotationQuaternionAfter.getRoll());
+
+            translationBefore.sub(translationAfter);
+            scaleBefore.sub(scaleAfter);
+            rotationBefore.sub(rotationAfter);
+
+            if (translationBefore.x != 0 || translationBefore.y != 0 || translationBefore.z != 0 ||
+                    scaleBefore.x != 0 || scaleBefore.y != 0 || scaleBefore.z != 0 ||
+                    rotationBefore.x != 0 || rotationBefore.y != 0 || rotationBefore.z != 0) {
+                cached = false;
+            }
         }
     }
 
