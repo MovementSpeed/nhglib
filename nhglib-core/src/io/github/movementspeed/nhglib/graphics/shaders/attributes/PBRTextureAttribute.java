@@ -14,11 +14,11 @@ import com.badlogic.gdx.utils.NumberUtils;
  * Created by Fausto Napoli on 23/03/2017.
  */
 public class PBRTextureAttribute extends Attribute {
-    public final static String AlbedoAlias = "albedoTexture";
-    public final static String MetalnessAlias = "metalnessTexture";
-    public final static String RoughnessAlias = "roughnessTexture";
-    public final static String NormalAlias = "normalTexture";
-    public final static String AmbientOcclusionAlias = "ambientOcclusionTexture";
+    public final static String AlbedoAlias = "PBRAlbedoTexture";
+    public final static String MetalnessAlias = "PBRMetalnessTexture";
+    public final static String RoughnessAlias = "PBRRoughnessTexture";
+    public final static String NormalAlias = "PBRNormalTexture";
+    public final static String AmbientOcclusionAlias = "PBRAmbientOcclusionTexture";
 
     public final static long Albedo = register(AlbedoAlias);
     public final static long Metalness = register(MetalnessAlias);
