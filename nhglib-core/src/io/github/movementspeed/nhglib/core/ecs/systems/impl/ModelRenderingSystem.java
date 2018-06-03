@@ -4,15 +4,22 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.g3d.ModelCache;
+import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.graphics.g3d.model.Node;
+import io.github.movementspeed.nhglib.assets.Asset;
 import io.github.movementspeed.nhglib.core.ecs.components.graphics.ModelComponent;
 import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
 import io.github.movementspeed.nhglib.core.ecs.systems.base.BaseRenderingSystem;
 import io.github.movementspeed.nhglib.core.ecs.utils.Entities;
+import io.github.movementspeed.nhglib.core.messaging.Message;
 import io.github.movementspeed.nhglib.core.messaging.Messaging;
+import io.github.movementspeed.nhglib.utils.data.Strings;
+import io.reactivex.functions.Consumer;
 
 public class ModelRenderingSystem extends BaseRenderingSystem {
     private Messaging messaging;
+    private ModelCache staticCache;
 
     private ComponentMapper<NodeComponent> nodeMapper;
     private ComponentMapper<ModelComponent> modelMapper;
@@ -20,6 +27,13 @@ public class ModelRenderingSystem extends BaseRenderingSystem {
     public ModelRenderingSystem(Entities entities, Messaging messaging) {
         super(Aspect.all(NodeComponent.class, ModelComponent.class), entities);
         this.messaging = messaging;
+        staticCache = new ModelCache();
+    }
+
+    @Override
+    protected void begin() {
+        super.begin();
+        renderableProviders.add(staticCache);
     }
 
     @Override
@@ -64,7 +78,7 @@ public class ModelRenderingSystem extends BaseRenderingSystem {
         }
     }
 
-    /*@Override
+    @Override
     protected void inserted(int entityId) {
         super.inserted(entityId);
         final ModelComponent modelComponent = modelMapper.get(entityId);
@@ -72,7 +86,7 @@ public class ModelRenderingSystem extends BaseRenderingSystem {
         messaging.get(Strings.Events.assetLoaded)
                 .subscribe(new Consumer<Message>() {
                     @Override
-                    public void accept(Message message) throws Exception {
+                    public void accept(Message message) {
                         if (modelComponent.type == ModelComponent.Type.STATIC) {
                             Asset asset = (Asset) message.data.get(Strings.Defaults.assetKey);
 
@@ -82,6 +96,12 @@ public class ModelRenderingSystem extends BaseRenderingSystem {
                         }
                     }
                 });
+    }
+
+    @Override
+    protected void dispose() {
+        super.dispose();
+        staticCache.dispose();
     }
 
     private void rebuildCache(RenderableProvider... renderableProviders) {
@@ -101,6 +121,7 @@ public class ModelRenderingSystem extends BaseRenderingSystem {
             }
 
             staticCache.end();
+            previousCache.dispose();
         }
-    }*/
+    }
 }

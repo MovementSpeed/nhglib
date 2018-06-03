@@ -138,6 +138,7 @@ float geometrySchlickGGX(float NdotV, float rough) {
 
     return nom / denom;
 }
+
 float geometrySmith(vec3 N, vec3 V, vec3 L, float rough) {
     float NdotV = max(dot(N, V), 0.0);
     float NdotL = max(dot(N, L), 0.0);
@@ -145,6 +146,12 @@ float geometrySmith(vec3 N, vec3 V, vec3 L, float rough) {
     float ggx1 = geometrySchlickGGX(NdotL, rough);
 
     return ggx1 * ggx2;
+}
+
+vec3 saturation(vec3 rgb, float adjustment) {
+    const vec3 W = vec3(0.2125, 0.7154, 0.0721);
+    vec3 intensity = vec3(dot(rgb, W));
+    return mix(intensity, rgb, adjustment);
 }
 
 void main() {
@@ -222,7 +229,7 @@ void main() {
                 LOWP vec3 specular     = numerator / max(denominator, 0.001);
 
                 // add to outgoing radiance Lo
-                LOWP float NdotL = max(dot(N, L), 0.0);
+                LOWP float NdotL = max(dot(N, L), 0.0) * u_dirLights[i].intensity;
                 Lo += (kD * albedo / M_PI + specular) * radiance * NdotL;
             }
         #endif
@@ -254,7 +261,7 @@ void main() {
                 LOWP vec3 specular     = numerator / max(denominator, 0.001);
 
                 // add to outgoing radiance Lo
-                LOWP float NdotL = max(dot(N, L), 0.0);
+                LOWP float NdotL = max(dot(N, L), 0.0) * u_pointLights[i].intensity;
                 Lo += (kD * albedo / M_PI + specular) * radiance * NdotL;
             }
         #endif
@@ -294,7 +301,7 @@ void main() {
                 LOWP vec3 specular     = numerator / max(denominator, 0.001);
 
                 // add to outgoing radiance Lo
-                LOWP float NdotL = max(dot(N, L), 0.0);
+                LOWP float NdotL = max(dot(N, L), 0.0) * u_spotLights[i].intensity;
                 Lo += (kD * albedo / M_PI + specular) * radiance * NdotL;
             }
         #endif
