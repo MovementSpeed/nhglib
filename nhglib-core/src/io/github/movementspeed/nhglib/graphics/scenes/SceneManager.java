@@ -1,6 +1,7 @@
 package io.github.movementspeed.nhglib.graphics.scenes;
 
 import com.artemis.ComponentMapper;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -8,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffectLoader;
@@ -191,6 +193,16 @@ public class SceneManager {
                             if (albedo != null) {
                                 pbrMaterial.set(PBRTextureAttribute.createAlbedo(albedo));
                             }
+                        } else {
+                            ColorAttribute colorAttribute = (ColorAttribute) material.get(ColorAttribute.Diffuse);
+
+                            if (colorAttribute != null) {
+                                Color color = colorAttribute.color;
+
+                                if (color != null) {
+                                    pbrMaterial.set(PBRTextureAttribute.createAlbedo(color));
+                                }
+                            }
                         }
                     }
                 }
@@ -218,6 +230,20 @@ public class SceneManager {
 
                     if (normal != null) {
                         pbrMaterial.set(PBRTextureAttribute.createNormal(normal));
+                    }
+                } else {
+                    Material material = modelComponent.model.materials.first();
+
+                    if (material != null) {
+                        TextureAttribute normalAttribute = (TextureAttribute) material.get(TextureAttribute.Normal);
+
+                        if (normalAttribute != null) {
+                            Texture normal = normalAttribute.textureDescription.texture;
+
+                            if (normal != null) {
+                                pbrMaterial.set(PBRTextureAttribute.createNormal(normal));
+                            }
+                        }
                     }
                 }
 

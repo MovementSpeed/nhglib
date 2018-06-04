@@ -154,14 +154,16 @@ vec3 saturation(vec3 rgb, float adjustment) {
 
 void main() {
     // Nota: NON SETTARE MAI METALNESS O ROUGHNESS A 0.0
-    LOWP vec3 color;
 
     #ifdef defAlbedo
         LOWP vec4 albedo = texture(u_albedo, v_texCoord);
+        if (albedo.a < 0.01) discard;
         albedo = pow(albedo, vec4(2.2));
     #else
         LOWP vec4 albedo = vec4(1.0);
     #endif
+
+    LOWP vec3 color;
 
     #ifdef defMetalness
         LOWP float metalness = texture(u_metalness, v_texCoord).r;
