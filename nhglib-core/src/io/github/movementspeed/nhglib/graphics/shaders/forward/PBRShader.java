@@ -188,6 +188,50 @@ public class PBRShader extends BaseShader {
             }
         });
 
+        register("u_metalnessTiles", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Metalness);
+
+                if (textureAttribute != null) {
+                    shader.set(inputID, vec2.set(textureAttribute.tilesU, textureAttribute.tilesV));
+                }
+            }
+        });
+
+        register("u_roughnessTiles", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Roughness);
+
+                if (textureAttribute != null) {
+                    shader.set(inputID, vec2.set(textureAttribute.tilesU, textureAttribute.tilesV));
+                }
+            }
+        });
+
+        register("u_normalTiles", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Normal);
+
+                if (textureAttribute != null) {
+                    shader.set(inputID, vec2.set(textureAttribute.tilesU, textureAttribute.tilesV));
+                }
+            }
+        });
+
+        register("u_ambientOcclusionTiles", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.AmbientOcclusion);
+
+                if (textureAttribute != null) {
+                    shader.set(inputID, vec2.set(textureAttribute.tilesU, textureAttribute.tilesV));
+                }
+            }
+        });
+
         register("u_albedo", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
