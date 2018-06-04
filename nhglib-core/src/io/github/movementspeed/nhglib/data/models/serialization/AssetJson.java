@@ -32,10 +32,9 @@ public class AssetJson implements JsonParseable<Asset> {
 
         output = new Asset(alias, source, assetClass);
         output.dependenciesPath = dependenciesPath;
+        output.parametersBundle = new Bundle();
 
         if (parameters != null) {
-            output.parametersBundle = new Bundle();
-
             for (JsonValue value : parameters) {
                 JsonValue internalValue = value.get(0);
 
