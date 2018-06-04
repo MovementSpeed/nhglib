@@ -187,7 +187,7 @@ public class SceneManager {
                     Texture albedo = assets.get(pbrMaterial.albedo);
 
                     if (albedo != null) {
-                        albedo.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
+                        albedo.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
                         pbrMaterial.set(PBRTextureAttribute.createAlbedo(albedo,
                                 pbrMaterial.offsetU, pbrMaterial.offsetV, pbrMaterial.tilesU, pbrMaterial.tilesV));
                     }
