@@ -2,10 +2,9 @@ package io.github.movementspeed.nhglib.graphics.shaders.forward;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g3d.Attributes;
-import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.Renderable;
-import com.badlogic.gdx.graphics.g3d.Shader;
+import com.badlogic.gdx.graphics.g3d.*;
+import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.DepthTestAttribute;
 import com.badlogic.gdx.graphics.g3d.shaders.BaseShader;
 import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -399,12 +398,18 @@ public class PBRShader extends BaseShader {
     }
 
     @Override
-    public void render(Renderable renderable) {
+    public void render(Renderable renderable, Attributes combinedAttributes) {
+        if (!combinedAttributes.has(BlendingAttribute.Type)) {
+            context.setBlending(false, GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        }
+
+        bindMaterial(combinedAttributes);
+
         if (params.lit) {
             bindLights(renderable);
         }
 
-        super.render(renderable);
+        super.render(renderable, combinedAttributes);
     }
 
     @Override
@@ -514,6 +519,30 @@ public class PBRShader extends BaseShader {
         }
 
         return prefix;
+    }
+
+    protected void bindMaterial (final Attributes attributes) {
+        int depthFunc = GL20.GL_LEQUAL;
+        float depthRangeNear = 0f;
+        float depthRangeFar = 1f;
+        boolean depthMask = true;
+
+        for (final Attribute attr : attributes) {
+            final long t = attr.type;
+
+            if (BlendingAttribute.is(t)) {
+                context.setBlending(true, ((BlendingAttribute)attr).sourceFunction, ((BlendingAttribute)attr).destFunction);
+            } else if ((t & DepthTestAttribute.Type) == DepthTestAttribute.Type) {
+                DepthTestAttribute dta = (DepthTestAttribute)attr;
+                depthFunc = dta.depthFunc;
+                depthRangeNear = dta.depthRangeNear;
+                depthRangeFar = dta.depthRangeFar;
+                depthMask = dta.depthMask;
+            }
+        }
+
+        context.setDepthTest(depthFunc, depthRangeNear, depthRangeFar);
+        context.setDepthMask(depthMask);
     }
 
     private void bindLights (final Renderable renderable) {

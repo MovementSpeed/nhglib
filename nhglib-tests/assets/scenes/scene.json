@@ -23,6 +23,11 @@
         "classAlias": "model"
       },
       {
+        "alias": "chassisAlbedo",
+        "source": "models/kart.png",
+        "classAlias": "texture"
+      },
+      {
         "alias": "wheelAsset",
         "source": "models/gk_wheel.g3db",
         "classAlias": "model"
@@ -160,13 +165,8 @@
             "asset": "chassisAsset",
             "materials": [
               {
-                "albedoColor": {
-                  "r": 1,
-                  "g": 0.86,
-                  "b": 0.23,
-                  "a": 1
-                },
-                "metalnessValue": 1,
+                "albedo": "chassisAlbedo",
+                "metalnessValue": 0.5,
                 "roughnessValue": 0.1
               }
             ]

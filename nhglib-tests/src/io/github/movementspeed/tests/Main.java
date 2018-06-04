@@ -7,7 +7,6 @@ import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.assets.Asset;
 import io.github.movementspeed.nhglib.core.ecs.components.graphics.CameraComponent;
-import io.github.movementspeed.nhglib.core.ecs.components.graphics.ModelComponent;
 import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.InputSystem;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
@@ -19,15 +18,14 @@ import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.movementspeed.nhglib.graphics.scenes.Scene;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.AmbientLightingAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.GammaCorrectionAttribute;
+import io.github.movementspeed.nhglib.graphics.shaders.forward.PBRShaderProvider;
 import io.github.movementspeed.nhglib.graphics.shaders.particles.ParticleShader;
-import io.github.movementspeed.nhglib.graphics.shaders.tiledForward.PBRShaderProvider;
 import io.github.movementspeed.nhglib.graphics.worlds.NhgWorld;
 import io.github.movementspeed.nhglib.graphics.worlds.strategies.impl.DefaultWorldStrategy;
 import io.github.movementspeed.nhglib.input.enums.InputAction;
 import io.github.movementspeed.nhglib.input.interfaces.InputListener;
 import io.github.movementspeed.nhglib.input.models.base.NhgInput;
 import io.github.movementspeed.nhglib.utils.data.Bounds;
-import io.github.movementspeed.nhglib.utils.data.Bundle;
 import io.github.movementspeed.nhglib.utils.data.Strings;
 import io.github.movementspeed.nhglib.utils.debug.NhgLogger;
 import io.github.movementspeed.tests.systems.TestNodeSystem;
@@ -85,13 +83,13 @@ public class Main extends NhgEntry implements InputListener {
         lightsAttribute.lights.add(other);
 
         GammaCorrectionAttribute gammaCorrectionAttribute = new GammaCorrectionAttribute(true);
-        AmbientLightingAttribute ambientLightingAttribute = new AmbientLightingAttribute(1.0f);
+        AmbientLightingAttribute ambientLightingAttribute = new AmbientLightingAttribute(0.03f);
 
         environment.set(lightsAttribute);
         environment.set(gammaCorrectionAttribute);
         environment.set(ambientLightingAttribute);
 
-        renderingSystem.setShaderProvider(new PBRShaderProvider(environment));
+        renderingSystem.setShaderProvider(new PBRShaderProvider());
 
         // Subscribe to asset events
         nhg.messaging.get(Strings.Events.assetLoaded, Strings.Events.assetLoadingFinished, Strings.Events.sceneLoaded)
@@ -114,13 +112,13 @@ public class Main extends NhgEntry implements InputListener {
                                 cameraComponent = nhg.entities.getComponent(cameraEntity, CameraComponent.class);
                             }
                         } else if (message.is(Strings.Events.sceneLoaded)) {
-                            NhgLogger.log(this, "Scene loaded");
+                            /*NhgLogger.log(this, "Scene loaded");
                             int kart = scene.sceneGraph.getSceneEntity("kart");
                             ModelComponent kartModel = nhg.entities.getComponent(kart, ModelComponent.class);
 
                             Bundle bundle = new Bundle();
-                            bundle.put(Strings.RenderingSettings.forceUnlitKey, true);
-                            kartModel.model.userData = bundle;
+                            bundle.put(Strings.RenderingSettings.forceUnlitKey, false);
+                            kartModel.model.userData = bundle;*/
 
                             /*HDRData data = nhg.assets.get("newport_loft");
 

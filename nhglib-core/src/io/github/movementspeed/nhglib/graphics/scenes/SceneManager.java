@@ -230,9 +230,9 @@ public class SceneManager {
                 }
 
                 // Clear other attributes in model's own materials
-                for (Material m : modelComponent.model.materials) {
+                /*for (Material m : modelComponent.model.materials) {
                     m.clear();
-                }
+                }*/
 
                 if (pbrMaterial.targetNode != null && !pbrMaterial.targetNode.isEmpty()) {
                     modelComponent.setPbrMaterial(pbrMaterial.targetNode, pbrMaterial);
