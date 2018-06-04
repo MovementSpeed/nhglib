@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
+import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffectLoader;
 import com.badlogic.gdx.utils.Array;
@@ -173,6 +174,15 @@ public class SceneManager {
             modelComponent.buildWithModel(nodeComponent.node.scale, model);
 
             for (PBRMaterial pbrMaterial : modelComponent.pbrMaterials) {
+                Material currentMaterial;
+
+                if (pbrMaterial.targetNode != null && !pbrMaterial.targetNode.isEmpty()) {
+                    Node node = modelComponent.model.getNode(pbrMaterial.targetNode);
+                    currentMaterial = node.parts.first().material;
+                } else {
+                    currentMaterial = modelComponent.model.materials.first();
+                }
+
                 if (pbrMaterial.albedo != null && !pbrMaterial.albedo.isEmpty()) {
                     Texture albedo = assets.get(pbrMaterial.albedo);
 
@@ -184,10 +194,8 @@ public class SceneManager {
                 } else if (pbrMaterial.albedoColor != null) {
                     pbrMaterial.set(PBRTextureAttribute.createAlbedo(pbrMaterial.albedoColor));
                 } else {
-                    Material material = modelComponent.model.materials.first();
-
-                    if (material != null) {
-                        TextureAttribute textureAttribute = (TextureAttribute) material.get(TextureAttribute.Diffuse);
+                    if (currentMaterial != null) {
+                        TextureAttribute textureAttribute = (TextureAttribute) currentMaterial.get(TextureAttribute.Diffuse);
 
                         if (textureAttribute != null) {
                             Texture albedo = textureAttribute.textureDescription.texture;
@@ -197,17 +205,17 @@ public class SceneManager {
 
                                 pbrMaterial.set(PBRTextureAttribute.createAlbedo(albedo,
                                         pbrMaterial.offsetU, pbrMaterial.offsetV, pbrMaterial.tilesU, pbrMaterial.tilesV));
-                                material.remove(TextureAttribute.Diffuse);
+                                currentMaterial.remove(TextureAttribute.Diffuse);
                             }
                         } else {
-                            ColorAttribute colorAttribute = (ColorAttribute) material.get(ColorAttribute.Diffuse);
+                            ColorAttribute colorAttribute = (ColorAttribute) currentMaterial.get(ColorAttribute.Diffuse);
 
                             if (colorAttribute != null) {
                                 Color color = colorAttribute.color;
 
                                 if (color != null) {
                                     pbrMaterial.set(PBRTextureAttribute.createAlbedo(color));
-                                    material.remove(ColorAttribute.Diffuse);
+                                    currentMaterial.remove(ColorAttribute.Diffuse);
                                 }
                             }
                         }
@@ -245,10 +253,8 @@ public class SceneManager {
                                 pbrMaterial.offsetU, pbrMaterial.offsetV, pbrMaterial.tilesU, pbrMaterial.tilesV));
                     }
                 } else {
-                    Material material = modelComponent.model.materials.first();
-
-                    if (material != null) {
-                        TextureAttribute normalAttribute = (TextureAttribute) material.get(TextureAttribute.Normal);
+                    if (currentMaterial != null) {
+                        TextureAttribute normalAttribute = (TextureAttribute) currentMaterial.get(TextureAttribute.Normal);
 
                         if (normalAttribute != null) {
                             Texture normal = normalAttribute.textureDescription.texture;
@@ -256,7 +262,7 @@ public class SceneManager {
                             if (normal != null) {
                                 normal.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
                                 pbrMaterial.set(PBRTextureAttribute.createNormal(normal));
-                                material.remove(TextureAttribute.Normal);
+                                currentMaterial.remove(TextureAttribute.Normal);
                             }
                         }
                     }
