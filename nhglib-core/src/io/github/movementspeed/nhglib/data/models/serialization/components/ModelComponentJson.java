@@ -3,7 +3,7 @@ package io.github.movementspeed.nhglib.data.models.serialization.components;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.movementspeed.nhglib.core.ecs.components.graphics.ModelComponent;
 import io.github.movementspeed.nhglib.data.models.serialization.ComponentJson;
-import io.github.movementspeed.nhglib.data.models.serialization.PbrMaterialJson;
+import io.github.movementspeed.nhglib.data.models.serialization.PBRMaterialJson;
 
 /**
  * Created by Fausto Napoli on 19/12/2016.
@@ -23,7 +23,7 @@ public class ModelComponentJson extends ComponentJson {
 
         if (materialsJson != null) {
             for (JsonValue mat : materialsJson) {
-                PbrMaterialJson pbrMaterialJson = new PbrMaterialJson();
+                PBRMaterialJson pbrMaterialJson = new PBRMaterialJson();
                 pbrMaterialJson.parse(mat);
 
                 modelComponent.pbrMaterials.add(pbrMaterialJson.get());

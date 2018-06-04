@@ -102,13 +102,11 @@ in HIGHP vec3 v_tangent;
 in LOWP vec2 v_texCoord;
 in LOWP vec3 v_normal;
 
-vec3 fresnelSchlick(float cosTheta, vec3 F0)
-{
+vec3 fresnelSchlick(float cosTheta, vec3 F0) {
     return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
-vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
-{
+vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness) {
     return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
@@ -159,9 +157,9 @@ void main() {
     LOWP vec3 color;
 
     #ifdef defAlbedo
-        LOWP vec3 albedo = texture(u_albedo, v_texCoord).rgb;
+        LOWP vec4 albedo = texture(u_albedo, v_texCoord);
     #else
-        LOWP vec3 albedo = vec3(1.0);
+        LOWP vec4 albedo = vec4(1.0);
     #endif
 
     #ifdef defMetalness
@@ -200,7 +198,7 @@ void main() {
     LOWP vec3 V = normalize(-v_position);
 
     LOWP vec3 F0 = vec3(0.04);
-    F0 = mix(F0, albedo, metalness);
+    F0 = mix(F0, albedo.rgb, metalness);
 
     LOWP vec3 Lo = vec3(0.0);
 
@@ -209,28 +207,28 @@ void main() {
         #if numDirectionalLights > 0
             for (int i = 0; i < numDirectionalLights; i++) {
                 LOWP vec3 direction = -u_dirLights[i].direction;
-                LOWP float distance    = length(direction);
-                LOWP vec3 radiance     = u_dirLights[i].color;
+                LOWP float distance = length(direction);
+                LOWP vec3 radiance = u_dirLights[i].color;
 
                 LOWP vec3 L = normalize(direction);
                 LOWP vec3 H = normalize(V + L);
 
                 // cook-torrance brdf
                 LOWP float NDF = distributionGGX(N, H, roughness);
-                LOWP float G   = geometrySmith(N, V, L, roughness);
-                LOWP vec3 F    = fresnelSchlick(max(dot(H, V), 0.0), F0);
+                LOWP float G = geometrySmith(N, V, L, roughness);
+                LOWP vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
 
                 LOWP vec3 kS = F;
                 LOWP vec3 kD = vec3(1.0) - kS;
                 kD *= 1.0 - metalness;
 
-                LOWP vec3 numerator    = NDF * G * F;
+                LOWP vec3 numerator = NDF * G * F;
                 LOWP float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
-                LOWP vec3 specular     = numerator / max(denominator, 0.001);
+                LOWP vec3 specular = numerator / max(denominator, 0.001);
 
                 // add to outgoing radiance Lo
                 LOWP float NdotL = max(dot(N, L), 0.0) * u_dirLights[i].intensity;
-                Lo += (kD * albedo / M_PI + specular) * radiance * NdotL;
+                Lo += (kD * albedo.rgb / M_PI + specular) * radiance * NdotL;
             }
         #endif
     #endif
@@ -240,29 +238,29 @@ void main() {
         #if numPointLights > 0
             for (int i = 0; i < numPointLights; i++) {
                 LOWP vec3 direction = u_pointLights[i].position - v_position;
-                LOWP float distance    = length(direction);
+                LOWP float distance = length(direction);
                 LOWP float attenuation = 1.0 / (distance * distance);
-                LOWP vec3 radiance     = u_pointLights[i].color * attenuation;
+                LOWP vec3 radiance = u_pointLights[i].color * attenuation;
 
                 LOWP vec3 L = normalize(direction);
                 LOWP vec3 H = normalize(V + L);
 
                 // cook-torrance brdf
                 LOWP float NDF = distributionGGX(N, H, roughness);
-                LOWP float G   = geometrySmith(N, V, L, roughness);
-                LOWP vec3 F    = fresnelSchlick(max(dot(H, V), 0.0), F0);
+                LOWP float G = geometrySmith(N, V, L, roughness);
+                LOWP vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
 
                 LOWP vec3 kS = F;
                 LOWP vec3 kD = vec3(1.0) - kS;
                 kD *= 1.0 - metalness;
 
-                LOWP vec3 numerator    = NDF * G * F;
+                LOWP vec3 numerator = NDF * G * F;
                 LOWP float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
-                LOWP vec3 specular     = numerator / max(denominator, 0.001);
+                LOWP vec3 specular = numerator / max(denominator, 0.001);
 
                 // add to outgoing radiance Lo
                 LOWP float NdotL = max(dot(N, L), 0.0) * u_pointLights[i].intensity;
-                Lo += (kD * albedo / M_PI + specular) * radiance * NdotL;
+                Lo += (kD * albedo.rgb / M_PI + specular) * radiance * NdotL;
             }
         #endif
     #endif
@@ -272,9 +270,9 @@ void main() {
         #if numSpotLights > 0
             for (int i = 0; i < numPointLights; i++) {
                 LOWP vec3 direction = u_spotLights[i].position - v_position;
-                LOWP float distance    = length(direction);
+                LOWP float distance = length(direction);
                 LOWP float attenuation = 1.0 / (distance * distance);
-                LOWP vec3 radiance     = u_spotLights[i].color * attenuation;
+                LOWP vec3 radiance = u_spotLights[i].color * attenuation;
 
                 float currentAngle = dot(-normalize(direction), normalize(u_spotLights[i].direction));
                 float innerConeAngle = cos(radians(u_spotLights[i].innerAngle));
@@ -289,20 +287,20 @@ void main() {
 
                 // cook-torrance brdf
                 LOWP float NDF = distributionGGX(N, H, roughness);
-                LOWP float G   = geometrySmith(N, V, L, roughness);
-                LOWP vec3 F    = fresnelSchlick(max(dot(H, V), 0.0), F0);
+                LOWP float G = geometrySmith(N, V, L, roughness);
+                LOWP vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
 
                 LOWP vec3 kS = F;
                 LOWP vec3 kD = vec3(1.0) - kS;
                 kD *= 1.0 - metalness;
 
-                LOWP vec3 numerator    = NDF * G * F;
+                LOWP vec3 numerator = NDF * G * F;
                 LOWP float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
-                LOWP vec3 specular     = numerator / max(denominator, 0.001);
+                LOWP vec3 specular = numerator / max(denominator, 0.001);
 
                 // add to outgoing radiance Lo
                 LOWP float NdotL = max(dot(N, L), 0.0) * u_spotLights[i].intensity;
-                Lo += (kD * albedo / M_PI + specular) * radiance * NdotL;
+                Lo += (kD * albedo.rgb / M_PI + specular) * radiance * NdotL;
             }
         #endif
     #endif
@@ -318,7 +316,7 @@ void main() {
         kD *= 1.0 - metalness;
 
         LOWP vec3 irradiance = texture(u_irradiance, N).rgb;
-        LOWP vec3 diffuse = irradiance * albedo;
+        LOWP vec3 diffuse = irradiance * albedo.rgb;
 
         LOWP vec3 prefilteredColor = textureLod(u_prefilter, R, roughness * MAX_REFLECTION_LOD).rgb;
         LOWP vec2 brdf = texture(u_brdf, vec2(max(dot(N, V), 0.0), roughness)).rg;
@@ -326,7 +324,7 @@ void main() {
 
         LOWP vec3 ambient = (kD * diffuse + specular) * ambientOcclusion;
     #else
-        LOWP vec3 ambient = vec3(u_ambient) * albedo;
+        LOWP vec3 ambient = vec3(u_ambient) * albedo.rgb;
     #endif
 
     color = ambient + Lo;
@@ -336,5 +334,5 @@ void main() {
         color = pow(color, vec3(1.0 / 2.2));
     #endif
 
-    fragmentColor = vec4(color, 1.0);
+    fragmentColor = vec4(color.rgb, albedo.a);
 }

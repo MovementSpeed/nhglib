@@ -1,11 +1,13 @@
 package io.github.movementspeed.nhglib.graphics.scenes;
 
 import com.artemis.ComponentMapper;
+import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffectLoader;
@@ -27,7 +29,7 @@ import io.github.movementspeed.nhglib.core.messaging.Messaging;
 import io.github.movementspeed.nhglib.data.models.serialization.components.*;
 import io.github.movementspeed.nhglib.files.HDRData;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.PBRTextureAttribute;
-import io.github.movementspeed.nhglib.graphics.utils.PbrMaterial;
+import io.github.movementspeed.nhglib.graphics.utils.PBRMaterial;
 import io.github.movementspeed.nhglib.physics.models.BvhTriangleMeshRigidBodyShape;
 import io.github.movementspeed.nhglib.physics.models.ConvexHullRigidBodyShape;
 import io.github.movementspeed.nhglib.physics.models.ConvexTriangleMeshRigidBodyShape;
@@ -168,7 +170,7 @@ public class SceneManager {
             Model model = assets.get(modelComponent.asset);
             modelComponent.buildWithModel(nodeComponent.node.scale, model);
 
-            for (PbrMaterial pbrMaterial : modelComponent.pbrMaterials) {
+            for (PBRMaterial pbrMaterial : modelComponent.pbrMaterials) {
                 if (pbrMaterial.albedo != null && !pbrMaterial.albedo.isEmpty()) {
                     Texture albedo = assets.get(pbrMaterial.albedo);
 
@@ -229,21 +231,25 @@ public class SceneManager {
                     pbrMaterial.set(PBRTextureAttribute.createRoughness(pbrMaterial.roughnessValue));
                 }
 
+                if (pbrMaterial.blended) {
+                    pbrMaterial.set(new BlendingAttribute(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA));
+                }
+
                 // Clear other attributes in model's own materials
                 /*for (Material m : modelComponent.model.materials) {
                     m.clear();
                 }*/
 
                 if (pbrMaterial.targetNode != null && !pbrMaterial.targetNode.isEmpty()) {
-                    modelComponent.setPbrMaterial(pbrMaterial.targetNode, pbrMaterial);
+                    modelComponent.setPBRMaterial(pbrMaterial.targetNode, pbrMaterial);
                 } else {
-                    modelComponent.setPbrMaterial(pbrMaterial);
+                    modelComponent.setPBRMaterial(pbrMaterial);
                 }
             }
         } else {
             assets.unloadAsset(modelComponent.asset);
 
-            for (PbrMaterial mat : modelComponent.pbrMaterials) {
+            for (PBRMaterial mat : modelComponent.pbrMaterials) {
                 assets.unloadAsset(mat.roughness);
                 assets.unloadAsset(mat.normal);
                 assets.unloadAsset(mat.metalness);

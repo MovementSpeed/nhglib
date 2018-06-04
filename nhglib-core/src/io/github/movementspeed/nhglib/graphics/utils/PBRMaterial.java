@@ -6,7 +6,9 @@ import com.badlogic.gdx.graphics.g3d.Material;
 /**
  * Created by Fausto Napoli on 03/04/2017.
  */
-public class PbrMaterial extends Material {
+public class PBRMaterial extends Material {
+    public boolean blended;
+
     public float metalnessValue;
     public float roughnessValue;
 

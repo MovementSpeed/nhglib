@@ -3,12 +3,14 @@ package io.github.movementspeed.tests;
 import com.artemis.BaseSystem;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.assets.Asset;
 import io.github.movementspeed.nhglib.core.ecs.components.graphics.CameraComponent;
 import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.InputSystem;
+import io.github.movementspeed.nhglib.core.ecs.systems.impl.PhysicsSystem;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
 import io.github.movementspeed.nhglib.core.entry.NhgEntry;
 import io.github.movementspeed.nhglib.core.messaging.Message;
@@ -66,6 +68,9 @@ public class Main extends NhgEntry implements InputListener {
         inputSystem.setEnableContext("game", true);
         inputSystem.setEnableContext("menu", true);
         inputSystem.addInputListener(this);
+
+        PhysicsSystem physicsSystem = nhg.entities.getEntitySystem(PhysicsSystem.class);
+        physicsSystem.setGravity(new Vector3(0, -0.5f, 0));
 
         renderingSystem = nhg.entities.getEntitySystem(RenderingSystem.class);
         renderingSystem.setClearColor(Color.GRAY);

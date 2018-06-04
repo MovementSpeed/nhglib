@@ -24,7 +24,7 @@
       },
       {
         "alias": "chassisAlbedo",
-        "source": "models/kart.png",
+        "source": "models/kart_alpha.png",
         "classAlias": "texture"
       },
       {
@@ -165,6 +165,7 @@
             "asset": "chassisAsset",
             "materials": [
               {
+                "blended": true,
                 "albedo": "chassisAlbedo",
                 "metalnessValue": 0.5,
                 "roughnessValue": 0.1

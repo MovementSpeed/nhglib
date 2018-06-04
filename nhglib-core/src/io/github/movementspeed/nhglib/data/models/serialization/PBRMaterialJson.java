@@ -2,25 +2,28 @@ package io.github.movementspeed.nhglib.data.models.serialization;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.JsonValue;
-import io.github.movementspeed.nhglib.graphics.utils.PbrMaterial;
+import io.github.movementspeed.nhglib.graphics.utils.PBRMaterial;
 import io.github.movementspeed.nhglib.interfaces.JsonParseable;
 
 /**
  * Created by Fausto Napoli on 28/03/2017.
  */
-public class PbrMaterialJson implements JsonParseable<PbrMaterial> {
-    private PbrMaterial pbrMaterial;
+public class PBRMaterialJson implements JsonParseable<PBRMaterial> {
+    private PBRMaterial pbrMaterial;
 
     @Override
     public void parse(JsonValue jsonValue) {
-        pbrMaterial = new PbrMaterial();
+        pbrMaterial = new PBRMaterial();
         pbrMaterial.targetNode = jsonValue.getString("targetNode", "");
 
+        boolean blended = jsonValue.getBoolean("blended", false);
         String albedo = jsonValue.getString("albedo", "");
         String metalness = jsonValue.getString("metalness", "");
         String roughness = jsonValue.getString("roughness", "");
         String normal = jsonValue.getString("normal", "");
         String ambientOcclusion = jsonValue.getString("ambientOcclusion", "");
+
+        pbrMaterial.blended = blended;
 
         if (jsonValue.has("metalnessValue")) {
             pbrMaterial.metalnessValue = jsonValue.getFloat("metalnessValue", 0.001f);
@@ -66,7 +69,7 @@ public class PbrMaterialJson implements JsonParseable<PbrMaterial> {
     }
 
     @Override
-    public PbrMaterial get() {
+    public PBRMaterial get() {
         return pbrMaterial;
     }
 }

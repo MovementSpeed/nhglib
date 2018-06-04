@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
-import io.github.movementspeed.nhglib.graphics.utils.PbrMaterial;
+import io.github.movementspeed.nhglib.graphics.utils.PBRMaterial;
 
 /**
  * Created by Fausto Napoli on 28/03/2017.
@@ -30,7 +30,7 @@ public class ModelComponent extends Component {
     public BoundingBox boundingBox;
     public AnimationController animationController;
 
-    public Array<PbrMaterial> pbrMaterials;
+    public Array<PBRMaterial> pbrMaterials;
 
     private Vector3 translationBefore, translationAfter, scaleBefore, scaleAfter, rotationBefore, rotationAfter;
     private Quaternion rotationQuaternionBefore, rotationQuaternionAfter;
@@ -113,17 +113,17 @@ public class ModelComponent extends Component {
         this.state = State.NOT_INITIALIZED;
     }
 
-    public void setPbrMaterial(PbrMaterial material) {
+    public void setPBRMaterial(PBRMaterial material) {
         for (Material m : model.materials) {
             m.set(material);
         }
     }
 
-    public void setPbrMaterial(int index, PbrMaterial material) {
+    public void setPBRMaterial(int index, PBRMaterial material) {
         model.materials.get(index).set(material);
     }
 
-    public void setPbrMaterial(String nodeId, PbrMaterial material) {
+    public void setPBRMaterial(String nodeId, PBRMaterial material) {
         Node targetNode = model.getNode(nodeId);
 
         for (NodePart nodePart : targetNode.parts) {
