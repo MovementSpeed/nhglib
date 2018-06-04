@@ -183,7 +183,7 @@ public class SceneManager {
                     currentMaterial = modelComponent.model.materials.first();
                 }
 
-                Texture.TextureFilter mag = Texture.TextureFilter.MipMapLinearLinear;
+                Texture.TextureFilter mag = Texture.TextureFilter.Linear;
                 Texture.TextureFilter min = Texture.TextureFilter.Linear;
                 Texture.TextureWrap wrapU = Texture.TextureWrap.Repeat;
                 Texture.TextureWrap wrapV = Texture.TextureWrap.Repeat;
