@@ -70,22 +70,27 @@ uniform HIGHP mat4 u_viewMatrix;
 
 #ifdef defAlbedo
     uniform LOWP sampler2D u_albedo;
+    uniform LOWP vec2 u_albedoTiles;
 #endif
 
 #ifdef defMetalness
     uniform LOWP sampler2D u_metalness;
+    uniform LOWP vec2 u_metalnessTiles;
 #endif
 
 #ifdef defRoughness
     uniform LOWP sampler2D u_roughness;
+    uniform LOWP vec2 u_roughnessTiles;
 #endif
 
 #ifdef defNormal
     uniform LOWP sampler2D u_normal;
+    uniform LOWP vec2 u_normalTiles;
 #endif
 
 #ifdef defAmbientOcclusion
     uniform LOWP sampler2D u_ambientOcclusion;
+    uniform LOWP vec2 u_ambientOcclusionTiles;
 #endif
 
 #ifdef defImageBasedLighting
@@ -156,7 +161,7 @@ void main() {
     // Nota: NON SETTARE MAI METALNESS O ROUGHNESS A 0.0
 
     #ifdef defAlbedo
-        LOWP vec4 albedo = texture2D(u_albedo, v_texCoord);
+        LOWP vec4 albedo = texture2D(u_albedo, fract(v_texCoord / u_albedoTiles));
         if (albedo.a < 0.01) discard;
         albedo = pow(albedo, vec4(2.2));
     #else
@@ -166,25 +171,25 @@ void main() {
     LOWP vec3 color;
 
     #ifdef defMetalness
-        LOWP float metalness = texture2D(u_metalness, v_texCoord).r;
+        LOWP float metalness = texture2D(u_metalness, fract(v_texCoord / u_metalnessTiles)).r;
     #else
         LOWP float metalness = 0.5;
     #endif
 
     #ifdef defRoughness
-        LOWP float roughness = texture2D(u_roughness, v_texCoord).r;
+        LOWP float roughness = texture2D(u_roughness, fract(v_texCoord / u_roughnessTiles)).r;
     #else
         LOWP float roughness = 0.1;
     #endif
 
     #ifdef defAmbientOcclusion
-        LOWP float ambientOcclusion = texture2D(u_ambientOcclusion, v_texCoord).r;
+        LOWP float ambientOcclusion = texture2D(u_ambientOcclusion, fract(v_texCoord / u_ambientOcclusionTiles)).r;
     #else
         LOWP float ambientOcclusion = 1.0;
     #endif
 
     #ifdef defNormal
-        LOWP vec3 normalMap = texture2D(u_normal, v_texCoord).rgb;
+        LOWP vec3 normalMap = texture2D(u_normal, fract(v_texCoord / u_normalTiles)).rgb;
 
         LOWP vec3 N = normalize(v_normal);
         LOWP vec3 tangent = normalize(v_tangent);
