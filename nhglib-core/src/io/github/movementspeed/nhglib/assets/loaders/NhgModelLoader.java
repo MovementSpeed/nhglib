@@ -104,6 +104,7 @@ public abstract class NhgModelLoader<P extends NhgModelLoader.ModelParameters> e
                         fName = fName.substring(fName.lastIndexOf("/") + 1);
                     }
 
+                    textureParameter.genMipMaps = true;
                     deps.add(new AssetDescriptor(currentAsset.dependenciesPath + fName, Texture.class, textureParameter));
                 }
             }

@@ -187,7 +187,7 @@ public class SceneManager {
                     Texture albedo = assets.get(pbrMaterial.albedo);
 
                     if (albedo != null) {
-                        albedo.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+                        albedo.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
                         pbrMaterial.set(PBRTextureAttribute.createAlbedo(albedo,
                                 pbrMaterial.offsetU, pbrMaterial.offsetV, pbrMaterial.tilesU, pbrMaterial.tilesV));
                     }
@@ -201,7 +201,7 @@ public class SceneManager {
                             Texture albedo = textureAttribute.textureDescription.texture;
 
                             if (albedo != null) {
-                                albedo.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+                                albedo.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
 
                                 pbrMaterial.set(PBRTextureAttribute.createAlbedo(albedo,
                                         pbrMaterial.offsetU, pbrMaterial.offsetV, pbrMaterial.tilesU, pbrMaterial.tilesV));
@@ -226,7 +226,7 @@ public class SceneManager {
                     Texture ambientOcclusion = assets.get(pbrMaterial.ambientOcclusion);
 
                     if (ambientOcclusion != null) {
-                        ambientOcclusion.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+                        ambientOcclusion.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
                         pbrMaterial.set(PBRTextureAttribute.createAmbientOcclusion(ambientOcclusion,
                                 pbrMaterial.offsetU, pbrMaterial.offsetV, pbrMaterial.tilesU, pbrMaterial.tilesV));
                     }
@@ -236,7 +236,7 @@ public class SceneManager {
                     Texture metalness = assets.get(pbrMaterial.metalness);
 
                     if (metalness != null) {
-                        metalness.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+                        metalness.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
                         pbrMaterial.set(PBRTextureAttribute.createMetalness(metalness,
                                 pbrMaterial.offsetU, pbrMaterial.offsetV, pbrMaterial.tilesU, pbrMaterial.tilesV));
                     }
@@ -248,7 +248,7 @@ public class SceneManager {
                     Texture normal = assets.get(pbrMaterial.normal);
 
                     if (normal != null) {
-                        normal.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+                        normal.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
                         pbrMaterial.set(PBRTextureAttribute.createNormal(normal,
                                 pbrMaterial.offsetU, pbrMaterial.offsetV, pbrMaterial.tilesU, pbrMaterial.tilesV));
                     }
@@ -260,7 +260,7 @@ public class SceneManager {
                             Texture normal = normalAttribute.textureDescription.texture;
 
                             if (normal != null) {
-                                normal.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+                                normal.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
                                 pbrMaterial.set(PBRTextureAttribute.createNormal(normal));
                                 currentMaterial.remove(TextureAttribute.Normal);
                             }
@@ -272,7 +272,7 @@ public class SceneManager {
                     Texture roughness = assets.get(pbrMaterial.roughness);
 
                     if (roughness != null) {
-                        roughness.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+                        roughness.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
                         pbrMaterial.set(PBRTextureAttribute.createRoughness(roughness,
                                 pbrMaterial.offsetU, pbrMaterial.offsetV, pbrMaterial.tilesU, pbrMaterial.tilesV));
                     }
