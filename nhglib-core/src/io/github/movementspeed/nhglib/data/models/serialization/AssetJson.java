@@ -37,14 +37,16 @@ public class AssetJson implements JsonParseable<Asset> {
             output.parametersBundle = new Bundle();
 
             for (JsonValue value : parameters) {
-                if (value.isBoolean()) {
-                    output.parametersBundle.put(value.name, value.asBoolean());
-                } else if (value.isDouble()) {
-                    output.parametersBundle.put(value.name, value.asDouble());
-                } else if (value.isLong()) {
-                    output.parametersBundle.put(value.name, value.asLong());
-                } else if (value.isString()) {
-                    output.parametersBundle.put(value.name, value.asString());
+                JsonValue internalValue = value.get(0);
+
+                if (internalValue.isBoolean()) {
+                    output.parametersBundle.put(internalValue.name, internalValue.asBoolean());
+                } else if (internalValue.isDouble()) {
+                    output.parametersBundle.put(internalValue.name, internalValue.asDouble());
+                } else if (internalValue.isLong()) {
+                    output.parametersBundle.put(internalValue.name, internalValue.asLong());
+                } else if (internalValue.isString()) {
+                    output.parametersBundle.put(internalValue.name, internalValue.asString());
                 }
             }
         }
