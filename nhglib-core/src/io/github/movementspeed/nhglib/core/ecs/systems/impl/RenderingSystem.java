@@ -55,6 +55,8 @@ public class RenderingSystem extends BaseSystem implements Disposable {
         renderingInterfaces = new Array<>();
 
         spriteBatch = new SpriteBatch();
+        spriteBatch.enableBlending();
+
         updateFramebuffer(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
@@ -72,7 +74,6 @@ public class RenderingSystem extends BaseSystem implements Disposable {
             }
 
             frameBuffer.begin();
-            Gdx.gl.glViewport(0, 0, frameBuffer.getWidth(), frameBuffer.getHeight());
             GLUtils.clearScreen(clearColor);
 
             renderer.begin(camera);

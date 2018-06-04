@@ -158,6 +158,7 @@ void main() {
 
     #ifdef defAlbedo
         LOWP vec4 albedo = texture2D(u_albedo, v_texCoord);
+        albedo = pow(albedo, vec4(2.2));
     #else
         LOWP vec4 albedo = vec4(1.0);
     #endif
