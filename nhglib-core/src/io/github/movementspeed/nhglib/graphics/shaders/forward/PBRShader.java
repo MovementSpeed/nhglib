@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g3d.shaders.BaseShader;
 import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
@@ -76,6 +77,7 @@ public class PBRShader extends BaseShader {
     private int bonesLoc;
     private float bones[];
 
+    private Vector2 vec2;
     private Vector3 vec3;
     private Matrix4 idtMatrix;
 
@@ -95,6 +97,7 @@ public class PBRShader extends BaseShader {
         this.environment = environment;
         this.params = (PBRShader.Params) shaderParams;
 
+        vec2 = new Vector2();
         vec3 = new Vector3();
 
         this.directionalLights = new NhgLight[params.lit ? 2 : 0];
@@ -171,6 +174,17 @@ public class PBRShader extends BaseShader {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
                 shader.set(inputID, RenderingSystem.renderHeight);
+            }
+        });
+
+        register("u_albedoTiles", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Albedo);
+
+                if (textureAttribute != null) {
+                    shader.set(inputID, vec2.set(textureAttribute.tilesU, textureAttribute.tilesV));
+                }
             }
         });
 

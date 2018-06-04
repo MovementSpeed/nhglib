@@ -177,7 +177,9 @@ public class SceneManager {
                     Texture albedo = assets.get(pbrMaterial.albedo);
 
                     if (albedo != null) {
-                        pbrMaterial.set(PBRTextureAttribute.createAlbedo(albedo));
+                        albedo.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+                        pbrMaterial.set(PBRTextureAttribute.createAlbedo(albedo,
+                                pbrMaterial.offsetU, pbrMaterial.offsetV, pbrMaterial.tilesU, pbrMaterial.tilesV));
                     }
                 } else if (pbrMaterial.albedoColor != null) {
                     pbrMaterial.set(PBRTextureAttribute.createAlbedo(pbrMaterial.albedoColor));
@@ -191,7 +193,11 @@ public class SceneManager {
                             Texture albedo = textureAttribute.textureDescription.texture;
 
                             if (albedo != null) {
-                                pbrMaterial.set(PBRTextureAttribute.createAlbedo(albedo));
+                                albedo.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+
+                                pbrMaterial.set(PBRTextureAttribute.createAlbedo(albedo,
+                                        pbrMaterial.offsetU, pbrMaterial.offsetV, pbrMaterial.tilesU, pbrMaterial.tilesV));
+                                material.remove(TextureAttribute.Diffuse);
                             }
                         } else {
                             ColorAttribute colorAttribute = (ColorAttribute) material.get(ColorAttribute.Diffuse);
@@ -201,6 +207,7 @@ public class SceneManager {
 
                                 if (color != null) {
                                     pbrMaterial.set(PBRTextureAttribute.createAlbedo(color));
+                                    material.remove(ColorAttribute.Diffuse);
                                 }
                             }
                         }
@@ -211,7 +218,9 @@ public class SceneManager {
                     Texture ambientOcclusion = assets.get(pbrMaterial.ambientOcclusion);
 
                     if (ambientOcclusion != null) {
-                        pbrMaterial.set(PBRTextureAttribute.createAmbientOcclusion(ambientOcclusion));
+                        ambientOcclusion.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+                        pbrMaterial.set(PBRTextureAttribute.createAmbientOcclusion(ambientOcclusion,
+                                pbrMaterial.offsetU, pbrMaterial.offsetV, pbrMaterial.tilesU, pbrMaterial.tilesV));
                     }
                 }
 
@@ -219,9 +228,11 @@ public class SceneManager {
                     Texture metalness = assets.get(pbrMaterial.metalness);
 
                     if (metalness != null) {
-                        pbrMaterial.set(PBRTextureAttribute.createMetalness(metalness));
+                        metalness.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+                        pbrMaterial.set(PBRTextureAttribute.createMetalness(metalness,
+                                pbrMaterial.offsetU, pbrMaterial.offsetV, pbrMaterial.tilesU, pbrMaterial.tilesV));
                     }
-                } else if (pbrMaterial.metalnessValue > 0 && pbrMaterial.metalnessValue <= 1) {
+                } else if (pbrMaterial.metalnessValue >= 0 && pbrMaterial.metalnessValue <= 1) {
                     pbrMaterial.set(PBRTextureAttribute.createMetalness(pbrMaterial.metalnessValue));
                 }
 
@@ -229,7 +240,9 @@ public class SceneManager {
                     Texture normal = assets.get(pbrMaterial.normal);
 
                     if (normal != null) {
-                        pbrMaterial.set(PBRTextureAttribute.createNormal(normal));
+                        normal.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+                        pbrMaterial.set(PBRTextureAttribute.createNormal(normal,
+                                pbrMaterial.offsetU, pbrMaterial.offsetV, pbrMaterial.tilesU, pbrMaterial.tilesV));
                     }
                 } else {
                     Material material = modelComponent.model.materials.first();
@@ -241,7 +254,9 @@ public class SceneManager {
                             Texture normal = normalAttribute.textureDescription.texture;
 
                             if (normal != null) {
+                                normal.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
                                 pbrMaterial.set(PBRTextureAttribute.createNormal(normal));
+                                material.remove(TextureAttribute.Normal);
                             }
                         }
                     }
@@ -251,9 +266,11 @@ public class SceneManager {
                     Texture roughness = assets.get(pbrMaterial.roughness);
 
                     if (roughness != null) {
-                        pbrMaterial.set(PBRTextureAttribute.createRoughness(roughness));
+                        roughness.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+                        pbrMaterial.set(PBRTextureAttribute.createRoughness(roughness,
+                                pbrMaterial.offsetU, pbrMaterial.offsetV, pbrMaterial.tilesU, pbrMaterial.tilesV));
                     }
-                } else if (pbrMaterial.roughnessValue > 0 && pbrMaterial.roughnessValue <= 1) {
+                } else if (pbrMaterial.roughnessValue >= 0 && pbrMaterial.roughnessValue <= 1) {
                     pbrMaterial.set(PBRTextureAttribute.createRoughness(pbrMaterial.roughnessValue));
                 }
 

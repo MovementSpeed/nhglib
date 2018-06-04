@@ -48,6 +48,13 @@ public class PBRTextureAttribute extends Attribute {
         return new PBRTextureAttribute(Albedo, region);
     }
 
+    public static PBRTextureAttribute createAlbedo(final Texture texture, float offsetU, float offsetV, float tilesU, float tilesV) {
+        TextureDescriptor textureDescriptor = new TextureDescriptor();
+        textureDescriptor.texture = texture;
+
+        return new PBRTextureAttribute(Albedo, textureDescriptor, offsetU, offsetV, tilesU, tilesV);
+    }
+
     public static PBRTextureAttribute createMetalness(final float metalness) {
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGB888);
         pixmap.setColor(metalness, metalness, metalness, 1.0f);
@@ -62,6 +69,13 @@ public class PBRTextureAttribute extends Attribute {
 
     public static PBRTextureAttribute createMetalness(final TextureRegion region) {
         return new PBRTextureAttribute(Metalness, region);
+    }
+
+    public static PBRTextureAttribute createMetalness(final Texture texture, float offsetU, float offsetV, float tilesU, float tilesV) {
+        TextureDescriptor textureDescriptor = new TextureDescriptor();
+        textureDescriptor.texture = texture;
+
+        return new PBRTextureAttribute(Metalness, textureDescriptor, offsetU, offsetV, tilesU, tilesV);
     }
 
     public static PBRTextureAttribute createRoughness(final float roughness) {
@@ -80,12 +94,26 @@ public class PBRTextureAttribute extends Attribute {
         return new PBRTextureAttribute(Roughness, region);
     }
 
+    public static PBRTextureAttribute createRoughness(final Texture texture, float offsetU, float offsetV, float tilesU, float tilesV) {
+        TextureDescriptor textureDescriptor = new TextureDescriptor();
+        textureDescriptor.texture = texture;
+
+        return new PBRTextureAttribute(Roughness, textureDescriptor, offsetU, offsetV, tilesU, tilesV);
+    }
+
     public static PBRTextureAttribute createNormal(final Texture texture) {
         return new PBRTextureAttribute(Normal, texture);
     }
 
     public static PBRTextureAttribute createNormal(final TextureRegion region) {
         return new PBRTextureAttribute(Normal, region);
+    }
+
+    public static PBRTextureAttribute createNormal(final Texture texture, float offsetU, float offsetV, float tilesU, float tilesV) {
+        TextureDescriptor textureDescriptor = new TextureDescriptor();
+        textureDescriptor.texture = texture;
+
+        return new PBRTextureAttribute(Normal, textureDescriptor, offsetU, offsetV, tilesU, tilesV);
     }
 
     public static PBRTextureAttribute createAmbientOcclusion(final Texture texture) {
@@ -96,12 +124,19 @@ public class PBRTextureAttribute extends Attribute {
         return new PBRTextureAttribute(AmbientOcclusion, region);
     }
 
+    public static PBRTextureAttribute createAmbientOcclusion(final Texture texture, float offsetU, float offsetV, float tilesU, float tilesV) {
+        TextureDescriptor textureDescriptor = new TextureDescriptor();
+        textureDescriptor.texture = texture;
+
+        return new PBRTextureAttribute(AmbientOcclusion, textureDescriptor, offsetU, offsetV, tilesU, tilesV);
+    }
+
     public final TextureDescriptor<Texture> textureDescription;
 
     public float offsetU = 0;
     public float offsetV = 0;
-    public float scaleU = 1;
-    public float scaleV = 1;
+    public float tilesU = 1;
+    public float tilesV = 1;
     /**
      * The index of the texture coordinate vertex attribute to use for this PBRTextureAttribute. Whether this value is used, depends
      * on the shader and {@link Attribute#type} value. For basic (model specific) types (e.g. {@link #Albedo},
@@ -121,18 +156,18 @@ public class PBRTextureAttribute extends Attribute {
     }
 
     public <T extends Texture> PBRTextureAttribute(final long type, final TextureDescriptor<T> textureDescription, float offsetU,
-                                                   float offsetV, float scaleU, float scaleV, int uvIndex) {
+                                                   float offsetV, float tilesU, float tilesV, int uvIndex) {
         this(type, textureDescription);
         this.offsetU = offsetU;
         this.offsetV = offsetV;
-        this.scaleU = scaleU;
-        this.scaleV = scaleV;
+        this.tilesU = tilesU;
+        this.tilesV = tilesV;
         this.uvIndex = uvIndex;
     }
 
     public <T extends Texture> PBRTextureAttribute(final long type, final TextureDescriptor<T> textureDescription, float offsetU,
-                                                   float offsetV, float scaleU, float scaleV) {
-        this(type, textureDescription, offsetU, offsetV, scaleU, scaleV, 0);
+                                                   float offsetV, float tilesU, float tilesV) {
+        this(type, textureDescription, offsetU, offsetV, tilesU, tilesV, 0);
     }
 
     public PBRTextureAttribute(final long type, final Texture texture) {
@@ -146,7 +181,7 @@ public class PBRTextureAttribute extends Attribute {
     }
 
     public PBRTextureAttribute(final PBRTextureAttribute copyFrom) {
-        this(copyFrom.type, copyFrom.textureDescription, copyFrom.offsetU, copyFrom.offsetV, copyFrom.scaleU, copyFrom.scaleV,
+        this(copyFrom.type, copyFrom.textureDescription, copyFrom.offsetU, copyFrom.offsetV, copyFrom.tilesU, copyFrom.tilesV,
                 copyFrom.uvIndex);
     }
 
@@ -154,8 +189,8 @@ public class PBRTextureAttribute extends Attribute {
         textureDescription.texture = region.getTexture();
         offsetU = region.getU();
         offsetV = region.getV();
-        scaleU = region.getU2() - offsetU;
-        scaleV = region.getV2() - offsetV;
+        tilesU = region.getU2() - offsetU;
+        tilesV = region.getV2() - offsetV;
     }
 
     @Override
@@ -169,8 +204,8 @@ public class PBRTextureAttribute extends Attribute {
         result = 991 * result + textureDescription.hashCode();
         result = 991 * result + NumberUtils.floatToRawIntBits(offsetU);
         result = 991 * result + NumberUtils.floatToRawIntBits(offsetV);
-        result = 991 * result + NumberUtils.floatToRawIntBits(scaleU);
-        result = 991 * result + NumberUtils.floatToRawIntBits(scaleV);
+        result = 991 * result + NumberUtils.floatToRawIntBits(tilesU);
+        result = 991 * result + NumberUtils.floatToRawIntBits(tilesV);
         result = 991 * result + uvIndex;
         return result;
     }
@@ -182,8 +217,8 @@ public class PBRTextureAttribute extends Attribute {
         final int c = textureDescription.compareTo(other.textureDescription);
         if (c != 0) return c;
         if (uvIndex != other.uvIndex) return uvIndex - other.uvIndex;
-        if (!MathUtils.isEqual(scaleU, other.scaleU)) return scaleU > other.scaleU ? 1 : -1;
-        if (!MathUtils.isEqual(scaleV, other.scaleV)) return scaleV > other.scaleV ? 1 : -1;
+        if (!MathUtils.isEqual(tilesU, other.tilesU)) return tilesU > other.tilesU ? 1 : -1;
+        if (!MathUtils.isEqual(tilesV, other.tilesV)) return tilesV > other.tilesV ? 1 : -1;
         if (!MathUtils.isEqual(offsetU, other.offsetU)) return offsetU > other.offsetU ? 1 : -1;
         if (!MathUtils.isEqual(offsetV, other.offsetV)) return offsetV > other.offsetV ? 1 : -1;
         return 0;

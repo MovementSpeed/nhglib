@@ -127,7 +127,7 @@ public class ModelComponent extends Component {
         Node targetNode = model.getNode(nodeId);
 
         for (NodePart nodePart : targetNode.parts) {
-            nodePart.material = material;
+            nodePart.material.set(material);
         }
     }
 

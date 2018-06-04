@@ -17,6 +17,7 @@ public class PBRMaterialJson implements JsonParseable<PBRMaterial> {
         pbrMaterial.targetNode = jsonValue.getString("targetNode", "");
 
         boolean blended = jsonValue.getBoolean("blended", false);
+
         String albedo = jsonValue.getString("albedo", "");
         String metalness = jsonValue.getString("metalness", "");
         String roughness = jsonValue.getString("roughness", "");
@@ -36,6 +37,11 @@ public class PBRMaterialJson implements JsonParseable<PBRMaterial> {
         } else {
             pbrMaterial.roughnessValue = -1;
         }
+
+        pbrMaterial.offsetU = jsonValue.getFloat("offsetU", 0f);
+        pbrMaterial.offsetV = jsonValue.getFloat("offsetV", 0f);
+        pbrMaterial.tilesU = jsonValue.getFloat("tilesU", 1f);
+        pbrMaterial.tilesV = jsonValue.getFloat("tilesV", 1f);
 
         JsonValue albedoColorJson = jsonValue.get("albedoColor");
 

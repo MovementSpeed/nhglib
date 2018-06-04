@@ -43,6 +43,11 @@
         "classAlias": "texture"
       },
       {
+        "alias": "dun_roughness",
+        "source": "textures/dun-roughness.jpg",
+        "classAlias": "texture"
+      },
+      {
         "alias": "newport_loft",
         "source": "textures/tears_of_steel_bridge_2k.hdr",
         "classAlias": "hdr"
@@ -166,9 +171,11 @@
             "materials": [
               {
                 "blended": true,
-                "albedo": "chassisAlbedo",
+                "albedo": "dun_roughness",
                 "metalnessValue": 0.5,
-                "roughnessValue": 0.1
+                "roughnessValue": 0.1,
+                "tilesU": 0.5,
+                "tilesV": 0.5
               }
             ]
           }

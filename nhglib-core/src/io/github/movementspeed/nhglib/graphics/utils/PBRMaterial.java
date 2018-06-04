@@ -12,6 +12,11 @@ public class PBRMaterial extends Material {
     public float metalnessValue;
     public float roughnessValue;
 
+    public float offsetU;
+    public float offsetV;
+    public float tilesU;
+    public float tilesV;
+
     public String targetNode;
 
     public String albedo;
