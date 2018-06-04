@@ -2,6 +2,7 @@ package io.github.movementspeed.nhglib.assets;
 
 import com.badlogic.gdx.assets.AssetLoaderParameters;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import io.github.movementspeed.nhglib.utils.data.Bundle;
 import io.github.movementspeed.nhglib.utils.data.Strings;
 
 /**
@@ -13,6 +14,7 @@ public class Asset {
     public String dependenciesPath;
 
     public Class assetClass;
+    public Bundle parametersBundle;
     public AssetLoaderParameters parameters;
 
     public Asset(Asset asset) {

@@ -3,6 +3,7 @@ package io.github.movementspeed.nhglib.data.models.serialization;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.movementspeed.nhglib.assets.Asset;
 import io.github.movementspeed.nhglib.interfaces.JsonParseable;
+import io.github.movementspeed.nhglib.utils.data.Bundle;
 import io.github.movementspeed.nhglib.utils.scenes.SceneMappings;
 
 /**
@@ -27,8 +28,26 @@ public class AssetJson implements JsonParseable<Asset> {
 
         Class assetClass = SceneMappings.assetClassFromAlias(classString);
 
+        JsonValue parameters = jsonValue.get("parameters");
+
         output = new Asset(alias, source, assetClass);
         output.dependenciesPath = dependenciesPath;
+
+        if (parameters != null) {
+            output.parametersBundle = new Bundle();
+
+            for (JsonValue value : parameters) {
+                if (value.isBoolean()) {
+                    output.parametersBundle.put(value.name, value.asBoolean());
+                } else if (value.isDouble()) {
+                    output.parametersBundle.put(value.name, value.asDouble());
+                } else if (value.isLong()) {
+                    output.parametersBundle.put(value.name, value.asLong());
+                } else if (value.isString()) {
+                    output.parametersBundle.put(value.name, value.asString());
+                }
+            }
+        }
     }
 
     @Override

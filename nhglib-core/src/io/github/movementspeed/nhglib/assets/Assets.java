@@ -6,6 +6,7 @@ import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetErrorListener;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
+import com.badlogic.gdx.assets.loaders.TextureLoader;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -254,6 +255,8 @@ public class Assets implements Updatable, AssetErrorListener {
                 FileHandle fileHandle = Gdx.files.internal(asset.source);
 
                 if (fileHandle.exists()) {
+                    buildAssetParameters(asset);
+
                     if (asset.parameters == null) {
                         assetManager.load(asset.source, asset.assetClass);
                     } else {
@@ -282,6 +285,8 @@ public class Assets implements Updatable, AssetErrorListener {
                     FileHandle fileHandle = assetManager.getFileHandleResolver().resolve(asset.source);
 
                     if (fileHandle.exists()) {
+                        buildAssetParameters(asset);
+
                         if (asset.parameters == null) {
                             assetManager.load(asset.source, asset.assetClass);
                         } else {
@@ -478,6 +483,20 @@ public class Assets implements Updatable, AssetErrorListener {
 
     public boolean assetInQueue(Asset asset) {
         return asset != null && assetQueue.contains(asset, true);
+    }
+
+    private void buildAssetParameters(Asset asset) {
+        if (asset.parametersBundle != null) {
+            if (asset.assetClass == Texture.class) {
+                TextureLoader.TextureParameter textureParameter = new TextureLoader.TextureParameter();
+
+                if (asset.parametersBundle.containsKey("genMipMaps")) {
+                    textureParameter.genMipMaps = asset.parametersBundle.getBoolean("genMipMaps", false);
+                }
+
+                asset.parameters = textureParameter;
+            }
+        }
     }
 
     private void setDefaultAssetLoaders(AssetManager assetManager) {
