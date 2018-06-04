@@ -489,7 +489,13 @@ public class Assets implements Updatable, AssetErrorListener {
         if (asset.parametersBundle != null) {
             if (asset.assetClass == Texture.class) {
                 TextureLoader.TextureParameter textureParameter = new TextureLoader.TextureParameter();
+
                 textureParameter.genMipMaps = asset.parametersBundle.getBoolean("genMipMaps", true);
+                textureParameter.magFilter = Texture.TextureFilter.MipMapLinearLinear;
+                textureParameter.minFilter = Texture.TextureFilter.Linear;
+                textureParameter.wrapU = Texture.TextureWrap.Repeat;
+                textureParameter.wrapV = Texture.TextureWrap.Repeat;
+
                 asset.parameters = textureParameter;
             }
         }
