@@ -8,82 +8,79 @@ import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.TextureLoader;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g3d.Material;
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
-import com.badlogic.gdx.graphics.g3d.model.data.ModelData;
-import com.badlogic.gdx.graphics.g3d.model.data.ModelMaterial;
-import com.badlogic.gdx.graphics.g3d.model.data.ModelTexture;
 import com.badlogic.gdx.graphics.g3d.utils.TextureProvider;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;
 import io.github.movementspeed.nhglib.assets.Asset;
-import io.github.movementspeed.nhglib.graphics.shaders.attributes.PBRTextureAttribute;
+import io.github.movementspeed.nhglib.graphics.geometry.NhgModel;
+import io.github.movementspeed.nhglib.graphics.geometry.NhgModelData;
+import io.github.movementspeed.nhglib.graphics.geometry.NhgModelMaterial;
+import io.github.movementspeed.nhglib.graphics.geometry.NhgModelTexture;
 
 import java.util.Iterator;
 
-public abstract class NhgModelLoader<P extends NhgModelLoader.ModelParameters> extends AsynchronousAssetLoader<Model, P> {
+public abstract class NhgModelLoader<P extends NhgModelLoader.ModelParameters> extends AsynchronousAssetLoader<NhgModel, P> {
     public NhgModelLoader(FileHandleResolver resolver) {
         super(resolver);
     }
 
     protected Asset currentAsset;
 
-    protected Array<ObjectMap.Entry<String, ModelData>> items = new Array<ObjectMap.Entry<String, ModelData>>();
+    protected Array<ObjectMap.Entry<String, NhgModelData>> items = new Array<ObjectMap.Entry<String, NhgModelData>>();
     protected NhgModelLoader.ModelParameters defaultParameters = new NhgModelLoader.ModelParameters();
 
-    private ArrayMap<ModelMaterial, Array<ModelTexture>> dependencies;
+    private ArrayMap<NhgModelMaterial, Array<NhgModelTexture>> dependencies;
 
     /**
      * Directly load the raw model data on the calling thread.
      */
-    public abstract ModelData loadModelData(final FileHandle fileHandle, P parameters);
+    public abstract NhgModelData loadModelData(final FileHandle fileHandle, P parameters);
 
     /**
      * Directly load the raw model data on the calling thread.
      */
-    public ModelData loadModelData(final FileHandle fileHandle) {
+    public NhgModelData loadModelData(final FileHandle fileHandle) {
         return loadModelData(fileHandle, null);
     }
 
     /**
      * Directly load the model on the calling thread. The model with not be managed by an {@link AssetManager}.
      */
-    public Model loadModel(final FileHandle fileHandle, TextureProvider textureProvider, P parameters) {
-        final ModelData data = loadModelData(fileHandle, parameters);
-        return data == null ? null : new Model(data, textureProvider);
+    public NhgModel loadModel(final FileHandle fileHandle, TextureProvider textureProvider, P parameters) {
+        final NhgModelData data = loadModelData(fileHandle, parameters);
+        return data == null ? null : new NhgModel(data, textureProvider);
     }
 
     /**
      * Directly load the model on the calling thread. The model with not be managed by an {@link AssetManager}.
      */
-    public Model loadModel(final FileHandle fileHandle, P parameters) {
+    public NhgModel loadModel(final FileHandle fileHandle, P parameters) {
         return loadModel(fileHandle, new TextureProvider.FileTextureProvider(), parameters);
     }
 
     /**
      * Directly load the model on the calling thread. The model with not be managed by an {@link AssetManager}.
      */
-    public Model loadModel(final FileHandle fileHandle, TextureProvider textureProvider) {
+    public NhgModel loadModel(final FileHandle fileHandle, TextureProvider textureProvider) {
         return loadModel(fileHandle, textureProvider, null);
     }
 
     /**
      * Directly load the model on the calling thread. The model with not be managed by an {@link AssetManager}.
      */
-    public Model loadModel(final FileHandle fileHandle) {
+    public NhgModel loadModel(final FileHandle fileHandle) {
         return loadModel(fileHandle, new TextureProvider.FileTextureProvider(), null);
     }
 
     @Override
     public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, P parameters) {
         final Array<AssetDescriptor> deps = new Array();
-        ModelData data = loadModelData(file, parameters);
+        NhgModelData data = loadModelData(file, parameters);
         if (data == null) return deps;
 
-        ObjectMap.Entry<String, ModelData> item = new ObjectMap.Entry<String, ModelData>();
+        ObjectMap.Entry<String, NhgModelData> item = new ObjectMap.Entry<String, NhgModelData>();
         item.key = fileName;
         item.value = data;
 
@@ -95,9 +92,9 @@ public abstract class NhgModelLoader<P extends NhgModelLoader.ModelParameters> e
                 ? parameters.textureParameter
                 : defaultParameters.textureParameter;
 
-        for (final ModelMaterial modelMaterial : data.materials) {
+        for (final NhgModelMaterial modelMaterial : data.materials) {
             if (modelMaterial.textures != null) {
-                for (final ModelTexture modelTexture : modelMaterial.textures) {
+                for (final NhgModelTexture modelTexture : modelMaterial.textures) {
                     String fName = modelTexture.fileName;
 
                     if (fName.contains("/")) {
@@ -123,8 +120,8 @@ public abstract class NhgModelLoader<P extends NhgModelLoader.ModelParameters> e
     }
 
     @Override
-    public Model loadSync(AssetManager manager, String fileName, FileHandle file, P parameters) {
-        ModelData data = null;
+    public NhgModel loadSync(AssetManager manager, String fileName, FileHandle file, P parameters) {
+        NhgModelData data = null;
         synchronized (items) {
             for (int i = 0; i < items.size; i++) {
                 if (items.get(i).key.equals(fileName)) {
@@ -134,7 +131,7 @@ public abstract class NhgModelLoader<P extends NhgModelLoader.ModelParameters> e
             }
         }
         if (data == null) return null;
-        final Model result = new Model(data, new TextureProvider.AssetTextureProvider(manager));
+        final NhgModel result = new NhgModel(data, new TextureProvider.AssetTextureProvider(manager));
         // need to remove the textures from the managed disposables, or else ref counting
         // doesn't work!
         Iterator<Disposable> disposables = result.getManagedDisposables().iterator();
@@ -142,15 +139,6 @@ public abstract class NhgModelLoader<P extends NhgModelLoader.ModelParameters> e
             Disposable disposable = disposables.next();
             if (disposable instanceof Texture) {
                 disposables.remove();
-            }
-        }
-
-        // Automatically convert all materials to PBR
-        for (Material material : result.materials) {
-            TextureAttribute textureAttribute = (TextureAttribute) material.get(TextureAttribute.Diffuse);
-
-            if (textureAttribute != null) {
-                material.set(PBRTextureAttribute.createAlbedo(textureAttribute.textureDescription.texture));
             }
         }
 
@@ -162,7 +150,7 @@ public abstract class NhgModelLoader<P extends NhgModelLoader.ModelParameters> e
         this.currentAsset = asset;
     }
 
-    static public class ModelParameters extends AssetLoaderParameters<Model> {
+    static public class ModelParameters extends AssetLoaderParameters<NhgModel> {
         public TextureLoader.TextureParameter textureParameter;
 
         public ModelParameters() {
