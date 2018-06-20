@@ -1,0 +1,208 @@
+package io.github.movementspeed.nhglib.graphics.shaders.tiled;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.graphics.VertexAttribute;
+import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.g3d.Attributes;
+import com.badlogic.gdx.graphics.g3d.Renderable;
+import com.badlogic.gdx.graphics.g3d.Shader;
+import com.badlogic.gdx.graphics.g3d.shaders.BaseShader;
+import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.BufferUtils;
+import com.badlogic.gdx.utils.GdxRuntimeException;
+import io.github.movementspeed.nhglib.Nhg;
+import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
+import io.github.movementspeed.nhglib.graphics.lighting.tiled.LightGrid;
+import io.github.movementspeed.nhglib.graphics.lighting.tiled.MinMax;
+
+import java.nio.FloatBuffer;
+
+/**
+ * Created by Fausto Napoli on 18/03/2017.
+ */
+public class MinMaxShader extends BaseShader {
+    private int maxBonesLength = Integer.MIN_VALUE;
+    private int bonesIID;
+    private int bonesLoc;
+    private float bones[];
+
+    private Vector3 vec1 = new Vector3();
+    private Matrix4 idtMatrix;
+
+    private Camera camera;
+    private Params params;
+    private Renderable renderable;
+    private ShaderProgram shaderProgram;
+
+    private Array<MinMax> tileDepthRanges;
+
+    public MinMaxShader(Renderable renderable, Params params) {
+        this.renderable = renderable;
+        this.params = params;
+
+        String prefix = createPrefix(renderable);
+        String folder;
+
+        if (Gdx.graphics.isGL30Available()) {
+            folder = "shaders/gl3/";
+
+            switch (Nhg.glVersion) {
+                case VERSION_2:
+                    folder = "shaders/gl2/";
+                    break;
+            }
+        } else {
+            folder = "shaders/gl2/";
+        }
+
+        String vert = prefix + Gdx.files.internal(folder + "tiled_pbr_shader.vert").readString();
+        String frag = prefix + Gdx.files.internal(folder + "min_max_depth_shader.frag").readString();
+
+        ShaderProgram.pedantic = false;
+        shaderProgram = new ShaderProgram(vert, frag);
+
+        String shaderLog = shaderProgram.getLog();
+
+        if (!shaderProgram.isCompiled()) {
+            throw new GdxRuntimeException(shaderLog);
+        }
+
+        register("u_depthTex", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                shader.set(inputID, RenderingSystem.depthTexture);
+            }
+        });
+
+        register("u_ipMatrix", new GlobalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                shader.set(inputID, shader.camera.invProjectionView);
+            }
+        });
+
+        bonesIID = register("u_bones", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                if (renderable.bones != null) {
+                    int renderableBonesLength = renderable.bones.length * 16;
+
+                    if (renderableBonesLength > maxBonesLength) {
+                        maxBonesLength = renderableBonesLength;
+                        bones = new float[renderableBonesLength];
+                    }
+
+                    for (int i = 0; i < renderableBonesLength; i++) {
+                        final int idx = i / 16;
+                        bones[i] = (idx >= renderable.bones.length || renderable.bones[idx] == null) ?
+                                idtMatrix.val[i % 16] : renderable.bones[idx].val[i % 16];
+                    }
+
+                    shaderProgram.setUniformMatrix4fv(bonesLoc, bones, 0, renderableBonesLength);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void init() {
+        super.init(shaderProgram, renderable);
+
+        idtMatrix = new Matrix4();
+        bones = new float[0];
+        bonesLoc = loc(bonesIID);
+        tileDepthRanges = new Array<>();
+    }
+
+    @Override
+    public int compareTo(Shader other) {
+        return 0;
+    }
+
+    @Override
+    public boolean canRender(Renderable instance) {
+        return true;
+    }
+
+    @Override
+    public void begin(Camera camera, RenderContext context) {
+        this.camera = camera;
+        Gdx.gl.glViewport(0, 0, (int) LightGrid.gridSize.x, (int) LightGrid.gridSize.y);
+        calcMinMaxDepth();
+        super.begin(camera, context);
+    }
+
+    @Override
+    public void render(Renderable renderable) {
+        super.render(renderable);
+    }
+
+    @Override
+    public void end() {
+        super.end();
+        calcMinMaxDepth();
+    }
+
+    @Override
+    public void dispose() {
+        shaderProgram.dispose();
+        super.dispose();
+    }
+
+    private void calcMinMaxDepth() {
+        FloatBuffer buffer = BufferUtils.newFloatBuffer((int) LightGrid.gridSize.x * (int) LightGrid.gridSize.y);
+
+        Gdx.gl.glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, 0);
+        Gdx.gl.glReadPixels(0, 0, (int) LightGrid.gridSize.x, (int) LightGrid.gridSize.y, GL30.GL_RG, GL30.GL_FLOAT, buffer);
+
+        float[] bufferFloats = buffer.array();
+        for (int i = 0; i < bufferFloats.length; i += 4) {
+            MinMax minMax = new MinMax();
+            minMax.min = bufferFloats[i];
+            minMax.max = bufferFloats[i + 1];
+
+            MinMax result = new MinMax();
+            result.min = bufferFloats[i + 2];
+            result.max = bufferFloats[i + 3];
+
+            tileDepthRanges.addAll(minMax, result);
+        }
+    }
+
+    private String createPrefix(Renderable renderable) {
+        String prefix = "#version 300 es\n";
+
+        if (params.useBones) {
+            prefix += "#define numBones " + 12 + "\n";
+            final int n = renderable.meshPart.mesh.getVertexAttributes().size();
+
+            for (int i = 0; i < n; i++) {
+                final VertexAttribute attr = renderable.meshPart.mesh.getVertexAttributes().get(i);
+
+                if (attr.usage == VertexAttributes.Usage.BoneWeight) {
+                    prefix += "#define boneWeight" + attr.unit + "Flag\n";
+                }
+            }
+        }
+
+        String renderer = Gdx.gl.glGetString(GL30.GL_RENDERER).toUpperCase();
+
+        if (renderer.contains("MALI")) {
+            prefix += "#define GPU_MALI\n";
+        } else if (renderer.contains("ADRENO")) {
+            prefix += "#define GPU_ADRENO\n";
+        }
+
+        return prefix;
+    }
+
+    public static class Params {
+        boolean useBones;
+    }
+}

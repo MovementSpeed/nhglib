@@ -20,7 +20,6 @@ import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.movementspeed.nhglib.graphics.scenes.Scene;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.AmbientLightingAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.GammaCorrectionAttribute;
-import io.github.movementspeed.nhglib.graphics.shaders.forward.PBRShaderProvider;
 import io.github.movementspeed.nhglib.graphics.shaders.particles.ParticleShader;
 import io.github.movementspeed.nhglib.graphics.worlds.NhgWorld;
 import io.github.movementspeed.nhglib.graphics.worlds.strategies.impl.DefaultWorldStrategy;
@@ -93,8 +92,6 @@ public class Main extends NhgEntry implements InputListener {
         environment.set(lightsAttribute);
         environment.set(gammaCorrectionAttribute);
         environment.set(ambientLightingAttribute);
-
-        renderingSystem.setShaderProvider(new PBRShaderProvider());
 
         // Subscribe to asset events
         nhg.messaging.get(Strings.Events.assetLoaded, Strings.Events.assetLoadingFinished, Strings.Events.sceneLoaded)
