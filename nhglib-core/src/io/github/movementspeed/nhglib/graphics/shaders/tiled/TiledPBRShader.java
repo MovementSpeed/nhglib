@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.IntArray;
 import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
 import io.github.movementspeed.nhglib.graphics.lighting.tiled.LightGrid;
@@ -22,45 +23,41 @@ import io.github.movementspeed.nhglib.graphics.shaders.attributes.IBLAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.PBRTextureAttribute;
 import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils;
 
+import static io.github.movementspeed.nhglib.graphics.lighting.tiled.LightGrid.*;
+
 /**
  * Created by Fausto Napoli on 18/03/2017.
  */
 public class TiledPBRShader extends BaseShader {
-    private boolean minMaxPass = true;
-
     private int maxBonesLength = Integer.MIN_VALUE;
     private int bonesIID;
     private int bonesLoc;
-    private float bones[];
 
     private Vector3 tempVec1 = new Vector3();
     private Matrix4 idtMatrix;
-
-    private LightGrid lightGrid;
 
     private Camera camera;
     private Params params;
     private Renderable renderable;
     private Environment environment;
+    private LightGrid lightGrid;
+
+    private Pixmap lightPixmap;
+    private Texture lightTexture;
 
     private ShaderProgram shaderProgram;
-    private SimpleShader simpleShader;
-    private MinMaxShader minMaxShader;
 
-    private Array<NhgLight> lights;
+    private float bones[];
 
-    public TiledPBRShader(Renderable renderable, Environment environment, Params params) {
+    private float[] countsAndOffsets;
+    private float[] posAndRadiuses;
+    private float[] colors;
+
+    public TiledPBRShader(Renderable renderable, Environment environment, LightGrid lightGrid, Params params) {
         this.renderable = renderable;
         this.environment = environment;
         this.params = params;
-
-        SimpleShader.Params simpleShaderParams = new SimpleShader.Params();
-        simpleShaderParams.useBones = params.useBones;
-        simpleShader = new SimpleShader(renderable, simpleShaderParams);
-
-        MinMaxShader.Params minMaxShaderParams = new MinMaxShader.Params();
-        minMaxShaderParams.useBones = params.useBones;
-        minMaxShader = new MinMaxShader(renderable, minMaxShaderParams);
+        this.lightGrid = lightGrid;
 
         String prefix = createPrefix(renderable);
         String folder;
@@ -212,14 +209,6 @@ public class TiledPBRShader extends BaseShader {
             }
         });
 
-        NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
-
-        if (lightsAttribute != null) {
-            lights = lightsAttribute.lights;
-        } else {
-            lights = new Array<>();
-        }
-
         bonesIID = register("u_bones", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
@@ -249,7 +238,16 @@ public class TiledPBRShader extends BaseShader {
         idtMatrix = new Matrix4();
         bones = new float[0];
         bonesLoc = loc(bonesIID);
-        lightGrid = new LightGrid();
+
+        countsAndOffsets = new float[TILES_COUNT * 2];
+        posAndRadiuses = new float[MAX_LIGHTS * 4];
+        colors = new float[MAX_LIGHTS * 4];
+
+        lightTexture = new Texture(64, 128, Pixmap.Format.RGBA8888);
+        lightTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+
+        lightPixmap = new Pixmap(64, 128, Pixmap.Format.RGBA8888);
+        lightPixmap.setBlending(Pixmap.Blending.None);
     }
 
     @Override
@@ -265,9 +263,9 @@ public class TiledPBRShader extends BaseShader {
         boolean normal = ShaderUtils.hasPbrNormal(instance) == params.normal;
         boolean ambientOcclusion = ShaderUtils.hasAmbientOcclusion(instance) == params.ambientOcclusion;
         boolean bones = ShaderUtils.useBones(instance) == params.useBones;
-        boolean lit = ShaderUtils.hasLights(instance.environment) == params.lit;
-        boolean gammaCorrection = ShaderUtils.useGammaCorrection(instance.environment) == params.gammaCorrection;
-        boolean imageBasedLighting = ShaderUtils.useImageBasedLighting(instance.environment) == params.imageBasedLighting;
+        boolean lit = ShaderUtils.hasLights(environment) == params.lit;
+        boolean gammaCorrection = ShaderUtils.useGammaCorrection(environment) == params.gammaCorrection;
+        boolean imageBasedLighting = ShaderUtils.useImageBasedLighting(environment) == params.imageBasedLighting;
 
         return diffuse && metalness && roughness && normal && ambientOcclusion && bones &&
                 lit && gammaCorrection && imageBasedLighting;
@@ -283,18 +281,9 @@ public class TiledPBRShader extends BaseShader {
 
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
 
-        /*depthPrePass(camera, renderable, context);
-        Array<MinMax> tileDepthRanges = new Array<>();
+        bindGridBuffers();
+        makeLightTexture();
 
-        if (minMaxPass) {
-            calcMinMaxDepth(tileDepthRanges);
-        }
-
-        if (lights.size > 0) {
-            lightGrid.buildLightGrid(tileDepthRanges, lights, camera.near, camera.view, camera.projection);
-        }
-
-        bindGridBuffers(lightGrid);*/
         super.begin(camera, context);
     }
 
@@ -314,6 +303,44 @@ public class TiledPBRShader extends BaseShader {
         super.dispose();
     }
 
+    private void makeLightTexture() {
+        IntArray lightList = lightGrid.getLightList();
+        int c = 0;
+        c++;
+    }
+
+    private void bindGridBuffers() {
+        if (lightGrid.getLightListLength() > 0) {
+            Array<NhgLight> lights = lightGrid.getViewSpaceLights();
+
+            for (int i = 0; i < lights.size; i += 4) {
+                NhgLight light = lights.get(i);
+
+                posAndRadiuses[i] = light.position.x;
+                posAndRadiuses[i + 1] = light.position.y;
+                posAndRadiuses[i + 2] = light.position.z;
+                posAndRadiuses[i + 3] = light.radius;
+
+                colors[i] = light.color.r;
+                colors[i + 1] = light.color.g;
+                colors[i + 2] = light.color.b;
+                colors[i + 3] = 1.0f;
+            }
+
+            int counts[] = lightGrid.getCounts();
+            int offsets[] = lightGrid.getOffsets();
+
+            for (int i = 0; i < TILES_COUNT; i += 2) {
+                countsAndOffsets[i] = counts[i];
+                countsAndOffsets[i + 1] = offsets[i];
+            }
+
+            program.setUniform2fv("u_countsAndOffsets", countsAndOffsets, 0, TILES_COUNT * 2);
+            program.setUniform4fv("u_posAndRadiuses", posAndRadiuses, 0, lights.size * 4);
+            program.setUniform4fv("u_colors", colors, 0, lights.size * 4);
+        }
+    }
+
     private String createPrefix(Renderable renderable) {
         String prefix = "#version 300 es\n";
 
@@ -329,6 +356,11 @@ public class TiledPBRShader extends BaseShader {
                 }
             }
         }
+
+        prefix += "#define TILES_COUNT " + TILES_COUNT + "\n";
+        prefix += "#define MAX_LIGHTS " + MAX_LIGHTS + "\n";
+        prefix += "#define TILE_DIM " + TILE_SIZE_XY + "\n";
+        prefix += "#define GRID_X " + LIGHT_GRID_DIM_X + "\n";
 
         if (params.albedo) {
             prefix += "#define defAlbedo\n";

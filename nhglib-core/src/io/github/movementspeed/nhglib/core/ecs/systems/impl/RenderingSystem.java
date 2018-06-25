@@ -15,7 +15,7 @@ import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.core.ecs.interfaces.RenderingSystemInterface;
 import io.github.movementspeed.nhglib.core.ecs.systems.base.BaseRenderingSystem;
 import io.github.movementspeed.nhglib.graphics.rendering.RenderPass;
-import io.github.movementspeed.nhglib.graphics.shaders.forward.PBRRenderPass;
+import io.github.movementspeed.nhglib.graphics.shaders.tiled.TiledPBRRenderPass;
 import io.github.movementspeed.nhglib.utils.graphics.GLUtils;
 
 /**
@@ -55,8 +55,10 @@ public class RenderingSystem extends BaseSystem implements Disposable {
         spriteBatch = new SpriteBatch();
         spriteBatch.enableBlending();
 
-        setRenderPass(0, new PBRRenderPass());
         updateFramebuffer(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        //setRenderPass(0, new DepthPreRenderPass());
+        //setRenderPass(1, new MinMaxRenderPass());
+        setRenderPass(0, new TiledPBRRenderPass());
     }
 
     @Override
@@ -143,19 +145,15 @@ public class RenderingSystem extends BaseSystem implements Disposable {
 
             renderPass.setEnvironment(environment);
             renderPass.setMainFBO(frameBuffer);
+
+            if (index > 0) {
+                renderPass.setPreviousRenderPass(renderPasses.get(index - 1));
+            }
+
+            renderPass.created();
             renderPasses.set(index, renderPass);
         }
     }
-
-    /*public void setShaderProvider(BaseShaderProvider shaderProvider) {
-        if (shaderProvider != null) {
-            this.shaderProvider.dispose();
-            this.renderer.dispose();
-
-            this.shaderProvider = shaderProvider;
-            renderer = new ModelBatch(this.shaderProvider);
-        }
-    }*/
 
     public void setRenderScale(float renderScale) {
         if (renderScale < 0f) renderScale = 0f;

@@ -56,9 +56,6 @@ public class LightGrid {
         //initialize light lists
         for (int i = 0; i < offsets.length; i++) {
             offsets[i] = 0;
-        }
-
-        for (int i = 0; i < counts.length; i++) {
             counts[i] = 0;
         }
 
@@ -145,9 +142,8 @@ public class LightGrid {
         viewSpaceLights.clear();
         affectedTiles.clear();
 
-        for(int i = 0; i < lights.size; i++)
-        {
-            NhgLight l = lights.get(i);
+        for (int i = 0; i < lights.size; i++) {
+            NhgLight l = lights.get(i).copy();
 
             //transform world light position to view space
             //Vector3 posVS = glm::vec3(view * glm::vec4(l.position, 1.0));
@@ -158,7 +154,7 @@ public class LightGrid {
             Vector4 clip = computeBoundingQuad(posVS, l.radius, n, projection);
 
             //transform quad to viewport
-            clip.sub(clip);
+            clip.scl(-1);
 
             float clipZ = clip.z;
             clip.z = clip.x;
@@ -180,8 +176,7 @@ public class LightGrid {
 
             //store viewspace lights and their quads
             //lights are stored in world space
-            if (quad.min.x < quad.max.x && quad.min.y < quad.max.y)
-            {
+            if (quad.min.x < quad.max.x && quad.min.y < quad.max.y) {
                 //store ss quad
                 quads.add(quad);
 
@@ -195,8 +190,8 @@ public class LightGrid {
     }
 
     private void computeLightAffectedTiles(float minx, float maxx, float miny, float maxy) {
-        Vector2 x = new Vector2(minx / TILE_SIZE_XY, (maxx + TILE_SIZE_XY - 1)/ TILE_SIZE_XY);
-        Vector2 y = new Vector2(miny/ TILE_SIZE_XY, (maxy + TILE_SIZE_XY - 1) / TILE_SIZE_XY);
+        Vector2 x = new Vector2(minx / TILE_SIZE_XY, (maxx + TILE_SIZE_XY - 1) / TILE_SIZE_XY);
+        Vector2 y = new Vector2(miny / TILE_SIZE_XY, (maxy + TILE_SIZE_XY - 1) / TILE_SIZE_XY);
 
         TileArea tmp = new TileArea();
 
@@ -212,12 +207,10 @@ public class LightGrid {
         return value;
     }
 
-    private Vector4 computeBoundingQuad(Vector3 Lp, float Lr, float n, Matrix4 projectionMatrix)
-    {
+    private Vector4 computeBoundingQuad(Vector3 Lp, float Lr, float n, Matrix4 projectionMatrix) {
         Vector4 boundingQuad = new Vector4(1.0f, 1.0f, -1.0f, -1.0f);
 
-        if (Lp.z - Lr <= -n)
-        {
+        if (Lp.z - Lr <= -n) {
             boundingQuad = new Vector4(-1.0f, -1.0f, 1.0f, 1.0f);
 
             MinMax minMax = new MinMax();
@@ -238,8 +231,7 @@ public class LightGrid {
         return boundingQuad;
     }
 
-    void computeRoots(float Lc, float Lz, float Lr, float proj, MinMax minMax)
-    {
+    void computeRoots(float Lc, float Lz, float Lr, float proj, MinMax minMax) {
         float LrSquare = Lr * Lr;
         float LcSquare = Lc * Lc;
         float LzSquare = Lz * Lz;
@@ -250,12 +242,9 @@ public class LightGrid {
         float D = LrSquare * LcSquare - denominator * (LrSquare - LzSquare);
 
         //check if point light does not fill whole screen
-        if (D < 0.0)
-        {
+        if (D < 0.0) {
             return;
-        }
-        else
-        {
+        } else {
             float Nx1 = (Lc * Lr + (float) Math.sqrt(D)) / denominator;
             float Nx2 = (Lc * Lr - (float) Math.sqrt(D)) / denominator;
 
@@ -264,20 +253,16 @@ public class LightGrid {
         }
     }
 
-    private void updateRoots(float Nc, float Lc, float Lz, float Lr, float proj, MinMax minMax)
-    {
+    private void updateRoots(float Nc, float Lc, float Lz, float Lr, float proj, MinMax minMax) {
         float Nz = (Lr - Nc * Lc) / Lz;
         float Pz = (Lc * Lc + Lz * Lz - Lr * Lr) / (Lz - (Nz / Nc) * Lc);
 
         //check if point P lies in front of camera (z coords must be less than 0)
-        if (Pz < 0.0f)
-        {
+        if (Pz < 0.0f) {
             float c = -Nz * proj / Nc;
-            if (Nc < 0.0f)
-            {
+            if (Nc < 0.0f) {
                 minMax.min = Math.max(minMax.min, c);
-            }
-            else {
+            } else {
                 minMax.max = Math.max(minMax.max, c);
             }
         }

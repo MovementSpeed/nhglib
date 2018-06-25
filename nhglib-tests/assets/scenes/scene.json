@@ -189,21 +189,7 @@
                 "y": 0,
                 "z": 0
               }
-            },
-            "components": [
-              {
-                "type": "light",
-                "lightType": "pointLight",
-                "range":100,
-                "intensity": 10,
-                "color": {
-                  "r": 0.9372,
-                  "g": 0.9137,
-                  "b": 0.6,
-                  "a": 1
-                }
-              }
-            ]
+            }
           },
           {
             "id": "wheel0",

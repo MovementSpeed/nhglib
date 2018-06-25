@@ -11,26 +11,27 @@ import io.github.movementspeed.nhglib.utils.data.Bundle;
 
 public abstract class RenderPass {
     public Bundle bundle;
+    public RenderPass previousRenderPass;
 
     protected ModelBatch renderer;
     protected FrameBuffer mainFBO;
-    protected RenderPass previousRenderPass;
     protected Environment environment;
+    protected ShaderProvider shaderProvider;
 
-    public RenderPass(boolean outputData, ShaderProvider shaderProvider) {
+    public RenderPass(boolean outputData) {
         if (outputData) {
             bundle = new Bundle();
         }
-
-        this.renderer = new ModelBatch(shaderProvider);
     }
 
+    public abstract void created();
     public abstract void begin(PerspectiveCamera camera);
     public abstract void render(PerspectiveCamera camera, Array<RenderableProvider> renderableProviders);
     public abstract void end();
 
-    public Bundle getOutputData() {
-        return bundle;
+    public void setShaderProvider(ShaderProvider shaderProvider) {
+        this.shaderProvider = shaderProvider;
+        this.renderer = new ModelBatch(shaderProvider);
     }
 
     public void setMainFBO(FrameBuffer mainFBO) {
@@ -43,5 +44,9 @@ public abstract class RenderPass {
 
     public void setEnvironment(Environment environment) {
         this.environment = environment;
+    }
+
+    public Bundle getOutputData() {
+        return bundle;
     }
 }

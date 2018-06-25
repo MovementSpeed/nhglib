@@ -7,7 +7,12 @@ import io.github.movementspeed.nhglib.graphics.rendering.RenderPass;
 
 public class PBRRenderPass extends RenderPass {
     public PBRRenderPass() {
-        super(false, new PBRShaderProvider());
+        super(false);
+    }
+
+    @Override
+    public void created() {
+        setShaderProvider(new PBRShaderProvider());
     }
 
     @Override

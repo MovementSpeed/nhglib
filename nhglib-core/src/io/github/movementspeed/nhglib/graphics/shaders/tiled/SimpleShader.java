@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import io.github.movementspeed.nhglib.Nhg;
+import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils;
 
 /**
  * Created by Fausto Napoli on 18/03/2017.
@@ -103,7 +104,6 @@ public class SimpleShader extends BaseShader {
         bonesLoc = loc(bonesIID);
     }
 
-
     @Override
     public int compareTo(Shader other) {
         return 0;
@@ -111,7 +111,7 @@ public class SimpleShader extends BaseShader {
 
     @Override
     public boolean canRender(Renderable instance) {
-        return true;
+        return ShaderUtils.useBones(instance) == params.useBones;
     }
 
     @Override

@@ -1,10 +1,7 @@
 package io.github.movementspeed.nhglib.graphics.shaders.tiled;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.GL30;
-import com.badlogic.gdx.graphics.VertexAttribute;
-import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.Attributes;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.Shader;
@@ -13,15 +10,9 @@ import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import io.github.movementspeed.nhglib.Nhg;
-import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
 import io.github.movementspeed.nhglib.graphics.lighting.tiled.LightGrid;
-import io.github.movementspeed.nhglib.graphics.lighting.tiled.MinMax;
-
-import java.nio.FloatBuffer;
 
 /**
  * Created by Fausto Napoli on 18/03/2017.
@@ -40,11 +31,12 @@ public class MinMaxShader extends BaseShader {
     private Renderable renderable;
     private ShaderProgram shaderProgram;
 
-    private Array<MinMax> tileDepthRanges;
+    private Texture depthTexture;
 
-    public MinMaxShader(Renderable renderable, Params params) {
+    public MinMaxShader(Renderable renderable, Texture depthTexture, Params params) {
         this.renderable = renderable;
         this.params = params;
+        this.depthTexture = depthTexture;
 
         String prefix = createPrefix(renderable);
         String folder;
@@ -76,7 +68,7 @@ public class MinMaxShader extends BaseShader {
         register("u_depthTex", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, RenderingSystem.depthTexture);
+                shader.set(inputID, MinMaxShader.this.depthTexture);
             }
         });
 
@@ -117,7 +109,6 @@ public class MinMaxShader extends BaseShader {
         idtMatrix = new Matrix4();
         bones = new float[0];
         bonesLoc = loc(bonesIID);
-        tileDepthRanges = new Array<>();
     }
 
     @Override
@@ -134,7 +125,6 @@ public class MinMaxShader extends BaseShader {
     public void begin(Camera camera, RenderContext context) {
         this.camera = camera;
         Gdx.gl.glViewport(0, 0, (int) LightGrid.gridSize.x, (int) LightGrid.gridSize.y);
-        calcMinMaxDepth();
         super.begin(camera, context);
     }
 
@@ -146,33 +136,12 @@ public class MinMaxShader extends BaseShader {
     @Override
     public void end() {
         super.end();
-        calcMinMaxDepth();
     }
 
     @Override
     public void dispose() {
         shaderProgram.dispose();
         super.dispose();
-    }
-
-    private void calcMinMaxDepth() {
-        FloatBuffer buffer = BufferUtils.newFloatBuffer((int) LightGrid.gridSize.x * (int) LightGrid.gridSize.y);
-
-        Gdx.gl.glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, 0);
-        Gdx.gl.glReadPixels(0, 0, (int) LightGrid.gridSize.x, (int) LightGrid.gridSize.y, GL30.GL_RG, GL30.GL_FLOAT, buffer);
-
-        float[] bufferFloats = buffer.array();
-        for (int i = 0; i < bufferFloats.length; i += 4) {
-            MinMax minMax = new MinMax();
-            minMax.min = bufferFloats[i];
-            minMax.max = bufferFloats[i + 1];
-
-            MinMax result = new MinMax();
-            result.min = bufferFloats[i + 2];
-            result.max = bufferFloats[i + 3];
-
-            tileDepthRanges.addAll(minMax, result);
-        }
     }
 
     private String createPrefix(Renderable renderable) {
