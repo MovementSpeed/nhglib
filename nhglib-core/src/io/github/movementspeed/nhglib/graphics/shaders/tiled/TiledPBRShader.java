@@ -10,20 +10,20 @@ import com.badlogic.gdx.graphics.g3d.shaders.BaseShader;
 import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.FloatArray;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.IntArray;
 import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
-import io.github.movementspeed.nhglib.graphics.lighting.tiled.LightGrid;
+import io.github.movementspeed.nhglib.enums.LightType;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.IBLAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.PBRTextureAttribute;
 import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils;
-
-import static io.github.movementspeed.nhglib.graphics.lighting.tiled.LightGrid.*;
 
 /**
  * Created by Fausto Napoli on 18/03/2017.
@@ -32,32 +32,41 @@ public class TiledPBRShader extends BaseShader {
     private int maxBonesLength = Integer.MIN_VALUE;
     private int bonesIID;
     private int bonesLoc;
+    private float bones[];
 
-    private Vector3 tempVec1 = new Vector3();
+    private Vector3 vec1;
+    private Vector2 vec2;
     private Matrix4 idtMatrix;
+
+    private Color color;
+
+    private Pixmap lightPixmap;
+    private Pixmap lightInfoPixmap;
+
+    private Texture lightTexture;
+    private Texture lightInfoTexture;
 
     private Camera camera;
     private Params params;
     private Renderable renderable;
     private Environment environment;
     private LightGrid lightGrid;
-
-    private Pixmap lightPixmap;
-    private Texture lightTexture;
-
     private ShaderProgram shaderProgram;
 
-    private float bones[];
+    private IntArray lightTypes;
+    private FloatArray lightIntensities;
+    private FloatArray lightInnerAngles;
+    private FloatArray lightOuterAngles;
+    private FloatArray lightPositions;
+    private FloatArray lightDirections;
 
-    private float[] countsAndOffsets;
-    private float[] posAndRadiuses;
-    private float[] colors;
+    private Array<IntArray> lightsFrustum;
+    private Array<NhgLight> lights;
 
-    public TiledPBRShader(Renderable renderable, Environment environment, LightGrid lightGrid, Params params) {
+    public TiledPBRShader(Renderable renderable, Environment environment, Params params) {
         this.renderable = renderable;
         this.environment = environment;
         this.params = params;
-        this.lightGrid = lightGrid;
 
         String prefix = createPrefix(renderable);
         String folder;
@@ -74,8 +83,8 @@ public class TiledPBRShader extends BaseShader {
             folder = "shaders/gl2/";
         }
 
-        String vert = prefix + Gdx.files.internal(folder + "tiled_pbr_shader.vert").readString();
-        String frag = prefix + Gdx.files.internal(folder + "tiled_pbr_shader.frag").readString();
+        String vert = prefix + Gdx.files.internal(folder + "tf_pbr_shader.vert").readString();
+        String frag = prefix + Gdx.files.internal(folder + "tf_pbr_shader.frag").readString();
 
         ShaderProgram.pedantic = false;
         shaderProgram = new ShaderProgram(vert, frag);
@@ -118,6 +127,61 @@ public class TiledPBRShader extends BaseShader {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
                 shader.set(inputID, RenderingSystem.renderHeight);
+            }
+        });
+
+        register("u_albedoTiles", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Albedo);
+
+                if (textureAttribute != null) {
+                    shader.set(inputID, vec2.set(textureAttribute.tilesU, textureAttribute.tilesV));
+                }
+            }
+        });
+
+        register("u_metalnessTiles", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Metalness);
+
+                if (textureAttribute != null) {
+                    shader.set(inputID, vec2.set(textureAttribute.tilesU, textureAttribute.tilesV));
+                }
+            }
+        });
+
+        register("u_roughnessTiles", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Roughness);
+
+                if (textureAttribute != null) {
+                    shader.set(inputID, vec2.set(textureAttribute.tilesU, textureAttribute.tilesV));
+                }
+            }
+        });
+
+        register("u_normalTiles", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Normal);
+
+                if (textureAttribute != null) {
+                    shader.set(inputID, vec2.set(textureAttribute.tilesU, textureAttribute.tilesV));
+                }
+            }
+        });
+
+        register("u_ambientOcclusionTiles", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.AmbientOcclusion);
+
+                if (textureAttribute != null) {
+                    shader.set(inputID, vec2.set(textureAttribute.tilesU, textureAttribute.tilesV));
+                }
             }
         });
 
@@ -209,6 +273,54 @@ public class TiledPBRShader extends BaseShader {
             }
         });
 
+        register("u_lights", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                shader.set(inputID, lightTexture);
+            }
+        });
+
+        register("u_lightInfo", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                shader.set(inputID, lightInfoTexture);
+            }
+        });
+
+        NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
+
+        if (lightsAttribute != null) {
+            lights = lightsAttribute.lights;
+        } else {
+            lights = new Array<>();
+        }
+
+        lightTypes = new IntArray(new int[lights.size]);
+        lightIntensities = new FloatArray(new float[lights.size]);
+        lightInnerAngles = new FloatArray(new float[lights.size]);
+        lightOuterAngles = new FloatArray(new float[lights.size]);
+        lightPositions = new FloatArray(new float[lights.size * 3]);
+        lightDirections = new FloatArray(new float[lights.size * 3]);
+
+        for (int i = 0; i < lights.size; i++) {
+            NhgLight l = lights.get(i);
+
+            lightTypes.set(i, l.type.ordinal());
+            lightIntensities.set(i, l.intensity);
+            lightInnerAngles.set(i, l.innerAngle);
+            lightOuterAngles.set(i, l.outerAngle);
+        }
+
+        shaderProgram.begin();
+        for (int i = 0; i < lightTypes.size; i++) {
+            shaderProgram.setUniformi("u_lightTypes[" + i + "]", lightTypes.get(i));
+        }
+
+        shaderProgram.setUniform1fv("u_lightIntensities", lightIntensities.items, 0, lights.size);
+        shaderProgram.setUniform1fv("u_lightInnerAngles", lightInnerAngles.items, 0, lights.size);
+        shaderProgram.setUniform1fv("u_lightOuterAngles", lightOuterAngles.items, 0, lights.size);
+        shaderProgram.end();
+
         bonesIID = register("u_bones", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
@@ -235,20 +347,36 @@ public class TiledPBRShader extends BaseShader {
     @Override
     public void init() {
         super.init(shaderProgram, renderable);
+
+        vec1 = new Vector3();
+        vec2 = new Vector2();
+
         idtMatrix = new Matrix4();
         bones = new float[0];
         bonesLoc = loc(bonesIID);
 
-        countsAndOffsets = new float[TILES_COUNT * 2];
-        posAndRadiuses = new float[MAX_LIGHTS * 4];
-        colors = new float[MAX_LIGHTS * 4];
+        color = new Color();
 
         lightTexture = new Texture(64, 128, Pixmap.Format.RGBA8888);
         lightTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
+        lightInfoTexture = new Texture(1, 128, Pixmap.Format.RGBA8888);
+        lightInfoTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+
         lightPixmap = new Pixmap(64, 128, Pixmap.Format.RGBA8888);
         lightPixmap.setBlending(Pixmap.Blending.None);
+
+        lightInfoPixmap = new Pixmap(1, 128, Pixmap.Format.RGBA8888);
+        lightInfoPixmap.setBlending(Pixmap.Blending.None);
+
+        lightGrid = new LightGrid(16);
+        lightsFrustum = new Array<>();
+
+        for (int i = 0; i < lightGrid.getNumTiles(); i++) {
+            lightsFrustum.add(new IntArray());
+        }
     }
+
 
     @Override
     public int compareTo(Shader other) {
@@ -263,9 +391,9 @@ public class TiledPBRShader extends BaseShader {
         boolean normal = ShaderUtils.hasPbrNormal(instance) == params.normal;
         boolean ambientOcclusion = ShaderUtils.hasAmbientOcclusion(instance) == params.ambientOcclusion;
         boolean bones = ShaderUtils.useBones(instance) == params.useBones;
-        boolean lit = ShaderUtils.hasLights(environment) == params.lit;
-        boolean gammaCorrection = ShaderUtils.useGammaCorrection(environment) == params.gammaCorrection;
-        boolean imageBasedLighting = ShaderUtils.useImageBasedLighting(environment) == params.imageBasedLighting;
+        boolean lit = ShaderUtils.hasLights(instance.environment) == params.lit;
+        boolean gammaCorrection = ShaderUtils.useGammaCorrection(instance.environment) == params.gammaCorrection;
+        boolean imageBasedLighting = ShaderUtils.useImageBasedLighting(instance.environment) == params.imageBasedLighting;
 
         return diffuse && metalness && roughness && normal && ambientOcclusion && bones &&
                 lit && gammaCorrection && imageBasedLighting;
@@ -279,12 +407,12 @@ public class TiledPBRShader extends BaseShader {
         context.setDepthTest(GL20.GL_LEQUAL);
         context.setDepthMask(true);
 
-        Gdx.gl.glViewport(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
-
-        bindGridBuffers();
+        lightGrid.setFrustums(((PerspectiveCamera) camera));
         makeLightTexture();
 
         super.begin(camera, context);
+        program.setUniform3fv("u_lightPositions", getLightPositions(), 0, lights.size * 3);
+        program.setUniform3fv("u_lightDirections", getLightDirections(), 0, lights.size * 3);
     }
 
     @Override
@@ -304,41 +432,52 @@ public class TiledPBRShader extends BaseShader {
     }
 
     private void makeLightTexture() {
-        IntArray lightList = lightGrid.getLightList();
-        int c = 0;
-        c++;
-    }
-
-    private void bindGridBuffers() {
-        if (lightGrid.getLightListLength() > 0) {
-            Array<NhgLight> lights = lightGrid.getViewSpaceLights();
-
-            for (int i = 0; i < lights.size; i += 4) {
-                NhgLight light = lights.get(i);
-
-                posAndRadiuses[i] = light.position.x;
-                posAndRadiuses[i + 1] = light.position.y;
-                posAndRadiuses[i + 2] = light.position.z;
-                posAndRadiuses[i + 3] = light.radius;
-
-                colors[i] = light.color.r;
-                colors[i + 1] = light.color.g;
-                colors[i + 2] = light.color.b;
-                colors[i + 3] = 1.0f;
-            }
-
-            int counts[] = lightGrid.getCounts();
-            int offsets[] = lightGrid.getOffsets();
-
-            for (int i = 0; i < TILES_COUNT; i += 2) {
-                countsAndOffsets[i] = counts[i];
-                countsAndOffsets[i + 1] = offsets[i];
-            }
-
-            program.setUniform2fv("u_countsAndOffsets", countsAndOffsets, 0, TILES_COUNT * 2);
-            program.setUniform4fv("u_posAndRadiuses", posAndRadiuses, 0, lights.size * 4);
-            program.setUniform4fv("u_colors", colors, 0, lights.size * 4);
+        for (int i = 0; i < lightGrid.getNumTiles(); i++) {
+            lightsFrustum.get(i).clear();
         }
+
+        for (int i = 0; i < lights.size; i++) {
+            NhgLight l = lights.get(i);
+
+            if (l.type != LightType.DIRECTIONAL_LIGHT) {
+                lightGrid.checkFrustums(l.position, l.radius, lightsFrustum, i);
+            } else {
+                for (int j = 0; j < lightGrid.getNumTiles(); j++) {
+                    lightsFrustum.get(j).add(i);
+                }
+            }
+        }
+
+        for (int i = 0; i < lights.size; i++) {
+            NhgLight l = lights.get(i);
+            color.set(l.color.r, l.color.g, l.color.b, l.radius / 255);
+            lightInfoPixmap.setColor(color);
+            lightInfoPixmap.drawPixel(0, i);
+        }
+
+        lightInfoTexture.draw(lightInfoPixmap, 0, 0);
+
+        for (int row = 0; row < lightGrid.getNumTiles(); row++) {
+            int col = 0;
+            float r = lightsFrustum.get(row).size;
+
+            color.set(r / 255, 0, 0, 0);
+            lightPixmap.setColor(color);
+            lightPixmap.drawPixel(col, row);
+
+            col++;
+
+            for (int i = 0; i < lightsFrustum.get(row).size; i++) {
+                int j = lightsFrustum.get(row).get(i);
+
+                color.set(((float) j) / 255, 0, 0, 0);
+                lightPixmap.setColor(color);
+                lightPixmap.drawPixel(col, row);
+                col++;
+            }
+        }
+
+        lightTexture.draw(lightPixmap, 0, 0);
     }
 
     private String createPrefix(Renderable renderable) {
@@ -356,11 +495,6 @@ public class TiledPBRShader extends BaseShader {
                 }
             }
         }
-
-        prefix += "#define TILES_COUNT " + TILES_COUNT + "\n";
-        prefix += "#define MAX_LIGHTS " + MAX_LIGHTS + "\n";
-        prefix += "#define TILE_DIM " + TILE_SIZE_XY + "\n";
-        prefix += "#define GRID_X " + LIGHT_GRID_DIM_X + "\n";
 
         if (params.albedo) {
             prefix += "#define defAlbedo\n";
@@ -404,6 +538,40 @@ public class TiledPBRShader extends BaseShader {
         }
 
         return prefix;
+    }
+
+    private float[] getLightPositions() {
+        int i = 0;
+
+        for (int k = 0; k < lights.size; k++) {
+            vec1.set(lights.get(k).position);
+            vec1.mul(camera.view);
+
+            lightPositions.set(i++, vec1.x);
+            lightPositions.set(i++, vec1.y);
+            lightPositions.set(i++, vec1.z);
+        }
+
+        return lightPositions.items;
+    }
+
+    private float[] getLightDirections() {
+        int i = 0;
+
+        for (int k = 0; k < lights.size; k++) {
+            NhgLight light = lights.get(k);
+
+            if (light.type != LightType.POINT_LIGHT) {
+                vec1.set(light.direction)
+                        .rot(camera.view);
+
+                lightDirections.set(i++, vec1.x);
+                lightDirections.set(i++, vec1.y);
+                lightDirections.set(i++, vec1.z);
+            }
+        }
+
+        return lightDirections.items;
     }
 
     public static class Params {

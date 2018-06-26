@@ -24,6 +24,7 @@
 
 out vec4 fragmentColor;
 
+uniform LOWP float u_ambient;
 uniform LOWP int u_graphicsWidth;
 uniform LOWP int u_graphicsHeight;
 uniform HIGHP mat4 u_viewMatrix;
@@ -44,22 +45,27 @@ uniform HIGHP mat4 u_viewMatrix;
 
 #ifdef defAlbedo
     uniform LOWP sampler2D u_albedo;
+    uniform LOWP vec2 u_albedoTiles;
 #endif
 
 #ifdef defMetalness
     uniform LOWP sampler2D u_metalness;
+    uniform LOWP vec2 u_metalnessTiles;
 #endif
 
 #ifdef defRoughness
     uniform LOWP sampler2D u_roughness;
+    uniform LOWP vec2 u_roughnessTiles;
 #endif
 
 #ifdef defNormal
     uniform LOWP sampler2D u_normal;
+    uniform LOWP vec2 u_normalTiles;
 #endif
 
 #ifdef defAmbientOcclusion
     uniform LOWP sampler2D u_ambientOcclusion;
+    uniform LOWP vec2 u_ambientOcclusionTiles;
 #endif
 
 #ifdef defImageBasedLighting
@@ -74,13 +80,11 @@ in HIGHP vec3 v_tangent;
 in LOWP vec2 v_texCoord;
 in LOWP vec3 v_normal;
 
-vec3 fresnelSchlick(float cosTheta, vec3 F0)
-{
+vec3 fresnelSchlick(float cosTheta, vec3 F0) {
     return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
-vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
-{
+vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness) {
     return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
@@ -110,6 +114,7 @@ float geometrySchlickGGX(float NdotV, float rough) {
 
     return nom / denom;
 }
+
 float geometrySmith(vec3 N, vec3 V, vec3 L, float rough) {
     float NdotV = max(dot(N, V), 0.0);
     float NdotL = max(dot(N, L), 0.0);
@@ -119,33 +124,45 @@ float geometrySmith(vec3 N, vec3 V, vec3 L, float rough) {
     return ggx1 * ggx2;
 }
 
+vec3 saturation(vec3 rgb, float adjustment) {
+    const vec3 W = vec3(0.2125, 0.7154, 0.0721);
+    vec3 intensity = vec3(dot(rgb, W));
+    return mix(intensity, rgb, adjustment);
+}
+
 void main() {
+    // Nota: NON SETTARE MAI METALNESS O ROUGHNESS A 0.0
+
     #ifdef defAlbedo
-        LOWP vec3 albedo = texture(u_albedo, v_texCoord).rgb;
+        LOWP vec4 albedo = texture(u_albedo, fract(v_texCoord / u_albedoTiles));
+        if (albedo.a < 0.01) discard;
+        albedo = pow(albedo, vec4(2.2));
     #else
-        LOWP vec3 albedo = vec3(0.5);
+        LOWP vec4 albedo = vec4(1.0);
     #endif
 
+    LOWP vec3 color;
+
     #ifdef defMetalness
-        LOWP float metalness = texture(u_metalness, v_texCoord).r;
+        LOWP float metalness = texture(u_metalness, fract(v_texCoord / u_metalnessTiles)).r;
     #else
-        LOWP float metalness = 0.0;
+        LOWP float metalness = 0.5;
     #endif
 
     #ifdef defRoughness
-        LOWP float roughness = texture(u_roughness, v_texCoord).r;
+        LOWP float roughness = texture(u_roughness, fract(v_texCoord / u_roughnessTiles)).r;
     #else
-        LOWP float roughness = 0.4;
+        LOWP float roughness = 0.1;
     #endif
 
     #ifdef defAmbientOcclusion
-        LOWP float ambientOcclusion = texture(u_ambientOcclusion, v_texCoord).r;
+        LOWP float ambientOcclusion = texture(u_ambientOcclusion, fract(v_texCoord / u_ambientOcclusionTiles)).r;
     #else
         LOWP float ambientOcclusion = 1.0;
     #endif
 
     #ifdef defNormal
-        LOWP vec3 normalMap = texture(u_normal, v_texCoord).rgb;
+        LOWP vec3 normalMap = texture(u_normal, fract(v_texCoord / u_normalTiles)).rgb;
 
         LOWP vec3 N = normalize(v_normal);
         LOWP vec3 tangent = normalize(v_tangent);
@@ -160,12 +177,11 @@ void main() {
     #endif
 
     LOWP vec3 V = normalize(-v_position);
-    LOWP vec3 R = reflect(-V, N);
-    R = vec3(inverse(u_viewMatrix) * vec4(R, 0.0));
+
+    LOWP vec3 F0 = vec3(0.04);
+    F0 = mix(F0, albedo.rgb, metalness);
 
     LOWP vec3 Lo = vec3(0.0);
-    LOWP vec3 F0 = vec3(0.04);
-    F0 = mix(F0, albedo, metalness);
 
     #ifdef lights
         LOWP int tileX = int(gl_FragCoord.x) / (u_graphicsWidth / 10);
@@ -222,7 +238,7 @@ void main() {
             kD *= 1.0 - metalness;
 
             LOWP float NdotL = max(dot(N, L), 0.0) * u_lightIntensities[lightId];
-            Lo += (kD * albedo / M_PI + brdf) * radiance * NdotL * lightAttenuation;
+            Lo += (kD * albedo.rgb / M_PI + brdf) * radiance * NdotL * lightAttenuation;
         }
     #endif
 
@@ -234,7 +250,7 @@ void main() {
         kD *= 1.0 - metalness;
 
         LOWP vec3 irradiance = texture(u_irradiance, N).rgb;
-        LOWP vec3 diffuse = irradiance * albedo;
+        LOWP vec3 diffuse = irradiance * albedo.rgb;
 
         const float MAX_REFLECTION_LOD = 4.0;
 
@@ -244,15 +260,15 @@ void main() {
 
         LOWP vec3 ambient = (kD * diffuse + specular) * ambientOcclusion;
     #else
-        LOWP vec3 ambient = vec3(0.03) * albedo;
+        LOWP vec3 ambient = vec3(0.03) * albedo.rgb;
     #endif
 
-    LOWP vec3 color = ambient + Lo;
+    color = ambient + Lo;
 
     #ifdef defGammaCorrection
         color = color / (color + vec3(1.0));
         color = pow(color, vec3(1.0 / 2.2));
     #endif
 
-    fragmentColor = vec4(color, 1.0);
+    fragmentColor = vec4(color.rgb, albedo.a);
 }

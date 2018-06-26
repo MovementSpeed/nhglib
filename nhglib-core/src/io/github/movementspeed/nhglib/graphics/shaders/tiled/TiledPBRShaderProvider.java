@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.Shader;
 import com.badlogic.gdx.graphics.g3d.utils.BaseShaderProvider;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import io.github.movementspeed.nhglib.graphics.lighting.tiled.LightGrid;
 import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils;
 
 /**
@@ -13,7 +12,6 @@ import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils;
  */
 public class TiledPBRShaderProvider extends BaseShaderProvider {
     private Environment environment;
-    private LightGrid lightGrid;
 
     public TiledPBRShaderProvider(Environment environment) {
         if (environment == null) throw new GdxRuntimeException("Environment parameter should not be null.");
@@ -33,10 +31,6 @@ public class TiledPBRShaderProvider extends BaseShaderProvider {
         params.gammaCorrection = ShaderUtils.useGammaCorrection(environment);
         params.imageBasedLighting = ShaderUtils.useImageBasedLighting(environment);
 
-        return new TiledPBRShader(renderable, environment, lightGrid, params);
-    }
-
-    public void setLightGrid(LightGrid lightGrid) {
-        this.lightGrid = lightGrid;
+        return new TiledPBRShader(renderable, environment, params);
     }
 }

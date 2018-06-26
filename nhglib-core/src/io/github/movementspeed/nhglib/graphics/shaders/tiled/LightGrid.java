@@ -1,4 +1,4 @@
-package io.github.movementspeed.nhglib.graphics.shaders.tiledForward;
+package io.github.movementspeed.nhglib.graphics.shaders.tiled;
 
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Frustum;
@@ -8,37 +8,45 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
 
 public class LightGrid {
-    Plane[][] verticalPlanes;
-    Plane[][] horizontalPlanes;
-    Vector3 nearBotLeft;
-    Vector3 nearBotRight;
-    Vector3 nearTopRight;
-    Vector3 nearTopLeft;
-    Vector3 farBotLeft;
-    Vector3 farBotRight;
-    Vector3 farTopRight;
-    Vector3 farTopLeft;
-    int sizex;
-    int sizey;
-    Vector3[] planePoints;
-    Vector3 ndw = new Vector3();
-    Vector3 ndh = new Vector3();
-    Vector3 fdw = new Vector3();
-    Vector3 fdh = new Vector3();
-    Vector3 temp = new Vector3();
-    Vector3 tempNearBotLeft = new Vector3();
-    Vector3 tempFarBotLeft = new Vector3();
+    private int size;
+    private int numTiles;
 
-    public LightGrid(int x, int y) {
+    private Vector3 nearBotLeft;
+    private Vector3 nearBotRight;
+    private Vector3 nearTopRight;
+    private Vector3 nearTopLeft;
+    private Vector3 farBotLeft;
+    private Vector3 farBotRight;
+    private Vector3 farTopRight;
+    private Vector3 farTopLeft;
+
+    private Vector3 ndw = new Vector3();
+    private Vector3 ndh = new Vector3();
+    private Vector3 fdw = new Vector3();
+    private Vector3 fdh = new Vector3();
+    private Vector3 temp = new Vector3();
+    private Vector3 tempNearBotLeft = new Vector3();
+    private Vector3 tempFarBotLeft = new Vector3();
+
+    private Vector3[] planePoints;
+
+    private Plane[][] verticalPlanes;
+    private Plane[][] horizontalPlanes;
+
+    public LightGrid(int size) {
+        numTiles = size * size;
         planePoints = new Vector3[8];
+
         for (int i = 0; i < 8; i++) {
             planePoints[i] = new Vector3();
         }
-        sizex = x;
-        sizey = y;
-        verticalPlanes = new Plane[2][10];
-        horizontalPlanes = new Plane[2][10];
-        for (int i = 0; i < 10; i++) {
+
+        this.size = size;
+
+        verticalPlanes = new Plane[2][this.size];
+        horizontalPlanes = new Plane[2][this.size];
+
+        for (int i = 0; i < this.size; i++) {
             for (int j = 0; j < 2; j++) {
                 verticalPlanes[j][i] = new Plane(new Vector3(), 0);
                 horizontalPlanes[j][i] = new Plane(new Vector3(), 0);
@@ -67,14 +75,14 @@ public class LightGrid {
         farTopRight.set(bigFrustum.planePoints[6]);
         farTopLeft.set(bigFrustum.planePoints[7]);
 
-        ndw.set(nearBotRight).sub(nearBotLeft).scl(1f / sizex);
-        ndh.set(nearTopLeft).sub(nearBotLeft).scl(1f / sizey);
-        fdw.set(farBotRight).sub(farBotLeft).scl(1f / sizex);
-        fdh.set(farTopRight).sub(farBotRight).scl(1f / sizey);
+        ndw.set(nearBotRight).sub(nearBotLeft).scl(1f / size);
+        ndh.set(nearTopLeft).sub(nearBotLeft).scl(1f / size);
+        fdw.set(farBotRight).sub(farBotLeft).scl(1f / size);
+        fdh.set(farTopRight).sub(farBotRight).scl(1f / size);
 
-
-        for (int x = 0; x < sizex; x++) {
-            temp.set(ndw).scl(x);
+        for (int i = 0; i < size; i++) {
+            //x
+            temp.set(ndw).scl(i);
             tempNearBotLeft.set(nearBotLeft);
             tempNearBotLeft.add(temp);
 
@@ -83,7 +91,7 @@ public class LightGrid {
             planePoints[2].set(tempNearBotLeft).add(ndw).add(ndh);
             planePoints[3].set(tempNearBotLeft).add(ndh);
 
-            temp.set(fdw).scl(x);
+            temp.set(fdw).scl(i);
             tempFarBotLeft.set(farBotLeft);
             tempFarBotLeft.add(temp);
 
@@ -91,12 +99,12 @@ public class LightGrid {
             planePoints[5].set(tempFarBotLeft).add(fdw);
             planePoints[6].set(tempFarBotLeft).add(fdw).add(fdh);
             planePoints[7].set(tempFarBotLeft).add(fdh);
-            verticalPlanes[0][x].set(planePoints[0], planePoints[4], planePoints[3]);
-            verticalPlanes[1][x].set(planePoints[5], planePoints[1], planePoints[6]);
-        }
-        for (int y = 0; y < sizey; y++) {
+            verticalPlanes[0][i].set(planePoints[0], planePoints[4], planePoints[3]);
+            verticalPlanes[1][i].set(planePoints[5], planePoints[1], planePoints[6]);
+
+            //y
             tempNearBotLeft.set(nearBotLeft);
-            temp.set(ndh).scl(y);
+            temp.set(ndh).scl(i);
             tempNearBotLeft.set(tempNearBotLeft);
             tempNearBotLeft.add(temp);
 
@@ -107,32 +115,36 @@ public class LightGrid {
 
             tempFarBotLeft.set(farBotLeft);
 
-            temp.set(fdh).scl(y);
+            temp.set(fdh).scl(i);
             tempFarBotLeft.set(tempFarBotLeft);
             tempFarBotLeft.add(temp);
             planePoints[4].set(tempFarBotLeft);
             planePoints[5].set(tempFarBotLeft).add(fdw);
             planePoints[6].set(tempFarBotLeft).add(fdw).add(fdh);
             planePoints[7].set(tempFarBotLeft).add(fdh);
-            horizontalPlanes[0][y].set(planePoints[2], planePoints[3], planePoints[6]);
-            horizontalPlanes[1][y].set(planePoints[4], planePoints[0], planePoints[1]);
+            horizontalPlanes[0][i].set(planePoints[2], planePoints[3], planePoints[6]);
+            horizontalPlanes[1][i].set(planePoints[4], planePoints[0], planePoints[1]);
         }
     }
 
     /* Check what tiles a given light source intersects
-     * and updates the array lights2 accordingly.
+     * and updates the array lights accordingly.
      */
-    public void checkFrustums(Vector3 pos, float radius, Array<IntArray> lights2, int lightID) {
+    public void checkFrustums(Vector3 pos, float radius, Array<IntArray> lights, int lightID) {
+        boolean foundStart = false;
+        boolean foundEnd = false;
+
         int startX = 0;
         int endX = 0;
         int startY = 0;
         int endY = 0;
-        boolean foundStart = false;
-        boolean foundEnd = false;
-        for (int x = 0; x < sizex; x++) {
+
+        for (int x = 0; x < size; x++) {
             if (insideColumn(x, pos, radius)) {
-                if (!foundStart)
+                if (!foundStart) {
                     startX = x;
+                }
+
                 foundStart = true;
             } else {
                 if (foundStart) {
@@ -142,14 +154,19 @@ public class LightGrid {
                 }
             }
         }
-        if (!foundEnd && foundStart)
-            endX = 9;
+        if (!foundEnd && foundStart) {
+            endX = size - 1;
+        }
+
         foundStart = false;
         foundEnd = false;
-        for (int y = 0; y < sizey; y++) {
+
+        for (int y = 0; y < size; y++) {
             if (insideRow(y, pos, radius)) {
-                if (!foundStart)
+                if (!foundStart) {
                     startY = y;
+                }
+
                 foundStart = true;
             } else {
                 if (foundStart) {
@@ -159,24 +176,29 @@ public class LightGrid {
                 }
             }
         }
-        if (!foundEnd && foundStart)
-            endY = 9;
+
+        if (!foundEnd && foundStart) {
+            endY = size - 1;
+        }
+
         for (int x = startX; x <= endX; x++) {
             for (int y = startY; y <= endY; y++) {
-                lights2.get(y * 10 + x).add(lightID);
+                lights.get(y * size + x).add(lightID);
             }
         }
     }
 
-    public boolean insideColumn(int x, Vector3 pos, float radius) {
-        if (verticalPlanes[0][x].distance(pos) < -radius) return false;
-        if (verticalPlanes[1][x].distance(pos) < -radius) return false;
-        return true;
+    public int getNumTiles() {
+        return numTiles;
     }
 
-    public boolean insideRow(int y, Vector3 pos, float radius) {
+    private boolean insideColumn(int x, Vector3 pos, float radius) {
+        if (verticalPlanes[0][x].distance(pos) < -radius) return false;
+        return !(verticalPlanes[1][x].distance(pos) < -radius);
+    }
+
+    private boolean insideRow(int y, Vector3 pos, float radius) {
         if (horizontalPlanes[0][y].distance(pos) < -radius) return false;
-        if (horizontalPlanes[1][y].distance(pos) < -radius) return false;
-        return true;
+        return !(horizontalPlanes[1][y].distance(pos) < -radius);
     }
 }

@@ -14,6 +14,7 @@ public class NhgLight extends BaseLight<NhgLight> {
     public final Vector3 direction;
 
     public boolean enabled;
+
     public float radius;
     public float intensity;
     public float innerAngle;
