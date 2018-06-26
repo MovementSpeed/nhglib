@@ -3,6 +3,7 @@ package io.github.movementspeed.tests;
 import com.artemis.BaseSystem;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.Nhg;
@@ -49,6 +50,7 @@ public class Main extends NhgEntry implements InputListener {
     public void onStart() {
         super.onStart();
         Nhg.debugLogs = true;
+        Nhg.debugFpsLogs = true;
         Nhg.debugDrawPhysics = false;
         ParticleShader.softParticles = false;
     }
@@ -79,12 +81,18 @@ public class Main extends NhgEntry implements InputListener {
 
         NhgLightsAttribute lightsAttribute = new NhgLightsAttribute();
 
-        NhgLight sun = NhgLight.directional(10, Color.WHITE);
+        float pos = 1f;
+
+        for (int i = 0; i < 50; i++) {
+            NhgLight light = NhgLight.point(4, 1f,
+                    new Color(MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), 1f));
+            light.position.set(new Vector3(MathUtils.random(-pos, pos), MathUtils.random(-pos, pos), MathUtils.random(-pos, pos)));
+            lightsAttribute.lights.add(light);
+        }
+
+        NhgLight sun = NhgLight.directional(10, Color.SALMON);
         sun.direction.set(-1, -1, -1);
         lightsAttribute.lights.add(sun);
-
-        NhgLight other = NhgLight.point(10, 1f, Color.RED);
-        lightsAttribute.lights.add(other);
 
         GammaCorrectionAttribute gammaCorrectionAttribute = new GammaCorrectionAttribute(true);
         AmbientLightingAttribute ambientLightingAttribute = new AmbientLightingAttribute(0.03f);

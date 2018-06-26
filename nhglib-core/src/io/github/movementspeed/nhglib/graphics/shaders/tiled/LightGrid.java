@@ -178,6 +178,10 @@ public class LightGrid {
         }
     }
 
+    public int getSize() {
+        return sizeX;
+    }
+
     public int getNumTiles() {
         return numTiles;
     }

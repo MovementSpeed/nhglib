@@ -35,6 +35,7 @@ public class NhgLight extends BaseLight<NhgLight> {
     public static NhgLight directional(float intensity, Color color) {
         NhgLight light = new NhgLight();
         light.type = LightType.DIRECTIONAL_LIGHT;
+        light.radius = 1.0f;
         light.intensity = intensity;
         light.color.set(color);
 
