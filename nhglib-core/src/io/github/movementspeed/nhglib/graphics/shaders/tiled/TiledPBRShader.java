@@ -13,7 +13,6 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.FloatArray;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.IntArray;
 import io.github.movementspeed.nhglib.Nhg;
@@ -53,12 +52,10 @@ public class TiledPBRShader extends BaseShader {
     private LightGrid lightGrid;
     private ShaderProgram shaderProgram;
 
-    private IntArray lightTypes;
-    private FloatArray lightIntensities;
-    private FloatArray lightInnerAngles;
-    private FloatArray lightOuterAngles;
-    private FloatArray lightPositions;
-    private FloatArray lightDirections;
+    private int[] lightTypes;
+    private float[] lightAngles;
+    private float[] lightPositionsAndRadiuses;
+    private float[] lightDirections;
 
     private Array<IntArray> lightsFrustum;
     private Array<NhgLight> lights;
@@ -129,6 +126,34 @@ public class TiledPBRShader extends BaseShader {
                 shader.set(inputID, RenderingSystem.renderHeight);
             }
         });
+
+        /*register("u_lightTypes", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                Gdx.gl.glUniform1iv(inputID, lightTypes.length, lightTypes, 0);
+            }
+        });
+
+        register("u_lightAngles", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                shaderProgram.setUniform2fv(inputID, lightAngles, 0, lightAngles.length);
+            }
+        });
+
+        register("u_lightPositionsAndRadiuses", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                shaderProgram.setUniform4fv(inputID, lightPositionsAndRadiuses, 0, lightPositionsAndRadiuses.length);
+            }
+        });
+
+        register("u_lightDirections", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                shaderProgram.setUniform3fv(inputID, lightDirections, 0, lightDirections.length);
+            }
+        });*/
 
         register("u_albedoTiles", new LocalSetter() {
             @Override
@@ -295,31 +320,10 @@ public class TiledPBRShader extends BaseShader {
             lights = new Array<>();
         }
 
-        lightTypes = new IntArray(new int[lights.size]);
-        lightIntensities = new FloatArray(new float[lights.size]);
-        lightInnerAngles = new FloatArray(new float[lights.size]);
-        lightOuterAngles = new FloatArray(new float[lights.size]);
-        lightPositions = new FloatArray(new float[lights.size * 3]);
-        lightDirections = new FloatArray(new float[lights.size * 3]);
-
-        for (int i = 0; i < lights.size; i++) {
-            NhgLight l = lights.get(i);
-
-            lightTypes.set(i, l.type.ordinal());
-            lightIntensities.set(i, l.intensity);
-            lightInnerAngles.set(i, l.innerAngle);
-            lightOuterAngles.set(i, l.outerAngle);
-        }
-
-        shaderProgram.begin();
-        for (int i = 0; i < lightTypes.size; i++) {
-            shaderProgram.setUniformi("u_lightTypes[" + i + "]", lightTypes.get(i));
-        }
-
-        shaderProgram.setUniform1fv("u_lightIntensities", lightIntensities.items, 0, lights.size);
-        shaderProgram.setUniform1fv("u_lightInnerAngles", lightInnerAngles.items, 0, lights.size);
-        shaderProgram.setUniform1fv("u_lightOuterAngles", lightOuterAngles.items, 0, lights.size);
-        shaderProgram.end();
+        lightTypes = new int[lights.size];
+        lightAngles = new float[lights.size * 2];
+        lightPositionsAndRadiuses = new float[lights.size * 4];
+        lightDirections = new float[lights.size * 3];
 
         bonesIID = register("u_bones", new LocalSetter() {
             @Override
@@ -369,7 +373,7 @@ public class TiledPBRShader extends BaseShader {
         lightInfoPixmap = new Pixmap(1, 128, Pixmap.Format.RGBA8888);
         lightInfoPixmap.setBlending(Pixmap.Blending.None);
 
-        lightGrid = new LightGrid(16);
+        lightGrid = new LightGrid(10);
         lightsFrustum = new Array<>();
 
         for (int i = 0; i < lightGrid.getNumTiles(); i++) {
@@ -407,12 +411,18 @@ public class TiledPBRShader extends BaseShader {
         context.setDepthTest(GL20.GL_LEQUAL);
         context.setDepthMask(true);
 
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
+
         lightGrid.setFrustums(((PerspectiveCamera) camera));
+
         makeLightTexture();
+        setLights();
 
         super.begin(camera, context);
-        program.setUniform3fv("u_lightPositions", getLightPositions(), 0, lights.size * 3);
-        program.setUniform3fv("u_lightDirections", getLightDirections(), 0, lights.size * 3);
+        Gdx.gl.glUniform1iv(shaderProgram.fetchUniformLocation("u_lightTypes", false), lightTypes.length, lightTypes, 0);
+        shaderProgram.setUniform2fv("u_lightAngles", lightAngles, 0, lightAngles.length);
+        shaderProgram.setUniform4fv("u_lightPositionsAndRadiuses", lightPositionsAndRadiuses, 0, lightPositionsAndRadiuses.length);
+        shaderProgram.setUniform3fv("u_lightDirections", lightDirections, 0, lightDirections.length);
     }
 
     @Override
@@ -432,6 +442,11 @@ public class TiledPBRShader extends BaseShader {
     }
 
     private void makeLightTexture() {
+        /* Calculates what lights are affecting what tiles.
+         * This is done by dividing the camera frustum. size + size planes,
+         * size rows and size columns to serve as the limits for size x size
+         * small frustums (Meaning screen is divided into a size x size grid)
+         */
         for (int i = 0; i < lightGrid.getNumTiles(); i++) {
             lightsFrustum.get(i).clear();
         }
@@ -448,15 +463,27 @@ public class TiledPBRShader extends BaseShader {
             }
         }
 
+        /* Creates a texture containing the color and radius
+         * information about all light sources. Position could
+         * be added here, but for this example it is not due to
+         * limitations in precision.
+         */
         for (int i = 0; i < lights.size; i++) {
             NhgLight l = lights.get(i);
-            color.set(l.color.r, l.color.g, l.color.b, l.radius / 255);
+            color.set(l.color.r, l.color.g, l.color.b, l.intensity);
             lightInfoPixmap.setColor(color);
             lightInfoPixmap.drawPixel(0, i);
         }
 
         lightInfoTexture.draw(lightInfoPixmap, 0, 0);
 
+        /* Creates a texture that contains a list of
+         * light sources that are affecting each specific
+         * tile. The row in the texture is decided by:
+         * yTile*10+xTile and the following pixels on that
+         * row are used to represent the ID of the light
+         * sources.
+         */
         for (int row = 0; row < lightGrid.getNumTiles(); row++) {
             int col = 0;
             float r = lightsFrustum.get(row).size;
@@ -478,6 +505,37 @@ public class TiledPBRShader extends BaseShader {
         }
 
         lightTexture.draw(lightPixmap, 0, 0);
+    }
+
+    private void setLights() {
+        int i1 = 0;
+        int i2 = 0;
+        int i3 = 0;
+
+        for (int k = 0; k < lights.size; k++) {
+            NhgLight light = lights.get(k);
+            lightTypes[k] = light.type.ordinal();
+
+            lightAngles[i1++] = light.innerAngle;
+            lightAngles[i1++] = light.outerAngle;
+
+            vec1.set(light.position).mul(camera.view);
+
+            lightPositionsAndRadiuses[i2++] = vec1.x;
+            lightPositionsAndRadiuses[i2++] = vec1.y;
+            lightPositionsAndRadiuses[i2++] = vec1.z;
+            lightPositionsAndRadiuses[i2++] = light.radius;
+
+            if (light.type != LightType.POINT_LIGHT) {
+                vec1.set(light.direction).rot(camera.view);
+            } else {
+                vec1.set(0, 0, 0);
+            }
+
+            lightDirections[i3++] = vec1.x;
+            lightDirections[i3++] = vec1.y;
+            lightDirections[i3++] = vec1.z;
+        }
     }
 
     private String createPrefix(Renderable renderable) {
@@ -538,40 +596,6 @@ public class TiledPBRShader extends BaseShader {
         }
 
         return prefix;
-    }
-
-    private float[] getLightPositions() {
-        int i = 0;
-
-        for (int k = 0; k < lights.size; k++) {
-            vec1.set(lights.get(k).position);
-            vec1.mul(camera.view);
-
-            lightPositions.set(i++, vec1.x);
-            lightPositions.set(i++, vec1.y);
-            lightPositions.set(i++, vec1.z);
-        }
-
-        return lightPositions.items;
-    }
-
-    private float[] getLightDirections() {
-        int i = 0;
-
-        for (int k = 0; k < lights.size; k++) {
-            NhgLight light = lights.get(k);
-
-            if (light.type != LightType.POINT_LIGHT) {
-                vec1.set(light.direction)
-                        .rot(camera.view);
-
-                lightDirections.set(i++, vec1.x);
-                lightDirections.set(i++, vec1.y);
-                lightDirections.set(i++, vec1.z);
-            }
-        }
-
-        return lightDirections.items;
     }
 
     public static class Params {

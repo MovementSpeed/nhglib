@@ -35,11 +35,9 @@ uniform HIGHP mat4 u_viewMatrix;
         uniform LOWP sampler2D u_lightInfo;
 
         uniform LOWP int u_lightTypes[lights];
-        uniform LOWP vec3 u_lightPositions[lights];
+        uniform LOWP vec2 u_lightAngles[lights];
+        uniform LOWP vec4 u_lightPositionsAndRadiuses[lights];
         uniform LOWP vec3 u_lightDirections[lights];
-        uniform LOWP float u_lightIntensities[lights];
-        uniform LOWP float u_lightInnerAngles[lights];
-        uniform LOWP float u_lightOuterAngles[lights];
     #endif
 #endif
 
@@ -196,10 +194,9 @@ void main() {
             LOWP int lightId = int(clamp(ceil(tempPixel.r * 255.0), 0.0, 255.0));
 
             LOWP vec4 lightInfo = texture(u_lightInfo, vec2(0.5, float(lightId) / 128.0));
-            LOWP float lightRadius = lightInfo.a * 255.0;
-            lightInfo.a = 1.0;
+            LOWP float lightRadius = u_lightPositionsAndRadiuses[lightId].w;
 
-            LOWP vec3 lightDirection = u_lightPositions[lightId] - v_position;
+            LOWP vec3 lightDirection = u_lightPositionsAndRadiuses[lightId].xyz - v_position;
             LOWP float lightDistance = length(lightDirection);
 
             LOWP float lightAttenuation = clamp(1.0 - (lightDistance / lightRadius), 0.0, 1.0);
@@ -213,8 +210,8 @@ void main() {
                 lightAttenuation = 1.0;
             } else if (u_lightTypes[lightId] == 2) {
                 float currentAngle = dot(-normalize(lightDirection), normalize(u_lightDirections[lightId]));
-                float innerConeAngle = cos(radians(u_lightInnerAngles[lightId]));
-                float outerConeAngle = cos(radians(u_lightOuterAngles[lightId]));
+                float innerConeAngle = cos(radians(u_lightAngles[lightId].x));
+                float outerConeAngle = cos(radians(u_lightAngles[lightId].y));
                 float conesAngleDiff = abs(innerConeAngle - outerConeAngle);
 
                 float spotEffect = clamp((currentAngle - outerConeAngle) / conesAngleDiff, 0.0, 1.0);
@@ -237,8 +234,9 @@ void main() {
 
             kD *= 1.0 - metalness;
 
-            LOWP float NdotL = max(dot(N, L), 0.0) * u_lightIntensities[lightId];
+            LOWP float NdotL = max(dot(N, L), 0.0) * lightInfo.a;
             Lo += (kD * albedo.rgb / M_PI + brdf) * radiance * NdotL * lightAttenuation;
+            //color = vec3(L);
         }
     #endif
 

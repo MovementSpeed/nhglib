@@ -8,7 +8,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
 
 public class LightGrid {
-    private int size;
+    private int sizeX;
+    private int sizeY;
     private int numTiles;
 
     private Vector3 nearBotLeft;
@@ -41,12 +42,13 @@ public class LightGrid {
             planePoints[i] = new Vector3();
         }
 
-        this.size = size;
+        this.sizeX = size;
+        this.sizeY = size;
 
-        verticalPlanes = new Plane[2][this.size];
-        horizontalPlanes = new Plane[2][this.size];
+        verticalPlanes = new Plane[2][this.sizeX];
+        horizontalPlanes = new Plane[2][this.sizeY];
 
-        for (int i = 0; i < this.size; i++) {
+        for (int i = 0; i < this.sizeX; i++) {
             for (int j = 0; j < 2; j++) {
                 verticalPlanes[j][i] = new Plane(new Vector3(), 0);
                 horizontalPlanes[j][i] = new Plane(new Vector3(), 0);
@@ -75,14 +77,13 @@ public class LightGrid {
         farTopRight.set(bigFrustum.planePoints[6]);
         farTopLeft.set(bigFrustum.planePoints[7]);
 
-        ndw.set(nearBotRight).sub(nearBotLeft).scl(1f / size);
-        ndh.set(nearTopLeft).sub(nearBotLeft).scl(1f / size);
-        fdw.set(farBotRight).sub(farBotLeft).scl(1f / size);
-        fdh.set(farTopRight).sub(farBotRight).scl(1f / size);
+        ndw.set(nearBotRight).sub(nearBotLeft).scl(1f / sizeX);
+        ndh.set(nearTopLeft).sub(nearBotLeft).scl(1f / sizeY);
+        fdw.set(farBotRight).sub(farBotLeft).scl(1f / sizeX);
+        fdh.set(farTopRight).sub(farBotRight).scl(1f / sizeY);
 
-        for (int i = 0; i < size; i++) {
-            //x
-            temp.set(ndw).scl(i);
+        for (int x = 0; x < sizeX; x++) {
+            temp.set(ndw).scl(x);
             tempNearBotLeft.set(nearBotLeft);
             tempNearBotLeft.add(temp);
 
@@ -91,7 +92,7 @@ public class LightGrid {
             planePoints[2].set(tempNearBotLeft).add(ndw).add(ndh);
             planePoints[3].set(tempNearBotLeft).add(ndh);
 
-            temp.set(fdw).scl(i);
+            temp.set(fdw).scl(x);
             tempFarBotLeft.set(farBotLeft);
             tempFarBotLeft.add(temp);
 
@@ -99,12 +100,13 @@ public class LightGrid {
             planePoints[5].set(tempFarBotLeft).add(fdw);
             planePoints[6].set(tempFarBotLeft).add(fdw).add(fdh);
             planePoints[7].set(tempFarBotLeft).add(fdh);
-            verticalPlanes[0][i].set(planePoints[0], planePoints[4], planePoints[3]);
-            verticalPlanes[1][i].set(planePoints[5], planePoints[1], planePoints[6]);
+            verticalPlanes[0][x].set(planePoints[0], planePoints[4], planePoints[3]);
+            verticalPlanes[1][x].set(planePoints[5], planePoints[1], planePoints[6]);
+        }
 
-            //y
+        for (int y = 0; y < sizeY; y++) {
             tempNearBotLeft.set(nearBotLeft);
-            temp.set(ndh).scl(i);
+            temp.set(ndh).scl(y);
             tempNearBotLeft.set(tempNearBotLeft);
             tempNearBotLeft.add(temp);
 
@@ -115,15 +117,15 @@ public class LightGrid {
 
             tempFarBotLeft.set(farBotLeft);
 
-            temp.set(fdh).scl(i);
+            temp.set(fdh).scl(y);
             tempFarBotLeft.set(tempFarBotLeft);
             tempFarBotLeft.add(temp);
             planePoints[4].set(tempFarBotLeft);
             planePoints[5].set(tempFarBotLeft).add(fdw);
             planePoints[6].set(tempFarBotLeft).add(fdw).add(fdh);
             planePoints[7].set(tempFarBotLeft).add(fdh);
-            horizontalPlanes[0][i].set(planePoints[2], planePoints[3], planePoints[6]);
-            horizontalPlanes[1][i].set(planePoints[4], planePoints[0], planePoints[1]);
+            horizontalPlanes[0][y].set(planePoints[2], planePoints[3], planePoints[6]);
+            horizontalPlanes[1][y].set(planePoints[4], planePoints[0], planePoints[1]);
         }
     }
 
@@ -131,20 +133,16 @@ public class LightGrid {
      * and updates the array lights accordingly.
      */
     public void checkFrustums(Vector3 pos, float radius, Array<IntArray> lights, int lightID) {
-        boolean foundStart = false;
-        boolean foundEnd = false;
-
         int startX = 0;
         int endX = 0;
         int startY = 0;
         int endY = 0;
-
-        for (int x = 0; x < size; x++) {
+        boolean foundStart = false;
+        boolean foundEnd = false;
+        for (int x = 0; x < sizeX; x++) {
             if (insideColumn(x, pos, radius)) {
-                if (!foundStart) {
+                if (!foundStart)
                     startX = x;
-                }
-
                 foundStart = true;
             } else {
                 if (foundStart) {
@@ -154,19 +152,14 @@ public class LightGrid {
                 }
             }
         }
-        if (!foundEnd && foundStart) {
-            endX = size - 1;
-        }
-
+        if (!foundEnd && foundStart)
+            endX = 9;
         foundStart = false;
         foundEnd = false;
-
-        for (int y = 0; y < size; y++) {
+        for (int y = 0; y < sizeY; y++) {
             if (insideRow(y, pos, radius)) {
-                if (!foundStart) {
+                if (!foundStart)
                     startY = y;
-                }
-
                 foundStart = true;
             } else {
                 if (foundStart) {
@@ -176,14 +169,11 @@ public class LightGrid {
                 }
             }
         }
-
-        if (!foundEnd && foundStart) {
-            endY = size - 1;
-        }
-
+        if (!foundEnd && foundStart)
+            endY = 9;
         for (int x = startX; x <= endX; x++) {
             for (int y = startY; y <= endY; y++) {
-                lights.get(y * size + x).add(lightID);
+                lights.get(y * sizeX + x).add(lightID);
             }
         }
     }
