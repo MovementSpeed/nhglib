@@ -175,6 +175,8 @@ void main() {
     #endif
 
     LOWP vec3 V = normalize(-v_position);
+    LOWP vec3 R = reflect(-V, N);
+    R = vec3(inverse(u_viewMatrix) * vec4(R, 0.0));
 
     LOWP vec3 F0 = vec3(0.04);
     F0 = mix(F0, albedo.rgb, metalness);
