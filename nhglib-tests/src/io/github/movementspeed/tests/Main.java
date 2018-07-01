@@ -9,7 +9,6 @@ import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.assets.Asset;
 import io.github.movementspeed.nhglib.core.ecs.components.graphics.CameraComponent;
-import io.github.movementspeed.nhglib.core.ecs.components.graphics.ModelComponent;
 import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.InputSystem;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.PhysicsSystem;
@@ -31,7 +30,6 @@ import io.github.movementspeed.nhglib.input.enums.InputAction;
 import io.github.movementspeed.nhglib.input.interfaces.InputListener;
 import io.github.movementspeed.nhglib.input.models.base.NhgInput;
 import io.github.movementspeed.nhglib.utils.data.Bounds;
-import io.github.movementspeed.nhglib.utils.data.Bundle;
 import io.github.movementspeed.nhglib.utils.data.Strings;
 import io.github.movementspeed.nhglib.utils.debug.NhgLogger;
 import io.github.movementspeed.tests.systems.TestNodeSystem;
@@ -85,18 +83,29 @@ public class Main extends NhgEntry implements InputListener {
 
         NhgLightsAttribute lightsAttribute = new NhgLightsAttribute();
 
-        float pos = 1f;
+        float pos = 5f;
 
-        for (int i = 0; i < 50; i++) {
-            NhgLight light = NhgLight.point(4, 1f,
+        /*for (int i = 0; i < 100; i++) {
+            NhgLight light = NhgLight.point(15, 2.8f,
                     new Color(MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), 1f));
             light.position.set(new Vector3(MathUtils.random(-pos, pos), MathUtils.random(-pos, pos), MathUtils.random(-pos, pos)));
             lightsAttribute.lights.add(light);
+        }*/
+
+        for (int x = 0; x < 3; x++) {
+            for (int y = 0; y < 3; y++) {
+                for (int z = 0; z < 3; z++) {
+                    NhgLight light = NhgLight.point(15, 5,
+                            new Color(MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), 1f));
+                    light.position.set(x*2, y*2, z*2);
+                    lightsAttribute.lights.add(light);
+                }
+            }
         }
 
-        NhgLight sun = NhgLight.directional(10, Color.SALMON);
-        sun.direction.set(-1, -1, -1);
-        lightsAttribute.lights.add(sun);
+        /*NhgLight sun = NhgLight.directional(5, Color.WHITE);
+        sun.direction.set(1, -1, -1);
+        lightsAttribute.lights.add(sun);*/
 
         GammaCorrectionAttribute gammaCorrectionAttribute = new GammaCorrectionAttribute(true);
         AmbientLightingAttribute ambientLightingAttribute = new AmbientLightingAttribute(0.03f);
@@ -127,13 +136,6 @@ public class Main extends NhgEntry implements InputListener {
                             }
                         } else if (message.is(Strings.Events.sceneLoaded)) {
                             NhgLogger.log(this, "Scene loaded");
-                            int kart = scene.sceneGraph.getSceneEntity("kart");
-                            ModelComponent kartModel = nhg.entities.getComponent(kart, ModelComponent.class);
-
-                            Bundle bundle = new Bundle();
-                            bundle.put(Strings.RenderingSettings.forceUnlitKey, false);
-                            kartModel.model.userData = bundle;
-
                             HDRData data = nhg.assets.get("newport_loft");
 
                             lightProbe = new LightProbe();

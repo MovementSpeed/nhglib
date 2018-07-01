@@ -69,7 +69,7 @@ public class TiledPBRShader extends BaseShader {
         this.environment = environment;
         this.params = params;
 
-        gridSize = 10;
+        gridSize = 16;
 
         String prefix = createPrefix(renderable);
         String folder;
@@ -443,15 +443,14 @@ public class TiledPBRShader extends BaseShader {
 
         for (int i = 0; i < lights.size; i++) {
             NhgLight l = lights.get(i);
-            lightGrid.checkFrustums(l.position, l.radius, lightsFrustum, i);
 
-            /*if (l.type != LightType.DIRECTIONAL_LIGHT) {
+            if (l.type != LightType.DIRECTIONAL_LIGHT) {
                 lightGrid.checkFrustums(l.position, l.radius, lightsFrustum, i);
             } else {
                 for (int j = 0; j < lightGrid.getNumTiles(); j++) {
                     lightsFrustum.get(j).add(i);
                 }
-            }*/
+            }
         }
 
         /* Creates a texture containing the color and radius
@@ -538,6 +537,16 @@ public class TiledPBRShader extends BaseShader {
         }
     }
 
+    private void setLightAngles() {
+        int i = 0;
+
+        for (int k = 0; k < lights.size; k++) {
+            NhgLight light = lights.get(k);
+            lightAngles[i++] = light.innerAngle;
+            lightAngles[i++] = light.outerAngle;
+        }
+    }
+
     private void setLightPositionsAndRadiusesAndDirections() {
         int i1 = 0;
         int i2 = 0;
@@ -557,16 +566,6 @@ public class TiledPBRShader extends BaseShader {
             lightDirectionsAndIntensities[i2++] = vec1.y;
             lightDirectionsAndIntensities[i2++] = vec1.z;
             lightDirectionsAndIntensities[i2++] = light.intensity;
-        }
-    }
-
-    private void setLightAngles() {
-        int i = 0;
-
-        for (int k = 0; k < lights.size; k++) {
-            NhgLight light = lights.get(k);
-            lightAngles[i++] = light.innerAngle;
-            lightAngles[i++] = light.outerAngle;
         }
     }
 
