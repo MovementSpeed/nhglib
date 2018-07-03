@@ -51,11 +51,6 @@ public abstract class BaseRenderingSystem extends NhgIteratingSystem implements 
     }
 
     @Override
-    public void onRender() {
-
-    }
-
-    @Override
     public void onPostRender() {
 
     }
