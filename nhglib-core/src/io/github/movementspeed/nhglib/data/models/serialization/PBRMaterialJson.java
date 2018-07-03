@@ -33,7 +33,7 @@ public class PBRMaterialJson implements JsonParseable<PBRMaterial> {
         }
 
         if (jsonValue.has("roughnessValue")) {
-            pbrMaterial.roughnessValue = jsonValue.getFloat("roughnessValue", 0.5f);
+            pbrMaterial.roughnessValue = jsonValue.getFloat("roughnessValue", 0.8f);
         } else {
             pbrMaterial.roughnessValue = -1;
         }

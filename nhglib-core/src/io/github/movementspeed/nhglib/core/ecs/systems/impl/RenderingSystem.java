@@ -5,10 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
-import com.badlogic.gdx.graphics.g3d.utils.BaseShaderProvider;
-import com.badlogic.gdx.graphics.g3d.utils.ShaderProvider;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.BufferUtils;
@@ -17,7 +14,8 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.core.ecs.interfaces.RenderingSystemInterface;
 import io.github.movementspeed.nhglib.core.ecs.systems.base.BaseRenderingSystem;
-import io.github.movementspeed.nhglib.graphics.shaders.forward.PBRShaderProvider;
+import io.github.movementspeed.nhglib.graphics.rendering.RenderPass;
+import io.github.movementspeed.nhglib.graphics.shaders.tiled.TiledPBRRenderPass;
 import io.github.movementspeed.nhglib.utils.graphics.GLUtils;
 
 /**
@@ -26,22 +24,23 @@ import io.github.movementspeed.nhglib.utils.graphics.GLUtils;
 public class RenderingSystem extends BaseSystem implements Disposable {
     public static int renderWidth;
     public static int renderHeight;
+    public static Texture depthTexture;
 
     private boolean saveScreenMode;
 
     // Injected references
     private CameraSystem cameraSystem;
 
-    private ShaderProvider shaderProvider;
     private Environment environment;
     private Color clearColor;
-    private ModelBatch renderer;
     private FPSLogger fpsLogger;
     private FrameBuffer frameBuffer;
     private SpriteBatch spriteBatch;
 
     private Pixmap screenPixmap;
 
+    private Array<RenderPass> renderPasses;
+    private Array<RenderableProvider> renderableProviders;
     private Array<RenderingSystemInterface> renderingInterfaces;
 
     public RenderingSystem() {
@@ -49,15 +48,15 @@ public class RenderingSystem extends BaseSystem implements Disposable {
         fpsLogger = new FPSLogger();
         environment = new Environment();
 
-        shaderProvider = new PBRShaderProvider();
-        renderer = new ModelBatch(shaderProvider);
-
+        renderPasses = new Array<>();
+        renderableProviders = new Array<>();
         renderingInterfaces = new Array<>();
 
         spriteBatch = new SpriteBatch();
         spriteBatch.enableBlending();
 
         updateFramebuffer(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        setRenderPass(0, new TiledPBRRenderPass());
     }
 
     @Override
@@ -67,42 +66,52 @@ public class RenderingSystem extends BaseSystem implements Disposable {
         }
 
         if (cameraSystem.cameras.size > 0) {
-            Camera camera = cameraSystem.cameras.first();
+            PerspectiveCamera camera = (PerspectiveCamera) cameraSystem.cameras.first();
 
             for (RenderingSystemInterface rsi : renderingInterfaces) {
                 rsi.onPreRender();
             }
 
-            frameBuffer.begin();
-            GLUtils.clearScreen(clearColor);
+            renderableProviders.clear();
 
-            renderer.begin(camera);
             for (RenderingSystemInterface rsi : renderingInterfaces) {
                 Array<RenderableProvider> providers = rsi.getRenderableProviders();
+                renderableProviders.addAll(providers);
+                rsi.clearRenderableProviders();
+            }
 
-                if (providers.size > 0) {
-                    renderer.render(providers, environment);
-                    rsi.onRender();
-                    rsi.clearRenderableProviders();
+            if (renderableProviders.size > 0) {
+                frameBuffer.begin();
+                GLUtils.clearScreen(clearColor);
+
+                for (int i = 0; i < renderPasses.size; i++) {
+                    RenderPass renderPass = renderPasses.get(i);
+
+                    if (i > 0) {
+                        renderPass.setPreviousRenderPass(renderPasses.get(i - 1));
+                    }
+
+                    renderPass.begin(camera);
+                    renderPass.render(camera, renderableProviders);
+                    renderPass.end();
                 }
-            }
-            renderer.end();
 
-            if (saveScreenMode) {
-                screenPixmap = getScreenPixmapInternal(frameBuffer.getWidth(), frameBuffer.getHeight());
-                saveScreenMode = false;
-            }
+                if (saveScreenMode) {
+                    screenPixmap = getScreenPixmapInternal(frameBuffer.getWidth(), frameBuffer.getHeight());
+                    saveScreenMode = false;
+                }
 
-            frameBuffer.end();
+                frameBuffer.end();
 
-            spriteBatch.begin();
-            spriteBatch.draw(frameBuffer.getColorBufferTexture(),
-                    0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),
-                    0, 0, 1, 1);
-            spriteBatch.end();
+                spriteBatch.begin();
+                spriteBatch.draw(frameBuffer.getColorBufferTexture(),
+                        0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),
+                        0, 0, 1, 1);
+                spriteBatch.end();
 
-            for (RenderingSystemInterface rsi : renderingInterfaces) {
-                rsi.onPostRender();
+                for (RenderingSystemInterface rsi : renderingInterfaces) {
+                    rsi.onPostRender();
+                }
             }
         }
     }
@@ -110,8 +119,6 @@ public class RenderingSystem extends BaseSystem implements Disposable {
     @Override
     public void dispose() {
         super.dispose();
-        shaderProvider.dispose();
-        renderer.dispose();
         frameBuffer.dispose();
     }
 
@@ -128,13 +135,21 @@ public class RenderingSystem extends BaseSystem implements Disposable {
         screenPixmap = null;
     }
 
-    public void setShaderProvider(BaseShaderProvider shaderProvider) {
-        if (shaderProvider != null) {
-            this.shaderProvider.dispose();
-            this.renderer.dispose();
+    public void setRenderPass(int index, RenderPass renderPass) {
+        if (index >= 0) {
+            if (index >= renderPasses.size) {
+                renderPasses.setSize(index + 1);
+            }
 
-            this.shaderProvider = shaderProvider;
-            renderer = new ModelBatch(this.shaderProvider);
+            renderPass.setEnvironment(environment);
+            renderPass.setMainFBO(frameBuffer);
+
+            if (index > 0) {
+                renderPass.setPreviousRenderPass(renderPasses.get(index - 1));
+            }
+
+            renderPass.created();
+            renderPasses.set(index, renderPass);
         }
     }
 

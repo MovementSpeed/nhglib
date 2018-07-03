@@ -3,102 +3,30 @@
     "name": "scene0",
     "assets": [
       {
-        "alias": "background",
-        "source": "textures/bg.jpg",
-        "classAlias": "texture"
-      },
-      {
-        "alias": "sphere",
-        "source": "models/sphere.g3db",
-        "classAlias": "model"
-      },
-      {
-        "alias": "trackAsset",
-        "source": "models/vsr_track.g3db",
-        "classAlias": "model"
-      },
-      {
-        "alias": "chassisAsset",
-        "source": "models/gk_chassis.g3db",
-        "classAlias": "model"
-      },
-      {
-        "alias": "chassisAlbedo",
-        "source": "models/kart_alpha.png",
-        "classAlias": "texture"
-      },
-      {
-        "alias": "wheelAsset",
-        "source": "models/gk_wheel.g3db",
-        "classAlias": "model"
-      },
-      {
         "alias": "quad",
         "source": "models/quad.g3db",
         "classAlias": "model"
       },
       {
-        "alias": "mat2_albedo",
-        "source": "textures/mat2_albedo.png",
-        "classAlias": "texture"
-      },
-      {
-        "alias": "dun_roughness",
-        "source": "textures/dun-roughness.jpg",
-        "classAlias": "texture"
+        "alias": "sponza",
+        "source": "models/sponza.g3db",
+        "classAlias": "model",
+        "dependenciesPath":"textures/sponza/"
       },
       {
         "alias": "newport_loft",
         "source": "textures/tears_of_steel_bridge_2k.hdr",
         "classAlias": "hdr"
-      },
-      {
-        "alias":"effect",
-        "source":"particles/kart_start_smoke.nhfx",
-        "classAlias":"particleEffect",
-        "dependenciesPath":"particles/"
       }
     ],
     "entities": [
       {
-        "id": "camera",
+        "id":"sponza",
         "transform": {
           "position": {
-            "x": 0.2,
-            "y": 0.1,
-            "z": -1
-          },
-          "rotation": {
-            "x": 0.0,
-            "y": 180.0,
-            "z": 0.0
-          },
-          "scale": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          }
-        },
-        "components": [
-          {
-            "type": "camera",
-            "cameraType": "perspective",
-            "fieldOfView": 67,
-            "nearPlane": 0.01,
-            "farPlane": 10.0
-          }
-        ],
-        "entities": [
-
-        ]
-      },
-      {
-        "id": "floor",
-        "transform": {
-          "position": {
-            "x": 9.0,
-            "y": 0.0,
-            "z": 0.0
+            "x": 0,
+            "y": -1.5,
+            "z": 4
           },
           "rotation": {
             "x": 0.0,
@@ -106,334 +34,46 @@
             "z": 0.0
           },
           "scale": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
+            "x": 0.01,
+            "y": 0.01,
+            "z": 0.01
           }
         },
         "components": [
-          {
-            "type": "rigidBody",
-            "mass": 0.0,
-            "shape": {
-              "type": "bvhTriangleMesh",
-              "asset": "trackAsset"
-            }
-          },
           {
             "type": "model",
             "enabled": true,
             "graphicsType": "static",
-            "asset": "trackAsset"
-          }
-        ],
-        "entities": [
-        ]
-      },
-      {
-        "id": "kart",
-        "transform": {
-          "position": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "scale": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          }
-        },
-        "components": [
-          {
-            "type": "vehicle",
-            "mass": 5.0,
-            "friction": 1.0,
-            "restitution": 0.0,
-            "shape": {
-              "type": "box",
-              "width": 0.876,
-              "height": 0.267,
-              "depth": 1.219
-            },
-            "vehicleTuning": {}
-          },
-          {
-            "type": "model",
-            "enabled": true,
-            "graphicsType": "dynamic",
-            "asset": "chassisAsset",
-            "materials": [
-              {
-                "blended": true,
-                "albedo": "dun_roughness",
-                "metalnessValue": 0.5,
-                "roughnessValue": 0.1,
-                "tilesU": 0.5,
-                "tilesV": 0.5
-              }
-            ]
+            "asset": "sponza"
           }
         ],
         "entities": [
           {
-            "id":"goodPoint",
+            "id": "camera",
             "transform": {
               "position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-              }
-            },
-            "components": [
-              {
-                "type": "light",
-                "lightType": "pointLight",
-                "range":100,
-                "intensity": 10,
-                "color": {
-                  "r": 0.9372,
-                  "g": 0.9137,
-                  "b": 0.6,
-                  "a": 1
-                }
-              }
-            ]
-          },
-          {
-            "id": "wheel0",
-            "transform": {
-              "position": {
-                "x": 0,
-                "y": 0,
+                "x": 800,
+                "y": 60,
                 "z": 0
               },
               "rotation": {
                 "x": 0.0,
-                "y": 0.0,
+                "y": 90.0,
                 "z": 0.0
               },
               "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
+                "x": 1,
+                "y": 1,
+                "z": 1
               }
             },
             "components": [
               {
-                "type": "wheel",
-                "wheelIndex": 0,
-                "attachmentPoint": {
-                  "x": 0.313,
-                  "y": 0,
-                  "z": 0.38
-                },
-                "direction": {
-                  "x": 0,
-                  "y": -1,
-                  "z": 0
-                },
-                "axis": {
-                  "x": -1,
-                  "y": 0,
-                  "z": 0
-                },
-                "radius": 0.112,
-                "suspensionRestLength": 0.0336,
-                "friction": 20,
-                "frontWheel": true
-              },
-              {
-                "type": "model",
-                "enabled": true,
-                "graphicsType": "dynamic",
-                "asset": "wheelAsset"
-              }
-            ]
-          },
-          {
-            "id": "wheel1",
-            "transform": {
-              "position": {
-                "x": -0.313,
-                "y": 0,
-                "z": 0.38
-              },
-              "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              }
-            },
-            "components": [
-              {
-                "type": "wheel",
-                "wheelIndex": 1,
-                "attachmentPoint": {
-                  "x": -0.313,
-                  "y": 0,
-                  "z": 0.38
-                },
-                "direction": {
-                  "x": 0,
-                  "y": -1,
-                  "z": 0
-                },
-                "axis": {
-                  "x": -1,
-                  "y": 0,
-                  "z": 0
-                },
-                "radius": 0.112,
-                "suspensionRestLength": 0.0336,
-                "friction": 20,
-                "frontWheel": true
-              },
-              {
-                "type": "model",
-                "enabled": true,
-                "graphicsType": "dynamic",
-                "asset": "wheelAsset"
-              }
-            ]
-          },
-          {
-            "id": "wheel2",
-            "transform": {
-              "position": {
-                "x": 0.313,
-                "y": 0,
-                "z": -0.33
-              },
-              "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              }
-            },
-            "components": [
-              {
-                "type": "wheel",
-                "wheelIndex": 2,
-                "attachmentPoint": {
-                  "x": 0.313,
-                  "y": 0,
-                  "z": -0.33
-                },
-                "direction": {
-                  "x": 0,
-                  "y": -1,
-                  "z": 0
-                },
-                "axis": {
-                  "x": -1,
-                  "y": 0,
-                  "z": 0
-                },
-                "radius": 0.112,
-                "suspensionRestLength": 0.0336,
-                "friction": 15,
-                "frontWheel": false
-              },
-              {
-                "type": "model",
-                "enabled": true,
-                "graphicsType": "dynamic",
-                "asset": "wheelAsset"
-              }
-            ],
-            "entities": [
-              {
-                "id": "particleSpawner",
-                "transform": {
-                  "position": {
-                    "x": 0,
-                    "y": 0,
-                    "z": 0
-                  },
-                  "scale": {
-                    "x": 1,
-                    "y": 1,
-                    "z": 1
-                  },
-                  "rotation": {
-                    "x": 0,
-                    "y": 0,
-                    "z": 0
-                  }
-                },
-                "components": [
-                  {
-                    "type":"particleEffect",
-                    "asset":"effect"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "id": "wheel3",
-            "transform": {
-              "position": {
-                "x": -0.313,
-                "y": 0,
-                "z": -0.33
-              },
-              "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              }
-            },
-            "components": [
-              {
-                "type": "wheel",
-                "wheelIndex": 3,
-                "attachmentPoint": {
-                  "x": -0.313,
-                  "y": 0,
-                  "z": -0.33
-                },
-                "direction": {
-                  "x": 0,
-                  "y": -1,
-                  "z": 0
-                },
-                "axis": {
-                  "x": -1,
-                  "y": 0,
-                  "z": 0
-                },
-                "radius": 0.112,
-                "suspensionRestLength": 0.0336,
-                "friction": 15,
-                "frontWheel": false
-              },
-              {
-                "type": "model",
-                "enabled": true,
-                "graphicsType": "dynamic",
-                "asset": "wheelAsset"
+                "type": "camera",
+                "cameraType": "perspective",
+                "fieldOfView": 67,
+                "nearPlane": 0.01,
+                "farPlane": 30.0
               }
             ]
           }
