@@ -1,0 +1,5 @@
+include 'desktop', 'android', 'ios', 'core', 'nhglib-core', 'nhglib-android', 'nhglib-ios', 'nhglib-desktop'
+project(':nhglib-core').projectDir = new File(settingsDir, '../nhglib-core')
+project(':nhglib-android').projectDir = new File(settingsDir, '../nhglib-android')
+project(':nhglib-ios').projectDir = new File(settingsDir, '../nhglib-ios')
+project(':nhglib-desktop').projectDir = new File(settingsDir, '../nhglib-desktop')
