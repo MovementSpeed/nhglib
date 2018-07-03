@@ -16,7 +16,7 @@ import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
 import io.github.movementspeed.nhglib.core.entry.NhgEntry;
 import io.github.movementspeed.nhglib.core.messaging.Message;
 import io.github.movementspeed.nhglib.files.HDRData;
-import io.github.movementspeed.nhglib.files.gltf.jgltf.model.GltfModel;
+import io.github.movementspeed.nhglib.files.gltf.jgltf.model.*;
 import io.github.movementspeed.nhglib.files.gltf.jgltf.model.io.GltfModelReader;
 import io.github.movementspeed.nhglib.graphics.lights.LightProbe;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
@@ -39,6 +39,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Playground extends NhgEntry implements InputListener {
 	private Scene scene;
@@ -180,6 +185,27 @@ public class Playground extends NhgEntry implements InputListener {
 		}
 
 		if (gltfModel != null) {
+			List<NodeModel> nodeModels = gltfModel.getNodeModels();
+			NodeModel nodeModel = nodeModels.get(1);
+
+			List<MeshModel> meshModels = nodeModel.getMeshModels();
+			MeshModel meshModel = meshModels.get(0);
+
+			List<MeshPrimitiveModel> primitiveModels = meshModel.getMeshPrimitiveModels();
+			MeshPrimitiveModel primitiveModel = primitiveModels.get(0);
+
+			Map<String, AccessorModel> attributes = primitiveModel.getAttributes();
+			AccessorModel position = attributes.get("POSITION");
+
+			ByteBuffer positionsBuffer = position.getBufferViewModel().getBufferModel().getBufferData();
+			byte[] positions = positionsBuffer.array();
+
+			//float positions[] = new float[position.getCount() * 3];
+
+			/*for (int i = 0; i < position.getCount(); ++i) {
+
+			}*/
+
 			int c = 0;
 			c++;
 		}
