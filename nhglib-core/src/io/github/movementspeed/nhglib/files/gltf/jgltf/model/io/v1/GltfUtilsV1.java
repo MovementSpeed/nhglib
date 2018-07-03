@@ -40,8 +40,7 @@ import java.io.IOException;
 /**
  * Utility methods related to {@link GlTF}s
  */
-class GltfUtilsV1
-{
+class GltfUtilsV1 {
     /**
      * Creates a deep copy of the given {@link GlTF}.<br>
      * <br>
@@ -50,35 +49,30 @@ class GltfUtilsV1
      * in the copy. The goal of this method is to create a copy that is,
      * as far as reasonably possible, "structurally equivalent" to the
      * given input.
-     * 
-     * @param gltf The input 
+     *
+     * @param gltf The input
      * @return The copy
      * @throws GltfException If the copy can not be created
      */
-    static GlTF copy(GlTF gltf)
-    {
+    static GlTF copy(GlTF gltf) {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setSerializationInclusion(Include.NON_NULL);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try
-        {
+        try {
             objectMapper.writeValue(baos, gltf);
             return objectMapper.readValue(baos.toByteArray(), GlTF.class);
-        } 
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             throw new GltfException("Could not copy glTF", e);
         }
     }
 
     /**
      * Creates a shallow copy of the given {@link BufferView}
-     * 
+     *
      * @param bufferView The {@link BufferView}
      * @return The copy
      */
-    static BufferView copy(BufferView bufferView)
-    {
+    static BufferView copy(BufferView bufferView) {
         BufferView copy = new BufferView();
         copy.setExtensions(bufferView.getExtensions());
         copy.setExtras(bufferView.getExtras());
@@ -89,16 +83,15 @@ class GltfUtilsV1
         copy.setTarget(bufferView.getTarget());
         return copy;
     }
-    
-    
+
+
     /**
      * Creates a shallow copy of the given {@link Image}
-     * 
+     *
      * @param image The {@link Image}
      * @return The copy
      */
-    static Image copy(Image image)
-    {
+    static Image copy(Image image) {
         Image copy = new Image();
         copy.setExtensions(image.getExtensions());
         copy.setExtras(image.getExtras());
@@ -106,15 +99,14 @@ class GltfUtilsV1
         copy.setUri(image.getUri());
         return copy;
     }
-    
+
     /**
      * Creates a shallow copy of the given {@link Shader}
-     * 
+     *
      * @param shader The {@link Shader}
      * @return The copy
      */
-    static Shader copy(Shader shader)
-    {
+    static Shader copy(Shader shader) {
         Shader copy = new Shader();
         copy.setExtensions(shader.getExtensions());
         copy.setExtras(shader.getExtras());
@@ -123,12 +115,11 @@ class GltfUtilsV1
         copy.setUri(shader.getUri());
         return copy;
     }
-    
+
     /**
      * Private constructor to prevent instantiation
      */
-    private GltfUtilsV1()
-    {
+    private GltfUtilsV1() {
         // Private constructor to prevent instantiation
     }
 }

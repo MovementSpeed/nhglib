@@ -32,13 +32,12 @@ import java.util.Objects;
 /**
  * Package-private abstract base implementation of an {@link AccessorData}
  */
-abstract class AbstractAccessorData implements AccessorData
-{
+abstract class AbstractAccessorData implements AccessorData {
     /**
      * The component type
      */
     private final Class<?> componentType;
-    
+
     /**
      * The byte buffer of the buffer view that the accessor
      * refers to
@@ -55,130 +54,118 @@ abstract class AbstractAccessorData implements AccessorData
      * The number of elements
      */
     private final int numElements;
-    
+
     /**
      * The number of components per element
      */
     private final int numComponentsPerElement;
-    
+
     /**
      * The number of bytes per component
      */
     private final int numBytesPerComponent;
-    
+
     /**
-     * The stride, in number of bytes, between two consecutive elements 
+     * The stride, in number of bytes, between two consecutive elements
      */
     private final int byteStridePerElement;
 
     /**
      * Default constructor
-     * 
-     * @param componentType The component type
-     * @param bufferViewByteBuffer The byte buffer of the buffer view
-     * @param byteOffset The byte offset in the buffer view 
-     * @param numElements The number of elements
+     *
+     * @param componentType           The component type
+     * @param bufferViewByteBuffer    The byte buffer of the buffer view
+     * @param byteOffset              The byte offset in the buffer view
+     * @param numElements             The number of elements
      * @param numComponentsPerElement The number of components per element
-     * @param numBytesPerComponent The number of bytes per component
-     * @param byteStride The byte stride between two elements. If this
-     * is <code>null</code> or <code>0</code>, then the stride will
-     * be the size of one element.
-     * @throws NullPointerException If the bufferViewByteBuffer is 
-     * <code>null</code>
+     * @param numBytesPerComponent    The number of bytes per component
+     * @param byteStride              The byte stride between two elements. If this
+     *                                is <code>null</code> or <code>0</code>, then the stride will
+     *                                be the size of one element.
+     * @throws NullPointerException If the bufferViewByteBuffer is
+     *                              <code>null</code>
      */
-    AbstractAccessorData(Class<?> componentType, 
-        ByteBuffer bufferViewByteBuffer, int byteOffset, 
-        int numElements, int numComponentsPerElement, 
-        int numBytesPerComponent, Integer byteStride)
-    {
-        Objects.requireNonNull(bufferViewByteBuffer, 
-            "The bufferViewByteBuffer is null");
-        
+    AbstractAccessorData(Class<?> componentType,
+                         ByteBuffer bufferViewByteBuffer, int byteOffset,
+                         int numElements, int numComponentsPerElement,
+                         int numBytesPerComponent, Integer byteStride) {
+        Objects.requireNonNull(bufferViewByteBuffer,
+                "The bufferViewByteBuffer is null");
+
         this.componentType = componentType;
         this.bufferViewByteBuffer = bufferViewByteBuffer;
         this.byteOffset = byteOffset;
         this.numElements = numElements;
         this.numComponentsPerElement = numComponentsPerElement;
         this.numBytesPerComponent = numBytesPerComponent;
-        if (byteStride == null || byteStride == 0)
-        {
-            this.byteStridePerElement = 
-                numComponentsPerElement * numBytesPerComponent;
-        }
-        else
-        {
+        if (byteStride == null || byteStride == 0) {
+            this.byteStridePerElement =
+                    numComponentsPerElement * numBytesPerComponent;
+        } else {
             this.byteStridePerElement = byteStride;
         }
     }
-    
+
     @Override
-    public final Class<?> getComponentType()
-    {
+    public final Class<?> getComponentType() {
         return componentType;
     }
 
     @Override
-    public final int getNumElements()
-    {
+    public final int getNumElements() {
         return numElements;
     }
 
     @Override
-    public final int getNumComponentsPerElement()
-    {
+    public final int getNumComponentsPerElement() {
         return numComponentsPerElement;
     }
 
     @Override
-    public final int getTotalNumComponents()
-    {
+    public final int getTotalNumComponents() {
         return numElements * numComponentsPerElement;
     }
-    
+
     /**
      * Returns the index of the byte in the byte buffer where the specified
      * component starts
-     * 
-     * @param elementIndex The element index
+     *
+     * @param elementIndex   The element index
      * @param componentIndex The component index
      * @return The byte index
      */
-    protected final int getByteIndex(int elementIndex, int componentIndex)
-    {
-        int byteIndex = byteOffset 
-            + elementIndex * byteStridePerElement
-            + componentIndex * numBytesPerComponent;
+    protected final int getByteIndex(int elementIndex, int componentIndex) {
+        int byteIndex = byteOffset
+                + elementIndex * byteStridePerElement
+                + componentIndex * numBytesPerComponent;
         return byteIndex;
     }
-    
-    
+
+
     /**
      * Returns the underlying byte buffer
-     * 
+     *
      * @return The byte buffer
      */
-    protected final ByteBuffer getBufferViewByteBuffer()
-    {
+    protected final ByteBuffer getBufferViewByteBuffer() {
         return bufferViewByteBuffer;
     }
-    
+
     /**
      * Returns the byte stride per element
-     * 
+     *
      * @return The byte stride
      */
-    protected final int getByteStridePerElement()
-    {
+    protected final int getByteStridePerElement() {
         return byteStridePerElement;
     }
-    
+
     /**
      * Returns the number of bytes per component
-     * 
+     *
      * @return The number of bytes per component
      */
-    protected final int getNumBytesPerComponent()
-    {
+    protected final int getNumBytesPerComponent() {
         return numBytesPerComponent;
     }
 

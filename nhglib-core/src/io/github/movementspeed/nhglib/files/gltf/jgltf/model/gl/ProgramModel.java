@@ -29,21 +29,20 @@ package io.github.movementspeed.nhglib.files.gltf.jgltf.model.gl;
 import io.github.movementspeed.nhglib.files.gltf.jgltf.model.NamedModelElement;
 
 /**
- * Interface for a program that consists of a vertex- and fragment 
+ * Interface for a program that consists of a vertex- and fragment
  * {@link ShaderModel}
  */
-public interface ProgramModel extends NamedModelElement
-{
+public interface ProgramModel extends NamedModelElement {
     /**
      * Return the {@link ShaderModel} for the vertex shader
-     * 
+     *
      * @return The {@link ShaderModel}
      */
     ShaderModel getVertexShaderModel();
-    
+
     /**
      * Return the {@link ShaderModel} for the fragment shader
-     * 
+     *
      * @return The {@link ShaderModel}
      */
     ShaderModel getFragmentShaderModel();

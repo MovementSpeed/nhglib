@@ -36,57 +36,51 @@ import java.util.Objects;
  * Implementation of a {@link ProgramModel}
  */
 public class DefaultProgramModel extends AbstractNamedModelElement
-    implements ProgramModel
-{
+        implements ProgramModel {
     /**
      * The vertex shader model
      */
     private ShaderModel vertexShaderModel;
-    
+
     /**
      * The fragment shader model
      */
     private ShaderModel fragmentShaderModel;
-    
+
     /**
      * Default constructor
      */
-    public DefaultProgramModel()
-    {
+    public DefaultProgramModel() {
         // Default constructor
     }
-    
+
     /**
      * Set the vertex {@link ShaderModel}
-     * 
+     *
      * @param vertexShaderModel The vertex {@link ShaderModel}
      */
-    public void setVertexShaderModel(ShaderModel vertexShaderModel)
-    {
+    public void setVertexShaderModel(ShaderModel vertexShaderModel) {
         this.vertexShaderModel = Objects.requireNonNull(vertexShaderModel,
-            "The vertexShaderModel may not be null");
+                "The vertexShaderModel may not be null");
     }
 
     @Override
-    public ShaderModel getVertexShaderModel()
-    {
+    public ShaderModel getVertexShaderModel() {
         return vertexShaderModel;
     }
-    
+
     /**
      * Set the fragment {@link ShaderModel}
-     * 
+     *
      * @param fragmentShaderModel The fragment {@link ShaderModel}
      */
-    public void setFragmentShaderModel(ShaderModel fragmentShaderModel)
-    {
+    public void setFragmentShaderModel(ShaderModel fragmentShaderModel) {
         this.fragmentShaderModel = Objects.requireNonNull(fragmentShaderModel,
-            "The fragmentShaderModel may not be null");
+                "The fragmentShaderModel may not be null");
     }
 
     @Override
-    public ShaderModel getFragmentShaderModel()
-    {
+    public ShaderModel getFragmentShaderModel() {
         return fragmentShaderModel;
     }
 }

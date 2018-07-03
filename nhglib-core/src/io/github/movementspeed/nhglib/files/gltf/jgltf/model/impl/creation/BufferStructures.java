@@ -40,60 +40,52 @@ import java.util.logging.Logger;
  * Utility methods related to {@link BufferStructure} instances.
  * Only intended for internal use.
  */
-public class BufferStructures
-{
+public class BufferStructures {
     /**
      * The logger used in this class
      */
-    private static final Logger logger = 
-        Logger.getLogger(BufferStructures.class.getName());
-    
+    private static final Logger logger =
+            Logger.getLogger(BufferStructures.class.getName());
+
     /**
      * Resolve the given {@link GltfReference} instances against the given
-     * {@link BufferStructure}. This will look up the {@link BufferModel} 
-     * instances in the given structure, based on the  
+     * {@link BufferStructure}. This will look up the {@link BufferModel}
+     * instances in the given structure, based on the
      * {@link GltfReference#getUri() reference URI}, and pass the buffer
      * data to the {@link GltfReference#getTarget() reference target}.
      * If there is no {@link BufferModel} for a URI, then a warning will
      * be printed.
-     * 
+     *
      * @param bufferReferences The {@link GltfReference} instances
-     * @param bufferStructure The {@link BufferStructure}
+     * @param bufferStructure  The {@link BufferStructure}
      */
     public static void resolve(
-        Iterable<? extends GltfReference> bufferReferences, 
-        BufferStructure bufferStructure)
-    {
+            Iterable<? extends GltfReference> bufferReferences,
+            BufferStructure bufferStructure) {
         List<BufferModel> bufferModels = bufferStructure.getBufferModels();
-        Map<String, BufferModel> uriToBufferModel = 
-            new LinkedHashMap<String, BufferModel>();
-        for (BufferModel bufferModel : bufferModels)
-        {
+        Map<String, BufferModel> uriToBufferModel =
+                new LinkedHashMap<String, BufferModel>();
+        for (BufferModel bufferModel : bufferModels) {
             String uri = bufferModel.getUri();
             uriToBufferModel.put(uri, bufferModel);
         }
-        for (GltfReference bufferReference : bufferReferences)
-        {
+        for (GltfReference bufferReference : bufferReferences) {
             String uri = bufferReference.getUri();
             BufferModel bufferModel = uriToBufferModel.get(uri);
-            if (bufferModel == null)
-            {
+            if (bufferModel == null) {
                 logger.warning("Could not resolve buffer model for URI " + uri
-                    + " in buffer structure");
-            }
-            else
-            {
+                        + " in buffer structure");
+            } else {
                 Consumer<ByteBuffer> target = bufferReference.getTarget();
                 target.accept(bufferModel.getBufferData());
             }
         }
     }
-    
+
     /**
      * Private constructor to prevent instantiation
      */
-    private BufferStructures()
-    {
+    private BufferStructures() {
         // Private constructor to prevent instantiation
     }
 }

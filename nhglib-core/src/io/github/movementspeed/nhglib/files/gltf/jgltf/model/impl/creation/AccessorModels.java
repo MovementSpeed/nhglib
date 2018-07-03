@@ -31,67 +31,60 @@ import io.github.movementspeed.nhglib.files.gltf.jgltf.model.AccessorModel;
 /**
  * Utility methods related to {@link AccessorModel} instances
  */
-class AccessorModels 
-{
+class AccessorModels {
     /**
      * Compute the number of bytes that the given {@link AccessorModel} data
-     * has to be aligned to. 
-     * 
+     * has to be aligned to.
+     *
      * @param accessorModel The {@link AccessorModel}
      * @return The alignment bytes
      */
-    static int computeAlignmentBytes(AccessorModel accessorModel)
-    {
+    static int computeAlignmentBytes(AccessorModel accessorModel) {
         return accessorModel.getComponentSizeInBytes();
     }
-    
+
     /**
      * Compute the alignment for the given {@link AccessorModel} instances.
      * This is the least common multiple of the alignment of all instances.
-     * 
+     *
      * @param accessorModels The {@link AccessorModel} instances
      * @return The alignment
      */
     static int computeAlignmentBytes(
-        Iterable<? extends AccessorModel> accessorModels)
-    {
+            Iterable<? extends AccessorModel> accessorModels) {
         int alignmentBytes = 1;
-        for (AccessorModel accessorModel : accessorModels)
-        {
-            alignmentBytes = Utils.computeLeastCommonMultiple(alignmentBytes, 
-                AccessorModels.computeAlignmentBytes(accessorModel));
+        for (AccessorModel accessorModel : accessorModels) {
+            alignmentBytes = Utils.computeLeastCommonMultiple(alignmentBytes,
+                    AccessorModels.computeAlignmentBytes(accessorModel));
         }
         return alignmentBytes;
     }
-    
+
     /**
-     * Compute the byte stride that is common for the given 
+     * Compute the byte stride that is common for the given
      * {@link AccessorModel} instances. This is the maximum of the
      * {@link AccessorModel#getElementSizeInBytes() element sizes}
      * of the given models.
-     * 
+     *
      * @param accessorModels The {@link AccessorModel} instances
      * @return The common byte stride
      */
     static int computeCommonByteStride(
-        Iterable<? extends AccessorModel> accessorModels)
-    {
+            Iterable<? extends AccessorModel> accessorModels) {
         int commonByteStride = 1;
-        for (AccessorModel accessorModel : accessorModels)
-        {
+        for (AccessorModel accessorModel : accessorModels) {
             int elementSize = accessorModel.getElementSizeInBytes();
             commonByteStride = Math.max(commonByteStride, elementSize);
         }
         return commonByteStride;
     }
-    
+
     /**
      * Private constructor to prevent instantiation
      */
-    private AccessorModels()
-    {
+    private AccessorModels() {
         // Private constructor to prevent instantiation
     }
-    
-    
+
+
 }

@@ -39,158 +39,144 @@ import java.util.Objects;
  * Implementation of an {@link AnimationModel}
  */
 public class DefaultAnimationModel extends AbstractNamedModelElement
-    implements AnimationModel
-{
+        implements AnimationModel {
     /**
-     * Default implementation of a 
+     * Default implementation of a
      * {@link io.github.movementspeed.nhglib.files.gltf.jgltf.model.AnimationModel.Sampler}
      */
-    public static class DefaultSampler implements Sampler
-    {
+    public static class DefaultSampler implements Sampler {
         /**
          * The input data
          */
         private final AccessorModel input;
-        
+
         /**
          * The interpolation method
          */
         private final Interpolation interpolation;
-        
+
         /**
          * The output data
          */
         private final AccessorModel output;
-        
+
         /**
          * Default constructor
-         * 
-         * @param input The input
+         *
+         * @param input         The input
          * @param interpolation The interpolation
-         * @param output The output
+         * @param output        The output
          */
         public DefaultSampler(
-            AccessorModel input,
-            Interpolation interpolation,
-            AccessorModel output)
-        {
+                AccessorModel input,
+                Interpolation interpolation,
+                AccessorModel output) {
             this.input = Objects.requireNonNull(
-                input, "The input may not be null");
+                    input, "The input may not be null");
             this.interpolation = Objects.requireNonNull(
-                interpolation, "The interpolation may not be null");
+                    interpolation, "The interpolation may not be null");
             this.output = Objects.requireNonNull(
-                output, "The output may not be null");
+                    output, "The output may not be null");
         }
-        
+
         @Override
-        public AccessorModel getInput()
-        {
+        public AccessorModel getInput() {
             return input;
         }
 
         @Override
-        public Interpolation getInterpolation()
-        {
+        public Interpolation getInterpolation() {
             return interpolation;
         }
 
         @Override
-        public AccessorModel getOutput()
-        {
+        public AccessorModel getOutput() {
             return output;
         }
     }
-    
+
     /**
-     * Default implementation of a 
+     * Default implementation of a
      * {@link io.github.movementspeed.nhglib.files.gltf.jgltf.model.AnimationModel.Channel}
      */
-    public static class DefaultChannel implements Channel
-    {
+    public static class DefaultChannel implements Channel {
         /**
          * The sampler
          */
         private final Sampler sampler;
-        
+
         /**
          * The node model
          */
         private final NodeModel nodeModel;
-        
+
         /**
          * The path
          */
         private final String path;
-        
+
         /**
          * Default constructor
-         * 
-         * @param sampler The sampler
+         *
+         * @param sampler   The sampler
          * @param nodeModel The node model
-         * @param path The path
+         * @param path      The path
          */
         public DefaultChannel(
-            Sampler sampler,
-            NodeModel nodeModel,
-            String path)
-        {
+                Sampler sampler,
+                NodeModel nodeModel,
+                String path) {
             this.sampler = Objects.requireNonNull(
-                sampler, "The sampler may not be null");
+                    sampler, "The sampler may not be null");
             this.nodeModel = nodeModel;
             this.path = Objects.requireNonNull(
-                path, "The path may not be null");
-            
+                    path, "The path may not be null");
+
         }
-        
+
         @Override
-        public Sampler getSampler()
-        {
+        public Sampler getSampler() {
             return sampler;
         }
 
         @Override
-        public NodeModel getNodeModel()
-        {
+        public NodeModel getNodeModel() {
             return nodeModel;
         }
 
         @Override
-        public String getPath()
-        {
+        public String getPath() {
             return path;
         }
-        
+
     }
-    
+
     /**
      * The {@link io.github.movementspeed.nhglib.files.gltf.jgltf.model.AnimationModel.Channel} instances
      * of this animation
      */
     private final List<Channel> channels;
-    
+
     /**
      * Creates a new instance
      */
-    public DefaultAnimationModel()
-    {
+    public DefaultAnimationModel() {
         this.channels = new ArrayList<Channel>();
     }
-    
+
     /**
      * Add the given {@link io.github.movementspeed.nhglib.files.gltf.jgltf.model.AnimationModel.Channel}
-     * 
+     *
      * @param channel The {@link io.github.movementspeed.nhglib.files.gltf.jgltf.model.AnimationModel.Channel}
      */
-    public void addChannel(Channel channel)
-    {
+    public void addChannel(Channel channel) {
         Objects.requireNonNull(channel, "The channel may not be null");
         this.channels.add(channel);
     }
-    
+
     @Override
-    public List<Channel> getChannels()
-    {
+    public List<Channel> getChannels() {
         return Collections.unmodifiableList(channels);
     }
-    
+
 }

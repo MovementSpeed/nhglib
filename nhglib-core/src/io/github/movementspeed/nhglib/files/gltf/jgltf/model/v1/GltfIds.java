@@ -35,22 +35,19 @@ import java.util.Set;
 /**
  * Utility methods for generating IDs for {@link GlTF} objects
  */
-public class GltfIds
-{
+public class GltfIds {
     /**
      * Generate an unspecified ID string with the given prefix that is not
      * yet contained in the key set of the given map
-     * 
+     *
      * @param prefix The prefix for the ID string
-     * @param map The map from the existing IDs. This may be <code>null</code>.
+     * @param map    The map from the existing IDs. This may be <code>null</code>.
      * @return The new ID
      */
     public static String generateId(
-        String prefix, Map<? extends String, ?> map)
-    {
+            String prefix, Map<? extends String, ?> map) {
         Set<? extends String> set = Collections.emptySet();
-        if (map != null)
-        {
+        if (map != null) {
             set = map.keySet();
         }
         return generateId(prefix, set);
@@ -59,25 +56,21 @@ public class GltfIds
     /**
      * Generate an unspecified ID string with the given prefix that is not
      * yet contained in the given set
-     * 
+     *
      * @param prefix The prefix for the ID string
-     * @param set The set of the existing IDs. This may be <code>null</code>.
+     * @param set    The set of the existing IDs. This may be <code>null</code>.
      * @return The new ID
      */
     public static String generateId(
-        String prefix, Set<? extends String> set)
-    {
+            String prefix, Set<? extends String> set) {
         Set<? extends String> localSet = Collections.emptySet();
-        if (set != null)
-        {
+        if (set != null) {
             localSet = set;
         }
         int counter = localSet.size();
-        while (true)
-        {
+        while (true) {
             String id = prefix + counter;
-            if (!localSet.contains(id))
-            {
+            if (!localSet.contains(id)) {
                 return id;
             }
             counter++;
@@ -87,8 +80,7 @@ public class GltfIds
     /**
      * Private constructor to prevent instantiation
      */
-    private GltfIds()
-    {
+    private GltfIds() {
         // Private constructor to prevent instantiation
     }
 

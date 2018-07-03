@@ -166,18 +166,16 @@ public class Playground extends NhgEntry implements InputListener {
 	}
 
 	private void readGLTF() {
-		FileHandle file = Gdx.files.internal("/models/box.gltf");
+		//FileHandle file = Gdx.files.internal("/models/box.gltf");
 		GltfModelReader gltfModelReader = new GltfModelReader();
 		GltfModel gltfModel = null;
 
-		String path = file.file().getAbsolutePath();
+		//String path = file.file().getAbsolutePath();
 
 		try {
-			URI uri = new URI(path);
-			gltfModel = gltfModelReader.read(uri);
+			//URI uri = new URI(path);
+			gltfModel = gltfModelReader.read("models/box.gltf");
 		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
 

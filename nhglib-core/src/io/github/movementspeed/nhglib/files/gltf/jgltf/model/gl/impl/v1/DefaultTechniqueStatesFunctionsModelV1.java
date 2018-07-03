@@ -33,117 +33,103 @@ import io.github.movementspeed.nhglib.files.gltf.jgltf.model.gl.TechniqueStatesF
 import java.util.Objects;
 
 /**
- * Default implementation of a {@link TechniqueStatesFunctionsModel}, 
+ * Default implementation of a {@link TechniqueStatesFunctionsModel},
  * based on glTF 1.0 {@link TechniqueStatesFunctions}
  */
-public class DefaultTechniqueStatesFunctionsModelV1 
-    implements TechniqueStatesFunctionsModel
-{
+public class DefaultTechniqueStatesFunctionsModelV1
+        implements TechniqueStatesFunctionsModel {
     /**
      * The {@link TechniqueStatesFunctions}
      */
     private final TechniqueStatesFunctions functions;
-    
+
     /**
-     * Default constructor 
-     * 
+     * Default constructor
+     *
      * @param functions The {@link TechniqueStatesFunctions}
      */
     public DefaultTechniqueStatesFunctionsModelV1(
-        TechniqueStatesFunctions functions)
-    {
+            TechniqueStatesFunctions functions) {
         this.functions = Objects.requireNonNull(
-            functions, "The functions may not be null");
+                functions, "The functions may not be null");
     }
 
     @Override
-    public float[] getBlendColor()
-    {
+    public float[] getBlendColor() {
         return Optionals.of(
-            functions.getBlendColor(), 
-            functions.defaultBlendColor());
+                functions.getBlendColor(),
+                functions.defaultBlendColor());
     }
 
     @Override
-    public int[] getBlendEquationSeparate()
-    {
+    public int[] getBlendEquationSeparate() {
         return Optionals.of(
-            functions.getBlendEquationSeparate(),
-            functions.defaultBlendEquationSeparate());
+                functions.getBlendEquationSeparate(),
+                functions.defaultBlendEquationSeparate());
     }
 
     @Override
-    public int[] getBlendFuncSeparate()
-    {
+    public int[] getBlendFuncSeparate() {
         return Optionals.of(
-            functions.getBlendFuncSeparate(),
-            functions.defaultBlendFuncSeparate());
+                functions.getBlendFuncSeparate(),
+                functions.defaultBlendFuncSeparate());
     }
 
     @Override
-    public boolean[] getColorMask()
-    {
+    public boolean[] getColorMask() {
         return Optionals.of(
-            functions.getColorMask(),
-            functions.defaultColorMask());
+                functions.getColorMask(),
+                functions.defaultColorMask());
     }
 
     @Override
-    public int[] getCullFace()
-    {
+    public int[] getCullFace() {
         return Optionals.of(
-            functions.getCullFace(),
-            functions.defaultCullFace());
+                functions.getCullFace(),
+                functions.defaultCullFace());
     }
 
     @Override
-    public int[] getDepthFunc()
-    {
+    public int[] getDepthFunc() {
         return Optionals.of(
-            functions.getDepthFunc(),
-            functions.defaultDepthFunc());
+                functions.getDepthFunc(),
+                functions.defaultDepthFunc());
     }
 
     @Override
-    public boolean[] getDepthMask()
-    {
+    public boolean[] getDepthMask() {
         return Optionals.of(
-            functions.getDepthMask(),
-            functions.defaultDepthMask());
+                functions.getDepthMask(),
+                functions.defaultDepthMask());
     }
 
     @Override
-    public float[] getDepthRange()
-    {
+    public float[] getDepthRange() {
         return Optionals.of(
-            functions.getDepthRange(),
-            functions.defaultDepthRange());
+                functions.getDepthRange(),
+                functions.defaultDepthRange());
     }
 
     @Override
-    public int[] getFrontFace()
-    {
+    public int[] getFrontFace() {
         return Optionals.of(
-            functions.getFrontFace(),
-            functions.defaultFrontFace());
+                functions.getFrontFace(),
+                functions.defaultFrontFace());
     }
 
     @Override
-    public float[] getLineWidth()
-    {
+    public float[] getLineWidth() {
         return Optionals.of(
-            functions.getLineWidth(),
-            functions.defaultLineWidth());
+                functions.getLineWidth(),
+                functions.defaultLineWidth());
     }
 
     @Override
-    public float[] getPolygonOffset()
-    {
-        return Optionals.of( 
-            functions.getPolygonOffset(),
-            functions.defaultPolygonOffset());
+    public float[] getPolygonOffset() {
+        return Optionals.of(
+                functions.getPolygonOffset(),
+                functions.defaultPolygonOffset());
     }
-    
-    
+
 
 }
