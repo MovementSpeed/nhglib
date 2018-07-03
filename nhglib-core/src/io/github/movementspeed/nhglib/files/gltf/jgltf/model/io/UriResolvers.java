@@ -26,6 +26,8 @@
  */
 package io.github.movementspeed.nhglib.files.gltf.jgltf.model.io;
 
+import com.badlogic.gdx.files.FileHandle;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -59,28 +61,10 @@ public class UriResolvers
      * @return The function
      */
     public static Function<String, ByteBuffer> createBaseUriResolver(
-        URI baseUri)
+            FileHandle file)
     {
-        Objects.requireNonNull(baseUri, "The baseUri may not be null");
-        Function<String, InputStream> inputStreamFunction = 
-            new Function<String, InputStream>()
-        {
-            @Override
-            public InputStream apply(String uriString)
-            {
-                try
-                {
-                    URI absoluteUri = IO.makeAbsolute(baseUri, uriString);
-                    return IO.createInputStream(absoluteUri);
-                }
-                catch (IOException e)
-                {
-                    logger.warning("Could not open input stream for URI "
-                        + uriString + ":  " + e.getMessage());
-                    return null;
-                }
-            }
-        };
+        //Objects.requireNonNull(baseUri, "The baseUri may not be null");
+        Function<String, InputStream> inputStreamFunction = uriString -> file.read();
         return reading(inputStreamFunction);
     }
     

@@ -1,5 +1,7 @@
 package io.github.movementspeed.nhgpg;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.math.MathUtils;
@@ -14,6 +16,8 @@ import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
 import io.github.movementspeed.nhglib.core.entry.NhgEntry;
 import io.github.movementspeed.nhglib.core.messaging.Message;
 import io.github.movementspeed.nhglib.files.HDRData;
+import io.github.movementspeed.nhglib.files.gltf.jgltf.model.GltfModel;
+import io.github.movementspeed.nhglib.files.gltf.jgltf.model.io.GltfModelReader;
 import io.github.movementspeed.nhglib.graphics.lights.LightProbe;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
@@ -30,6 +34,11 @@ import io.github.movementspeed.nhglib.utils.data.Bounds;
 import io.github.movementspeed.nhglib.utils.data.Strings;
 import io.github.movementspeed.nhglib.utils.debug.NhgLogger;
 import io.reactivex.functions.Consumer;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class Playground extends NhgEntry implements InputListener {
 	private Scene scene;
@@ -50,6 +59,8 @@ public class Playground extends NhgEntry implements InputListener {
 	@Override
 	public void onInitialized() {
 		super.onInitialized();
+		readGLTF();
+
 		world = new NhgWorld(nhg.messaging, nhg.entities, nhg.assets,
 				new DefaultWorldStrategy(),
 				new Bounds(2f, 2f, 2f));
@@ -66,8 +77,7 @@ public class Playground extends NhgEntry implements InputListener {
 		physicsSystem.setGravity(new Vector3(0, -0.5f, 0));
 
 		renderingSystem = nhg.entities.getEntitySystem(RenderingSystem.class);
-		renderingSystem.setClearColor(Color.GRAY);
-		//renderingSystem.setRenderResolution(640, 360);
+		renderingSystem.setClearColor(Color.DARK_GRAY);
 
 		environment = renderingSystem.getEnvironment();
 
@@ -152,6 +162,28 @@ public class Playground extends NhgEntry implements InputListener {
 			if (input.is("exit")) {
 				nhg.messaging.send(new Message(Strings.Events.engineDestroy));
 			}
+		}
+	}
+
+	private void readGLTF() {
+		FileHandle file = Gdx.files.internal("/models/box.gltf");
+		GltfModelReader gltfModelReader = new GltfModelReader();
+		GltfModel gltfModel = null;
+
+		String path = file.file().getAbsolutePath();
+
+		try {
+			URI uri = new URI(path);
+			gltfModel = gltfModelReader.read(uri);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+
+		if (gltfModel != null) {
+			int c = 0;
+			c++;
 		}
 	}
 }

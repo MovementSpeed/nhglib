@@ -26,6 +26,7 @@
  */
 package io.github.movementspeed.nhglib.files.gltf.jgltf.model.io;
 
+import com.badlogic.gdx.files.FileHandle;
 import io.github.movementspeed.nhglib.files.gltf.jgltf.model.GltfModel;
 import io.github.movementspeed.nhglib.files.gltf.jgltf.model.io.v1.GltfAssetV1;
 import io.github.movementspeed.nhglib.files.gltf.jgltf.model.io.v2.GltfAssetV2;
@@ -75,11 +76,11 @@ public final class GltfModelReader
      * @return The {@link GltfModel}
      * @throws IOException If an IO error occurs
      */
-    public GltfModel read(URI uri) throws IOException
+    public GltfModel read(String path) throws IOException
     {
         GltfAssetReader gltfAssetReader = new GltfAssetReader();
         gltfAssetReader.setJsonErrorConsumer(jsonErrorConsumer);
-        GltfAsset gltfAsset = gltfAssetReader.read(uri);
+        GltfAsset gltfAsset = gltfAssetReader.read(path);
         return createModel(gltfAsset);
     }
     

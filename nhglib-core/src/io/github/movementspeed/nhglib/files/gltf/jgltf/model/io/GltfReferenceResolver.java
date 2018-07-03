@@ -26,6 +26,8 @@
  */
 package io.github.movementspeed.nhglib.files.gltf.jgltf.model.io;
 
+import com.badlogic.gdx.files.FileHandle;
+
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.Objects;
@@ -54,12 +56,12 @@ public class GltfReferenceResolver
      * @param baseUri The base URI that references will be resolved against
      */
     public static void resolveAll(
-        Iterable<? extends GltfReference> references, URI baseUri)
+            Iterable<? extends GltfReference> references, FileHandle file)
     {
         Objects.requireNonNull(references, "The references may not be null");
-        Objects.requireNonNull(baseUri, "The baseUri may not be null");
+        //Objects.requireNonNull(baseUri, "The baseUri may not be null");
         Function<String, ByteBuffer> uriResolver = 
-            UriResolvers.createBaseUriResolver(baseUri);
+            UriResolvers.createBaseUriResolver(file);
         resolveAll(references, uriResolver);
     }
     
