@@ -174,14 +174,16 @@ public class NhgG3dModelLoader extends NhgModelLoader<NhgModelLoader.ModelParame
                 jsonMaterial.id = id;
 
                 // Read material colors
-                final JsonValue albedo = material.get("albedo");
+                final JsonValue albedo = material.get("diffuse");
                 if (albedo != null) jsonMaterial.albedo = parseColor(albedo);
                 
                 final JsonValue ambient = material.get("ambient");
                 if (ambient != null) jsonMaterial.ambient = parseColor(ambient);
 
-                jsonMaterial.roughness = material.getFloat("roughness", -1);
-                jsonMaterial.metalness = material.getFloat("metalness", -1);
+                final JsonValue metalness = material.get("specular");
+                if (metalness != null) jsonMaterial.metalness = parseColor(metalness).r;
+
+                jsonMaterial.roughness = material.getFloat("shininess", -1);
                 
                 // Read opacity
                 jsonMaterial.opacity = 1.0f/*material.getFloat("opacity", 1.0f)*/;
@@ -220,22 +222,30 @@ public class NhgG3dModelLoader extends NhgModelLoader<NhgModelLoader.ModelParame
     }
 
     private int parseTextureUsage(final String value) {
-        if (value.equalsIgnoreCase("AMBIENT_OCCLUSION"))
+        if (value.equalsIgnoreCase("AMBIENT"))
             return NhgModelTexture.USAGE_AMBIENT_OCCLUSION;
-        else if (value.equalsIgnoreCase("ALBEDO"))
+
+        else if (value.equalsIgnoreCase("DIFFUSE"))
             return NhgModelTexture.USAGE_ALBEDO;
+
         else if (value.equalsIgnoreCase("EMISSIVE"))
             return NhgModelTexture.USAGE_EMISSIVE;
+
         else if (value.equalsIgnoreCase("NONE"))
             return NhgModelTexture.USAGE_NONE;
+
         else if (value.equalsIgnoreCase("NORMAL"))
             return NhgModelTexture.USAGE_NORMAL;
-        else if (value.equalsIgnoreCase("ROUGHNESS"))
+
+        else if (value.equalsIgnoreCase("SHININESS"))
             return NhgModelTexture.USAGE_ROUGHNESS;
-        else if (value.equalsIgnoreCase("METALNESS"))
+
+        else if (value.equalsIgnoreCase("SPECULAR"))
             return NhgModelTexture.USAGE_METALNESS;
+
         else if (value.equalsIgnoreCase("TRANSPARENCY"))
             return NhgModelTexture.USAGE_TRANSPARENCY;
+
         return NhgModelTexture.USAGE_UNKNOWN;
     }
 
