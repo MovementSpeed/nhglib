@@ -1,7 +1,5 @@
 package io.github.movementspeed.nhgpg;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.math.MathUtils;
@@ -16,8 +14,6 @@ import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
 import io.github.movementspeed.nhglib.core.entry.NhgEntry;
 import io.github.movementspeed.nhglib.core.messaging.Message;
 import io.github.movementspeed.nhglib.files.HDRData;
-import io.github.movementspeed.nhglib.files.gltf.jgltf.model.*;
-import io.github.movementspeed.nhglib.files.gltf.jgltf.model.io.GltfModelReader;
 import io.github.movementspeed.nhglib.graphics.lights.LightProbe;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
@@ -34,16 +30,6 @@ import io.github.movementspeed.nhglib.utils.data.Bounds;
 import io.github.movementspeed.nhglib.utils.data.Strings;
 import io.github.movementspeed.nhglib.utils.debug.NhgLogger;
 import io.reactivex.functions.Consumer;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 public class Playground extends NhgEntry implements InputListener {
 	private Scene scene;
@@ -64,8 +50,6 @@ public class Playground extends NhgEntry implements InputListener {
 	@Override
 	public void onInitialized() {
 		super.onInitialized();
-		readGLTF();
-
 		world = new NhgWorld(nhg.messaging, nhg.entities, nhg.assets,
 				new DefaultWorldStrategy(),
 				new Bounds(2f, 2f, 2f));
@@ -167,47 +151,6 @@ public class Playground extends NhgEntry implements InputListener {
 			if (input.is("exit")) {
 				nhg.messaging.send(new Message(Strings.Events.engineDestroy));
 			}
-		}
-	}
-
-	private void readGLTF() {
-		//FileHandle file = Gdx.files.internal("/models/box.gltf");
-		GltfModelReader gltfModelReader = new GltfModelReader();
-		GltfModel gltfModel = null;
-
-		//String path = file.file().getAbsolutePath();
-
-		try {
-			//URI uri = new URI(path);
-			gltfModel = gltfModelReader.read("models/box.gltf");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		if (gltfModel != null) {
-			List<NodeModel> nodeModels = gltfModel.getNodeModels();
-			NodeModel nodeModel = nodeModels.get(1);
-
-			List<MeshModel> meshModels = nodeModel.getMeshModels();
-			MeshModel meshModel = meshModels.get(0);
-
-			List<MeshPrimitiveModel> primitiveModels = meshModel.getMeshPrimitiveModels();
-			MeshPrimitiveModel primitiveModel = primitiveModels.get(0);
-
-			Map<String, AccessorModel> attributes = primitiveModel.getAttributes();
-			AccessorModel position = attributes.get("POSITION");
-
-			ByteBuffer positionsBuffer = position.getBufferViewModel().getBufferModel().getBufferData();
-			byte[] positions = positionsBuffer.array();
-
-			//float positions[] = new float[position.getCount() * 3];
-
-			/*for (int i = 0; i < position.getCount(); ++i) {
-
-			}*/
-
-			int c = 0;
-			c++;
 		}
 	}
 }
