@@ -57,7 +57,6 @@ public class UriResolvers
      * If the returned function cannot read the data, then it will print a
      * warning and return <code>null</code>.
      * 
-     * @param baseUri The base URI to resolve against
      * @return The function
      */
     public static Function<String, ByteBuffer> createBaseUriResolver(

@@ -53,7 +53,6 @@ public class GltfReferenceResolver
      * URIs of the references against the given base URI
      * 
      * @param references The {@link GltfReference} objects
-     * @param baseUri The base URI that references will be resolved against
      */
     public static void resolveAll(
             Iterable<? extends GltfReference> references, FileHandle file)

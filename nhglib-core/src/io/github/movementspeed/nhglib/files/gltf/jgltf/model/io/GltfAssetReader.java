@@ -42,7 +42,7 @@ import java.util.function.Consumer;
 /**
  * A class for reading a glTF asset in a version-agnostic form. <br>
  * <br>
- * The {@link #read(URI)} method allows reading the asset from a URI. The
+ * The method allows reading the asset from a URI. The
  * external references of the asset will be resolved against the parent
  * of the given URI, and loaded automatically. The respective data may
  * then be obtained with {@link GltfAsset#getReferenceData(String)}.<br>
@@ -98,7 +98,6 @@ public final class GltfAssetReader
     /**
      * Read the {@link GltfAsset} from the given URI
      * 
-     * @param uri The URI
      * @return The {@link GltfModel}
      * @throws IOException If an IO error occurs
      */
@@ -117,7 +116,7 @@ public final class GltfAssetReader
     /**
      * Read the {@link GltfAsset} from the given URI.<br>
      * <br>
-     * In contrast to the {@link #read(URI)} method, this method will
+     * In contrast to the read(URI) method, this method will
      * not resolve any external references.<br>
      * <br>
      * This is mainly intended for binary- or embedded glTF assets that do not
@@ -143,7 +142,7 @@ public final class GltfAssetReader
      * {@link #getMajorVersion()}, and the actual asset may be obtained
      * with {@link #getAsGltfAssetV1()} or {@link #getAsGltfAssetV2()}.<br>
      * <br>
-     * In contrast to the {@link #read(URI)} method, this method will
+     * In contrast to the read(URI) method, this method will
      * not resolve any external references.<br>
      * <br>
      * This is mainly intended for binary- or embedded glTF assets that do not

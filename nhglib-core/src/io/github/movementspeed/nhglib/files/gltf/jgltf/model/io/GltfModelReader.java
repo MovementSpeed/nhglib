@@ -72,7 +72,6 @@ public final class GltfModelReader
     /**
      * Read the {@link GltfModel} from the given URI
      * 
-     * @param uri The URI
      * @return The {@link GltfModel}
      * @throws IOException If an IO error occurs
      */
@@ -86,7 +85,7 @@ public final class GltfModelReader
     
     /**
      * Read the {@link GltfModel} from the given URI. In contrast to the 
-     * {@link #read(URI)} method, this method will not resolve any 
+     * read(URI) method, this method will not resolve any
      * references that are contained in the {@link GltfModel}. <br>
      * <br>
      * This is mainly intended for binary- or embedded glTF assets that do not
@@ -107,7 +106,7 @@ public final class GltfModelReader
     
     /**
      * Read the {@link GltfModel} from the given input stream. In contrast
-     * to the {@link #read(URI)} method, this method will not resolve any 
+     * to the read(URI) method, this method will not resolve any
      * references that are contained in the {@link GltfAsset}. <br>
      * <br>
      * This is mainly intended for binary- or embedded glTF assets that do not
