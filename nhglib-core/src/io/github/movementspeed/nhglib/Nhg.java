@@ -10,6 +10,7 @@ import io.github.movementspeed.nhglib.enums.OpenGLVersion;
  * Created by Fausto Napoli on 17/10/2016.
  * Entry point for Nhg, where various parts of the engine will be exposed.
  */
+// TODO 1: Make a complete 3D model with diffuse, normal, shininess and specular textures to try PBR model
 public class Nhg {
     public Assets assets;
     public Messaging messaging;
