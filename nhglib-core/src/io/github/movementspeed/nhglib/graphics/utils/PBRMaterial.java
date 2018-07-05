@@ -11,6 +11,7 @@ public class PBRMaterial extends Material {
 
     public float metalnessValue;
     public float roughnessValue;
+    public float aoValue;
 
     public float offsetU;
     public float offsetV;
@@ -20,10 +21,8 @@ public class PBRMaterial extends Material {
     public String targetNode;
 
     public String albedo;
-    public String metalness;
-    public String roughness;
     public String normal;
-    public String ambientOcclusion;
+    public String rma;
 
     public Color albedoColor;
 }

@@ -22,10 +22,8 @@ public class TiledPBRShaderProvider extends BaseShaderProvider {
     protected Shader createShader(Renderable renderable) {
         TiledPBRShader.Params params = new TiledPBRShader.Params();
         params.albedo = ShaderUtils.hasAlbedo(renderable);
-        params.metalness = ShaderUtils.hasMetalness(renderable);
-        params.roughness = ShaderUtils.hasRoughness(renderable);
+        params.rma = ShaderUtils.hasRMA(renderable);
         params.normal = ShaderUtils.hasPbrNormal(renderable);
-        params.ambientOcclusion = ShaderUtils.hasAmbientOcclusion(renderable);
         params.useBones = ShaderUtils.useBones(renderable);
         params.lit = ShaderUtils.hasLights(environment);
         params.gammaCorrection = ShaderUtils.useGammaCorrection(environment);

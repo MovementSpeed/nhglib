@@ -20,10 +20,8 @@ public class PBRShaderProvider extends BaseShaderProvider {
     protected PBRShader.Params createShaderParams(Renderable renderable) {
         PBRShader.Params params = new PBRShader.Params();
         params.albedo = ShaderUtils.hasAlbedo(renderable);
-        params.metalness = ShaderUtils.hasMetalness(renderable);
-        params.roughness = ShaderUtils.hasRoughness(renderable);
+        params.rma = ShaderUtils.hasRMA(renderable);
         params.normal = ShaderUtils.hasPbrNormal(renderable);
-        params.ambientOcclusion = ShaderUtils.hasAmbientOcclusion(renderable);
         params.useBones = ShaderUtils.useBones(renderable);
         params.lit = ShaderUtils.hasLights(renderable.environment);
         params.gammaCorrection = ShaderUtils.useGammaCorrection(renderable.environment);

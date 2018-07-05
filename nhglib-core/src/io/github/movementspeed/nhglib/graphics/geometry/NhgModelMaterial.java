@@ -5,8 +5,6 @@ import com.badlogic.gdx.utils.Array;
 
 public class NhgModelMaterial {
     public float opacity = 1.f;
-    public float roughness;
-    public float metalness;
 
     public String id;
 

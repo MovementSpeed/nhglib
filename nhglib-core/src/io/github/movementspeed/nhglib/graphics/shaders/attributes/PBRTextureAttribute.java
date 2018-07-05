@@ -15,18 +15,16 @@ import com.badlogic.gdx.utils.NumberUtils;
  */
 public class PBRTextureAttribute extends Attribute {
     public final static String AlbedoAlias = "PBRAlbedoTexture";
-    public final static String MetalnessAlias = "PBRMetalnessTexture";
-    public final static String RoughnessAlias = "PBRRoughnessTexture";
     public final static String NormalAlias = "PBRNormalTexture";
-    public final static String AmbientOcclusionAlias = "PBRAmbientOcclusionTexture";
+    public final static String RMAAlias = "RMATexture";
+    public final static String EmissiveAlias = "PBREmissiveTexture";
 
     public final static long Albedo = register(AlbedoAlias);
-    public final static long Metalness = register(MetalnessAlias);
-    public final static long Roughness = register(RoughnessAlias);
     public final static long Normal = register(NormalAlias);
-    public final static long AmbientOcclusion = register(AmbientOcclusionAlias);
+    public final static long RMA = register(RMAAlias);
+    public final static long Emissive = register(EmissiveAlias);
 
-    protected static long Mask = Albedo | Metalness | Roughness | Normal | AmbientOcclusion;
+    protected static long Mask = Albedo | Normal | RMA | Emissive;
 
     public final static boolean is(final long mask) {
         return (mask & Mask) != 0;
@@ -55,7 +53,45 @@ public class PBRTextureAttribute extends Attribute {
         return new PBRTextureAttribute(Albedo, textureDescriptor, offsetU, offsetV, tilesU, tilesV);
     }
 
-    public static PBRTextureAttribute createMetalness(final float metalness) {
+    public static PBRTextureAttribute createRMA(final float roughness, final float metalness, final float ambientOcclusion) {
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGB888);
+        pixmap.setColor(roughness, metalness, ambientOcclusion, 1.0f);
+        pixmap.drawPixel(0, 0);
+        Texture texture = new Texture(pixmap);
+        return new PBRTextureAttribute(RMA, texture);
+    }
+
+    public static PBRTextureAttribute createRMA(final Texture texture) {
+        return new PBRTextureAttribute(RMA, texture);
+    }
+
+    public static PBRTextureAttribute createRMA(final TextureRegion region) {
+        return new PBRTextureAttribute(RMA, region);
+    }
+
+    public static PBRTextureAttribute createRMA(final Texture texture, float offsetU, float offsetV, float tilesU, float tilesV) {
+        TextureDescriptor textureDescriptor = new TextureDescriptor();
+        textureDescriptor.texture = texture;
+
+        return new PBRTextureAttribute(RMA, textureDescriptor, offsetU, offsetV, tilesU, tilesV);
+    }
+
+    public static PBRTextureAttribute createEmissive(final Texture texture) {
+        return new PBRTextureAttribute(Emissive, texture);
+    }
+
+    public static PBRTextureAttribute createEmissive(final TextureRegion region) {
+        return new PBRTextureAttribute(Emissive, region);
+    }
+
+    public static PBRTextureAttribute createEmissive(final Texture texture, float offsetU, float offsetV, float tilesU, float tilesV) {
+        TextureDescriptor textureDescriptor = new TextureDescriptor();
+        textureDescriptor.texture = texture;
+
+        return new PBRTextureAttribute(Emissive, textureDescriptor, offsetU, offsetV, tilesU, tilesV);
+    }
+
+    /*public static PBRTextureAttribute createMetalness(final float metalness) {
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGB888);
         pixmap.setColor(metalness, metalness, metalness, 1.0f);
         pixmap.drawPixel(0, 0);
@@ -99,7 +135,7 @@ public class PBRTextureAttribute extends Attribute {
         textureDescriptor.texture = texture;
 
         return new PBRTextureAttribute(Roughness, textureDescriptor, offsetU, offsetV, tilesU, tilesV);
-    }
+    }*/
 
     public static PBRTextureAttribute createNormal(final Texture texture) {
         return new PBRTextureAttribute(Normal, texture);
@@ -116,7 +152,7 @@ public class PBRTextureAttribute extends Attribute {
         return new PBRTextureAttribute(Normal, textureDescriptor, offsetU, offsetV, tilesU, tilesV);
     }
 
-    public static PBRTextureAttribute createAmbientOcclusion(final Texture texture) {
+    /*public static PBRTextureAttribute createAmbientOcclusion(final Texture texture) {
         return new PBRTextureAttribute(AmbientOcclusion, texture);
     }
 
@@ -129,7 +165,7 @@ public class PBRTextureAttribute extends Attribute {
         textureDescriptor.texture = texture;
 
         return new PBRTextureAttribute(AmbientOcclusion, textureDescriptor, offsetU, offsetV, tilesU, tilesV);
-    }
+    }*/
 
     public final TextureDescriptor<Texture> textureDescription;
 

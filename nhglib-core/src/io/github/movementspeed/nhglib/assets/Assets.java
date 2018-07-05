@@ -9,13 +9,13 @@ import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.TextureLoader;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.utils.*;
 import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.assets.loaders.*;
 import io.github.movementspeed.nhglib.core.fsm.base.AssetsStates;
 import io.github.movementspeed.nhglib.core.messaging.Message;
 import io.github.movementspeed.nhglib.files.HDRData;
+import io.github.movementspeed.nhglib.graphics.geometry.NhgModel;
 import io.github.movementspeed.nhglib.graphics.scenes.Scene;
 import io.github.movementspeed.nhglib.input.handler.InputProxy;
 import io.github.movementspeed.nhglib.interfaces.Updatable;
@@ -514,7 +514,7 @@ public class Assets implements Updatable, AssetErrorListener {
         assetManager.setLoader(InputProxy.class, inputLoader);
         assetManager.setLoader(JsonValue.class, jsonLoader);
         assetManager.setLoader(HDRData.class, hdrLoader);
-        assetManager.setLoader(Model.class, ".g3db", nhgG3dModelLoader);
+        assetManager.setLoader(NhgModel.class, ".g3db", nhgG3dModelLoader);
     }
 
     public interface AssetListener {

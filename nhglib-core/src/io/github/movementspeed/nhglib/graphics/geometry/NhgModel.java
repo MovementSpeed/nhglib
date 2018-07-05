@@ -261,8 +261,6 @@ public class NhgModel implements Disposable {
         result.id = mtl.id;
 
         if (mtl.albedo != null) result.set(PBRTextureAttribute.createAlbedo(mtl.albedo));
-        if (mtl.roughness != -1) result.set(PBRTextureAttribute.createRoughness(mtl.roughness));
-        if (mtl.metalness != -1) result.set(PBRTextureAttribute.createMetalness(mtl.metalness));
 
         if (mtl.opacity != 1.f)
             result.set(new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, mtl.opacity));
@@ -296,20 +294,14 @@ public class NhgModel implements Disposable {
                     case NhgModelTexture.USAGE_ALBEDO:
                         result.set(new PBRTextureAttribute(PBRTextureAttribute.Albedo, descriptor, offsetU, offsetV, scaleU, scaleV));
                         break;
-                    case NhgModelTexture.USAGE_ROUGHNESS:
-                        result.set(new PBRTextureAttribute(PBRTextureAttribute.Roughness, descriptor, offsetU, offsetV, scaleU, scaleV));
-                        break;
-                    case NhgModelTexture.USAGE_METALNESS:
-                        result.set(new PBRTextureAttribute(PBRTextureAttribute.Metalness, descriptor, offsetU, offsetV, scaleU, scaleV));
+                    case NhgModelTexture.USAGE_RMA:
+                        result.set(new PBRTextureAttribute(PBRTextureAttribute.RMA, descriptor, offsetU, offsetV, scaleU, scaleV));
                         break;
                     case NhgModelTexture.USAGE_NORMAL:
                         result.set(new PBRTextureAttribute(PBRTextureAttribute.Normal, descriptor, offsetU, offsetV, scaleU, scaleV));
                         break;
-                    case NhgModelTexture.USAGE_AMBIENT_OCCLUSION:
-                        result.set(new PBRTextureAttribute(PBRTextureAttribute.AmbientOcclusion, descriptor, offsetU, offsetV, scaleU, scaleV));
-                        break;
                     case NhgModelTexture.USAGE_EMISSIVE:
-                        //result.set(new TextureAttribute(TextureAttribute.Emissive, descriptor, offsetU, offsetV, scaleU, scaleV));
+                        result.set(new PBRTextureAttribute(PBRTextureAttribute.Emissive, descriptor, offsetU, offsetV, scaleU, scaleV));
                         break;
                 }
             }

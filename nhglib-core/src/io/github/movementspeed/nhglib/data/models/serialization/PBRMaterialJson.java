@@ -19,10 +19,8 @@ public class PBRMaterialJson implements JsonParseable<PBRMaterial> {
         boolean blended = jsonValue.getBoolean("blended", false);
 
         String albedo = jsonValue.getString("albedo", "");
-        String metalness = jsonValue.getString("metalness", "");
-        String roughness = jsonValue.getString("roughness", "");
         String normal = jsonValue.getString("normal", "");
-        String ambientOcclusion = jsonValue.getString("ambientOcclusion", "");
+        String rma = jsonValue.getString("rma", "");
 
         pbrMaterial.blended = blended;
 
@@ -36,6 +34,12 @@ public class PBRMaterialJson implements JsonParseable<PBRMaterial> {
             pbrMaterial.roughnessValue = jsonValue.getFloat("roughnessValue", 0.8f);
         } else {
             pbrMaterial.roughnessValue = -1;
+        }
+
+        if (jsonValue.has("aoValue")) {
+            pbrMaterial.aoValue = jsonValue.getFloat("aoValue", 1.0f);
+        } else {
+            pbrMaterial.aoValue = -1;
         }
 
         pbrMaterial.offsetU = jsonValue.getFloat("offsetU", 0f);
@@ -57,20 +61,12 @@ public class PBRMaterialJson implements JsonParseable<PBRMaterial> {
             pbrMaterial.albedo = albedo;
         }
 
-        if (metalness != null) {
-            pbrMaterial.metalness = metalness;
-        }
-
-        if (roughness != null) {
-            pbrMaterial.roughness = roughness;
+        if (rma != null) {
+            pbrMaterial.rma = rma;
         }
 
         if (normal != null) {
             pbrMaterial.normal = normal;
-        }
-
-        if (ambientOcclusion != null) {
-            pbrMaterial.ambientOcclusion = ambientOcclusion;
         }
     }
 

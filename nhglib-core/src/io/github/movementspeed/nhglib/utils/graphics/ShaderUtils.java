@@ -150,44 +150,11 @@ public class ShaderUtils {
         return res;
     }
 
-    public static boolean hasMetalness(Renderable renderable) {
+    public static boolean hasRMA(Renderable renderable) {
         boolean res = false;
-        PBRTextureAttribute attribute = (PBRTextureAttribute) renderable.material.get(PBRTextureAttribute.Metalness);
+        PBRTextureAttribute attribute = (PBRTextureAttribute) renderable.material.get(PBRTextureAttribute.RMA);
 
         if (attribute != null && attribute.textureDescription.texture != null) {
-            res = true;
-        }
-
-        return res;
-    }
-
-    public static boolean hasMetalnessValue(Renderable renderable) {
-        boolean res = false;
-        PBRColorAttribute attribute = (PBRColorAttribute) renderable.material.get(PBRColorAttribute.MetalnessValue);
-
-        if (attribute != null) {
-            res = true;
-        }
-
-        return res;
-    }
-
-    public static boolean hasRoughness(Renderable renderable) {
-        boolean res = false;
-        PBRTextureAttribute attribute = (PBRTextureAttribute) renderable.material.get(PBRTextureAttribute.Roughness);
-
-        if (attribute != null && attribute.textureDescription.texture != null) {
-            res = true;
-        }
-
-        return res;
-    }
-
-    public static boolean hasRoughnessValue(Renderable renderable) {
-        boolean res = false;
-        PBRColorAttribute attribute = (PBRColorAttribute) renderable.material.get(PBRColorAttribute.RoughnessValue);
-
-        if (attribute != null) {
             res = true;
         }
 
@@ -197,17 +164,6 @@ public class ShaderUtils {
     public static boolean hasPbrNormal(Renderable renderable) {
         boolean res = false;
         PBRTextureAttribute attribute = (PBRTextureAttribute) renderable.material.get(PBRTextureAttribute.Normal);
-
-        if (attribute != null && attribute.textureDescription.texture != null) {
-            res = true;
-        }
-
-        return res;
-    }
-
-    public static boolean hasAmbientOcclusion(Renderable renderable) {
-        boolean res = false;
-        PBRTextureAttribute attribute = (PBRTextureAttribute) renderable.material.get(PBRTextureAttribute.AmbientOcclusion);
 
         if (attribute != null && attribute.textureDescription.texture != null) {
             res = true;

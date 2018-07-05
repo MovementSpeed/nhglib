@@ -228,30 +228,6 @@ public class SceneManager {
                     }
                 }
 
-                if (pbrMaterial.ambientOcclusion != null && !pbrMaterial.ambientOcclusion.isEmpty()) {
-                    Texture ambientOcclusion = assets.get(pbrMaterial.ambientOcclusion);
-
-                    if (ambientOcclusion != null) {
-                        ambientOcclusion.setFilter(mag, min);
-                        ambientOcclusion.setWrap(wrapU, wrapV);
-                        pbrMaterial.set(PBRTextureAttribute.createAmbientOcclusion(ambientOcclusion,
-                                pbrMaterial.offsetU, pbrMaterial.offsetV, pbrMaterial.tilesU, pbrMaterial.tilesV));
-                    }
-                }
-
-                if (pbrMaterial.metalness != null && !pbrMaterial.metalness.isEmpty()) {
-                    Texture metalness = assets.get(pbrMaterial.metalness);
-
-                    if (metalness != null) {
-                        metalness.setFilter(mag, min);
-                        metalness.setWrap(wrapU, wrapV);
-                        pbrMaterial.set(PBRTextureAttribute.createMetalness(metalness,
-                                pbrMaterial.offsetU, pbrMaterial.offsetV, pbrMaterial.tilesU, pbrMaterial.tilesV));
-                    }
-                } else if (pbrMaterial.metalnessValue >= 0 && pbrMaterial.metalnessValue <= 1) {
-                    pbrMaterial.set(PBRTextureAttribute.createMetalness(pbrMaterial.metalnessValue));
-                }
-
                 if (pbrMaterial.normal != null && !pbrMaterial.normal.isEmpty()) {
                     Texture normal = assets.get(pbrMaterial.normal);
 
@@ -278,17 +254,31 @@ public class SceneManager {
                     }
                 }
 
-                if (pbrMaterial.roughness != null && !pbrMaterial.roughness.isEmpty()) {
-                    Texture roughness = assets.get(pbrMaterial.roughness);
+                if (pbrMaterial.rma != null && !pbrMaterial.rma.isEmpty()) {
+                    Texture rma = assets.get(pbrMaterial.rma);
 
-                    if (roughness != null) {
-                        roughness.setFilter(mag, min);
-                        roughness.setWrap(wrapU, wrapV);
-                        pbrMaterial.set(PBRTextureAttribute.createRoughness(roughness,
+                    if (rma != null) {
+                        rma.setFilter(mag, min);
+                        rma.setWrap(wrapU, wrapV);
+                        pbrMaterial.set(PBRTextureAttribute.createRMA(rma,
                                 pbrMaterial.offsetU, pbrMaterial.offsetV, pbrMaterial.tilesU, pbrMaterial.tilesV));
                     }
-                } else if (pbrMaterial.roughnessValue >= 0 && pbrMaterial.roughnessValue <= 1) {
-                    pbrMaterial.set(PBRTextureAttribute.createRoughness(pbrMaterial.roughnessValue));
+                } else {
+                    float roughness = 1, metalness = 0, ao = 1;
+
+                    if (pbrMaterial.roughnessValue >= 0 && pbrMaterial.roughnessValue <= 1) {
+                        roughness = pbrMaterial.roughnessValue;
+                    }
+
+                    if (pbrMaterial.metalnessValue >= 0 && pbrMaterial.metalnessValue <= 1) {
+                        metalness = pbrMaterial.metalnessValue;
+                    }
+
+                    if (pbrMaterial.aoValue >= 0 && pbrMaterial.aoValue <= 1) {
+                        ao = pbrMaterial.aoValue;
+                    }
+
+                    pbrMaterial.set(PBRTextureAttribute.createRMA(roughness, metalness, ao));
                 }
 
                 if (pbrMaterial.blended) {
@@ -310,11 +300,9 @@ public class SceneManager {
             assets.unloadAsset(modelComponent.asset);
 
             for (PBRMaterial mat : modelComponent.pbrMaterials) {
-                assets.unloadAsset(mat.roughness);
-                assets.unloadAsset(mat.normal);
-                assets.unloadAsset(mat.metalness);
-                assets.unloadAsset(mat.ambientOcclusion);
                 assets.unloadAsset(mat.albedo);
+                assets.unloadAsset(mat.normal);
+                assets.unloadAsset(mat.rma);
             }
         }
     }

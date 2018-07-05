@@ -144,28 +144,6 @@ public class TiledPBRShader extends BaseShader {
             }
         });
 
-        register("u_metalnessTiles", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Metalness);
-
-                if (textureAttribute != null) {
-                    shader.set(inputID, vec2.set(textureAttribute.tilesU, textureAttribute.tilesV));
-                }
-            }
-        });
-
-        register("u_roughnessTiles", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Roughness);
-
-                if (textureAttribute != null) {
-                    shader.set(inputID, vec2.set(textureAttribute.tilesU, textureAttribute.tilesV));
-                }
-            }
-        });
-
         register("u_normalTiles", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
@@ -177,10 +155,10 @@ public class TiledPBRShader extends BaseShader {
             }
         });
 
-        register("u_ambientOcclusionTiles", new LocalSetter() {
+        register("u_rmaTiles", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.AmbientOcclusion);
+                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.RMA);
 
                 if (textureAttribute != null) {
                     shader.set(inputID, vec2.set(textureAttribute.tilesU, textureAttribute.tilesV));
@@ -199,28 +177,6 @@ public class TiledPBRShader extends BaseShader {
             }
         });
 
-        register("u_metalness", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Metalness);
-
-                if (textureAttribute != null) {
-                    shader.set(inputID, textureAttribute.textureDescription.texture);
-                }
-            }
-        });
-
-        register("u_roughness", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Roughness);
-
-                if (textureAttribute != null) {
-                    shader.set(inputID, textureAttribute.textureDescription.texture);
-                }
-            }
-        });
-
         register("u_normal", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
@@ -232,10 +188,10 @@ public class TiledPBRShader extends BaseShader {
             }
         });
 
-        register("u_ambientOcclusion", new LocalSetter() {
+        register("u_rma", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.AmbientOcclusion);
+                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.RMA);
 
                 if (textureAttribute != null) {
                     shader.set(inputID, textureAttribute.textureDescription.texture);
@@ -382,17 +338,14 @@ public class TiledPBRShader extends BaseShader {
     @Override
     public boolean canRender(Renderable instance) {
         boolean diffuse = ShaderUtils.hasAlbedo(instance) == params.albedo;
-        boolean metalness = ShaderUtils.hasMetalness(instance) == params.metalness;
-        boolean roughness = ShaderUtils.hasRoughness(instance) == params.roughness;
+        boolean rma = ShaderUtils.hasRMA(instance) == params.rma;
         boolean normal = ShaderUtils.hasPbrNormal(instance) == params.normal;
-        boolean ambientOcclusion = ShaderUtils.hasAmbientOcclusion(instance) == params.ambientOcclusion;
         boolean bones = ShaderUtils.useBones(instance) == params.useBones;
         boolean lit = ShaderUtils.hasLights(instance.environment) == params.lit;
         boolean gammaCorrection = ShaderUtils.useGammaCorrection(instance.environment) == params.gammaCorrection;
         boolean imageBasedLighting = ShaderUtils.useImageBasedLighting(instance.environment) == params.imageBasedLighting;
 
-        return diffuse && metalness && roughness && normal && ambientOcclusion && bones &&
-                lit && gammaCorrection && imageBasedLighting;
+        return diffuse && rma && normal && bones && lit && gammaCorrection && imageBasedLighting;
     }
 
     @Override
@@ -589,20 +542,12 @@ public class TiledPBRShader extends BaseShader {
             prefix += "#define defAlbedo\n";
         }
 
-        if (params.metalness) {
-            prefix += "#define defMetalness\n";
-        }
-
-        if (params.roughness) {
-            prefix += "#define defRoughness\n";
+        if (params.rma) {
+            prefix += "#define defRMA\n";
         }
 
         if (params.normal) {
             prefix += "#define defNormal\n";
-        }
-
-        if (params.ambientOcclusion) {
-            prefix += "#define defAmbientOcclusion\n";
         }
 
         if (params.gammaCorrection) {
@@ -634,10 +579,8 @@ public class TiledPBRShader extends BaseShader {
     public static class Params {
         boolean useBones;
         boolean albedo;
-        boolean metalness;
-        boolean roughness;
         boolean normal;
-        boolean ambientOcclusion;
+        boolean rma;
         boolean lit;
         boolean gammaCorrection;
         boolean imageBasedLighting;
