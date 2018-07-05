@@ -73,24 +73,14 @@ uniform HIGHP mat4 u_viewMatrix;
     uniform LOWP vec2 u_albedoTiles;
 #endif
 
-#ifdef defMetalness
-    uniform LOWP sampler2D u_metalness;
-    uniform LOWP vec2 u_metalnessTiles;
-#endif
-
-#ifdef defRoughness
-    uniform LOWP sampler2D u_roughness;
-    uniform LOWP vec2 u_roughnessTiles;
+#ifdef defRMA
+    uniform LOWP sampler2D u_rma;
+    uniform LOWP vec2 u_rmaTiles;
 #endif
 
 #ifdef defNormal
     uniform LOWP sampler2D u_normal;
     uniform LOWP vec2 u_normalTiles;
-#endif
-
-#ifdef defAmbientOcclusion
-    uniform LOWP sampler2D u_ambientOcclusion;
-    uniform LOWP vec2 u_ambientOcclusionTiles;
 #endif
 
 #ifdef defImageBasedLighting
@@ -170,21 +160,14 @@ void main() {
 
     LOWP vec3 color;
 
-    #ifdef defMetalness
-        LOWP float metalness = texture2D(u_metalness, fract(v_texCoord / u_metalnessTiles)).r;
-    #else
-        LOWP float metalness = 0.5;
-    #endif
-
-    #ifdef defRoughness
-        LOWP float roughness = texture2D(u_roughness, fract(v_texCoord / u_roughnessTiles)).r;
+    #ifdef defRMA
+        LOWP vec2 rmaCoords = fract(v_texCoord / u_rmaTiles);
+        LOWP float roughness = texture(u_rma, rmaCoords).r;
+        LOWP float metalness = texture(u_rma, rmaCoords).g;
+        LOWP float ambientOcclusion = texture(u_rma, rmaCoords).b;
     #else
         LOWP float roughness = 0.1;
-    #endif
-
-    #ifdef defAmbientOcclusion
-        LOWP float ambientOcclusion = texture2D(u_ambientOcclusion, fract(v_texCoord / u_ambientOcclusionTiles)).r;
-    #else
+        LOWP float metalness = 0.5;
         LOWP float ambientOcclusion = 1.0;
     #endif
 
