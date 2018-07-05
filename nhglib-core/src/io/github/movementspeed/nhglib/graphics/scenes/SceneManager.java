@@ -1,17 +1,12 @@
 package io.github.movementspeed.nhglib.graphics.scenes;
 
 import com.artemis.ComponentMapper;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
-import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffectLoader;
 import com.badlogic.gdx.utils.Array;
@@ -174,15 +169,6 @@ public class SceneManager {
             modelComponent.buildWithModel(nodeComponent.node.scale, model);
 
             for (PBRMaterial pbrMaterial : modelComponent.pbrMaterials) {
-                Material currentMaterial;
-
-                if (pbrMaterial.targetNode != null && !pbrMaterial.targetNode.isEmpty()) {
-                    Node node = modelComponent.model.getNode(pbrMaterial.targetNode);
-                    currentMaterial = node.parts.first().material;
-                } else {
-                    currentMaterial = modelComponent.model.materials.first();
-                }
-
                 Texture.TextureFilter mag = Texture.TextureFilter.Linear;
                 Texture.TextureFilter min = Texture.TextureFilter.Linear;
                 Texture.TextureWrap wrapU = Texture.TextureWrap.Repeat;
@@ -199,33 +185,6 @@ public class SceneManager {
                     }
                 } else if (pbrMaterial.albedoColor != null) {
                     pbrMaterial.set(PBRTextureAttribute.createAlbedo(pbrMaterial.albedoColor));
-                } else {
-                    if (currentMaterial != null) {
-                        TextureAttribute textureAttribute = (TextureAttribute) currentMaterial.get(TextureAttribute.Diffuse);
-
-                        if (textureAttribute != null) {
-                            Texture albedo = textureAttribute.textureDescription.texture;
-
-                            if (albedo != null) {
-                                albedo.setFilter(mag, min);
-                                albedo.setWrap(wrapU, wrapV);
-                                pbrMaterial.set(PBRTextureAttribute.createAlbedo(albedo,
-                                        pbrMaterial.offsetU, pbrMaterial.offsetV, pbrMaterial.tilesU, pbrMaterial.tilesV));
-                                currentMaterial.remove(TextureAttribute.Diffuse);
-                            }
-                        } else {
-                            ColorAttribute colorAttribute = (ColorAttribute) currentMaterial.get(ColorAttribute.Diffuse);
-
-                            if (colorAttribute != null) {
-                                Color color = colorAttribute.color;
-
-                                if (color != null) {
-                                    pbrMaterial.set(PBRTextureAttribute.createAlbedo(color));
-                                    currentMaterial.remove(ColorAttribute.Diffuse);
-                                }
-                            }
-                        }
-                    }
                 }
 
                 if (pbrMaterial.normal != null && !pbrMaterial.normal.isEmpty()) {
@@ -236,21 +195,6 @@ public class SceneManager {
                         normal.setWrap(wrapU, wrapV);
                         pbrMaterial.set(PBRTextureAttribute.createNormal(normal,
                                 pbrMaterial.offsetU, pbrMaterial.offsetV, pbrMaterial.tilesU, pbrMaterial.tilesV));
-                    }
-                } else {
-                    if (currentMaterial != null) {
-                        TextureAttribute normalAttribute = (TextureAttribute) currentMaterial.get(TextureAttribute.Normal);
-
-                        if (normalAttribute != null) {
-                            Texture normal = normalAttribute.textureDescription.texture;
-
-                            if (normal != null) {
-                                normal.setFilter(mag, min);
-                                normal.setWrap(wrapU, wrapV);
-                                pbrMaterial.set(PBRTextureAttribute.createNormal(normal));
-                                currentMaterial.remove(TextureAttribute.Normal);
-                            }
-                        }
                     }
                 }
 

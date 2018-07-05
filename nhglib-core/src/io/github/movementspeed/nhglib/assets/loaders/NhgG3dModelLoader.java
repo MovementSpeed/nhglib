@@ -13,9 +13,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.*;
 import io.github.movementspeed.nhglib.assets.Asset;
 import io.github.movementspeed.nhglib.assets.Assets;
-import io.github.movementspeed.nhglib.graphics.geometry.NhgModelData;
-import io.github.movementspeed.nhglib.graphics.geometry.NhgModelMaterial;
-import io.github.movementspeed.nhglib.graphics.geometry.NhgModelTexture;
 
 public class NhgG3dModelLoader extends NhgModelLoader<NhgModelLoader.ModelParameters> {
     public static final short VERSION_HI = 0;
@@ -35,13 +32,13 @@ public class NhgG3dModelLoader extends NhgModelLoader<NhgModelLoader.ModelParame
     }
 
     @Override
-    public NhgModelData loadModelData(FileHandle fileHandle, NhgModelLoader.ModelParameters parameters) {
+    public ModelData loadModelData(FileHandle fileHandle, NhgModelLoader.ModelParameters parameters) {
         return parseModel(fileHandle);
     }
 
-    public NhgModelData parseModel(FileHandle handle) {
+    public ModelData parseModel(FileHandle handle) {
         JsonValue json = reader.parse(handle);
-        NhgModelData model = new NhgModelData();
+        ModelData model = new ModelData();
         JsonValue version = json.require("version");
         model.version[0] = version.getShort(0);
         model.version[1] = version.getShort(1);
@@ -65,7 +62,7 @@ public class NhgG3dModelLoader extends NhgModelLoader<NhgModelLoader.ModelParame
         return model;
     }
 
-    private void parseMeshes(NhgModelData model, JsonValue json) {
+    private void parseMeshes(ModelData model, JsonValue json) {
         JsonValue meshes = json.get("meshes");
         if (meshes != null) {
 
@@ -158,7 +155,7 @@ public class NhgG3dModelLoader extends NhgModelLoader<NhgModelLoader.ModelParame
         return vertexAttributes.toArray(VertexAttribute.class);
     }
 
-    private void parseMaterials(NhgModelData model, JsonValue json, String materialDir) {
+    private void parseMaterials(ModelData model, JsonValue json, String materialDir) {
         JsonValue materials = json.get("materials");
 
         if (materials == null) {
@@ -166,7 +163,7 @@ public class NhgG3dModelLoader extends NhgModelLoader<NhgModelLoader.ModelParame
         } else {
             model.materials.ensureCapacity(materials.size);
             for (JsonValue material = materials.child; material != null; material = material.next) {
-                NhgModelMaterial jsonMaterial = new NhgModelMaterial();
+                ModelMaterial jsonMaterial = new ModelMaterial();
 
                 String id = material.getString("id", null);
                 if (id == null) throw new GdxRuntimeException("Material needs an id.");
@@ -175,7 +172,7 @@ public class NhgG3dModelLoader extends NhgModelLoader<NhgModelLoader.ModelParame
 
                 // Read material colors
                 final JsonValue albedo = material.get("diffuse");
-                if (albedo != null) jsonMaterial.albedo = parseColor(albedo);
+                if (albedo != null) jsonMaterial.diffuse = parseColor(albedo);
                 
                 final JsonValue ambient = material.get("ambient");
                 if (ambient != null) jsonMaterial.ambient = parseColor(ambient);
@@ -187,7 +184,7 @@ public class NhgG3dModelLoader extends NhgModelLoader<NhgModelLoader.ModelParame
                 JsonValue textures = material.get("textures");
                 if (textures != null) {
                     for (JsonValue texture = textures.child; texture != null; texture = texture.next) {
-                        NhgModelTexture jsonTexture = new NhgModelTexture();
+                        ModelTexture jsonTexture = new ModelTexture();
 
                         String textureId = texture.getString("id", null);
                         if (textureId == null) throw new GdxRuntimeException("Texture has no id.");
@@ -218,24 +215,24 @@ public class NhgG3dModelLoader extends NhgModelLoader<NhgModelLoader.ModelParame
 
     private int parseTextureUsage(final String value) {
         if (value.equalsIgnoreCase("DIFFUSE"))
-            return NhgModelTexture.USAGE_ALBEDO;
+            return ModelTexture.USAGE_DIFFUSE;
 
         else if (value.equalsIgnoreCase("EMISSIVE"))
-            return NhgModelTexture.USAGE_EMISSIVE;
+            return ModelTexture.USAGE_EMISSIVE;
 
         else if (value.equalsIgnoreCase("NONE"))
-            return NhgModelTexture.USAGE_NONE;
+            return ModelTexture.USAGE_NONE;
 
         else if (value.equalsIgnoreCase("BUMP"))
-            return NhgModelTexture.USAGE_NORMAL;
+            return ModelTexture.USAGE_NORMAL;
 
         else if (value.equalsIgnoreCase("SPECULAR"))
-            return NhgModelTexture.USAGE_RMA;
+            return ModelTexture.USAGE_SPECULAR;
 
         else if (value.equalsIgnoreCase("TRANSPARENCY"))
-            return NhgModelTexture.USAGE_TRANSPARENCY;
+            return ModelTexture.USAGE_TRANSPARENCY;
 
-        return NhgModelTexture.USAGE_UNKNOWN;
+        return ModelTexture.USAGE_UNKNOWN;
     }
 
     private Color parseColor(JsonValue colorArray) {
@@ -254,7 +251,7 @@ public class NhgG3dModelLoader extends NhgModelLoader<NhgModelLoader.ModelParame
             throw new GdxRuntimeException("Expected Vector2 values <> than two.");
     }
 
-    private Array<ModelNode> parseNodes(NhgModelData model, JsonValue json) {
+    private Array<ModelNode> parseNodes(ModelData model, JsonValue json) {
         JsonValue nodes = json.get("nodes");
         if (nodes != null) {
             model.nodes.ensureCapacity(nodes.size);
@@ -350,7 +347,7 @@ public class NhgG3dModelLoader extends NhgModelLoader<NhgModelLoader.ModelParame
         return jsonNode;
     }
 
-    private void parseAnimations(NhgModelData model, JsonValue json) {
+    private void parseAnimations(ModelData model, JsonValue json) {
         JsonValue animations = json.get("animations");
         if (animations == null) return;
 
