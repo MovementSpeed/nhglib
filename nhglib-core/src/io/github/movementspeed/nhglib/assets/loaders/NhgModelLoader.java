@@ -163,10 +163,31 @@ public abstract class NhgModelLoader<P extends NhgModelLoader.ModelParameters> e
             Material material = materials.get(i);
 
             if (material.has(TextureAttribute.Diffuse)) {
-                TextureAttribute diffuseTA = (TextureAttribute) material.get(TextureAttribute.Diffuse);
-                material.set(PBRTextureAttribute.createAlbedo(diffuseTA.textureDescription.texture,
-                        diffuseTA.offsetU, diffuseTA.offsetV, diffuseTA.scaleU, diffuseTA.scaleV));
+                TextureAttribute ta = (TextureAttribute) material.get(TextureAttribute.Diffuse);
+                material.set(PBRTextureAttribute.createAlbedo(ta.textureDescription.texture,
+                        ta.offsetU, ta.offsetV, ta.scaleU, ta.scaleV));
                 material.remove(TextureAttribute.Diffuse);
+            }
+
+            if (material.has(TextureAttribute.Bump)) {
+                TextureAttribute ta = (TextureAttribute) material.get(TextureAttribute.Bump);
+                material.set(PBRTextureAttribute.createNormal(ta.textureDescription.texture,
+                        ta.offsetU, ta.offsetV, ta.scaleU, ta.scaleV));
+                material.remove(TextureAttribute.Bump);
+            }
+
+            if (material.has(TextureAttribute.Specular)) {
+                TextureAttribute ta = (TextureAttribute) material.get(TextureAttribute.Specular);
+                material.set(PBRTextureAttribute.createRMA(ta.textureDescription.texture,
+                        ta.offsetU, ta.offsetV, ta.scaleU, ta.scaleV));
+                material.remove(TextureAttribute.Specular);
+            }
+
+            if (material.has(TextureAttribute.Emissive)) {
+                TextureAttribute ta = (TextureAttribute) material.get(TextureAttribute.Emissive);
+                material.set(PBRTextureAttribute.createEmissive(ta.textureDescription.texture,
+                        ta.offsetU, ta.offsetV, ta.scaleU, ta.scaleV));
+                material.remove(TextureAttribute.Emissive);
             }
         }
     }
