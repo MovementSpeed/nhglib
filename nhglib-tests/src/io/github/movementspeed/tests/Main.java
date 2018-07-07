@@ -46,6 +46,9 @@ public class Main extends NhgEntry implements InputListener {
     private RenderingSystem renderingSystem;
     private Environment environment;
 
+    private NodeComponent target;
+    private Vector3 targetVec;
+
     private LightProbe lightProbe;
 
     @Override
@@ -55,6 +58,7 @@ public class Main extends NhgEntry implements InputListener {
         Nhg.debugFpsLogs = true;
         Nhg.debugDrawPhysics = false;
         ParticleShader.softParticles = false;
+        targetVec = new Vector3(0, 0.5f, 0);
     }
 
     @Override
@@ -64,7 +68,7 @@ public class Main extends NhgEntry implements InputListener {
                 new DefaultWorldStrategy(),
                 new Bounds(2f, 2f, 2f));
 
-        nhg.assets.queueAsset(new Asset("scene", "scenes/scene.json", Scene.class));
+        nhg.assets.queueAsset(new Asset("scene", "scenes/hydrant_scene.json", Scene.class));
 
         InputSystem inputSystem = nhg.entities.getEntitySystem(InputSystem.class);
         inputSystem.loadMapping("input/input.json");
@@ -83,25 +87,25 @@ public class Main extends NhgEntry implements InputListener {
 
         NhgLightsAttribute lightsAttribute = new NhgLightsAttribute();
 
-        float pos = 5f;
+        float pos = 1f;
 
-        /*for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             NhgLight light = NhgLight.point(15, 2.8f,
                     new Color(MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), 1f));
             light.position.set(new Vector3(MathUtils.random(-pos, pos), MathUtils.random(-pos, pos), MathUtils.random(-pos, pos)));
             lightsAttribute.lights.add(light);
-        }*/
+        }
 
-        for (int x = 0; x < 3; x++) {
-            for (int y = 0; y < 3; y++) {
-                for (int z = 0; z < 3; z++) {
+        /*for (int x = 0; x < 1; x++) {
+            for (int y = 0; y < 1; y++) {
+                for (int z = 0; z < 1; z++) {
                     NhgLight light = NhgLight.point(15, 5,
                             new Color(MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), 1f));
                     light.position.set(x*2, y*2, z*2);
                     lightsAttribute.lights.add(light);
                 }
             }
-        }
+        }*/
 
         /*NhgLight sun = NhgLight.directional(5, Color.WHITE);
         sun.direction.set(1, -1, -1);
@@ -133,6 +137,9 @@ public class Main extends NhgEntry implements InputListener {
                                         cameraEntity, NodeComponent.class);
 
                                 cameraComponent = nhg.entities.getComponent(cameraEntity, CameraComponent.class);
+
+                                int targetEntity = scene.sceneGraph.getSceneEntity("fireHydrant");
+                                target = nhg.entities.getComponent(targetEntity, NodeComponent.class);
                             }
                         } else if (message.is(Strings.Events.sceneLoaded)) {
                             NhgLogger.log(this, "Scene loaded");
@@ -161,6 +168,7 @@ public class Main extends NhgEntry implements InputListener {
     public void onUpdate(float delta) {
         super.onUpdate(delta);
         world.update();
+        if (target != null) target.rotate(targetVec, true);
     }
 
     @Override

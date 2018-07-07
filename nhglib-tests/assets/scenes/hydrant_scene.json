@@ -1,0 +1,82 @@
+{
+  "scene": {
+    "name": "scene0",
+    "assets": [
+      {
+        "alias": "quad",
+        "source": "models/quad.g3db",
+        "classAlias": "model"
+      },
+      {
+        "alias": "fireHydrant",
+        "source": "models/FireHydrant.g3db",
+        "classAlias": "model",
+        "dependenciesPath":"textures/fire_hydrant/"
+      },
+      {
+        "alias": "newport_loft",
+        "source": "textures/tears_of_steel_bridge_2k.hdr",
+        "classAlias": "hdr"
+      }
+    ],
+    "entities": [
+      {
+        "id":"fireHydrant",
+        "transform": {
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scale": {
+            "x": 0.01,
+            "y": 0.01,
+            "z": 0.01
+          }
+        },
+        "components": [
+          {
+            "type": "model",
+            "enabled": true,
+            "graphicsType": "dynamic",
+            "asset": "fireHydrant"
+          }
+        ]
+      },
+      {
+        "id": "camera",
+        "transform": {
+          "position": {
+            "x": 0,
+            "y": 0.25,
+            "z": 0.6
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        },
+        "components": [
+          {
+            "type": "camera",
+            "cameraType": "perspective",
+            "fieldOfView": 67,
+            "nearPlane": 0.01,
+            "farPlane": 30.0
+          }
+        ]
+      }
+    ]
+  }
+}
