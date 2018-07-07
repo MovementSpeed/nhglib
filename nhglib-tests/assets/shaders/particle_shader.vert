@@ -9,17 +9,25 @@ precision mediump float;
 #define HIGH
 #endif
 
+#if GLVERSION == 2
+    #define IN attribute
+    #define OUT varying
+#else
+    #define IN in
+    #define OUT out
+#endif
+
 #ifdef billboard
 //Billboard particles
 //In
-in vec3 a_position;
-in vec2 a_texCoord0;
-in vec4 a_sizeAndRotation;
-in vec4 a_color;
+IN vec3 a_position;
+IN vec2 a_texCoord0;
+IN vec4 a_sizeAndRotation;
+IN vec4 a_color;
 
 //out
-out MED vec2 v_texCoords0;
-out vec4 v_color;
+OUT MED vec2 v_texCoords0;
+OUT vec4 v_color;
 
 //Camera
 uniform mat4 u_projViewTrans;
@@ -36,7 +44,7 @@ uniform vec3 u_cameraUp;
 #endif
 #ifdef paticleDirectionFacing
 uniform vec3 u_cameraPosition;
-in vec3 a_direction;
+IN vec3 a_direction;
 #endif
 
 void main()
@@ -75,18 +83,18 @@ void main()
 }
 #else
 //Point particles
-in vec3 a_sizeAndRotation;
-in vec4 a_position;
-in vec4 a_color;
-in vec4 a_region;
+IN vec3 a_sizeAndRotation;
+IN vec4 a_position;
+IN vec4 a_color;
+IN vec4 a_region;
 
 //out
-out float v_depth;
-out vec2 v_uvRegionCenter;
-out vec4 v_position;
-out vec4 v_color;
-out vec4 v_rotation;
-out MED vec4 v_region;
+OUT float v_depth;
+OUT vec2 v_uvRegionCenter;
+OUT vec4 v_position;
+OUT vec4 v_color;
+OUT vec4 v_rotation;
+OUT MED vec4 v_region;
 
 uniform vec2 u_screen;
 uniform vec2 u_regionSize;

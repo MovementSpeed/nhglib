@@ -72,19 +72,7 @@ public class TiledPBRShader extends BaseShader {
         gridSize = 16;
 
         String prefix = createPrefix(renderable);
-        String folder;
-
-        if (Gdx.graphics.isGL30Available()) {
-            folder = "shaders/gl3/";
-
-            switch (Nhg.glVersion) {
-                case VERSION_2:
-                    folder = "shaders/gl2/";
-                    break;
-            }
-        } else {
-            folder = "shaders/gl2/";
-        }
+        String folder = "shaders/";
 
         String vert = prefix + Gdx.files.internal(folder + "tf_pbr_shader.vert").readString();
         String frag = prefix + Gdx.files.internal(folder + "tf_pbr_shader.frag").readString();
@@ -523,7 +511,22 @@ public class TiledPBRShader extends BaseShader {
     }
 
     private String createPrefix(Renderable renderable) {
-        String prefix = "#version 300 es\n";
+        String prefix = "";
+
+        if (Gdx.graphics.isGL30Available()) {
+            switch (Nhg.glVersion) {
+                case VERSION_2:
+                    prefix = "#define GLVERSION 2\n";
+                    break;
+
+                case VERSION_3:
+                    prefix = "#version 300 es\n";
+                    prefix += "#define GLVERSION 3\n";
+                    break;
+            }
+        } else {
+            prefix = "#define GLVERSION 2\n";
+        }
 
         if (params.useBones) {
             prefix += "#define numBones " + 12 + "\n";

@@ -14,7 +14,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.UBJsonReader;
-import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.files.HDRData;
 
 /**
@@ -187,19 +186,7 @@ public class LightProbe {
 
     private Cubemap renderEnvironmentFromHDRData(HDRData data) {
         Texture equirectangularTexture;
-        String folder;
-
-        if (Gdx.graphics.isGL30Available()) {
-            folder = "shaders/gl3/";
-
-            switch (Nhg.glVersion) {
-                case VERSION_2:
-                    folder = "shaders/gl2/";
-                    break;
-            }
-        } else {
-            folder = "shaders/gl2/";
-        }
+        String folder = "shaders/";
 
         ShaderProgram equiToCubeShader = new ShaderProgram(
                 Gdx.files.internal(folder + "equi_to_cube_shader.vert"),
@@ -238,19 +225,7 @@ public class LightProbe {
     }
 
     private Cubemap renderEnvironmentFromTexture(Texture equirectangularTexture) {
-        String folder;
-
-        if (Gdx.graphics.isGL30Available()) {
-            folder = "shaders/gl3/";
-
-            switch (Nhg.glVersion) {
-                case VERSION_2:
-                    folder = "shaders/gl2/";
-                    break;
-            }
-        } else {
-            folder = "shaders/gl2/";
-        }
+        String folder = "shaders/";
 
         ShaderProgram equiToCubeShader = new ShaderProgram(
                 Gdx.files.internal(folder + "equi_to_cube_shader.vert"),
@@ -291,19 +266,7 @@ public class LightProbe {
     }
 
     private Cubemap renderIrradiance(Cubemap environmentCubemap) {
-        String folder;
-
-        if (Gdx.graphics.isGL30Available()) {
-            folder = "shaders/gl3/";
-
-            switch (Nhg.glVersion) {
-                case VERSION_2:
-                    folder = "shaders/gl2/";
-                    break;
-            }
-        } else {
-            folder = "shaders/gl2/";
-        }
+        String folder = "shaders/";
 
         ShaderProgram irradianceShader = new ShaderProgram(
                 Gdx.files.internal(folder + "equi_to_cube_shader.vert"),
@@ -344,19 +307,7 @@ public class LightProbe {
     }
 
     private Cubemap renderPrefilter(Cubemap environmentCubemap) {
-        String folder;
-
-        if (Gdx.graphics.isGL30Available()) {
-            folder = "shaders/gl3/";
-
-            switch (Nhg.glVersion) {
-                case VERSION_2:
-                    folder = "shaders/gl2/";
-                    break;
-            }
-        } else {
-            folder = "shaders/gl2/";
-        }
+        String folder = "shaders/";
 
         ShaderProgram prefilterShader = new ShaderProgram(
                 Gdx.files.internal(folder + "equi_to_cube_shader.vert"),
@@ -469,19 +420,7 @@ public class LightProbe {
     }
 
     private Texture renderBRDF() {
-        String folder;
-
-        if (Gdx.graphics.isGL30Available()) {
-            folder = "shaders/gl3/";
-
-            switch (Nhg.glVersion) {
-                case VERSION_2:
-                    folder = "shaders/gl2/";
-                    break;
-            }
-        } else {
-            folder = "shaders/gl2/";
-        }
+        String folder = "shaders/";
 
         ShaderProgram brdfShader = new ShaderProgram(
                 Gdx.files.internal(folder + "brdf_shader.vert"),

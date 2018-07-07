@@ -1,14 +1,14 @@
 #version 300 es
 
 #ifdef GL_ES
-#define LOWP lowp
-#define MED mediump
-#define HIGH highp
-precision mediump float;
+    #define LOWP lowp
+    #define MED mediump
+    #define HIGH highp
+    precision mediump float;
 #else
-#define MED
-#define LOWP
-#define HIGH
+    #define MED
+    #define LOWP
+    #define HIGH
 #endif
 
 out vec4 fragmentColor;

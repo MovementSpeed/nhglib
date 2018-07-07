@@ -116,19 +116,7 @@ public class PBRShader extends BaseShader {
         }
 
         String prefix = createPrefix(renderable);
-        String folder;
-
-        if (Gdx.graphics.isGL30Available()) {
-            folder = "shaders/gl3/";
-
-            switch (Nhg.glVersion) {
-                case VERSION_2:
-                    folder = "shaders/gl2/";
-                    break;
-            }
-        } else {
-            folder = "shaders/gl2/";
-        }
+        String folder = "shaders/";
 
         String vert = prefix + Gdx.files.internal(folder + "tf_pbr_shader.vert").readString();
         String frag = prefix + Gdx.files.internal(folder + "pbr_shader.frag").readString();
@@ -439,10 +427,17 @@ public class PBRShader extends BaseShader {
 
         if (Gdx.graphics.isGL30Available()) {
             switch (Nhg.glVersion) {
+                case VERSION_2:
+                    prefix = "#define GLVERSION 2\n";
+                    break;
+
                 case VERSION_3:
                     prefix = "#version 300 es\n";
+                    prefix += "#define GLVERSION 3\n";
                     break;
             }
+        } else {
+            prefix = "#define GLVERSION 2\n";
         }
 
         if (params.useBones) {

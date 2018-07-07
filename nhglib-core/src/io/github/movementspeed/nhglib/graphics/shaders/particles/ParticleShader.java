@@ -18,7 +18,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
-import io.github.movementspeed.nhglib.enums.OpenGLVersion;
 
 /**
  * This is a custom shader to render the particles. Usually is not required, because the {@link DefaultShader} will be used
@@ -218,8 +217,19 @@ public class ParticleShader extends BaseShader {
     public static String createPrefix(final Renderable renderable, final Config config) {
         String prefix = "";
 
-        if (Nhg.glVersion == OpenGLVersion.VERSION_3 && Gdx.graphics.isGL30Available()) {
-            prefix = "#version 300 es\n";
+        if (Gdx.graphics.isGL30Available()) {
+            switch (Nhg.glVersion) {
+                case VERSION_2:
+                    prefix = "#define GLVERSION 2\n";
+                    break;
+
+                case VERSION_3:
+                    prefix = "#version 300 es\n";
+                    prefix += "#define GLVERSION 3\n";
+                    break;
+            }
+        } else {
+            prefix = "#define GLVERSION 2\n";
         }
 
         if (config.type == ParticleType.Billboard) {

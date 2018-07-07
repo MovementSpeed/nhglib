@@ -1,51 +1,70 @@
 #ifdef GL_ES
-#define LOWP lowp
-#define MED mediump
-#define HIGH highp
-precision mediump float;
+    #ifdef GPU_MALI
+        #define LOWP lowp
+        #define MEDP mediump
+        #define HIGHP highp
+    #elif defined GPU_ADRENO
+        #define LOWP
+        #define MEDP
+        #define HIGHP
+    #else
+        #define MEDP
+        #define LOWP
+        #define HIGHP
+    #endif
+
+    precision mediump float;
 #else
-#define MED
-#define LOWP
-#define HIGH
+    #define MEDP
+    #define LOWP
+    #define HIGHP
 #endif
 
-attribute vec4 a_position;
-attribute vec3 a_normal;
-attribute vec3 a_binormal;
-attribute vec3 a_tangent;
-attribute vec2 a_texCoord0;
+#if GLVERSION == 2
+    #define IN attribute
+    #define OUT varying
+#else
+    #define IN in
+    #define OUT out
+#endif
+
+IN HIGHP vec4 a_position;
+IN HIGHP vec3 a_binormal;
+IN HIGHP vec3 a_tangent;
+IN LOWP vec2 a_texCoord0;
+IN LOWP vec3 a_normal;
 
 #ifdef boneWeight0Flag
     #define boneWeightsFlag
-    attribute vec2 a_boneWeight0;
+    IN LOWP vec2 a_boneWeight0;
 #endif
 
 #ifdef boneWeight1Flag
-    attribute vec2 a_boneWeight1;
+    IN LOWP vec2 a_boneWeight1;
 #endif
 
 #ifdef boneWeight2Flag
-    attribute vec2 a_boneWeight2;
+    IN LOWP vec2 a_boneWeight2;
 #endif
 
 #ifdef boneWeight3Flag
-    attribute vec2 a_boneWeight3;
+    IN LOWP vec2 a_boneWeight3;
 #endif
 
 #ifdef boneWeight4Flag
-    attribute vec2 a_boneWeight4;
+    IN LOWP vec2 a_boneWeight4;
 #endif
 
 #ifdef boneWeight5Flag
-    attribute vec2 a_boneWeight5;
+    IN LOWP vec2 a_boneWeight5;
 #endif
 
 #ifdef boneWeight6Flag
-    attribute vec2 a_boneWeight6;
+    IN LOWP vec2 a_boneWeight6;
 #endif
 
 #ifdef boneWeight7Flag
-    attribute vec2 a_boneWeight7;
+    IN LOWP vec2 a_boneWeight7;
 #endif
 
 #if defined(numBones) && defined(boneWeightsFlag)
@@ -56,27 +75,26 @@ attribute vec2 a_texCoord0;
 
 #ifdef numBones
     #if numBones > 0
-        uniform mat4 u_bones[numBones];
+        uniform HIGHP mat4 u_bones[numBones];
     #endif
 #endif
 
-uniform mat4 u_mvpMatrix;
-uniform mat4 u_modelMatrix;
-uniform mat4 u_viewMatrix;
+uniform HIGHP mat4 u_mvpMatrix;
+uniform HIGHP mat4 u_viewMatrix;
+uniform HIGHP mat4 u_modelMatrix;
 
-varying vec3 v_position;
-varying vec2 v_texCoord;
-varying vec3 v_normal;
-varying vec3 v_binormal;
-varying vec3 v_tangent;
-varying float v_depth;
+OUT HIGHP vec3 v_position;
+OUT HIGHP vec3 v_binormal;
+OUT HIGHP vec3 v_tangent;
+OUT LOWP vec2 v_texCoord;
+OUT LOWP vec3 v_normal;
 
 void main() {
-    vec4 position;
-    vec3 normal;
+    LOWP vec4 position;
+    LOWP vec3 normal;
 
     #ifdef numBones
-        mat4 skinning = mat4(0.0);
+        HIGHP mat4 skinning = mat4(0.0);
 
         #ifdef boneWeight0Flag
             skinning += (a_boneWeight0.y) * u_bones[int(a_boneWeight0.x)];
@@ -110,7 +128,7 @@ void main() {
             skinning += (a_boneWeight7.y) * u_bones[int(a_boneWeight7.x)];
         #endif
     #else
-        mat4 skinning = mat4(1.0);
+        HIGHP mat4 skinning = mat4(1.0);
     #endif
 
     position = u_modelMatrix * skinning * a_position;
@@ -121,9 +139,6 @@ void main() {
     v_binormal = a_binormal;
     v_tangent = a_tangent;
 
-    vec4 fpos = u_mvpMatrix * position;
-    v_depth = fpos.z;
-
-    gl_Position = fpos;
+    gl_Position = u_mvpMatrix * position;
     v_texCoord = a_texCoord0;
 }

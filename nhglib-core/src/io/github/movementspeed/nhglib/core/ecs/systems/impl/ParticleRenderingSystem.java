@@ -6,7 +6,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
-import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.core.ecs.components.graphics.ParticleEffectComponent;
 import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
 import io.github.movementspeed.nhglib.core.ecs.systems.base.BaseRenderingSystem;
@@ -38,19 +37,7 @@ public class ParticleRenderingSystem extends BaseRenderingSystem {
         if (!initialized) {
             initialized = true;
 
-            String folder;
-
-            if (Gdx.graphics.isGL30Available()) {
-                folder = "shaders/gl3/";
-
-                switch (Nhg.glVersion) {
-                    case VERSION_2:
-                        folder = "shaders/gl2/";
-                        break;
-                }
-            } else {
-                folder = "shaders/gl2/";
-            }
+            String folder = "shaders/";
 
             ParticleShader.Config config = new ParticleShader.Config(
                     Gdx.files.internal(folder + "particle_shader.vert").readString(),
