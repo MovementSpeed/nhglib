@@ -3,7 +3,6 @@ package io.github.movementspeed.tests;
 import com.artemis.BaseSystem;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.Nhg;
@@ -68,7 +67,7 @@ public class Main extends NhgEntry implements InputListener {
                 new DefaultWorldStrategy(),
                 new Bounds(2f, 2f, 2f));
 
-        nhg.assets.queueAsset(new Asset("scene", "scenes/hydrant_scene.json", Scene.class));
+        nhg.assets.queueAsset(new Asset("scene", "scenes/lamborghini_scene.json", Scene.class));
 
         InputSystem inputSystem = nhg.entities.getEntitySystem(InputSystem.class);
         inputSystem.loadMapping("input/input.json");
@@ -87,14 +86,14 @@ public class Main extends NhgEntry implements InputListener {
 
         NhgLightsAttribute lightsAttribute = new NhgLightsAttribute();
 
-        float pos = 1f;
+        float pos = 1.5f;
 
-        for (int i = 0; i < 10; i++) {
-            NhgLight light = NhgLight.point(15, 2.8f,
+        /*for (int i = 0; i < 4; i++) {
+            NhgLight light = NhgLight.point(15, 4f,
                     new Color(MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), 1f));
             light.position.set(new Vector3(MathUtils.random(-pos, pos), MathUtils.random(-pos, pos), MathUtils.random(-pos, pos)));
             lightsAttribute.lights.add(light);
-        }
+        }*/
 
         /*for (int x = 0; x < 1; x++) {
             for (int y = 0; y < 1; y++) {
@@ -107,9 +106,9 @@ public class Main extends NhgEntry implements InputListener {
             }
         }*/
 
-        /*NhgLight sun = NhgLight.directional(5, Color.WHITE);
+        NhgLight sun = NhgLight.directional(30, Color.WHITE);
         sun.direction.set(1, -1, -1);
-        lightsAttribute.lights.add(sun);*/
+        lightsAttribute.lights.add(sun);
 
         GammaCorrectionAttribute gammaCorrectionAttribute = new GammaCorrectionAttribute(true);
         AmbientLightingAttribute ambientLightingAttribute = new AmbientLightingAttribute(0.03f);
@@ -138,7 +137,7 @@ public class Main extends NhgEntry implements InputListener {
 
                                 cameraComponent = nhg.entities.getComponent(cameraEntity, CameraComponent.class);
 
-                                int targetEntity = scene.sceneGraph.getSceneEntity("fireHydrant");
+                                int targetEntity = scene.sceneGraph.getSceneEntity("target");
                                 target = nhg.entities.getComponent(targetEntity, NodeComponent.class);
                             }
                         } else if (message.is(Strings.Events.sceneLoaded)) {

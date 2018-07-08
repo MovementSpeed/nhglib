@@ -8,7 +8,7 @@
         "classAlias": "model"
       },
       {
-        "alias": "fireHydrant",
+        "alias": "target",
         "source": "models/FireHydrant.g3db",
         "classAlias": "model",
         "dependenciesPath":"textures/fire_hydrant/"
@@ -21,7 +21,7 @@
     ],
     "entities": [
       {
-        "id":"fireHydrant",
+        "id":"target",
         "transform": {
           "position": {
             "x": 0,
@@ -44,7 +44,7 @@
             "type": "model",
             "enabled": true,
             "graphicsType": "dynamic",
-            "asset": "fireHydrant"
+            "asset": "target"
           }
         ]
       },
@@ -53,11 +53,11 @@
         "transform": {
           "position": {
             "x": 0,
-            "y": 0.25,
-            "z": 0.6
+            "y": 0.65,
+            "z": 0.4
           },
           "rotation": {
-            "x": 0.0,
+            "x": -35.0,
             "y": 0.0,
             "z": 0.0
           },

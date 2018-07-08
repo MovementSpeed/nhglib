@@ -7,9 +7,11 @@ import com.badlogic.gdx.assets.loaders.AsynchronousAssetLoader;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.TextureLoader;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.model.data.ModelData;
 import com.badlogic.gdx.graphics.g3d.model.data.ModelMaterial;
@@ -104,9 +106,9 @@ public abstract class NhgModelLoader<P extends NhgModelLoader.ModelParameters> e
                         fName = fName.substring(fName.lastIndexOf("/") + 1);
                     }
 
-                    textureParameter.genMipMaps = false;
+                    textureParameter.genMipMaps = true;
                     textureParameter.magFilter = Texture.TextureFilter.Linear;
-                    textureParameter.minFilter = Texture.TextureFilter.Linear;
+                    textureParameter.minFilter = Texture.TextureFilter.MipMapLinearLinear;
                     textureParameter.wrapU = Texture.TextureWrap.Repeat;
                     textureParameter.wrapV = Texture.TextureWrap.Repeat;
 
@@ -164,29 +166,34 @@ public abstract class NhgModelLoader<P extends NhgModelLoader.ModelParameters> e
 
             if (material.has(TextureAttribute.Diffuse)) {
                 TextureAttribute ta = (TextureAttribute) material.get(TextureAttribute.Diffuse);
-                material.set(PBRTextureAttribute.createAlbedo(ta.textureDescription.texture,
-                        ta.offsetU, ta.offsetV, ta.scaleU, ta.scaleV));
+                Texture texture = ta.textureDescription.texture;
+                material.set(PBRTextureAttribute.createAlbedo(texture, ta.offsetU, ta.offsetV, ta.scaleU, ta.scaleV));
+                material.remove(TextureAttribute.Diffuse);
+            } else if (material.has(ColorAttribute.Diffuse)) {
+                ColorAttribute ca = (ColorAttribute) material.get(ColorAttribute.Diffuse);
+                Color color = ca.color;
+                material.set(PBRTextureAttribute.createAlbedo(color));
                 material.remove(TextureAttribute.Diffuse);
             }
 
             if (material.has(TextureAttribute.Bump)) {
                 TextureAttribute ta = (TextureAttribute) material.get(TextureAttribute.Bump);
-                material.set(PBRTextureAttribute.createNormal(ta.textureDescription.texture,
-                        ta.offsetU, ta.offsetV, ta.scaleU, ta.scaleV));
+                Texture texture = ta.textureDescription.texture;
+                material.set(PBRTextureAttribute.createNormal(texture, ta.offsetU, ta.offsetV, ta.scaleU, ta.scaleV));
                 material.remove(TextureAttribute.Bump);
             }
 
             if (material.has(TextureAttribute.Specular)) {
                 TextureAttribute ta = (TextureAttribute) material.get(TextureAttribute.Specular);
-                material.set(PBRTextureAttribute.createRMA(ta.textureDescription.texture,
-                        ta.offsetU, ta.offsetV, ta.scaleU, ta.scaleV));
+                Texture texture = ta.textureDescription.texture;
+                material.set(PBRTextureAttribute.createRMA(texture, ta.offsetU, ta.offsetV, ta.scaleU, ta.scaleV));
                 material.remove(TextureAttribute.Specular);
             }
 
             if (material.has(TextureAttribute.Emissive)) {
                 TextureAttribute ta = (TextureAttribute) material.get(TextureAttribute.Emissive);
-                material.set(PBRTextureAttribute.createEmissive(ta.textureDescription.texture,
-                        ta.offsetU, ta.offsetV, ta.scaleU, ta.scaleV));
+                Texture texture = ta.textureDescription.texture;
+                material.set(PBRTextureAttribute.createEmissive(texture, ta.offsetU, ta.offsetV, ta.scaleU, ta.scaleV));
                 material.remove(TextureAttribute.Emissive);
             }
         }
@@ -197,8 +204,10 @@ public abstract class NhgModelLoader<P extends NhgModelLoader.ModelParameters> e
 
         public ModelParameters() {
             textureParameter = new TextureLoader.TextureParameter();
-            textureParameter.minFilter = textureParameter.magFilter = Texture.TextureFilter.Linear;
+            textureParameter.minFilter = Texture.TextureFilter.MipMapLinearLinear;
+            textureParameter.magFilter = Texture.TextureFilter.Linear;
             textureParameter.wrapU = textureParameter.wrapV = Texture.TextureWrap.Repeat;
+            textureParameter.genMipMaps = true;
         }
     }
 }
