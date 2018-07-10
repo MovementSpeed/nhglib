@@ -137,12 +137,16 @@ public class LightGrid {
         int endX = 0;
         int startY = 0;
         int endY = 0;
+
         boolean foundStart = false;
         boolean foundEnd = false;
+
         for (int x = 0; x < sizeX; x++) {
             if (insideColumn(x, pos, radius)) {
-                if (!foundStart)
+                if (!foundStart) {
                     startX = x;
+                }
+
                 foundStart = true;
             } else {
                 if (foundStart) {
@@ -152,14 +156,20 @@ public class LightGrid {
                 }
             }
         }
-        if (!foundEnd && foundStart)
-            endX = 9;
+
+        if (!foundEnd && foundStart) {
+            endX = sizeX - 1;
+        }
+
         foundStart = false;
         foundEnd = false;
+
         for (int y = 0; y < sizeY; y++) {
             if (insideRow(y, pos, radius)) {
-                if (!foundStart)
+                if (!foundStart) {
                     startY = y;
+                }
+
                 foundStart = true;
             } else {
                 if (foundStart) {
@@ -169,8 +179,11 @@ public class LightGrid {
                 }
             }
         }
-        if (!foundEnd && foundStart)
-            endY = 9;
+
+        if (!foundEnd && foundStart) {
+            endY = sizeY - 1;
+        }
+
         for (int x = startX; x <= endX; x++) {
             for (int y = startY; y <= endY; y++) {
                 lights.get(y * sizeX + x).add(lightID);

@@ -161,6 +161,17 @@ public class ShaderUtils {
         return res;
     }
 
+    public static boolean hasEmissive(Renderable renderable) {
+        boolean res = false;
+        PBRTextureAttribute attribute = (PBRTextureAttribute) renderable.material.get(PBRTextureAttribute.Emissive);
+
+        if (attribute != null && attribute.textureDescription.texture != null) {
+            res = true;
+        }
+
+        return res;
+    }
+
     public static boolean hasPbrNormal(Renderable renderable) {
         boolean res = false;
         PBRTextureAttribute attribute = (PBRTextureAttribute) renderable.material.get(PBRTextureAttribute.Normal);

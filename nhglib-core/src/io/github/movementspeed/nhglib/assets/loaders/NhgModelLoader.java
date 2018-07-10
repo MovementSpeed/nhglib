@@ -180,6 +180,7 @@ public abstract class NhgModelLoader<P extends NhgModelLoader.ModelParameters> e
                 TextureAttribute ta = (TextureAttribute) material.get(TextureAttribute.Bump);
                 Texture texture = ta.textureDescription.texture;
                 material.set(PBRTextureAttribute.createNormal(texture, ta.offsetU, ta.offsetV, ta.scaleU, ta.scaleV));
+                material.remove(TextureAttribute.Normal);
                 material.remove(TextureAttribute.Bump);
             }
 

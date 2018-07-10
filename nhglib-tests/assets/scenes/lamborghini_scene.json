@@ -1,0 +1,82 @@
+{
+  "scene": {
+    "name": "scene0",
+    "assets": [
+      {
+        "alias": "quad",
+        "source": "models/quad.g3db",
+        "classAlias": "model"
+      },
+      {
+        "alias": "target",
+        "source": "models/Lamborghini.g3db",
+        "classAlias": "model",
+        "dependenciesPath":"textures/lamborghini/"
+      },
+      {
+        "alias": "newport_loft",
+        "source": "textures/tears_of_steel_bridge_2k.hdr",
+        "classAlias": "hdr"
+      }
+    ],
+    "entities": [
+      {
+        "id":"target",
+        "transform": {
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scale": {
+            "x": 0.02,
+            "y": 0.02,
+            "z": 0.02
+          }
+        },
+        "components": [
+          {
+            "type": "model",
+            "enabled": true,
+            "graphicsType": "dynamic",
+            "asset": "target"
+          }
+        ]
+      },
+      {
+        "id": "camera",
+        "transform": {
+          "position": {
+            "x": 0,
+            "y": 0.25,
+            "z": 0.4
+          },
+          "rotation": {
+            "x": -30.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+          }
+        },
+        "components": [
+          {
+            "type": "camera",
+            "cameraType": "perspective",
+            "fieldOfView": 67,
+            "nearPlane": 0.01,
+            "farPlane": 30.0
+          }
+        ]
+      }
+    ]
+  }
+}

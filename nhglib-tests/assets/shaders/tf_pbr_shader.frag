@@ -38,6 +38,7 @@ uniform LOWP float u_ambient;
 uniform LOWP int u_graphicsWidth;
 uniform LOWP int u_graphicsHeight;
 uniform HIGHP mat4 u_viewMatrix;
+uniform HIGHP vec3 u_cameraPosition;
 
 #ifdef lights
     #if lights > 0
@@ -64,6 +65,11 @@ uniform HIGHP mat4 u_viewMatrix;
 #ifdef defNormal
     uniform LOWP sampler2D u_normal;
     uniform LOWP vec2 u_normalTiles;
+#endif
+
+#ifdef defEmissive
+    uniform LOWP sampler2D u_emissive;
+    uniform LOWP vec2 u_emissiveTiles;
 #endif
 
 #ifdef defImageBasedLighting
@@ -217,9 +223,9 @@ vec3 getLighting(vec4 albedo, vec3 rma, vec3 normal, vec3 V, vec3 F0) {
             LOWP float NDF = distributionGGX(normal, H, rma.r);
             LOWP float G = geometrySmith(normal, V, L, rma.r);
 
-            LOWP vec3 nominator = NDF * G * F;
+            LOWP vec3 numerator = NDF * G * F;
             LOWP float denominator = max(4.0 * max(dot(normal, V), 0.0) * max(dot(normal, L), 0.0), 0.001);
-            LOWP vec3 brdf = nominator / denominator;
+            LOWP vec3 brdf = numerator / denominator;
 
             LOWP vec3 kS = F;
             LOWP vec3 kD = vec3(1.0) - kS;
@@ -264,8 +270,8 @@ vec3 getAmbient(vec4 albedo, vec3 normal, vec3 V, vec3 F0, vec3 rma) {
     return ambient;
 }
 
-vec3 getColor(vec3 ambient, vec3 lighting) {
-    LOWP vec3 color = ambient + lighting;
+vec3 getColor(vec3 ambient, vec3 emissive, vec3 lighting) {
+    LOWP vec3 color = emissive + ambient + lighting;
 
     #ifdef defGammaCorrection
         color = color / (color + vec3(1.0));
@@ -275,17 +281,29 @@ vec3 getColor(vec3 ambient, vec3 lighting) {
     return color;
 }
 
+vec3 getEmissive() {
+    #ifdef defRMA
+        LOWP vec2 emissiveCoords = fract(v_texCoord / u_emissiveTiles);
+        LOWP vec3 emissive = TEXTURE(u_emissive, emissiveCoords).rgb;
+    #else
+        LOWP vec3 emissive = vec3(0.0);
+    #endif
+
+    return emissive;
+}
+
 void main() {
     LOWP vec4 albedo = getAlbedo();
     LOWP vec3 rma = getRMA();
     LOWP vec3 normal = getNormal();
-    LOWP vec3 V = normalize(-v_position);
+    LOWP vec3 emissive = getEmissive();
+    LOWP vec3 V = normalize(u_cameraPosition - v_position);
 
     LOWP vec3 F0 = vec3(0.04);
     F0 = mix(F0, albedo.rgb, rma.g);
 
     LOWP vec3 lighting = getLighting(albedo, rma, normal, V, F0);
     LOWP vec3 ambient = getAmbient(albedo, normal, V, F0, rma);
-    LOWP vec3 color = getColor(ambient, lighting);
+    LOWP vec3 color = getColor(ambient, emissive, lighting);
     FRAG_COLOR = vec4(color.rgb, albedo.a);
 }

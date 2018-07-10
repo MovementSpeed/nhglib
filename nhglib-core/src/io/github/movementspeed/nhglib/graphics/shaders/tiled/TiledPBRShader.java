@@ -69,7 +69,7 @@ public class TiledPBRShader extends BaseShader {
         this.environment = environment;
         this.params = params;
 
-        gridSize = 16;
+        gridSize = 10;
 
         String prefix = createPrefix(renderable);
         String folder = "shaders/";
@@ -104,6 +104,13 @@ public class TiledPBRShader extends BaseShader {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
                 shader.set(inputID, renderable.worldTransform);
+            }
+        });
+
+        register("u_cameraPosition", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                shader.set(inputID, camera.position);
             }
         });
 
@@ -154,83 +161,14 @@ public class TiledPBRShader extends BaseShader {
             }
         });
 
-        register("u_albedo", new LocalSetter() {
+        register("u_emissiveTiles", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Albedo);
+                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Emissive);
 
                 if (textureAttribute != null) {
-                    shader.set(inputID, textureAttribute.textureDescription.texture);
+                    shader.set(inputID, vec2.set(textureAttribute.tilesU, textureAttribute.tilesV));
                 }
-            }
-        });
-
-        register("u_normal", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Normal);
-
-                if (textureAttribute != null) {
-                    shader.set(inputID, textureAttribute.textureDescription.texture);
-                }
-            }
-        });
-
-        register("u_rma", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.RMA);
-
-                if (textureAttribute != null) {
-                    shader.set(inputID, textureAttribute.textureDescription.texture);
-                }
-            }
-        });
-
-        register("u_irradiance", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                IBLAttribute attribute = (IBLAttribute) combinedAttributes.get(IBLAttribute.IrradianceType);
-
-                if (attribute != null) {
-                    shader.set(inputID, attribute.textureDescription.texture);
-                }
-            }
-        });
-
-        register("u_prefilter", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                IBLAttribute attribute = (IBLAttribute) combinedAttributes.get(IBLAttribute.PrefilterType);
-
-                if (attribute != null) {
-                    shader.set(inputID, attribute.textureDescription.texture);
-                }
-            }
-        });
-
-        register("u_brdf", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                IBLAttribute attribute = (IBLAttribute) combinedAttributes.get(IBLAttribute.BrdfType);
-
-                if (attribute != null) {
-                    shader.set(inputID, attribute.textureDescription.texture);
-                }
-            }
-        });
-
-        register("u_lights", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, lightTexture);
-            }
-        });
-
-        register("u_lightInfo", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, lightInfoTexture);
             }
         });
 
@@ -328,12 +266,13 @@ public class TiledPBRShader extends BaseShader {
         boolean diffuse = ShaderUtils.hasAlbedo(instance) == params.albedo;
         boolean rma = ShaderUtils.hasRMA(instance) == params.rma;
         boolean normal = ShaderUtils.hasPbrNormal(instance) == params.normal;
+        boolean emissive = ShaderUtils.hasEmissive(instance) == params.emissive;
         boolean bones = ShaderUtils.useBones(instance) == params.useBones;
         boolean lit = ShaderUtils.hasLights(instance.environment) == params.lit;
         boolean gammaCorrection = ShaderUtils.useGammaCorrection(instance.environment) == params.gammaCorrection;
         boolean imageBasedLighting = ShaderUtils.useImageBasedLighting(instance.environment) == params.imageBasedLighting;
 
-        return diffuse && rma && normal && bones && lit && gammaCorrection && imageBasedLighting;
+        return diffuse && rma && normal && emissive && bones && lit && gammaCorrection && imageBasedLighting;
     }
 
     @Override
@@ -352,13 +291,16 @@ public class TiledPBRShader extends BaseShader {
         setLightPositionsAndRadiusesAndDirections();
 
         super.begin(camera, context);
+
         shaderProgram.setUniform4fv(positionsAndRadiusesLoc, lightPositionsAndRadiuses, 0, lights.size * 4);
         shaderProgram.setUniform4fv(directionsAndIntensitiesLoc, lightDirectionsAndIntensities, 0, lights.size * 4);
     }
 
     @Override
-    public void render(Renderable renderable) {
-        super.render(renderable);
+    public void render(Renderable renderable, Attributes combinedAttributes) {
+        this.renderable = renderable;
+        bindTextures(combinedAttributes);
+        super.render(renderable, combinedAttributes);
     }
 
     @Override
@@ -370,6 +312,85 @@ public class TiledPBRShader extends BaseShader {
     public void dispose() {
         shaderProgram.dispose();
         super.dispose();
+    }
+
+    private void bindTextures(Attributes combinedAttributes) {
+        int bindValue;
+        GLTexture texture;
+        context.textureBinder.begin();
+
+        // Albedo
+        PBRTextureAttribute attribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Albedo);
+
+        if (attribute != null) {
+            texture = attribute.textureDescription.texture;
+            bindValue = context.textureBinder.bind(texture);
+            shaderProgram.setUniformi("u_albedo", bindValue);
+        }
+
+        // RMA
+        attribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.RMA);
+
+        if (attribute != null) {
+            texture = attribute.textureDescription.texture;
+            bindValue = context.textureBinder.bind(texture);
+            shaderProgram.setUniformi("u_rma", bindValue);
+        }
+
+        // Normal
+        attribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Normal);
+
+        if (attribute != null) {
+            texture = attribute.textureDescription.texture;
+            bindValue = context.textureBinder.bind(texture);
+            shaderProgram.setUniformi("u_normal", bindValue);
+        }
+
+        // Emissive
+        attribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Emissive);
+
+        if (attribute != null) {
+            texture = attribute.textureDescription.texture;
+            bindValue = context.textureBinder.bind(texture);
+            shaderProgram.setUniformi("u_emissive", bindValue);
+        }
+
+        // Lights
+        bindValue = context.textureBinder.bind(lightTexture);
+        shaderProgram.setUniformi("u_lights", bindValue);
+
+        // Lights info
+        bindValue = context.textureBinder.bind(lightInfoTexture);
+        shaderProgram.setUniformi("u_lightInfo", bindValue);
+
+        // Irradiance
+        IBLAttribute iblAttribute = (IBLAttribute) combinedAttributes.get(IBLAttribute.IrradianceType);
+
+        if (iblAttribute != null) {
+            texture = iblAttribute.textureDescription.texture;
+            bindValue = context.textureBinder.bind(texture);
+            shaderProgram.setUniformi("u_irradiance", bindValue);
+        }
+
+        // Prefilter
+        iblAttribute = (IBLAttribute) combinedAttributes.get(IBLAttribute.PrefilterType);
+
+        if (iblAttribute != null) {
+            texture = iblAttribute.textureDescription.texture;
+            bindValue = context.textureBinder.bind(texture);
+            shaderProgram.setUniformi("u_prefilter", bindValue);
+        }
+
+        // Brdf
+        iblAttribute = (IBLAttribute) combinedAttributes.get(IBLAttribute.BrdfType);
+
+        if (iblAttribute != null) {
+            texture = iblAttribute.textureDescription.texture;
+            bindValue = context.textureBinder.bind(texture);
+            shaderProgram.setUniformi("u_brdf", bindValue);
+        }
+
+        context.textureBinder.end();
     }
 
     private void makeLightTexture() {
@@ -436,37 +457,6 @@ public class TiledPBRShader extends BaseShader {
         }
 
         lightTexture.draw(lightPixmap, 0, 0);
-    }
-
-    private void setLights() {
-        int i1 = 0;
-        int i2 = 0;
-        int i3 = 0;
-
-        for (int k = 0; k < lights.size; k++) {
-            NhgLight light = lights.get(k);
-            lightTypes[k] = light.type.ordinal();
-
-            lightAngles[i1++] = light.innerAngle;
-            lightAngles[i1++] = light.outerAngle;
-
-            vec1.set(light.position).mul(camera.view);
-
-            lightPositionsAndRadiuses[i2++] = vec1.x;
-            lightPositionsAndRadiuses[i2++] = vec1.y;
-            lightPositionsAndRadiuses[i2++] = vec1.z;
-            lightPositionsAndRadiuses[i2++] = light.radius;
-
-            if (light.type != LightType.POINT_LIGHT) {
-                vec1.set(light.direction).rot(camera.view);
-            } else {
-                vec1.set(0, 0, 0);
-            }
-
-            lightDirectionsAndIntensities[i3++] = vec1.x;
-            lightDirectionsAndIntensities[i3++] = vec1.y;
-            lightDirectionsAndIntensities[i3++] = vec1.z;
-        }
     }
 
     private void setLightTypes() {
@@ -553,6 +543,10 @@ public class TiledPBRShader extends BaseShader {
             prefix += "#define defNormal\n";
         }
 
+        if (params.emissive) {
+            prefix += "#define defEmissive\n";
+        }
+
         if (params.gammaCorrection) {
             prefix += "#define defGammaCorrection\n";
         }
@@ -584,6 +578,7 @@ public class TiledPBRShader extends BaseShader {
         boolean albedo;
         boolean normal;
         boolean rma;
+        boolean emissive;
         boolean lit;
         boolean gammaCorrection;
         boolean imageBasedLighting;
