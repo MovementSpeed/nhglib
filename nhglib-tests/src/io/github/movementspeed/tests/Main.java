@@ -89,7 +89,7 @@ public class Main extends NhgEntry implements InputListener {
 
         float pos = 1.5f;
 
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 3; i++) {
             NhgLight light = NhgLight.point(15, 4f,
                     new Color(MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), 1f));
             light.position.set(new Vector3(MathUtils.random(-pos, pos), MathUtils.random(-pos, pos), MathUtils.random(-pos, pos)));
