@@ -198,72 +198,6 @@ public class PBRShader extends BaseShader {
             }
         });
 
-        register("u_albedo", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Albedo);
-
-                if (textureAttribute != null) {
-                    shader.set(inputID, textureAttribute.textureDescription.texture);
-                }
-            }
-        });
-
-        register("u_rma", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.RMA);
-
-                if (textureAttribute != null) {
-                    shader.set(inputID, textureAttribute.textureDescription.texture);
-                }
-            }
-        });
-
-        register("u_normal", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Normal);
-
-                if (textureAttribute != null) {
-                    shader.set(inputID, textureAttribute.textureDescription.texture);
-                }
-            }
-        });
-
-        register("u_irradiance", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                IBLAttribute attribute = (IBLAttribute) combinedAttributes.get(IBLAttribute.IrradianceType);
-
-                if (attribute != null) {
-                    shader.set(inputID, attribute.textureDescription.texture);
-                }
-            }
-        });
-
-        register("u_prefilter", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                IBLAttribute attribute = (IBLAttribute) combinedAttributes.get(IBLAttribute.PrefilterType);
-
-                if (attribute != null) {
-                    shader.set(inputID, attribute.textureDescription.texture);
-                }
-            }
-        });
-
-        register("u_brdf", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                IBLAttribute attribute = (IBLAttribute) combinedAttributes.get(IBLAttribute.BrdfType);
-
-                if (attribute != null) {
-                    shader.set(inputID, attribute.textureDescription.texture);
-                }
-            }
-        });
-
         register("u_ambient", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
@@ -403,6 +337,7 @@ public class PBRShader extends BaseShader {
         }
 
         bindMaterial(combinedAttributes);
+        bindTextures(combinedAttributes);
 
         if (params.lit) {
             bindLights(renderable);
@@ -420,6 +355,77 @@ public class PBRShader extends BaseShader {
     public void dispose() {
         shaderProgram.dispose();
         super.dispose();
+    }
+
+    private void bindTextures(Attributes combinedAttributes) {
+        int bindValue;
+        GLTexture texture;
+        context.textureBinder.begin();
+
+        // Albedo
+        PBRTextureAttribute attribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Albedo);
+
+        if (attribute != null) {
+            texture = attribute.textureDescription.texture;
+            bindValue = context.textureBinder.bind(texture);
+            shaderProgram.setUniformi("u_albedo", bindValue);
+        }
+
+        // RMA
+        attribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.RMA);
+
+        if (attribute != null) {
+            texture = attribute.textureDescription.texture;
+            bindValue = context.textureBinder.bind(texture);
+            shaderProgram.setUniformi("u_rma", bindValue);
+        }
+
+        // Normal
+        attribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Normal);
+
+        if (attribute != null) {
+            texture = attribute.textureDescription.texture;
+            bindValue = context.textureBinder.bind(texture);
+            shaderProgram.setUniformi("u_normal", bindValue);
+        }
+
+        // Emissive
+        attribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Emissive);
+
+        if (attribute != null) {
+            texture = attribute.textureDescription.texture;
+            bindValue = context.textureBinder.bind(texture);
+            shaderProgram.setUniformi("u_emissive", bindValue);
+        }
+
+        // Irradiance
+        IBLAttribute iblAttribute = (IBLAttribute) combinedAttributes.get(IBLAttribute.IrradianceType);
+
+        if (iblAttribute != null) {
+            texture = iblAttribute.textureDescription.texture;
+            bindValue = context.textureBinder.bind(texture);
+            shaderProgram.setUniformi("u_irradiance", bindValue);
+        }
+
+        // Prefilter
+        iblAttribute = (IBLAttribute) combinedAttributes.get(IBLAttribute.PrefilterType);
+
+        if (iblAttribute != null) {
+            texture = iblAttribute.textureDescription.texture;
+            bindValue = context.textureBinder.bind(texture);
+            shaderProgram.setUniformi("u_prefilter", bindValue);
+        }
+
+        // Brdf
+        iblAttribute = (IBLAttribute) combinedAttributes.get(IBLAttribute.BrdfType);
+
+        if (iblAttribute != null) {
+            texture = iblAttribute.textureDescription.texture;
+            bindValue = context.textureBinder.bind(texture);
+            shaderProgram.setUniformi("u_brdf", bindValue);
+        }
+
+        context.textureBinder.end();
     }
 
     private String createPrefix(Renderable renderable) {
