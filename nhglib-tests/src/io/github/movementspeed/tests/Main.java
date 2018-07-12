@@ -3,7 +3,6 @@ package io.github.movementspeed.tests;
 import com.artemis.BaseSystem;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.Nhg;
@@ -24,6 +23,8 @@ import io.github.movementspeed.nhglib.graphics.shaders.attributes.AmbientLightin
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.GammaCorrectionAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.IBLAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.particles.ParticleShader;
+import io.github.movementspeed.nhglib.graphics.shaders.shadows.ShadowsDepthRenderPass;
+import io.github.movementspeed.nhglib.graphics.shaders.tiled.TiledPBRRenderPass;
 import io.github.movementspeed.nhglib.graphics.worlds.NhgWorld;
 import io.github.movementspeed.nhglib.graphics.worlds.strategies.impl.DefaultWorldStrategy;
 import io.github.movementspeed.nhglib.input.enums.InputAction;
@@ -89,12 +90,12 @@ public class Main extends NhgEntry implements InputListener {
 
         float pos = 1.5f;
 
-        for (int i = 0; i < 3; i++) {
+        /*for (int i = 0; i < 3; i++) {
             NhgLight light = NhgLight.point(15, 4f,
                     new Color(MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), 1f));
             light.position.set(new Vector3(MathUtils.random(-pos, pos), MathUtils.random(-pos, pos), MathUtils.random(-pos, pos)));
             lightsAttribute.lights.add(light);
-        }
+        }*/
 
         /*for (int x = 0; x < 1; x++) {
             for (int y = 0; y < 1; y++) {
@@ -107,9 +108,10 @@ public class Main extends NhgEntry implements InputListener {
             }
         }*/
 
-        /*NhgLight sun = NhgLight.directional(30, Color.WHITE);
-        sun.direction.set(1, -1, -1);
-        lightsAttribute.lights.add(sun);*/
+        NhgLight sun = NhgLight.directional(30, Color.WHITE);
+        sun.direction.set(-1f, -1f, -1f);
+        sun.setCastsShadows(true);
+        lightsAttribute.lights.add(sun);
 
         GammaCorrectionAttribute gammaCorrectionAttribute = new GammaCorrectionAttribute(true);
         AmbientLightingAttribute ambientLightingAttribute = new AmbientLightingAttribute(0.03f);
@@ -117,6 +119,9 @@ public class Main extends NhgEntry implements InputListener {
         environment.set(lightsAttribute);
         environment.set(gammaCorrectionAttribute);
         environment.set(ambientLightingAttribute);
+
+        renderingSystem.setRenderPass(0, new ShadowsDepthRenderPass());
+        renderingSystem.setRenderPass(1, new TiledPBRRenderPass());
 
         // Subscribe to asset events
         nhg.messaging.get(Strings.Events.assetLoaded, Strings.Events.assetLoadingFinished, Strings.Events.sceneLoaded)

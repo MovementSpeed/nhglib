@@ -36,16 +36,6 @@ public class CameraSystem extends NhgIteratingSystem {
         camera.up.set(0, 1, 0);
         camera.transform(nodeComponent.getTransform());
 
-        /*camera.position.set(nodeComponent.getTranslation());
-
-        Quaternion rotation = nodeComponent.getRotationQuaternion();
-
-        camera.direction.rotate(camera.up, -rotation.getYaw());
-        camera.up.rotate(camera.direction, rotation.getRoll());
-
-        vec.set(camera.direction).crs(camera.up).nor();
-        camera.direction.rotate(vec, rotation.getPitch());*/
-
         camera.update();
 
         if (!cameras.contains(camera, true)) {

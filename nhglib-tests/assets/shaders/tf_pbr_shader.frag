@@ -46,7 +46,7 @@ uniform HIGHP vec3 u_cameraPosition;
         uniform LOWP sampler2D u_lightInfo;
 
         uniform LOWP int u_lightTypes[lights];
-        uniform LOWP vec2 u_lightAngles[lights];
+        uniform LOWP vec2 lightAngles[lights];
         uniform LOWP vec4 u_lightPositionsAndRadiuses[lights];
         uniform LOWP vec4 u_lightDirectionsAndIntensities[lights];
     #endif
@@ -208,8 +208,8 @@ vec3 getLighting(vec4 albedo, vec3 rma, vec3 normal, vec3 V, vec3 F0) {
                 lightAttenuation = 1.0;
             } else if (u_lightTypes[lightId] == 2) {
                 float currentAngle = dot(-normalize(lightDirection), normalize(u_lightDirectionsAndIntensities[lightId].xyz));
-                float innerConeAngle = cos(radians(u_lightAngles[lightId].x));
-                float outerConeAngle = cos(radians(u_lightAngles[lightId].y));
+                float innerConeAngle = cos(radians(lightAngles[lightId].x));
+                float outerConeAngle = cos(radians(lightAngles[lightId].y));
                 float conesAngleDiff = abs(innerConeAngle - outerConeAngle);
 
                 float spotEffect = clamp((currentAngle - outerConeAngle) / conesAngleDiff, 0.0, 1.0);
@@ -270,8 +270,8 @@ vec3 getAmbient(vec4 albedo, vec3 normal, vec3 V, vec3 F0, vec3 rma) {
     return ambient;
 }
 
-vec3 getColor(vec3 ambient, vec3 emissive, vec3 lighting) {
-    LOWP vec3 color = emissive + ambient + lighting;
+vec3 getColor(vec3 ambient, vec3 emissive, vec3 lighting, float shadow) {
+    LOWP vec3 color = emissive + ambient + lighting * (1.0 - shadow);
 
     #ifdef defGammaCorrection
         color = color / (color + vec3(1.0));
@@ -302,8 +302,9 @@ void main() {
     LOWP vec3 F0 = vec3(0.04);
     F0 = mix(F0, albedo.rgb, rma.g);
 
+    HIGHP float shadow = 0.0;
     LOWP vec3 lighting = getLighting(albedo, rma, normal, V, F0);
     LOWP vec3 ambient = getAmbient(albedo, normal, V, F0, rma);
-    LOWP vec3 color = getColor(ambient, emissive, lighting);
+    LOWP vec3 color = getColor(ambient, emissive, lighting, shadow);
     FRAG_COLOR = vec4(color.rgb, albedo.a);
 }

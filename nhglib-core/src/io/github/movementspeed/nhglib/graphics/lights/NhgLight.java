@@ -1,6 +1,6 @@
 package io.github.movementspeed.nhglib.graphics.lights;
 
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.environment.BaseLight;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
@@ -21,7 +21,9 @@ public class NhgLight extends BaseLight<NhgLight> {
     public float outerAngle;
 
     public LightType type;
+    public ShadowLightProperties shadowLightProperties;
 
+    private boolean castsShadows;
     private Matrix4 transform;
 
     public NhgLight() {
@@ -62,6 +64,35 @@ public class NhgLight extends BaseLight<NhgLight> {
         light.outerAngle = outerAngle;
 
         return light;
+    }
+
+    public void setCastsShadows(boolean castsShadows) {
+        this.castsShadows = castsShadows;
+
+        if (castsShadows) {
+            switch (type) {
+                case SPOT_LIGHT:
+                    shadowLightProperties = new ShadowLightProperties<PerspectiveCamera, Texture>();
+                    break;
+
+                case DIRECTIONAL_LIGHT:
+                    shadowLightProperties = new ShadowLightProperties<OrthographicCamera, Texture>();
+                    shadowLightProperties.lightView = new OrthographicCamera(2, 2);
+                    shadowLightProperties.lightView.near = 1.0f;
+                    shadowLightProperties.lightView.far = 100.0f;
+                    shadowLightProperties.halfHeight = 2 * 0.5f;
+                    shadowLightProperties.halfDepth = shadowLightProperties.lightView.near + 0.5f * (shadowLightProperties.lightView.far - shadowLightProperties.lightView.near);
+                    break;
+
+                case POINT_LIGHT:
+                    shadowLightProperties = new ShadowLightProperties<PerspectiveCamera, Cubemap>();
+                    break;
+            }
+        }
+    }
+
+    public boolean castsShadows() {
+        return castsShadows;
     }
 
     public void set(NhgLight light) {

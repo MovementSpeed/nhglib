@@ -22,6 +22,10 @@ public class GLUtils {
         Gdx.gl.glClear(mask);
     }
 
+    public static void clearScreen(int mask) {
+        Gdx.gl.glClear(mask);
+    }
+
     public static void setViewport(int x, int y, int width, int height) {
         Gdx.gl.glViewport(x, y, width, height);
     }

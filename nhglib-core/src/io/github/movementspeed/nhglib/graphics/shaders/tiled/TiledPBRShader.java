@@ -92,6 +92,13 @@ public class TiledPBRShader extends BaseShader {
             }
         });
 
+        register("u_lightMatrix", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                shader.set(inputID, lights.first().shadowLightProperties.lightView.combined);
+            }
+        });
+
         register("u_viewMatrix", new GlobalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
@@ -386,12 +393,16 @@ public class TiledPBRShader extends BaseShader {
         }
 
         // Lights
-        bindValue = context.textureBinder.bind(lightTexture);
-        shaderProgram.setUniformi("u_lights", bindValue);
+        if (params.lit) {
+            bindValue = context.textureBinder.bind(lightTexture);
+            shaderProgram.setUniformi("u_lights", bindValue);
+        }
 
         // Lights info
-        bindValue = context.textureBinder.bind(lightInfoTexture);
-        shaderProgram.setUniformi("u_lightInfo", bindValue);
+        if (params.lit) {
+            bindValue = context.textureBinder.bind(lightInfoTexture);
+            shaderProgram.setUniformi("u_lightInfo", bindValue);
+        }
 
         // Irradiance
         IBLAttribute iblAttribute = (IBLAttribute) combinedAttributes.get(IBLAttribute.IrradianceType);
