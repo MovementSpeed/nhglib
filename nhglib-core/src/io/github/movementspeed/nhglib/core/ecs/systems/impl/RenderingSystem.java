@@ -16,7 +16,6 @@ import io.github.movementspeed.nhglib.core.ecs.interfaces.RenderingSystemInterfa
 import io.github.movementspeed.nhglib.core.ecs.systems.base.BaseRenderingSystem;
 import io.github.movementspeed.nhglib.graphics.rendering.RenderPass;
 import io.github.movementspeed.nhglib.graphics.shaders.tiled.TiledPBRRenderPass;
-import io.github.movementspeed.nhglib.utils.graphics.GLUtils;
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
@@ -82,7 +81,8 @@ public class RenderingSystem extends BaseSystem implements Disposable {
 
             if (renderableProviders.size > 0) {
                 frameBuffer.begin();
-                GLUtils.clearScreen(clearColor);
+                Gdx.gl.glClearColor(0, 0, 0, 1);
+                Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling ? GL20.GL_COVERAGE_BUFFER_BIT_NV : 0));
 
                 for (int i = 0; i < renderPasses.size; i++) {
                     RenderPass renderPass = renderPasses.get(i);

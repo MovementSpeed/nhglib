@@ -23,7 +23,8 @@ import io.github.movementspeed.nhglib.graphics.shaders.attributes.AmbientLightin
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.GammaCorrectionAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.IBLAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.particles.ParticleShader;
-import io.github.movementspeed.nhglib.graphics.shaders.shadows.ShadowsDepthRenderPass;
+import io.github.movementspeed.nhglib.graphics.shaders.shadows.depth.LightDepthMapRenderPass;
+import io.github.movementspeed.nhglib.graphics.shaders.shadows.shadow.ShadowsRenderPass;
 import io.github.movementspeed.nhglib.graphics.shaders.tiled.TiledPBRRenderPass;
 import io.github.movementspeed.nhglib.graphics.worlds.NhgWorld;
 import io.github.movementspeed.nhglib.graphics.worlds.strategies.impl.DefaultWorldStrategy;
@@ -109,7 +110,8 @@ public class Main extends NhgEntry implements InputListener {
         }*/
 
         NhgLight sun = NhgLight.directional(30, Color.WHITE);
-        sun.direction.set(-1f, -1f, -1f);
+        sun.position.set(1, 1, 1);
+        sun.direction.set(-10, 0, 0);
         sun.setCastsShadows(true);
         lightsAttribute.lights.add(sun);
 
@@ -120,8 +122,9 @@ public class Main extends NhgEntry implements InputListener {
         environment.set(gammaCorrectionAttribute);
         environment.set(ambientLightingAttribute);
 
-        renderingSystem.setRenderPass(0, new ShadowsDepthRenderPass());
-        renderingSystem.setRenderPass(1, new TiledPBRRenderPass());
+        renderingSystem.setRenderPass(0, new LightDepthMapRenderPass());
+        renderingSystem.setRenderPass(1, new ShadowsRenderPass());
+        renderingSystem.setRenderPass(2, new TiledPBRRenderPass());
 
         // Subscribe to asset events
         nhg.messaging.get(Strings.Events.assetLoaded, Strings.Events.assetLoadingFinished, Strings.Events.sceneLoaded)

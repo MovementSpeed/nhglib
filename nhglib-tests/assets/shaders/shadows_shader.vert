@@ -28,8 +28,6 @@
     #define OUT out
 #endif
 
-IN HIGHP vec4 a_position;
-
 #ifdef boneWeight0Flag
     #define boneWeightsFlag
     IN LOWP vec2 a_boneWeight0;
@@ -75,12 +73,16 @@ IN HIGHP vec4 a_position;
     #endif
 #endif
 
+IN HIGHP vec4 a_position;
+
 uniform HIGHP mat4 u_mvpMatrix;
 uniform HIGHP mat4 u_modelMatrix;
+uniform HIGHP mat4 u_lightMatrix;
+
+OUT HIGHP vec4 v_position;
+OUT HIGHP vec4 v_positionLightMatrix;
 
 void main() {
-    LOWP vec4 position;
-
     #ifdef numBones
         HIGHP mat4 skinning = mat4(0.0);
 
@@ -119,5 +121,11 @@ void main() {
         HIGHP mat4 skinning = mat4(1.0);
     #endif
 
-    gl_Position = u_mvpMatrix * position;
+	// Vertex position after transformation
+    v_position = u_modelMatrix * skinning * a_position;
+
+    // Vertex position in the light perspective
+    v_positionLightMatrix = u_lightMatrix * v_position;
+
+    gl_Position = u_mvpMatrix * v_position;
 }

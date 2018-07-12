@@ -1,6 +1,6 @@
 package io.github.movementspeed.nhglib.graphics.lights;
 
-import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.environment.BaseLight;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
@@ -72,22 +72,19 @@ public class NhgLight extends BaseLight<NhgLight> {
         if (castsShadows) {
             switch (type) {
                 case SPOT_LIGHT:
-                    shadowLightProperties = new ShadowLightProperties<PerspectiveCamera, Texture>();
+                    shadowLightProperties = new ShadowSpotLightProperties();
                     break;
 
                 case DIRECTIONAL_LIGHT:
-                    shadowLightProperties = new ShadowLightProperties<OrthographicCamera, Texture>();
-                    shadowLightProperties.lightView = new OrthographicCamera(2, 2);
-                    shadowLightProperties.lightView.near = 1.0f;
-                    shadowLightProperties.lightView.far = 100.0f;
-                    shadowLightProperties.halfHeight = 2 * 0.5f;
-                    shadowLightProperties.halfDepth = shadowLightProperties.lightView.near + 0.5f * (shadowLightProperties.lightView.far - shadowLightProperties.lightView.near);
+                    shadowLightProperties = new ShadowDirectionalLightProperties();
                     break;
 
                 case POINT_LIGHT:
-                    shadowLightProperties = new ShadowLightProperties<PerspectiveCamera, Cubemap>();
+                    shadowLightProperties = new ShadowPointLightProperties();
                     break;
             }
+
+            shadowLightProperties.build(this);
         }
     }
 

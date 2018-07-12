@@ -21,12 +21,12 @@ import com.badlogic.gdx.graphics.g3d.Shader;
 import com.badlogic.gdx.graphics.g3d.utils.BaseShaderProvider;
 import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils;
 
-public class ShadowsDepthShaderProvider extends BaseShaderProvider {
+public class LightDepthShaderProvider extends BaseShaderProvider {
     @Override
     protected Shader createShader(final Renderable renderable) {
-        ShadowsDepthShader.Params params = new ShadowsDepthShader.Params();
+        LightDepthShader.Params params = new LightDepthShader.Params();
         params.useBones = ShaderUtils.useBones(renderable);
 
-        return new ShadowsDepthShader(renderable, params);
+        return new LightDepthShader(renderable, params);
     }
 }

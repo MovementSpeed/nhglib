@@ -21,6 +21,7 @@ import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.IBLAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.PBRTextureAttribute;
+import io.github.movementspeed.nhglib.graphics.shaders.attributes.ShadowsAttribute;
 import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils;
 
 /**
@@ -95,7 +96,7 @@ public class TiledPBRShader extends BaseShader {
         register("u_lightMatrix", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, lights.first().shadowLightProperties.lightView.combined);
+                shader.set(inputID, lights.first().shadowLightProperties.lightCamera.combined);
             }
         });
 
@@ -402,6 +403,13 @@ public class TiledPBRShader extends BaseShader {
         if (params.lit) {
             bindValue = context.textureBinder.bind(lightInfoTexture);
             shaderProgram.setUniformi("u_lightInfo", bindValue);
+        }
+
+        // Shadows
+        if (params.lit) {
+            ShadowsAttribute shadowsAttribute = (ShadowsAttribute) combinedAttributes.get(ShadowsAttribute.Type);
+            bindValue = context.textureBinder.bind(shadowsAttribute.shadows);
+            shaderProgram.setUniformi("u_shadows", bindValue);
         }
 
         // Irradiance

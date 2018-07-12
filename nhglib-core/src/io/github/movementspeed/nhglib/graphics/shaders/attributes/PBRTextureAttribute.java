@@ -91,52 +91,6 @@ public class PBRTextureAttribute extends Attribute {
         return new PBRTextureAttribute(Emissive, textureDescriptor, offsetU, offsetV, tilesU, tilesV);
     }
 
-    /*public static PBRTextureAttribute createMetalness(final float metalness) {
-        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGB888);
-        pixmap.setColor(metalness, metalness, metalness, 1.0f);
-        pixmap.drawPixel(0, 0);
-        Texture texture = new Texture(pixmap);
-        return new PBRTextureAttribute(Metalness, texture);
-    }
-
-    public static PBRTextureAttribute createMetalness(final Texture texture) {
-        return new PBRTextureAttribute(Metalness, texture);
-    }
-
-    public static PBRTextureAttribute createMetalness(final TextureRegion region) {
-        return new PBRTextureAttribute(Metalness, region);
-    }
-
-    public static PBRTextureAttribute createMetalness(final Texture texture, float offsetU, float offsetV, float tilesU, float tilesV) {
-        TextureDescriptor textureDescriptor = new TextureDescriptor();
-        textureDescriptor.texture = texture;
-
-        return new PBRTextureAttribute(Metalness, textureDescriptor, offsetU, offsetV, tilesU, tilesV);
-    }
-
-    public static PBRTextureAttribute createRoughness(final float roughness) {
-        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGB888);
-        pixmap.setColor(roughness, roughness, roughness, 1.0f);
-        pixmap.drawPixel(0, 0);
-        Texture texture = new Texture(pixmap);
-        return new PBRTextureAttribute(Roughness, texture);
-    }
-
-    public static PBRTextureAttribute createRoughness(final Texture texture) {
-        return new PBRTextureAttribute(Roughness, texture);
-    }
-
-    public static PBRTextureAttribute createRoughness(final TextureRegion region) {
-        return new PBRTextureAttribute(Roughness, region);
-    }
-
-    public static PBRTextureAttribute createRoughness(final Texture texture, float offsetU, float offsetV, float tilesU, float tilesV) {
-        TextureDescriptor textureDescriptor = new TextureDescriptor();
-        textureDescriptor.texture = texture;
-
-        return new PBRTextureAttribute(Roughness, textureDescriptor, offsetU, offsetV, tilesU, tilesV);
-    }*/
-
     public static PBRTextureAttribute createNormal(final Texture texture) {
         return new PBRTextureAttribute(Normal, texture);
     }
@@ -151,21 +105,6 @@ public class PBRTextureAttribute extends Attribute {
 
         return new PBRTextureAttribute(Normal, textureDescriptor, offsetU, offsetV, tilesU, tilesV);
     }
-
-    /*public static PBRTextureAttribute createAmbientOcclusion(final Texture texture) {
-        return new PBRTextureAttribute(AmbientOcclusion, texture);
-    }
-
-    public static PBRTextureAttribute createAmbientOcclusion(final TextureRegion region) {
-        return new PBRTextureAttribute(AmbientOcclusion, region);
-    }
-
-    public static PBRTextureAttribute createAmbientOcclusion(final Texture texture, float offsetU, float offsetV, float tilesU, float tilesV) {
-        TextureDescriptor textureDescriptor = new TextureDescriptor();
-        textureDescriptor.texture = texture;
-
-        return new PBRTextureAttribute(AmbientOcclusion, textureDescriptor, offsetU, offsetV, tilesU, tilesV);
-    }*/
 
     public final TextureDescriptor<Texture> textureDescription;
 
