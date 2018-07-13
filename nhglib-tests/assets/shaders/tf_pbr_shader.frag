@@ -273,8 +273,7 @@ vec3 getAmbient(vec4 albedo, vec3 normal, vec3 V, vec3 F0, vec3 rma) {
 }
 
 vec3 getColor(vec3 ambient, vec3 emissive, vec3 lighting, float shadow) {
-    LOWP vec3 color = emissive + ambient + lighting;
-    color *= shadow;
+    LOWP vec3 color = emissive + ambient + (lighting * shadow);
 
     #ifdef defGammaCorrection
         color = color / (color + vec3(1.0));
@@ -300,7 +299,7 @@ float getShadow() {
     shadowCoords.x /= 1280.0;
     shadowCoords.y /= 720.0;
     vec4 shadowColor = TEXTURE(u_shadows, shadowCoords);
-    return 0.4 + 0.6 * shadowColor.a;
+    return 1.0 - shadowColor.a;
 }
 
 void main() {

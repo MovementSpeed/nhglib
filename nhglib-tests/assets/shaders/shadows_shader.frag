@@ -40,10 +40,25 @@ uniform sampler2D u_depthMapDir;
 uniform samplerCube u_depthMapCube;
 
 IN HIGHP vec4 v_position;
-IN HIGHP vec4 v_positionLightMatrix;
+IN HIGHP vec4 v_fragPosLightSpace;
 
 void main() {
-	// Default is to not add any color
+    //vec3 lightDir = normalize(u_lightPosition - v_position.xyz);
+
+    // perform perspective divide
+    vec3 projCoords = v_fragPosLightSpace.xyz / v_fragPosLightSpace.w;
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5 + 0.5;
+    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+    float closestDepth = TEXTURE(u_depthMapDir, projCoords.xy).r;
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
+    // check whether current frag pos is in shadow
+    float bias = 0.005;
+    float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
+    FRAG_COLOR = vec4(shadow);
+
+	/*// Default is to not add any color
 	float intensity = 0.0;
 
 	// Vector light-current position
@@ -69,6 +84,6 @@ void main() {
 		intensity = 0.5 * (1.0 - lenToLight);
 	}
 
-	FRAG_COLOR = vec4(intensity);
+	FRAG_COLOR = vec4(intensity);*/
 }
 

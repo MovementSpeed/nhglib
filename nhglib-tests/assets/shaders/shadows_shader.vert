@@ -80,7 +80,7 @@ uniform HIGHP mat4 u_modelMatrix;
 uniform HIGHP mat4 u_lightMatrix;
 
 OUT HIGHP vec4 v_position;
-OUT HIGHP vec4 v_positionLightMatrix;
+OUT HIGHP vec4 v_fragPosLightSpace;
 
 void main() {
     #ifdef numBones
@@ -125,7 +125,7 @@ void main() {
     v_position = u_modelMatrix * skinning * a_position;
 
     // Vertex position in the light perspective
-    v_positionLightMatrix = u_lightMatrix * v_position;
+    v_fragPosLightSpace = u_lightMatrix * v_position;
 
     gl_Position = u_mvpMatrix * v_position;
 }

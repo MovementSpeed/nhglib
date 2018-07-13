@@ -111,7 +111,7 @@ public class Main extends NhgEntry implements InputListener {
 
         NhgLight sun = NhgLight.directional(30, Color.WHITE);
         sun.position.set(1, 1, 1);
-        sun.direction.set(-10, 0, 0);
+        sun.direction.set(-1, -1, -1);
         sun.setCastsShadows(true);
         lightsAttribute.lights.add(sun);
 
