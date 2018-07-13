@@ -8,12 +8,14 @@ import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.assets.Asset;
 import io.github.movementspeed.nhglib.core.ecs.components.graphics.CameraComponent;
+import io.github.movementspeed.nhglib.core.ecs.components.graphics.LightComponent;
 import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.InputSystem;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.PhysicsSystem;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
 import io.github.movementspeed.nhglib.core.entry.NhgEntry;
 import io.github.movementspeed.nhglib.core.messaging.Message;
+import io.github.movementspeed.nhglib.enums.LightType;
 import io.github.movementspeed.nhglib.files.HDRData;
 import io.github.movementspeed.nhglib.graphics.lights.LightProbe;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
@@ -109,12 +111,6 @@ public class Main extends NhgEntry implements InputListener {
             }
         }*/
 
-        NhgLight sun = NhgLight.directional(30, Color.WHITE);
-        sun.position.set(1, 1, 1);
-        sun.direction.set(-1, -1, -1);
-        sun.setCastsShadows(true);
-        lightsAttribute.lights.add(sun);
-
         GammaCorrectionAttribute gammaCorrectionAttribute = new GammaCorrectionAttribute(true);
         AmbientLightingAttribute ambientLightingAttribute = new AmbientLightingAttribute(0.03f);
 
@@ -148,6 +144,18 @@ public class Main extends NhgEntry implements InputListener {
 
                                 int targetEntity = scene.sceneGraph.getSceneEntity("target");
                                 target = nhg.entities.getComponent(targetEntity, NodeComponent.class);
+
+                                NhgLight sunLight = NhgLight.directional(30, Color.WHITE);
+                                sunLight.setCastsShadows(true);
+                                lightsAttribute.lights.add(sunLight);
+
+                                int sun = scene.sceneGraph.addSceneEntity("sun");
+                                LightComponent lightComponent = nhg.entities.createComponent(sun, LightComponent.class);
+                                lightComponent.light = sunLight;
+                                lightComponent.type = LightType.DIRECTIONAL_LIGHT;
+
+                                NodeComponent sunNode = nhg.entities.getComponent(sun, NodeComponent.class);
+                                sunNode.setTranslation(-1f, 1f, 1f, true);
                             }
                         } else if (message.is(Strings.Events.sceneLoaded)) {
                             NhgLogger.log(this, "Scene loaded");

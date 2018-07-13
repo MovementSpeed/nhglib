@@ -27,6 +27,10 @@ public class ShadowDirectionalLightProperties extends ShadowLightProperties<Pers
 
     @Override
     public void bind(NhgLight light, ShaderProgram shaderProgram) {
+        lightCamera.position.set(light.position);
+        lightCamera.lookAt(Vector3.Zero);
+        lightCamera.update();
+
         final int textureNum = 3;
         depthSampler.bind(textureNum);
         shaderProgram.setUniformi("u_depthMapDir", textureNum);

@@ -12,8 +12,7 @@ public class ShadowSpotLightProperties extends ShadowLightProperties<Perspective
         lightCamera = new PerspectiveCamera(light.outerAngle, 1024, 1024);
         lightCamera.near = 1f;
         lightCamera.far = 70;
-        lightCamera.position.set(light.position);
-        lightCamera.lookAt(light.direction);
+        lightCamera.transform(light.getTransform());
         lightCamera.update();
 
         frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, 1024, 1024, true);
@@ -26,6 +25,9 @@ public class ShadowSpotLightProperties extends ShadowLightProperties<Perspective
 
     @Override
     public void bind(NhgLight light, ShaderProgram shaderProgram) {
+        lightCamera.transform(light.getTransform());
+        lightCamera.update();
+
         final int textureNum = 3;
         depthSampler.bind(textureNum);
         shaderProgram.setUniformi("u_depthMapDir", textureNum);

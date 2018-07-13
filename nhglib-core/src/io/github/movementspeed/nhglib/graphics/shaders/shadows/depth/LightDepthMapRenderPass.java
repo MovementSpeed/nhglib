@@ -35,6 +35,16 @@ public class LightDepthMapRenderPass extends RenderPass {
 
     @Override
     public void render(PerspectiveCamera camera, Array<RenderableProvider> renderableProviders) {
+        NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
+        Array<NhgLight> lights = lightsAttribute.lights;
+        if (lights.size != shadowLights.size) {
+            for (NhgLight light : lights) {
+                if (light.castsShadows()) {
+                    shadowLights.add(light);
+                }
+            }
+        }
+
         for (NhgLight light : shadowLights) {
             light.shadowLightProperties.begin();
             renderer.begin(light.shadowLightProperties.lightCamera);

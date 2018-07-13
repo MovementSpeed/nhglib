@@ -25,6 +25,9 @@ public class ShadowPointLightProperties extends ShadowLightProperties<Perspectiv
 
     @Override
     public void bind(NhgLight light, ShaderProgram shaderProgram) {
+        lightCamera.position.set(light.position);
+        lightCamera.update();
+
         final int textureNum = 2;
         depthSampler.bind(textureNum);
         shaderProgram.setUniformf("u_type", 2);

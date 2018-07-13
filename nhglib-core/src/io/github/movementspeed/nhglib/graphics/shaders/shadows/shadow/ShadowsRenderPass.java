@@ -44,6 +44,16 @@ public class ShadowsRenderPass extends RenderPass {
 
     @Override
     public void render(PerspectiveCamera camera, Array<RenderableProvider> renderableProviders) {
+        NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
+        Array<NhgLight> lights = lightsAttribute.lights;
+        if (lights.size != shadowLights.size) {
+            for (NhgLight light : lights) {
+                if (light.castsShadows()) {
+                    shadowLights.add(light);
+                }
+            }
+        }
+
         frameBuffer.begin();
 
         Gdx.gl.glClearColor(0.4f, 0.4f, 0.4f, 0.4f);
