@@ -1,10 +1,7 @@
 package io.github.movementspeed.nhglib.graphics.shaders.shadows.depth;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.VertexAttribute;
-import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.Attributes;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.Shader;
@@ -103,7 +100,7 @@ public class LightDepthMapShader extends BaseShader {
     public void begin(final Camera camera, final RenderContext context) {
         super.begin(camera, context);
         context.setDepthTest(GL20.GL_LEQUAL);
-        context.setCullFace(GL20.GL_BACK);
+        context.setCullFace(0);
     }
 
     @Override
@@ -116,6 +113,7 @@ public class LightDepthMapShader extends BaseShader {
 
     @Override
     public void end() {
+        context.setCullFace(GL30.GL_BACK);
         super.end();
     }
 

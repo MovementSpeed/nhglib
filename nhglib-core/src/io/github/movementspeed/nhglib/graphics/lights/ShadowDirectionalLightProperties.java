@@ -12,7 +12,7 @@ public class ShadowDirectionalLightProperties extends ShadowLightProperties<Pers
     public void build(NhgLight light) {
         lightCamera = new PerspectiveCamera(90, 1024, 1024);
         lightCamera.near = 0.1f;
-        lightCamera.far = 7;
+        lightCamera.far = 1;
         lightCamera.position.set(light.position);
         lightCamera.lookAt(Vector3.Zero);
         lightCamera.update();

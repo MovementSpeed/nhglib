@@ -145,6 +145,7 @@ public class Main extends NhgEntry implements InputListener {
                                 int targetEntity = scene.sceneGraph.getSceneEntity("target");
                                 target = nhg.entities.getComponent(targetEntity, NodeComponent.class);
 
+                                // Sun 1
                                 NhgLight sunLight = NhgLight.directional(30, Color.WHITE);
                                 sunLight.setCastsShadows(true);
                                 lightsAttribute.lights.add(sunLight);
@@ -156,6 +157,19 @@ public class Main extends NhgEntry implements InputListener {
 
                                 NodeComponent sunNode = nhg.entities.getComponent(sun, NodeComponent.class);
                                 sunNode.setTranslation(-0.3f, 0.3f, 0.3f, true);
+
+                                // Sun 2
+                                /*NhgLight sunLight2 = NhgLight.directional(30, Color.RED);
+                                sunLight2.setCastsShadows(true);
+                                lightsAttribute.lights.add(sunLight2);
+
+                                int sun2 = scene.sceneGraph.addSceneEntity("sun2");
+                                lightComponent = nhg.entities.createComponent(sun2, LightComponent.class);
+                                lightComponent.light = sunLight2;
+                                lightComponent.type = LightType.DIRECTIONAL_LIGHT;
+
+                                NodeComponent sun2Node = nhg.entities.getComponent(sun2, NodeComponent.class);
+                                sun2Node.setTranslation(0.3f, -0.3f, -0.3f, true);*/
                             }
                         } else if (message.is(Strings.Events.sceneLoaded)) {
                             NhgLogger.log(this, "Scene loaded");
