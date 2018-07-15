@@ -40,50 +40,51 @@ uniform sampler2D u_depthMapDir;
 uniform samplerCube u_depthMapCube;
 
 IN HIGHP vec4 v_position;
+IN HIGHP vec3 v_normal;
 IN HIGHP vec4 v_fragPosLightSpace;
 
 void main() {
-    //vec3 lightDir = normalize(u_lightPosition - v_position.xyz);
-
     // perform perspective divide
     vec3 projCoords = v_fragPosLightSpace.xyz / v_fragPosLightSpace.w;
+
     // transform to [0,1] range
     projCoords = projCoords * 0.5 + 0.5;
+
+    vec3 lightDir = normalize(u_lightPosition - v_position.xyz);
+
+    float closestDepth;
+
     // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-    float closestDepth = TEXTURE(u_depthMapDir, projCoords.xy).r;
+    if (u_type == 1.0) {
+        closestDepth = TEXTURE(u_depthMapDir, projCoords.xy).r;
+    } else if (u_type == 2.0) {
+        closestDepth = TEXTURE_CUBE(u_depthMapCube, lightDir).r;
+    }
+
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
+
+    vec3 normal = normalize(v_normal);
+
     // check whether current frag pos is in shadow
-    float bias = 0.005;
-    float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
-    FRAG_COLOR = vec4(shadow);
+    float bias = max(0.0026 * (1.0 - dot(normal, lightDir)), 0.0026);
 
-	/*// Default is to not add any color
-	float intensity = 0.0;
-
-	// Vector light-current position
-	vec3 lightDirection = v_position.xyz - u_lightPosition;
-	float lenToLight = length(lightDirection) / u_cameraFar;
-
-	// By default assume shadow
-	float lenDepthMap = -1.0;
-
-	if (u_type == 1.0) {
-	    vec3 depth = (v_positionLightMatrix.xyz / v_positionLightMatrix.w) * 0.5 + 0.5;
-        if (v_positionLightMatrix.z >= 0.0 && (depth.x >= 0.0) && (depth.x <= 1.0) && (depth.y >= 0.0) && (depth.y <= 1.0)) {
-            lenDepthMap = TEXTURE(u_depthMapDir, depth.xy).r;
+    float shadow = 0.0;
+    vec2 texelSize = vec2(1.0 / vec2(1024.0, 1024.0));
+    for(int x = -1; x <= 1; ++x)
+    {
+        for(int y = -1; y <= 1; ++y)
+        {
+            float pcfDepth = TEXTURE(u_depthMapDir, projCoords.xy + vec2(float(x), float(y)) * texelSize).r;
+            shadow += currentDepth - bias > pcfDepth  ? 1.0 : 0.0;
         }
-	} else if (u_type == 2.0) {
-	    // Point light, just get the depth given light vector
-        lenDepthMap = TEXTURE_CUBE(u_depthMapCube, lightDirection).r;
-	}
+    }
+    shadow /= 9.0;
 
-	// If not in shadow, add some light
-	if (lenDepthMap < lenToLight - 0.005) {
-	} else {
-		intensity = 0.5 * (1.0 - lenToLight);
-	}
+    // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
+    if(projCoords.z > 1.0)
+        shadow = 0.0;
 
-	FRAG_COLOR = vec4(intensity);*/
+    FRAG_COLOR = vec4(shadow);
 }
 

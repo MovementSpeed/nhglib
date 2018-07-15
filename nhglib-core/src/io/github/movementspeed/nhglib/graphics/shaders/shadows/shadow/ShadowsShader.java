@@ -57,6 +57,13 @@ public class ShadowsShader extends BaseShader {
             }
         });
 
+        register("u_viewMatrix", new GlobalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                shader.set(inputID, shader.camera.view);
+            }
+        });
+
         register("u_modelMatrix", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
@@ -102,7 +109,6 @@ public class ShadowsShader extends BaseShader {
     @Override
     public void begin(final Camera camera, final RenderContext context) {
         super.begin(camera, context);
-        context.setDepthTest(GL20.GL_LEQUAL);
         context.setCullFace(GL20.GL_BACK);
     }
 
@@ -128,7 +134,6 @@ public class ShadowsShader extends BaseShader {
                 super.render(renderable, combinedAttributes);
             }
         }
-
     }
 
     @Override

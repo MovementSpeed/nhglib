@@ -74,12 +74,15 @@
 #endif
 
 IN HIGHP vec4 a_position;
+IN HIGHP vec3 a_normal;
 
 uniform HIGHP mat4 u_mvpMatrix;
 uniform HIGHP mat4 u_modelMatrix;
+uniform HIGHP mat4 u_viewMatrix;
 uniform HIGHP mat4 u_lightMatrix;
 
 OUT HIGHP vec4 v_position;
+OUT HIGHP vec3 v_normal;
 OUT HIGHP vec4 v_fragPosLightSpace;
 
 void main() {
@@ -123,6 +126,7 @@ void main() {
 
 	// Vertex position after transformation
     v_position = u_modelMatrix * skinning * a_position;
+    v_normal = normalize(vec3(u_viewMatrix * u_modelMatrix * skinning * vec4(a_normal, 0.0)));
 
     // Vertex position in the light perspective
     v_fragPosLightSpace = u_lightMatrix * v_position;

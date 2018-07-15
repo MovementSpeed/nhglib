@@ -115,6 +115,11 @@ public class LightDepthMapShader extends BaseShader {
     }
 
     @Override
+    public void end() {
+        super.end();
+    }
+
+    @Override
     public int compareTo(final Shader other) {
         return 0;
     }

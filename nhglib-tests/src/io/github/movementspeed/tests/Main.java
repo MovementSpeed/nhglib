@@ -155,7 +155,7 @@ public class Main extends NhgEntry implements InputListener {
                                 lightComponent.type = LightType.DIRECTIONAL_LIGHT;
 
                                 NodeComponent sunNode = nhg.entities.getComponent(sun, NodeComponent.class);
-                                sunNode.setTranslation(-1f, 1f, 1f, true);
+                                sunNode.setTranslation(-0.3f, 0.3f, 0.3f, true);
                             }
                         } else if (message.is(Strings.Events.sceneLoaded)) {
                             NhgLogger.log(this, "Scene loaded");
