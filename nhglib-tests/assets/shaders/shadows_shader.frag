@@ -75,7 +75,7 @@ void main() {
     {
         for(int y = -1; y <= 1; ++y)
         {
-            float pcfDepth = TEXTURE(u_depthMapDir, projCoords.xy + vec2(float(x), float(y)) * texelSize).r;
+            float pcfDepth = TEXTURE(u_depthMapDir, projCoords.xy + vec2(x, y) * texelSize).r;
             shadow += currentDepth - bias > pcfDepth  ? 1.0 : 0.0;
         }
     }
