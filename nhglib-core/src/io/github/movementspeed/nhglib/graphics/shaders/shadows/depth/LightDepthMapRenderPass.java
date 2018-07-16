@@ -46,11 +46,25 @@ public class LightDepthMapRenderPass extends RenderPass {
         }
 
         for (NhgLight light : shadowLights) {
-            light.shadowLightProperties.begin();
-            renderer.begin(light.shadowLightProperties.lightCamera);
-            renderer.render(renderableProviders, environment);
-            renderer.end();
-            light.shadowLightProperties.end();
+            switch (light.type) {
+                case POINT_LIGHT:
+                    for (int i = 0; i < 6; i++) {
+                        light.shadowLightProperties.begin();
+                        renderer.begin(light.shadowLightProperties.lightCamera);
+                        renderer.render(renderableProviders, environment);
+                        renderer.end();
+                    }
+                    light.shadowLightProperties.end();
+                    break;
+
+                default:
+                    light.shadowLightProperties.begin();
+                    renderer.begin(light.shadowLightProperties.lightCamera);
+                    renderer.render(renderableProviders, environment);
+                    renderer.end();
+                    light.shadowLightProperties.end();
+            }
+
         }
     }
 

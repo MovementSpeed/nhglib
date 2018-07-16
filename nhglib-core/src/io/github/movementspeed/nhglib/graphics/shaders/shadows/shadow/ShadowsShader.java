@@ -71,6 +71,13 @@ public class ShadowsShader extends BaseShader {
             }
         });
 
+        register("u_cameraPosition", new LocalSetter() {
+            @Override
+            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+                shader.set(inputID, shader.camera.position);
+            }
+        });
+
         bonesIID = register("u_bones", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
@@ -168,6 +175,9 @@ public class ShadowsShader extends BaseShader {
         } else {
             prefix = "#define GLVERSION 2\n";
         }
+
+        float contribute = 1.0f / shadowLights.size;
+        prefix += "#define LIGHT_CONTRIBUTE " + contribute + "\n";
 
         if (params.useBones) {
             prefix += "#define numBones " + 12 + "\n";
