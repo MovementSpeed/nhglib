@@ -54,22 +54,24 @@ public class ShadowsRenderPass extends RenderPass {
             }
         }
 
-        frameBuffer.begin();
+        if (shadowLights.size > 0) {
+            frameBuffer.begin();
 
-        Gdx.gl.glClearColor(0.4f, 0.4f, 0.4f, 0.4f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+            Gdx.gl.glClearColor(0.4f, 0.4f, 0.4f, 0.4f);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-        renderer.begin(camera);
-        renderer.render(renderableProviders, environment);
-        renderer.end();
+            renderer.begin(camera);
+            renderer.render(renderableProviders, environment);
+            renderer.end();
 
-        frameBuffer.end();
+            frameBuffer.end();
 
-        if (shadowsAttribute != null) {
-            shadowsAttribute.shadows = frameBuffer.getColorBufferTexture();
-        } else {
-            shadowsAttribute = new ShadowsAttribute(frameBuffer.getColorBufferTexture());
-            environment.set(shadowsAttribute);
+            if (shadowsAttribute != null) {
+                shadowsAttribute.shadows = frameBuffer.getColorBufferTexture();
+            } else {
+                shadowsAttribute = new ShadowsAttribute(frameBuffer.getColorBufferTexture());
+                environment.set(shadowsAttribute);
+            }
         }
     }
 

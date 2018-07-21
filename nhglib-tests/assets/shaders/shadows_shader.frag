@@ -68,33 +68,39 @@ void main() {
 
     // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
     if (u_type == 1.0) {
-        vec2 texelSize = vec2(1.0 / vec2(1024.0, 1024.0));
-        float currentDepth = projCoords.z;
-
-        for(int x = -1; x <= 1; ++x) {
-            for(int y = -1; y <= 1; ++y) {
-                float pcfDepth = TEXTURE(u_depthMapDir, projCoords.xy + vec2(x, y) * texelSize).r;
-                shadow += currentDepth - bias > pcfDepth  ? LIGHT_CONTRIBUTE : 0.0;
-            }
-        }
-
-        shadow /= 9.0;
-
-        // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
-        if(projCoords.z > 1.0) {
+        if (projCoords.z > 1.0) {
             shadow = 0.0;
+        } else {
+            vec2 texelSize = vec2(1.0 / vec2(2048.0, 2048.0));
+            float currentDepth = projCoords.z;
+
+            for(int x = -1; x <= 1; ++x) {
+                for(int y = -1; y <= 1; ++y) {
+                    float pcfDepth = TEXTURE(u_depthMapDir, projCoords.xy + vec2(x, y) * texelSize).r;
+                    shadow += currentDepth - bias > pcfDepth  ? LIGHT_CONTRIBUTE : 0.0;
+                }
+            }
+
+            shadow /= 9.0;
         }
     } else if (u_type == 2.0) {
-        int samples = 20;
-        float diskRadius = 0.001;
         float currentDepth = length(lightDir);
-        for(int i = 0; i < samples; ++i)
-        {
-            float closestDepth = TEXTURE_CUBE(u_depthMapCube, lightDir + sampleOffsetDirections[i] * diskRadius).r;
-            if(currentDepth - bias > closestDepth)
-                shadow += LIGHT_CONTRIBUTE;
+
+        if (currentDepth > 1.0) {
+            shadow = 0.0;
+        } else {
+            int samples = 20;
+            float diskRadius = 0.001;
+
+            for (int i = 0; i < samples; ++i) {
+                float closestDepth = TEXTURE_CUBE(u_depthMapCube, lightDir + sampleOffsetDirections[i] * diskRadius).r;
+                if (currentDepth - 0.008 > closestDepth) {
+                    shadow += LIGHT_CONTRIBUTE;
+                }
+            }
+
+            shadow /= float(samples);
         }
-        shadow /= float(samples);
     }
 
     FRAG_COLOR = vec4(shadow);

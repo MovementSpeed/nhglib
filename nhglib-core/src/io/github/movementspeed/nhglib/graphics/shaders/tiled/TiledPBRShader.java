@@ -408,8 +408,10 @@ public class TiledPBRShader extends BaseShader {
         // Shadows
         if (params.lit) {
             ShadowsAttribute shadowsAttribute = (ShadowsAttribute) combinedAttributes.get(ShadowsAttribute.Type);
-            bindValue = context.textureBinder.bind(shadowsAttribute.shadows);
-            shaderProgram.setUniformi("u_shadows", bindValue);
+            if (shadowsAttribute != null && shadowsAttribute.shadows != null) {
+                bindValue = context.textureBinder.bind(shadowsAttribute.shadows);
+                shaderProgram.setUniformi("u_shadows", bindValue);
+            }
         }
 
         // Irradiance

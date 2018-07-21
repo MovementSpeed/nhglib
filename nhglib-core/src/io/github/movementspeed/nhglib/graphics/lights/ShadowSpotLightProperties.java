@@ -9,13 +9,13 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 public class ShadowSpotLightProperties extends ShadowLightProperties<PerspectiveCamera, Texture, FrameBuffer> {
     @Override
     public void build(NhgLight light) {
-        lightCamera = new PerspectiveCamera(light.outerAngle, 1024, 1024);
-        lightCamera.near = 0.1f;
-        lightCamera.far = 1;
+        lightCamera = new PerspectiveCamera(light.outerAngle, 2048, 2048);
+        lightCamera.near = 1f;
+        lightCamera.far = 10;
         lightCamera.transform(light.getTransform());
         lightCamera.update();
 
-        frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, 1024, 1024, true);
+        frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, 2048, 2048, true);
     }
 
     @Override

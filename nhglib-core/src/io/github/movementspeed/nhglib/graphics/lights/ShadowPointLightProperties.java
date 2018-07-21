@@ -15,7 +15,7 @@ public class ShadowPointLightProperties extends ShadowLightProperties<Perspectiv
     public void build(NhgLight light) {
         lightCamera = new PerspectiveCamera(90f, 1024, 1024);
         lightCamera.near = 0.1f;
-        lightCamera.far = 3;
+        lightCamera.far = 10;
         lightCamera.position.set(light.position);
         lightCamera.update();
 

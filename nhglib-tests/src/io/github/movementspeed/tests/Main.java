@@ -142,10 +142,10 @@ public class Main extends NhgEntry implements InputListener {
 
                                 cameraComponent = nhg.entities.getComponent(cameraEntity, CameraComponent.class);
 
-                                //int targetEntity = scene.sceneGraph.getSceneEntity("target");
-                                //target = nhg.entities.getComponent(targetEntity, NodeComponent.class);
+                                int targetEntity = scene.sceneGraph.getSceneEntity("target");
+                                target = nhg.entities.getComponent(targetEntity, NodeComponent.class);
 
-                                /*NhgLight pointLight = NhgLight.point(30, 4, Color.WHITE);
+                                NhgLight pointLight = NhgLight.point(30, 2, Color.WHITE);
                                 pointLight.setCastsShadows(true);
                                 lightsAttribute.lights.add(pointLight);
 
@@ -155,10 +155,10 @@ public class Main extends NhgEntry implements InputListener {
                                 lightComponent.type = LightType.DIRECTIONAL_LIGHT;
 
                                 NodeComponent pointLightNode = nhg.entities.getComponent(pointLightEntity, NodeComponent.class);
-                                pointLightNode.setTranslation(-0.2f, 0.3f, 0.1f, true);*/
+                                pointLightNode.setTranslation(0.2f, 0.2f, 0.2f, true);
 
                                 // Sun 1
-                                NhgLight sunLight = NhgLight.directional(30, Color.WHITE);
+                                /*NhgLight sunLight = NhgLight.directional(30, Color.WHITE);
                                 sunLight.setCastsShadows(true);
                                 lightsAttribute.lights.add(sunLight);
 
@@ -168,7 +168,7 @@ public class Main extends NhgEntry implements InputListener {
                                 sunLightComponent.type = LightType.DIRECTIONAL_LIGHT;
 
                                 NodeComponent sunNode = nhg.entities.getComponent(sun, NodeComponent.class);
-                                sunNode.setTranslation(0.3f, 0.3f, 0.3f, true);
+                                sunNode.setTranslation(1, 1, 1, true);*/
 
                                 /*// Sun 2
                                 NhgLight sunLight2 = NhgLight.directional(30, Color.RED);
@@ -223,7 +223,7 @@ public class Main extends NhgEntry implements InputListener {
     public void onUpdate(float delta) {
         super.onUpdate(delta);
         world.update();
-        //if (target != null) target.rotate(targetVec, true);
+        if (target != null) target.rotate(targetVec, true);
     }
 
     @Override
