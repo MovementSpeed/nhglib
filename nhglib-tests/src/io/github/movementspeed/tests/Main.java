@@ -145,7 +145,7 @@ public class Main extends NhgEntry implements InputListener {
                                 int targetEntity = scene.sceneGraph.getSceneEntity("target");
                                 target = nhg.entities.getComponent(targetEntity, NodeComponent.class);
 
-                                NhgLight pointLight = NhgLight.point(30, 2, Color.WHITE);
+                                NhgLight pointLight = NhgLight.point(30, 1f, Color.WHITE);
                                 pointLight.setCastsShadows(true);
                                 lightsAttribute.lights.add(pointLight);
 
