@@ -10,8 +10,8 @@ public class ShadowSpotLightProperties extends ShadowLightProperties<Perspective
     @Override
     public void build(NhgLight light) {
         lightCamera = new PerspectiveCamera(light.outerAngle, 2048, 2048);
-        lightCamera.near = 1f;
-        lightCamera.far = 10;
+        lightCamera.near = 0.1f;
+        lightCamera.far = 5;
         lightCamera.transform(light.getTransform());
         lightCamera.update();
 

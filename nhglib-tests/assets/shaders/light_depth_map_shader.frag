@@ -39,11 +39,6 @@ uniform HIGHP float u_cameraFar;
 uniform HIGHP vec3 u_lightPosition;
 
 void main() {
-	// Simple depth calculation, just the length of the vector light-current position
-	// TODO : questa funziona con le luci direzionali
-	//FRAG_COLOR = vec4(vec3(gl_FragCoord.z), 1.0);
-
-	// TODO : questa funziona con le luci omnidirezionali
-	float lightDistance = length(v_position.xyz - u_lightPosition);
+	float lightDistance = length(v_position.xyz - u_lightPosition) / u_cameraFar;
 	FRAG_COLOR = vec4(vec3(lightDistance), 1.0);
 }

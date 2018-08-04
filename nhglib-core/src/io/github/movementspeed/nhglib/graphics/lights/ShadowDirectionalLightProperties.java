@@ -10,9 +10,9 @@ import com.badlogic.gdx.math.Vector3;
 public class ShadowDirectionalLightProperties extends ShadowLightProperties<PerspectiveCamera, Texture, FrameBuffer> {
     @Override
     public void build(NhgLight light) {
-        lightCamera = new PerspectiveCamera(25, 2048, 2048);
-        lightCamera.near = 1f;
-        lightCamera.far = 10;
+        lightCamera = new PerspectiveCamera(90, 2048, 2048);
+        lightCamera.near = 0.1f;
+        lightCamera.far = 5;
         lightCamera.position.set(light.position);
         lightCamera.lookAt(Vector3.Zero);
         lightCamera.update();

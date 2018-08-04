@@ -105,9 +105,8 @@ public class LightDepthMapShader extends BaseShader {
 
     @Override
     public void render(Renderable renderable, Attributes combinedAttributes) {
-        NhgLight light = shadowLights.get(0);
-        program.setUniformf("u_lightPosition", light.position);
-        program.setUniformf("u_cameraFar", light.shadowLightProperties.lightCamera.far);
+        program.setUniformf("u_lightPosition", camera.position);
+        program.setUniformf("u_cameraFar", camera.far);
         super.render(renderable, combinedAttributes);
     }
 

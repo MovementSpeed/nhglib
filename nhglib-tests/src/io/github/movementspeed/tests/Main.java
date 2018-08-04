@@ -145,19 +145,7 @@ public class Main extends NhgEntry implements InputListener {
                                 int targetEntity = scene.sceneGraph.getSceneEntity("target");
                                 target = nhg.entities.getComponent(targetEntity, NodeComponent.class);
 
-                                NhgLight pointLight = NhgLight.point(30, 1f, Color.WHITE);
-                                pointLight.setCastsShadows(true);
-                                lightsAttribute.lights.add(pointLight);
-
-                                int pointLightEntity = scene.sceneGraph.addSceneEntity("pointLight");
-                                LightComponent lightComponent = nhg.entities.createComponent(pointLightEntity, LightComponent.class);
-                                lightComponent.light = pointLight;
-                                lightComponent.type = LightType.DIRECTIONAL_LIGHT;
-
-                                NodeComponent pointLightNode = nhg.entities.getComponent(pointLightEntity, NodeComponent.class);
-                                pointLightNode.setTranslation(0.2f, 0.2f, 0.2f, true);
-
-                                // Sun 1
+                                // directional light
                                 /*NhgLight sunLight = NhgLight.directional(30, Color.WHITE);
                                 sunLight.setCastsShadows(true);
                                 lightsAttribute.lights.add(sunLight);
@@ -168,7 +156,34 @@ public class Main extends NhgEntry implements InputListener {
                                 sunLightComponent.type = LightType.DIRECTIONAL_LIGHT;
 
                                 NodeComponent sunNode = nhg.entities.getComponent(sun, NodeComponent.class);
-                                sunNode.setTranslation(1, 1, 1, true);*/
+                                sunNode.setTranslation(1f, 1f, 1f, true);*/
+
+                                // spot light
+                                NhgLight spotLight = NhgLight.spot(30, 30, 50, 60, Color.WHITE);
+                                spotLight.setCastsShadows(false);
+                                lightsAttribute.lights.add(spotLight);
+
+                                int spot = scene.sceneGraph.addSceneEntity("spotLight");
+                                LightComponent spotLightComponent = nhg.entities.createComponent(spot, LightComponent.class);
+                                spotLightComponent.light = spotLight;
+                                spotLightComponent.type = LightType.SPOT_LIGHT;
+
+                                NodeComponent spotNode = nhg.entities.getComponent(spot, NodeComponent.class);
+                                spotNode.setTranslation(0, 0.2f, -0.2f, true);
+                                //spotNode.rotate(180, 0, 0);
+
+                                // point light
+                                /*NhgLight pointLight = NhgLight.point(10, 30f, Color.WHITE);
+                                pointLight.setCastsShadows(true);
+                                lightsAttribute.lights.add(pointLight);
+
+                                int pointLightEntity = scene.sceneGraph.addSceneEntity("pointLight");
+                                LightComponent lightComponent = nhg.entities.createComponent(pointLightEntity, LightComponent.class);
+                                lightComponent.light = pointLight;
+                                lightComponent.type = LightType.DIRECTIONAL_LIGHT;
+
+                                NodeComponent pointLightNode = nhg.entities.getComponent(pointLightEntity, NodeComponent.class);
+                                pointLightNode.setTranslation(-0.5f, 0.5f, 0.5f, true);*/
 
                                 /*// Sun 2
                                 NhgLight sunLight2 = NhgLight.directional(30, Color.RED);

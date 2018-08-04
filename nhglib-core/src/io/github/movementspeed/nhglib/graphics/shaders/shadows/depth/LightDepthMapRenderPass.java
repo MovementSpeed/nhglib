@@ -38,6 +38,8 @@ public class LightDepthMapRenderPass extends RenderPass {
         NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
         Array<NhgLight> lights = lightsAttribute.lights;
         if (lights.size != shadowLights.size) {
+            shadowLights.clear();
+
             for (NhgLight light : lights) {
                 if (light.castsShadows()) {
                     shadowLights.add(light);
@@ -64,7 +66,6 @@ public class LightDepthMapRenderPass extends RenderPass {
                     renderer.end();
                     light.shadowLightProperties.end();
             }
-
         }
     }
 
