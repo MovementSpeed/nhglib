@@ -3,7 +3,6 @@ package io.github.movementspeed.tests;
 import com.artemis.BaseSystem;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.Nhg;
@@ -17,7 +16,6 @@ import io.github.movementspeed.nhglib.core.entry.NhgEntry;
 import io.github.movementspeed.nhglib.core.messaging.Message;
 import io.github.movementspeed.nhglib.files.HDRData;
 import io.github.movementspeed.nhglib.graphics.lights.LightProbe;
-import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.movementspeed.nhglib.graphics.scenes.Scene;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.AmbientLightingAttribute;
@@ -89,12 +87,12 @@ public class Main extends NhgEntry implements InputListener {
 
         float pos = 1.5f;
 
-        for (int i = 0; i < 3; i++) {
+        /*for (int i = 0; i < 3; i++) {
             NhgLight light = NhgLight.point(15, 4f,
                     new Color(MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), 1f));
             light.position.set(new Vector3(MathUtils.random(-pos, pos), MathUtils.random(-pos, pos), MathUtils.random(-pos, pos)));
             lightsAttribute.lights.add(light);
-        }
+        }*/
 
         /*for (int x = 0; x < 1; x++) {
             for (int y = 0; y < 1; y++) {
