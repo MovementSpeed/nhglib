@@ -28,7 +28,7 @@ public class Pass1Shader extends DefaultShader {
 
 	public static String getDefaultVertexShader () {
 		if (defaultVertexShader == null)
-			defaultVertexShader = Gdx.files.classpath("io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/pass1.vertex.glsl")
+			defaultVertexShader = Gdx.files.internal("shaders/shadows/classical/pass1.vertex.glsl")
 				.readString();
 		return defaultVertexShader;
 	}
@@ -37,7 +37,7 @@ public class Pass1Shader extends DefaultShader {
 
 	public static String getDefaultFragmentShader () {
 		if (defaultFragmentShader == null)
-			defaultFragmentShader = Gdx.files.classpath("io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/pass1.fragment.glsl")
+			defaultFragmentShader = Gdx.files.internal("shaders/shadows/classical/pass1.fragment.glsl")
 				.readString();
 		return defaultFragmentShader;
 	}

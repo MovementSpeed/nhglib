@@ -38,13 +38,12 @@ public class ClassicalShadowsRenderPass extends RenderPass {
 
         for (int i = 0; i < shadowSystem.getPassQuantity(); i++) {
             shadowSystem.begin(i);
-            ModelBatch renderBatch = passBatches.get(i);
             Camera lightCamera;
 
             while ((lightCamera = shadowSystem.next()) != null) {
-                renderBatch.begin(lightCamera);
-                renderBatch.render(renderableProviders, environment);
-                renderBatch.end();
+                passBatches.get(i).begin(lightCamera);
+                passBatches.get(i).render(renderableProviders, environment);
+                passBatches.get(i).end();
             }
 
             shadowSystem.end(i);
@@ -55,6 +54,6 @@ public class ClassicalShadowsRenderPass extends RenderPass {
 
     @Override
     public void end() {
-
+        mainFBO.begin();
     }
 }

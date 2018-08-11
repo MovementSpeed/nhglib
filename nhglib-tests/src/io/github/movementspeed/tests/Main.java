@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.assets.Asset;
 import io.github.movementspeed.nhglib.core.ecs.components.graphics.CameraComponent;
+import io.github.movementspeed.nhglib.core.ecs.components.graphics.LightComponent;
 import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.InputSystem;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.PhysicsSystem;
@@ -16,6 +17,7 @@ import io.github.movementspeed.nhglib.core.entry.NhgEntry;
 import io.github.movementspeed.nhglib.core.messaging.Message;
 import io.github.movementspeed.nhglib.files.HDRData;
 import io.github.movementspeed.nhglib.graphics.lights.LightProbe;
+import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.movementspeed.nhglib.graphics.scenes.Scene;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.AmbientLightingAttribute;
@@ -119,6 +121,7 @@ public class Main extends NhgEntry implements InputListener {
 
         ShadowSystem shadowSystem = new ClassicalShadowSystem();
         shadowSystem.init();
+
         ShadowSystemAttribute shadowSystemAttribute = new ShadowSystemAttribute(shadowSystem);
 
         environment.set(lightsAttribute);
@@ -170,6 +173,11 @@ public class Main extends NhgEntry implements InputListener {
                             environment.set(irradianceAttribute);
                             environment.set(prefilterAttribute);
                             environment.set(brdfAttribute);
+
+                            int spot = scene.sceneGraph.getSceneEntity("spot");
+                            LightComponent lightComponent = nhg.entities.getComponent(spot, LightComponent.class);
+                            NhgLight light = lightComponent.light;
+                            shadowSystem.addLight(light);
                         }
                     }
                 });

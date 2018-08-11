@@ -20,6 +20,9 @@ public class LightComponentJson extends ComponentJson {
         LightComponent lightComponent = nhg.entities.createComponent(entity, LightComponent.class);
 
         LightType lightType = LightType.fromString(jsonValue.getString("lightType"));
+
+        //boolean shadowLight = jsonValue.getBoolean("shadowLight", false);
+
         float range = jsonValue.getFloat("range", 1f);
         float intensity = jsonValue.getFloat("intensity", 1f);
         float innerAngle = jsonValue.getFloat("innerAngle", 0f);

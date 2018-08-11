@@ -52,6 +52,9 @@ uniform HIGHP vec3 u_cameraPosition;
     #endif
 #endif
 
+uniform LOWP sampler2D u_shadowTexture;
+uniform LOWP vec2 u_resolution;
+
 #ifdef defAlbedo
     uniform LOWP sampler2D u_albedo;
     uniform LOWP vec2 u_albedoTiles;
@@ -270,8 +273,8 @@ vec3 getAmbient(vec4 albedo, vec3 normal, vec3 V, vec3 F0, vec3 rma) {
     return ambient;
 }
 
-vec3 getColor(vec3 ambient, vec3 emissive, vec3 lighting) {
-    LOWP vec3 color = emissive + ambient + lighting;
+vec3 getColor(vec3 ambient, vec3 emissive, vec3 lighting, vec3 shadow) {
+    LOWP vec3 color = emissive + ambient + (lighting - shadow);
 
     #ifdef defGammaCorrection
         color = color / (color + vec3(1.0));
@@ -292,6 +295,13 @@ vec3 getEmissive() {
     return emissive;
 }
 
+vec3 getShadow() {
+	vec2 c = gl_FragCoord.xy;
+	c.x /= u_resolution.x;
+	c.y /= u_resolution.y;
+	return texture2D(u_shadowTexture, c).rgb;
+}
+
 void main() {
     LOWP vec4 albedo = getAlbedo();
     LOWP vec3 rma = getRMA();
@@ -302,8 +312,9 @@ void main() {
     LOWP vec3 F0 = vec3(0.04);
     F0 = mix(F0, albedo.rgb, rma.g);
 
+    LOWP vec3 shadow = getShadow();
     LOWP vec3 lighting = getLighting(albedo, rma, normal, V, F0);
     LOWP vec3 ambient = getAmbient(albedo, normal, V, F0, rma);
-    LOWP vec3 color = getColor(ambient, emissive, lighting);
+    LOWP vec3 color = getColor(ambient, emissive, lighting, shadow);
     FRAG_COLOR = vec4(color.rgb, albedo.a);
 }

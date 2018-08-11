@@ -27,6 +27,7 @@ import com.badlogic.gdx.graphics.g3d.attributes.DepthTestAttribute;
 import com.badlogic.gdx.graphics.g3d.shaders.BaseShader;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.enums.LightType;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
 
@@ -154,7 +155,7 @@ public class Pass2Shader extends DefaultShader {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
                 NhgLight l = shadowSystem.getCurrentLight();
-                shader.set(inputID, 0);
+                shader.set(inputID, 5);
             }
         };
     }
@@ -164,7 +165,7 @@ public class Pass2Shader extends DefaultShader {
 
     public static String getDefaultVertexShader() {
         if (defaultVertexShader == null)
-            defaultVertexShader = Gdx.files.classpath("io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/pass2.vertex.glsl")
+            defaultVertexShader = Gdx.files.internal("shaders/shadows/classical/pass2.vertex.glsl")
                     .readString();
         return defaultVertexShader;
     }
@@ -173,7 +174,7 @@ public class Pass2Shader extends DefaultShader {
 
     public static String getDefaultFragmentShader() {
         if (defaultFragmentShader == null)
-            defaultFragmentShader = Gdx.files.classpath("io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/pass2.fragment.glsl")
+            defaultFragmentShader = Gdx.files.internal("shaders/shadows/classical/pass2.fragment.glsl")
                     .readString();
         return defaultFragmentShader;
     }
@@ -213,12 +214,30 @@ public class Pass2Shader extends DefaultShader {
     }
 
     public static String createPrefix(final Renderable renderable, final Config config) {
-        String prefix = DefaultShader.createPrefix(renderable, config);
+        String prefix = "";
+
+        if (Gdx.graphics.isGL30Available()) {
+            switch (Nhg.glVersion) {
+                case VERSION_2:
+                    prefix = "#define GLVERSION 2\n";
+                    break;
+
+                case VERSION_3:
+                    prefix = "#version 300 es\n";
+                    prefix += "#define GLVERSION 3\n";
+                    break;
+            }
+        } else {
+            prefix = "#define GLVERSION 2\n";
+        }
+
+        prefix += DefaultShader.createPrefix(renderable, config);
         boolean dir = (config.shadowSystem.getCurrentLight().type == LightType.DIRECTIONAL_LIGHT);
         if (dir)
             prefix += "#define directionalLight\n";
         else
             prefix += "#define spotLight\n";
+
         return prefix;
     }
 
