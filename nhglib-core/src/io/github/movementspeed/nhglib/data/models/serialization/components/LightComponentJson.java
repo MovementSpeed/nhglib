@@ -34,7 +34,17 @@ public class LightComponentJson extends ComponentJson {
         }
 
         JsonValue colorJson = jsonValue.get("color");
-        Color color = new Color(colorJson.getFloat("r"), colorJson.getFloat("g"), colorJson.getFloat("b"), colorJson.getFloat("a"));
+        Color color;
+
+        if (colorJson != null) {
+             color = new Color(
+                    colorJson.getFloat("r", 1),
+                    colorJson.getFloat("g", 1),
+                    colorJson.getFloat("b", 1),
+                    colorJson.getFloat("a", 1));
+        } else {
+            color = new Color(1, 1, 1, 1);
+        }
 
         NhgLight light = null;
 

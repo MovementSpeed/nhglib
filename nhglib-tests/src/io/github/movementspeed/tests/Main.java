@@ -8,17 +8,14 @@ import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.assets.Asset;
 import io.github.movementspeed.nhglib.core.ecs.components.graphics.CameraComponent;
-import io.github.movementspeed.nhglib.core.ecs.components.graphics.LightComponent;
 import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.InputSystem;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.PhysicsSystem;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
 import io.github.movementspeed.nhglib.core.entry.NhgEntry;
 import io.github.movementspeed.nhglib.core.messaging.Message;
-import io.github.movementspeed.nhglib.enums.LightType;
 import io.github.movementspeed.nhglib.files.HDRData;
 import io.github.movementspeed.nhglib.graphics.lights.LightProbe;
-import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.movementspeed.nhglib.graphics.scenes.Scene;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.AmbientLightingAttribute;
@@ -159,7 +156,7 @@ public class Main extends NhgEntry implements InputListener {
                                 sunNode.setTranslation(1f, 1f, 1f, true);*/
 
                                 // spot light
-                                NhgLight spotLight = NhgLight.spot(30, 30, 50, 60, Color.WHITE);
+                                /*NhgLight spotLight = NhgLight.spot(30, 30, 50, 60, Color.WHITE);
                                 spotLight.setCastsShadows(false);
                                 lightsAttribute.lights.add(spotLight);
 
@@ -169,7 +166,7 @@ public class Main extends NhgEntry implements InputListener {
                                 spotLightComponent.type = LightType.SPOT_LIGHT;
 
                                 NodeComponent spotNode = nhg.entities.getComponent(spot, NodeComponent.class);
-                                spotNode.setTranslation(0, 0.2f, -0.2f, true);
+                                spotNode.setTranslation(0, 0.2f, -0.2f, true);*/
                                 //spotNode.rotate(180, 0, 0);
 
                                 // point light
