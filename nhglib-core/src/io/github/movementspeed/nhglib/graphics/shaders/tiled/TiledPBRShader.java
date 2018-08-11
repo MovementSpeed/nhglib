@@ -21,6 +21,8 @@ import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.IBLAttribute;
 import io.github.movementspeed.nhglib.graphics.shaders.attributes.PBRTextureAttribute;
+import io.github.movementspeed.nhglib.graphics.shaders.attributes.ShadowSystemAttribute;
+import io.github.movementspeed.nhglib.graphics.shaders.shadows.system.classical.ClassicalShadowSystem;
 import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils;
 
 /**
@@ -53,6 +55,7 @@ public class TiledPBRShader extends BaseShader {
     private Environment environment;
     private LightGrid lightGrid;
     private ShaderProgram shaderProgram;
+    private ClassicalShadowSystem shadowSystem;
 
     private int[] lightTypes;
     private float[] lightAngles;
@@ -69,6 +72,7 @@ public class TiledPBRShader extends BaseShader {
         this.params = params;
 
         gridSize = 10;
+        shadowSystem = (ClassicalShadowSystem) ((ShadowSystemAttribute) environment.get(ShadowSystemAttribute.Type)).shadowSystem;
 
         String prefix = createPrefix(renderable);
         String folder = "shaders/";
@@ -392,6 +396,13 @@ public class TiledPBRShader extends BaseShader {
         // Lights info
         bindValue = context.textureBinder.bind(lightInfoTexture);
         shaderProgram.setUniformi("u_lightInfo", bindValue);
+
+        // Shadows
+        bindValue = context.textureBinder.bind(shadowSystem.getMainTexture());
+        shaderProgram.setUniformi("u_shadowTexture", bindValue);
+        shaderProgram.setUniformf("u_resolution",
+                (float) Gdx.graphics.getBackBufferWidth(),
+                (float) Gdx.graphics.getBackBufferHeight());
 
         // Irradiance
         IBLAttribute iblAttribute = (IBLAttribute) combinedAttributes.get(IBLAttribute.IrradianceType);
