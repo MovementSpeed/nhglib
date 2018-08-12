@@ -92,8 +92,8 @@ void main()
 		if (depth.x >= 0.0 &&
 			depth.x <= 1.0 &&
 			depth.y >= 0.0 &&
-			depth.y <= 1.0 //&&
-			//v_shadowMapUv.z >= 0.0
+			depth.y <= 1.0 &&
+			v_shadowMapUv.z >= 0.0
 		) {
 			if (depth.z - bias > lenDepthMap) {
 			    shadow += 1.0;
