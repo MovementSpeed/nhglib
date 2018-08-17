@@ -274,8 +274,8 @@ vec3 getAmbient(vec4 albedo, vec3 normal, vec3 V, vec3 F0, vec3 rma) {
 }
 
 vec3 getColor(vec3 ambient, vec3 emissive, vec3 lighting, vec3 shadow) {
-    LOWP vec3 color = emissive + ambient + (lighting -
-     shadow);
+    LOWP vec3 color = emissive + ambient + lighting;
+    color -= shadow;
 
     #ifdef defGammaCorrection
         color = color / (color + vec3(1.0));

@@ -28,5 +28,5 @@ public interface NearFarAnalyzer {
 	 * @param light Current light
 	 * @param camera Light's camera
 	 * @param renderableProviders Renderable providers */
-	public <T extends RenderableProvider> void analyze(BaseLight light, Camera camera, Iterable<T> renderableProviders);
+	<T extends RenderableProvider> void analyze(BaseLight light, Camera camera, Iterable<T> renderableProviders);
 }

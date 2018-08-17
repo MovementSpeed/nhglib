@@ -30,8 +30,8 @@ import com.badlogic.gdx.utils.Pool;
  * @author realitix */
 public class AABBNearFarAnalyzer implements NearFarAnalyzer {
 	/** Near and far initialization before computation. You should put the same values as the main camera */
-	public static float CAMERA_NEAR = 1;
-	public static float CAMERA_FAR = 100;
+	public static float CAMERA_NEAR = 1f;
+	public static float CAMERA_FAR = 100.0f;
 
 	// @TODO Merge renderable pools (ModelBatch)
 	protected static class RenderablePool extends Pool<Renderable> {

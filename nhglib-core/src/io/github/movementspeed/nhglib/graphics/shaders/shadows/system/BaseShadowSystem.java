@@ -26,6 +26,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ShaderProvider;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.ObjectMap;
@@ -152,7 +153,7 @@ public abstract class BaseShadowSystem implements ShadowSystem, Disposable {
 				break;
 
 			case SPOT_LIGHT:
-				PerspectiveCamera spotCamera = new PerspectiveCamera(light.outerAngle, 0, 0);
+				PerspectiveCamera spotCamera = new PerspectiveCamera(light.outerAngle * 2f, 0, 0);
 				spotCamera.position.set(light.position);
 				spotCamera.direction.set(light.direction);
 				spotCamera.near = 1;
@@ -223,8 +224,17 @@ public abstract class BaseShadowSystem implements ShadowSystem, Disposable {
 	@Override
 	public void update () {
 		for (ObjectMap.Entry<NhgLight, LightProperties> e : spotCameras) {
+		    // Reset camera
+            e.value.camera.position.set(Vector3.Zero);
+            e.value.camera.direction.set(0, 0, -1);
+            e.value.camera.up.set(0, 1, 0);
+
+            // Look at the direction of the light
+            e.value.camera.lookAt(e.key.direction);
+
+            // Set at the light's position
 			e.value.camera.position.set(e.key.position);
-			e.value.camera.direction.set(e.key.direction);
+
 			nearFarAnalyzer.analyze(e.key, e.value.camera, renderableProviders);
 		}
 

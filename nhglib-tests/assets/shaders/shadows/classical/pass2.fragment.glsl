@@ -74,15 +74,15 @@ void main()
 		if (depth.x >= 0.0 &&
 			depth.x <= 1.0 &&
 			depth.y >= 0.0 &&
-			depth.y <= 1.0
-		) {
-		    shadow += depth.z - bias > lenDepthMap ? 1.0 : 0.0;
-			//if( depth.z - lenDepthMap > bias ) {
-				//vec3 lightDir = -u_lightDirection;
+			depth.y <= 1.0)
+		{
+			if (depth.z - lenDepthMap > bias) {
+				vec3 lightDir = -u_lightDirection;
+
 				// Diffuse
-				//float NdotL = clamp(dot(normal, lightDir), 0.0, 1.0);
-				//lightDiffuse.rgb += 1.0;
-			//}
+				float NdotL = clamp(dot(v_normal, lightDir), 0.0, 1.0);
+				shadow += NdotL;
+			}
 		}
 
 	#endif
@@ -93,26 +93,25 @@ void main()
 			depth.x <= 1.0 &&
 			depth.y >= 0.0 &&
 			depth.y <= 1.0 &&
-			v_shadowMapUv.z >= 0.0
-		) {
+			v_shadowMapUv.z >= 0.0)
+		{
 			if (depth.z - bias > lenDepthMap) {
-			    shadow += 1.0;
-				/*vec3 lightDir = u_lightPosition - v_position;
+				vec3 lightDir = u_lightPosition - v_position;
 
 				float spotEffect = dot(-normalize(lightDir), normalize(u_lightDirection));
-				if ( spotEffect  > cos(radians(u_lightCutoffAngle)) ) {
-					spotEffect = max( pow( max( spotEffect, 0.0 ), u_lightExponent ), 0.0 );
+				if (spotEffect  > cos(radians(u_lightCutoffAngle))) {
+					spotEffect = max(pow(max(spotEffect, 0.0), u_lightExponent), 0.0);
 					float dist2 = dot(lightDir, lightDir);
 					lightDir *= inversesqrt(dist2);
-					float NdotL = clamp(dot(normal, lightDir), 0.0, 2.0);
+					float NdotL = clamp(dot(v_normal, lightDir), 0.0, 2.0);
 					float falloff = clamp(u_lightIntensity / (1.0 + dist2), 0.0, 2.0);
 
 					// Diffuse
-					lightDiffuse += u_lightColor * (NdotL * falloff) * spotEffect;
-				}*/
+					shadow += (NdotL * falloff) * spotEffect;
+				}
 			}
 		}
 	#endif
 
-	FRAG_COLOR = vec4(shadow);
+	FRAG_COLOR.rgb = vec3(shadow);
 }

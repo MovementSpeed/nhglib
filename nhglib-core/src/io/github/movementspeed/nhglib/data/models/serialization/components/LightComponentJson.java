@@ -2,6 +2,7 @@ package io.github.movementspeed.nhglib.data.models.serialization.components;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.movementspeed.nhglib.core.ecs.components.graphics.LightComponent;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
@@ -32,18 +33,33 @@ public class LightComponentJson extends ComponentJson {
             innerAngle = outerAngle;
         }
 
-        if (range < 1.0f) {
-            range = 1.0f;
+        JsonValue colorJson = jsonValue.get("color");
+        Color color = new Color();
+
+        if (colorJson != null) {
+            color = new Color(
+                    colorJson.getFloat("r", 1),
+                    colorJson.getFloat("g", 1),
+                    colorJson.getFloat("b", 1),
+                    colorJson.getFloat("a", 1));
         }
 
-        JsonValue colorJson = jsonValue.get("color");
-        Color color = new Color(colorJson.getFloat("r"), colorJson.getFloat("g"), colorJson.getFloat("b"), colorJson.getFloat("a"));
+        JsonValue directionJson = jsonValue.get("direction");
+        Vector3 direction = new Vector3();
+
+        if (directionJson != null) {
+            direction = new Vector3(
+                    directionJson.getFloat("x", 0),
+                    directionJson.getFloat("y", 0),
+                    directionJson.getFloat("z", 0));
+        }
 
         NhgLight light = null;
 
         switch (lightType) {
             case DIRECTIONAL_LIGHT:
                 light = NhgLight.directional(intensity, color);
+                light.direction.set(direction);
                 break;
 
             case POINT_LIGHT:
@@ -52,6 +68,7 @@ public class LightComponentJson extends ComponentJson {
 
             case SPOT_LIGHT:
                 light = NhgLight.spot(intensity, range, innerAngle, outerAngle, color);
+                light.direction.set(direction);
                 break;
         }
 

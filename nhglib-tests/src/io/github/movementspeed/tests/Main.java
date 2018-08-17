@@ -184,7 +184,7 @@ public class Main extends NhgEntry implements InputListener {
                             light = lightComponent.light;
                             shadowSystem.addLight(light);*/
 
-                            for (int i = 0; i < 2; i++) {
+                            for (int i = 0; i < 1; i++) {
                                 int light = scene.sceneGraph.getSceneEntity("l" + i);
                                 LightComponent lightComponent = nhg.entities.getComponent(light, LightComponent.class);
                                 NhgLight nhgLight = lightComponent.light;

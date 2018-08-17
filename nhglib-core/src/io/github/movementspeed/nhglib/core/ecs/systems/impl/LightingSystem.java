@@ -37,7 +37,7 @@ public class LightingSystem extends IteratingSystem {
             light.light.position.set(node.getTranslation());
             light.light.setTransform(node.getTransform());
 
-            switch (light.type) {
+            /*switch (light.type) {
                 case SPOT_LIGHT:
                 case DIRECTIONAL_LIGHT:
                     tempMat.set(node.getTransform());
@@ -48,7 +48,7 @@ public class LightingSystem extends IteratingSystem {
 
                     light.light.direction.set(tempVec1);
                     break;
-            }
+            }*/
         }
     }
 }
