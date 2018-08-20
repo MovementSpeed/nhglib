@@ -35,11 +35,13 @@ public class BoundingSphereDirectionalAnalyzer implements DirectionalAnalyzer {
 
 		// Create bounding box encompassing main camera frustum
 		for (int i = 0; i < mainCamera.frustum.planePoints.length; i++) {
-			bb.ext(mainCamera.frustum.planePoints[i]);
+			bb.ext(mainCamera.frustum.planePoints[i].scl(0.01f));
 		}
+		// TODO : this ^ for calculates a wrong bounding box, it's scaled for now
 
 		// Radius
-		float radius = bb.getDimensions(tmpV).len() * 0.5f;
+		bb.getDimensions(tmpV);
+		float radius = tmpV.len() * 0.5f;
 
 		// Center
 		bb.getCenter(tmpV);
