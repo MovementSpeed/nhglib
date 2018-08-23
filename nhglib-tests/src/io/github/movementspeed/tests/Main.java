@@ -86,35 +86,10 @@ public class Main extends NhgEntry implements InputListener {
 
         renderingSystem = nhg.entities.getEntitySystem(RenderingSystem.class);
         renderingSystem.setClearColor(Color.GRAY);
-        //renderingSystem.setRenderResolution(640, 360);
 
         environment = renderingSystem.getEnvironment();
 
         NhgLightsAttribute lightsAttribute = new NhgLightsAttribute();
-
-        float pos = 1.5f;
-
-        /*for (int i = 0; i < 3; i++) {
-            NhgLight light = NhgLight.point(15, 4f,
-                    new Color(MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), 1f));
-            light.position.set(new Vector3(MathUtils.random(-pos, pos), MathUtils.random(-pos, pos), MathUtils.random(-pos, pos)));
-            lightsAttribute.lights.add(light);
-        }*/
-
-        /*for (int x = 0; x < 1; x++) {
-            for (int y = 0; y < 1; y++) {
-                for (int z = 0; z < 1; z++) {
-                    NhgLight light = NhgLight.point(15, 5,
-                            new Color(MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), MathUtils.random(0f, 1f), 1f));
-                    light.position.set(x*2, y*2, z*2);
-                    lightsAttribute.lights.add(light);
-                }
-            }
-        }*/
-
-        /*NhgLight sun = NhgLight.directional(30, Color.WHITE);
-        sun.direction.set(1, -1, -1);
-        lightsAttribute.lights.add(sun);*/
 
         GammaCorrectionAttribute gammaCorrectionAttribute = new GammaCorrectionAttribute(true);
         AmbientLightingAttribute ambientLightingAttribute = new AmbientLightingAttribute(0.03f);
