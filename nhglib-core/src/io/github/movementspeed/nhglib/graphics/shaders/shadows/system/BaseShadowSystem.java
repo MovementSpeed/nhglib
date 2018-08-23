@@ -146,8 +146,8 @@ public abstract class BaseShadowSystem implements ShadowSystem, Disposable {
 			case DIRECTIONAL_LIGHT:
 				OrthographicCamera directionalCamera = new OrthographicCamera();
 				directionalCamera.direction.set(light.direction);
-				directionalCamera.near = 1;
-				directionalCamera.far = 100;
+				directionalCamera.near = 0.1f;
+				directionalCamera.far = 10;
 
 				dirCameras.put(light, new LightProperties(directionalCamera));
 				break;
@@ -156,8 +156,8 @@ public abstract class BaseShadowSystem implements ShadowSystem, Disposable {
 				PerspectiveCamera spotCamera = new PerspectiveCamera(light.outerAngle * 2f, 0, 0);
 				spotCamera.position.set(light.position);
 				spotCamera.direction.set(light.direction);
-				spotCamera.near = 1;
-				spotCamera.far = 100;
+				spotCamera.near = 0.1f;
+				spotCamera.far = 10;
 				spotCamera.up.set(spotCamera.direction.y, spotCamera.direction.z, spotCamera.direction.x);
 
 				spotCameras.put(light, new LightProperties(spotCamera));
@@ -175,8 +175,8 @@ public abstract class BaseShadowSystem implements ShadowSystem, Disposable {
 				camera.position.set(point.position);
 				camera.direction.set(cubemapSide.direction);
 				camera.up.set(cubemapSide.up);
-				camera.near = 1;
-				camera.far = 100;
+				camera.near = 0.1f;
+				camera.far = 10;
 
 				LightProperties p = new LightProperties(camera);
 				plProperty.properties.put(cubemapSide, p);

@@ -174,7 +174,7 @@ public class Main extends NhgEntry implements InputListener {
                             environment.set(prefilterAttribute);
                             environment.set(brdfAttribute);
 
-                            for (int i = 0; i < 2; i++) {
+                            for (int i = 0; i < 3; i++) {
                                 int light = scene.sceneGraph.getSceneEntity("l" + i);
                                 LightComponent lightComponent = nhg.entities.getComponent(light, LightComponent.class);
                                 NhgLight nhgLight = lightComponent.light;

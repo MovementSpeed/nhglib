@@ -84,7 +84,6 @@ void main()
 				shadow += NdotL;
 			}
 		}
-
 	#endif
 
 	// Spot Lights
@@ -97,8 +96,10 @@ void main()
 		{
 			if (depth.z - bias > lenDepthMap) {
 				vec3 lightDir = u_lightPosition - v_position;
+				float NdotL = clamp(dot(v_normal, lightDir), 0.0, 1.0);
+				shadow += NdotL;
 
-				float spotEffect = dot(-normalize(lightDir), normalize(u_lightDirection));
+				/*float spotEffect = dot(-normalize(lightDir), normalize(u_lightDirection));
 				if (spotEffect  > cos(radians(u_lightCutoffAngle))) {
 					spotEffect = max(pow(max(spotEffect, 0.0), u_lightExponent), 0.0);
 					float dist2 = dot(lightDir, lightDir);
@@ -107,11 +108,11 @@ void main()
 					float falloff = clamp(u_lightIntensity / (1.0 + dist2), 0.0, 2.0);
 
 					// Diffuse
-					shadow += (NdotL * falloff) * spotEffect;
-				}
+
+				}*/
 			}
 		}
 	#endif
 
-	FRAG_COLOR.rgb = vec3(shadow);
+	FRAG_COLOR = vec4(vec3(shadow), 1.0);
 }
