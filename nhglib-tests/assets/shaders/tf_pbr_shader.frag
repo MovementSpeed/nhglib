@@ -299,7 +299,7 @@ vec3 getShadow() {
 	vec2 c = gl_FragCoord.xy;
 	c.x /= u_resolution.x;
 	c.y /= u_resolution.y;
-	return texture2D(u_shadowTexture, c).rgb;
+	return TEXTURE(u_shadowTexture, c).rgb;
 }
 
 void main() {
