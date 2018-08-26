@@ -285,7 +285,7 @@ vec3 getColor(vec3 ambient, vec3 emissive, vec3 lighting, vec3 shadow) {
 }
 
 vec3 getEmissive() {
-    #ifdef defRMA
+    #ifdef defEmissive
         LOWP vec2 emissiveCoords = fract(v_texCoord / u_emissiveTiles);
         LOWP vec3 emissive = TEXTURE(u_emissive, emissiveCoords).rgb;
     #else

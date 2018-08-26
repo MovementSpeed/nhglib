@@ -15,7 +15,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.IntArray;
 import io.github.movementspeed.nhglib.Nhg;
-import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
 import io.github.movementspeed.nhglib.enums.LightType;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
@@ -117,17 +116,17 @@ public class TiledPBRShader extends BaseShader {
             }
         });
 
-        register("u_graphicsWidth", new GlobalSetter() {
+        register("u_graphicsWidth", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, RenderingSystem.renderWidth);
+                shader.set(inputID, Gdx.graphics.getWidth());
             }
         });
 
-        register("u_graphicsHeight", new GlobalSetter() {
+        register("u_graphicsHeight", new LocalSetter() {
             @Override
             public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, RenderingSystem.renderHeight);
+                shader.set(inputID, Gdx.graphics.getHeight());
             }
         });
 
