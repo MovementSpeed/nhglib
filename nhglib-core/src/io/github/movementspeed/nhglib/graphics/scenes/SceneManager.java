@@ -185,6 +185,12 @@ public class SceneManager {
                     }
                 } else if (pbrMaterial.albedoColor != null) {
                     pbrMaterial.set(PBRTextureAttribute.createAlbedo(pbrMaterial.albedoColor));
+                } else if (pbrMaterial.get(PBRTextureAttribute.Albedo) != null) {
+                    PBRTextureAttribute attribute = (PBRTextureAttribute) pbrMaterial.get(PBRTextureAttribute.Albedo);
+                    attribute.tilesU = pbrMaterial.tilesU;
+                    attribute.tilesV = pbrMaterial.tilesV;
+                    attribute.offsetU = pbrMaterial.offsetU;
+                    attribute.offsetV = pbrMaterial.offsetV;
                 }
 
                 if (pbrMaterial.normal != null && !pbrMaterial.normal.isEmpty()) {
@@ -196,6 +202,12 @@ public class SceneManager {
                         pbrMaterial.set(PBRTextureAttribute.createNormal(normal,
                                 pbrMaterial.offsetU, pbrMaterial.offsetV, pbrMaterial.tilesU, pbrMaterial.tilesV));
                     }
+                } else if (pbrMaterial.get(PBRTextureAttribute.Normal) != null) {
+                    PBRTextureAttribute attribute = (PBRTextureAttribute) pbrMaterial.get(PBRTextureAttribute.Normal);
+                    attribute.tilesU = pbrMaterial.tilesU;
+                    attribute.tilesV = pbrMaterial.tilesV;
+                    attribute.offsetU = pbrMaterial.offsetU;
+                    attribute.offsetV = pbrMaterial.offsetV;
                 }
 
                 if (pbrMaterial.rma != null && !pbrMaterial.rma.isEmpty()) {
@@ -207,6 +219,12 @@ public class SceneManager {
                         pbrMaterial.set(PBRTextureAttribute.createRMA(rma,
                                 pbrMaterial.offsetU, pbrMaterial.offsetV, pbrMaterial.tilesU, pbrMaterial.tilesV));
                     }
+                } else if (pbrMaterial.get(PBRTextureAttribute.RMA) != null) {
+                    PBRTextureAttribute attribute = (PBRTextureAttribute) pbrMaterial.get(PBRTextureAttribute.RMA);
+                    attribute.tilesU = pbrMaterial.tilesU;
+                    attribute.tilesV = pbrMaterial.tilesV;
+                    attribute.offsetU = pbrMaterial.offsetU;
+                    attribute.offsetV = pbrMaterial.offsetV;
                 } else {
                     float roughness = 1, metalness = 0, ao = 1;
 

@@ -307,7 +307,7 @@ void main() {
     LOWP vec3 rma = getRMA();
     LOWP vec3 normal = getNormal();
     LOWP vec3 emissive = getEmissive();
-    LOWP vec3 V = normalize(u_cameraPosition - v_position);
+    LOWP vec3 V = normalize(-v_position);
 
     LOWP vec3 F0 = vec3(0.04);
     F0 = mix(F0, albedo.rgb, rma.g);
