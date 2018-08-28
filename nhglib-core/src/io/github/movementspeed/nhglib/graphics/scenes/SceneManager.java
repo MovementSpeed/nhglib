@@ -7,8 +7,11 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
+import com.badlogic.gdx.graphics.g3d.model.Node;
+import com.badlogic.gdx.graphics.g3d.model.NodePart;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleEffectLoader;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import io.github.movementspeed.nhglib.assets.Asset;
 import io.github.movementspeed.nhglib.assets.AssetPackage;
@@ -185,12 +188,21 @@ public class SceneManager {
                     }
                 } else if (pbrMaterial.albedoColor != null) {
                     pbrMaterial.set(PBRTextureAttribute.createAlbedo(pbrMaterial.albedoColor));
-                } else if (pbrMaterial.get(PBRTextureAttribute.Albedo) != null) {
-                    PBRTextureAttribute attribute = (PBRTextureAttribute) pbrMaterial.get(PBRTextureAttribute.Albedo);
-                    attribute.tilesU = pbrMaterial.tilesU;
-                    attribute.tilesV = pbrMaterial.tilesV;
-                    attribute.offsetU = pbrMaterial.offsetU;
-                    attribute.offsetV = pbrMaterial.offsetV;
+                } else {
+                    if (pbrMaterial.targetNode != null && !pbrMaterial.targetNode.isEmpty()) {
+                        Node node = modelComponent.model.getNode(pbrMaterial.targetNode);
+
+                        for (NodePart nodePart : node.parts) {
+                            PBRTextureAttribute attribute = (PBRTextureAttribute) nodePart.material.get(PBRTextureAttribute.Albedo);
+
+                            if (attribute != null) {
+                                attribute.tilesU = pbrMaterial.tilesU;
+                                attribute.tilesV = pbrMaterial.tilesV;
+                                attribute.offsetU = pbrMaterial.offsetU;
+                                attribute.offsetV = pbrMaterial.offsetV;
+                            }
+                        }
+                    }
                 }
 
                 if (pbrMaterial.normal != null && !pbrMaterial.normal.isEmpty()) {
@@ -202,12 +214,21 @@ public class SceneManager {
                         pbrMaterial.set(PBRTextureAttribute.createNormal(normal,
                                 pbrMaterial.offsetU, pbrMaterial.offsetV, pbrMaterial.tilesU, pbrMaterial.tilesV));
                     }
-                } else if (pbrMaterial.get(PBRTextureAttribute.Normal) != null) {
-                    PBRTextureAttribute attribute = (PBRTextureAttribute) pbrMaterial.get(PBRTextureAttribute.Normal);
-                    attribute.tilesU = pbrMaterial.tilesU;
-                    attribute.tilesV = pbrMaterial.tilesV;
-                    attribute.offsetU = pbrMaterial.offsetU;
-                    attribute.offsetV = pbrMaterial.offsetV;
+                } else {
+                    if (pbrMaterial.targetNode != null && !pbrMaterial.targetNode.isEmpty()) {
+                        Node node = modelComponent.model.getNode(pbrMaterial.targetNode);
+
+                        for (NodePart nodePart : node.parts) {
+                            PBRTextureAttribute attribute = (PBRTextureAttribute) nodePart.material.get(PBRTextureAttribute.Normal);
+
+                            if (attribute != null) {
+                                attribute.tilesU = pbrMaterial.tilesU;
+                                attribute.tilesV = pbrMaterial.tilesV;
+                                attribute.offsetU = pbrMaterial.offsetU;
+                                attribute.offsetV = pbrMaterial.offsetV;
+                            }
+                        }
+                    }
                 }
 
                 if (pbrMaterial.rma != null && !pbrMaterial.rma.isEmpty()) {
@@ -219,38 +240,32 @@ public class SceneManager {
                         pbrMaterial.set(PBRTextureAttribute.createRMA(rma,
                                 pbrMaterial.offsetU, pbrMaterial.offsetV, pbrMaterial.tilesU, pbrMaterial.tilesV));
                     }
-                } else if (pbrMaterial.get(PBRTextureAttribute.RMA) != null) {
-                    PBRTextureAttribute attribute = (PBRTextureAttribute) pbrMaterial.get(PBRTextureAttribute.RMA);
-                    attribute.tilesU = pbrMaterial.tilesU;
-                    attribute.tilesV = pbrMaterial.tilesV;
-                    attribute.offsetU = pbrMaterial.offsetU;
-                    attribute.offsetV = pbrMaterial.offsetV;
                 } else {
-                    float roughness = 1, metalness = 0, ao = 1;
+                    float roughness = MathUtils.clamp(pbrMaterial.roughnessValue, 0.01f, 1f),
+                            metalness = MathUtils.clamp(pbrMaterial.metalnessValue, 0.01f, 1f),
+                            ao = MathUtils.clamp(pbrMaterial.aoValue, 0f, 1f);
 
-                    if (pbrMaterial.roughnessValue >= 0 && pbrMaterial.roughnessValue <= 1) {
-                        roughness = pbrMaterial.roughnessValue;
+                    if (pbrMaterial.targetNode != null && !pbrMaterial.targetNode.isEmpty()) {
+                        Node node = modelComponent.model.getNode(pbrMaterial.targetNode);
+
+                        for (NodePart nodePart : node.parts) {
+                            PBRTextureAttribute attribute = (PBRTextureAttribute) nodePart.material.get(PBRTextureAttribute.RMA);
+
+                            if (attribute != null) {
+                                attribute.tilesU = pbrMaterial.tilesU;
+                                attribute.tilesV = pbrMaterial.tilesV;
+                                attribute.offsetU = pbrMaterial.offsetU;
+                                attribute.offsetV = pbrMaterial.offsetV;
+                            } else {
+                                pbrMaterial.set(PBRTextureAttribute.createRMA(roughness, metalness, ao));
+                            }
+                        }
                     }
-
-                    if (pbrMaterial.metalnessValue >= 0 && pbrMaterial.metalnessValue <= 1) {
-                        metalness = pbrMaterial.metalnessValue;
-                    }
-
-                    if (pbrMaterial.aoValue >= 0 && pbrMaterial.aoValue <= 1) {
-                        ao = pbrMaterial.aoValue;
-                    }
-
-                    pbrMaterial.set(PBRTextureAttribute.createRMA(roughness, metalness, ao));
                 }
 
                 if (pbrMaterial.blended) {
                     pbrMaterial.set(new BlendingAttribute(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA));
                 }
-
-                // Clear other attributes in model's own materials
-                /*for (Material m : modelComponent.model.materials) {
-                    m.clear();
-                }*/
 
                 if (pbrMaterial.targetNode != null && !pbrMaterial.targetNode.isEmpty()) {
                     modelComponent.setPBRMaterial(pbrMaterial.targetNode, pbrMaterial);
