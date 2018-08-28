@@ -71,7 +71,11 @@ public class TiledPBRShader extends BaseShader {
         this.params = params;
 
         gridSize = 10;
-        shadowSystem = (ClassicalShadowSystem) ((ShadowSystemAttribute) environment.get(ShadowSystemAttribute.Type)).shadowSystem;
+
+        ShadowSystemAttribute shadowSystemAttribute = (ShadowSystemAttribute) environment.get(ShadowSystemAttribute.Type);
+        if (shadowSystemAttribute != null) {
+            shadowSystem = (ClassicalShadowSystem) shadowSystemAttribute.shadowSystem;
+        }
 
         String prefix = createPrefix(renderable);
         String folder = "shaders/";
