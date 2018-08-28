@@ -16,6 +16,8 @@ public class RigidBodyComponentJson extends ComponentJson {
         ShapeJson shapeJson = new ShapeJson();
         shapeJson.parse(jsonValue.get("shape"));
 
+        boolean kinematic = jsonValue.getBoolean("kinematic", false);
+
         float mass = jsonValue.getFloat("mass", 1.0f);
         float friction = jsonValue.getFloat("friction", 0.5f);
         float restitution = jsonValue.getFloat("restitution", 0f);
@@ -34,6 +36,7 @@ public class RigidBodyComponentJson extends ComponentJson {
         rigidBodyComponent.mass = mass;
         rigidBodyComponent.friction = friction;
         rigidBodyComponent.restitution = restitution;
+        rigidBodyComponent.kinematic = kinematic;
         rigidBodyComponent.collisionFiltering = true;
         rigidBodyComponent.rigidBodyShape = shapeJson.get();
 

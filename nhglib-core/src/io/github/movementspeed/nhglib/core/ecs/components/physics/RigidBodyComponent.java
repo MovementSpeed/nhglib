@@ -20,6 +20,7 @@ import io.github.movementspeed.nhglib.physics.models.*;
 public class RigidBodyComponent extends Component implements Disposable {
     public boolean added;
     public boolean collisionFiltering;
+    public boolean kinematic;
 
     public short group;
     public short mask;
@@ -75,30 +76,12 @@ public class RigidBodyComponent extends Component implements Disposable {
 
     public void build(btCollisionShape collisionShape, float mass, float friction, float restitution, short group, short[] masks) {
         this.collisionShape = collisionShape;
-        constructionInfo = getConstructionInfo(collisionShape, mass);
-
-        if (constructionInfo != null) {
-            motionState = new MotionState();
-
-            body = new btRigidBody(constructionInfo);
-            body.setSleepingThresholds(1f / 1000f, 1f / 1000f);
-            body.setFriction(friction);
-            body.setRestitution(restitution);
-        }
+        buildBody(mass, friction, restitution);
     }
 
     public void build(Assets assets) {
         buildCollisionShape(assets);
-        constructionInfo = getConstructionInfo(collisionShape, mass);
-
-        if (constructionInfo != null) {
-            motionState = new MotionState();
-
-            body = new btRigidBody(constructionInfo);
-            body.setSleepingThresholds(1f / 1000f, 1f / 1000f);
-            body.setFriction(friction);
-            body.setRestitution(restitution);
-        }
+        buildBody(mass, friction, restitution);
     }
 
     public void addToWorld(btDynamicsWorld world, Matrix4 transform) {
@@ -147,6 +130,23 @@ public class RigidBodyComponent extends Component implements Disposable {
 
     public Quaternion getRotation() {
         return motionState.transform.getRotation(rotation);
+    }
+
+    private void buildBody(float mass, float friction, float restitution) {
+        constructionInfo = getConstructionInfo(collisionShape, mass);
+
+        if (constructionInfo != null) {
+            motionState = new MotionState();
+
+            body = new btRigidBody(constructionInfo);
+            body.setSleepingThresholds(1f / 1000f, 1f / 1000f);
+            body.setFriction(friction);
+            body.setRestitution(restitution);
+
+            if (kinematic) {
+                body.setCollisionFlags(body.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_KINEMATIC_OBJECT);
+            }
+        }
     }
 
     private void setTransform(Matrix4 transform) {

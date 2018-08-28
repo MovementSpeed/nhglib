@@ -156,9 +156,13 @@ public class PhysicsSystem extends NhgIteratingSystem {
                 initialTransform.set(translation, rotation, scale);
                 bodyComponent.addToWorld(dynamicsWorld, initialTransform);
             } else {
-                nodeComponent.setTranslation(bodyComponent.getTranslation());
-                nodeComponent.setRotation(bodyComponent.getRotation());
-                nodeComponent.applyTransforms();
+                if (bodyComponent.kinematic) {
+                    bodyComponent.setWorldTransform(nodeComponent.getTransform());
+                } else {
+                    nodeComponent.setTranslation(bodyComponent.getTranslation());
+                    nodeComponent.setRotation(bodyComponent.getRotation());
+                    nodeComponent.applyTransforms();
+                }
             }
         }
     }
