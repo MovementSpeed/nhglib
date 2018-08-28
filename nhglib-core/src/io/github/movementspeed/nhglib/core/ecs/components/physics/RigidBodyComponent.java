@@ -14,6 +14,9 @@ import io.github.movementspeed.nhglib.assets.Assets;
 import io.github.movementspeed.nhglib.physics.MotionState;
 import io.github.movementspeed.nhglib.physics.models.*;
 
+import static com.badlogic.gdx.physics.bullet.collision.CollisionConstants.DISABLE_DEACTIVATION;
+import static com.badlogic.gdx.physics.bullet.collision.btCollisionObject.CollisionFlags.CF_KINEMATIC_OBJECT;
+
 /**
  * Created by Fausto Napoli on 03/05/2017.
  */
@@ -144,7 +147,8 @@ public class RigidBodyComponent extends Component implements Disposable {
             body.setRestitution(restitution);
 
             if (kinematic) {
-                body.setCollisionFlags(body.getCollisionFlags() | btCollisionObject.CollisionFlags.CF_KINEMATIC_OBJECT);
+                body.setCollisionFlags(body.getCollisionFlags() | CF_KINEMATIC_OBJECT);
+                body.setActivationState(DISABLE_DEACTIVATION);
             }
         }
     }
