@@ -157,7 +157,7 @@ public class PhysicsSystem extends NhgIteratingSystem {
                 bodyComponent.addToWorld(dynamicsWorld, initialTransform);
             } else {
                 if (bodyComponent.kinematic) {
-                    bodyComponent.setWorldTransform(nodeComponent.getTransform());
+                    bodyComponent.setTransform(nodeComponent.getTransform());
                 } else {
                     nodeComponent.setTranslation(bodyComponent.getTranslation());
                     nodeComponent.setRotation(bodyComponent.getRotation());

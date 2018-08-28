@@ -107,6 +107,10 @@ public class RigidBodyComponent extends Component implements Disposable {
         body.setWorldTransform(transform);
     }
 
+    public void setTransform(Matrix4 transform) {
+        motionState.transform.set(transform);
+    }
+
     public void reset() {
         setWorldTransform(initialTransform);
     }
@@ -152,10 +156,6 @@ public class RigidBodyComponent extends Component implements Disposable {
                 body.setRestitution(restitution);
             }
         }
-    }
-
-    private void setTransform(Matrix4 transform) {
-        motionState.transform.set(transform);
     }
 
     private void buildCollisionShape(Assets assets) {
