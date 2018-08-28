@@ -108,7 +108,7 @@ public abstract class NhgModelLoader<P extends NhgModelLoader.ModelParameters> e
 
                     textureParameter.genMipMaps = false;
                     textureParameter.magFilter = Texture.TextureFilter.Linear;
-                    textureParameter.minFilter = Texture.TextureFilter.MipMapLinearLinear;
+                    textureParameter.minFilter = Texture.TextureFilter.Linear;
                     textureParameter.wrapU = Texture.TextureWrap.Repeat;
                     textureParameter.wrapV = Texture.TextureWrap.Repeat;
 
@@ -205,7 +205,7 @@ public abstract class NhgModelLoader<P extends NhgModelLoader.ModelParameters> e
 
         public ModelParameters() {
             textureParameter = new TextureLoader.TextureParameter();
-            textureParameter.minFilter = Texture.TextureFilter.MipMapLinearLinear;
+            textureParameter.minFilter = Texture.TextureFilter.Linear;
             textureParameter.magFilter = Texture.TextureFilter.Linear;
             textureParameter.wrapU = textureParameter.wrapV = Texture.TextureWrap.Repeat;
             textureParameter.genMipMaps = false;
