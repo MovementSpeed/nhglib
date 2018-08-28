@@ -25,21 +25,21 @@ public class PBRMaterialJson implements JsonParseable<PBRMaterial> {
         pbrMaterial.blended = blended;
 
         if (jsonValue.has("metalnessValue")) {
-            pbrMaterial.metalnessValue = jsonValue.getFloat("metalnessValue", 0.001f);
+            pbrMaterial.metalnessValue = jsonValue.getFloat("metalnessValue", 0.01f);
         } else {
-            pbrMaterial.metalnessValue = -1;
+            pbrMaterial.metalnessValue = 0.01f;
         }
 
         if (jsonValue.has("roughnessValue")) {
             pbrMaterial.roughnessValue = jsonValue.getFloat("roughnessValue", 0.8f);
         } else {
-            pbrMaterial.roughnessValue = -1;
+            pbrMaterial.roughnessValue = 0.8f;
         }
 
         if (jsonValue.has("aoValue")) {
             pbrMaterial.aoValue = jsonValue.getFloat("aoValue", 1.0f);
         } else {
-            pbrMaterial.aoValue = -1;
+            pbrMaterial.aoValue = 1.0f;
         }
 
         pbrMaterial.offsetU = jsonValue.getFloat("offsetU", 0f);
