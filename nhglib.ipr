@@ -2,18 +2,18 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
-      <module name="nhglib-android_main" target="1.7" />
-      <module name="nhglib-android_test" target="1.7" />
-      <module name="nhglib-core_main" target="1.7" />
-      <module name="nhglib-core_test" target="1.7" />
-      <module name="nhglib-desktop_main" target="1.7" />
-      <module name="nhglib-desktop_test" target="1.7" />
-      <module name="nhglib-ios_main" target="1.7" />
-      <module name="nhglib-ios_test" target="1.7" />
-      <module name="nhglib-tests_main" target="1.7" />
-      <module name="nhglib-tests_test" target="1.7" />
-      <module name="nhglib_main" target="1.7" />
-      <module name="nhglib_test" target="1.7" />
+      <module name="nhglib-android_main" target="1.8" />
+      <module name="nhglib-android_test" target="1.8" />
+      <module name="nhglib-core_main" target="1.8" />
+      <module name="nhglib-core_test" target="1.8" />
+      <module name="nhglib-desktop_main" target="1.8" />
+      <module name="nhglib-desktop_test" target="1.8" />
+      <module name="nhglib-ios_main" target="1.8" />
+      <module name="nhglib-ios_test" target="1.8" />
+      <module name="nhglib-tests_main" target="1.8" />
+      <module name="nhglib-tests_test" target="1.8" />
+      <module name="nhglib_main" target="1.8" />
+      <module name="nhglib_test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="GradleSettings">
@@ -22,7 +22,7 @@
         <option name="createEmptyContentRootDirectories" value="true" />
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleJvm" value="#JAVA_HOME" />
+        <option name="gradleJvm" value="1.8" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
@@ -43,6 +43,29 @@
     </profile>
     <version value="1.0" />
   </component>
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/nhglib.iml" filepath="$PROJECT_DIR$/nhglib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/nhglib-android/nhglib-android.iml" filepath="$PROJECT_DIR$/nhglib-android/nhglib-android.iml" group="nhglib-android" />
+      <module fileurl="file://$PROJECT_DIR$/nhglib-android/nhglib-android_main.iml" filepath="$PROJECT_DIR$/nhglib-android/nhglib-android_main.iml" group="nhglib-android" />
+      <module fileurl="file://$PROJECT_DIR$/nhglib-android/nhglib-android_test.iml" filepath="$PROJECT_DIR$/nhglib-android/nhglib-android_test.iml" group="nhglib-android" />
+      <module fileurl="file://$PROJECT_DIR$/nhglib-core/nhglib-core.iml" filepath="$PROJECT_DIR$/nhglib-core/nhglib-core.iml" group="nhglib-core" />
+      <module fileurl="file://$PROJECT_DIR$/nhglib-core/nhglib-core_main.iml" filepath="$PROJECT_DIR$/nhglib-core/nhglib-core_main.iml" group="nhglib-core" />
+      <module fileurl="file://$PROJECT_DIR$/nhglib-core/nhglib-core_test.iml" filepath="$PROJECT_DIR$/nhglib-core/nhglib-core_test.iml" group="nhglib-core" />
+      <module fileurl="file://$PROJECT_DIR$/nhglib-desktop/nhglib-desktop.iml" filepath="$PROJECT_DIR$/nhglib-desktop/nhglib-desktop.iml" group="nhglib-desktop" />
+      <module fileurl="file://$PROJECT_DIR$/nhglib-desktop/nhglib-desktop_main.iml" filepath="$PROJECT_DIR$/nhglib-desktop/nhglib-desktop_main.iml" group="nhglib-desktop" />
+      <module fileurl="file://$PROJECT_DIR$/nhglib-desktop/nhglib-desktop_test.iml" filepath="$PROJECT_DIR$/nhglib-desktop/nhglib-desktop_test.iml" group="nhglib-desktop" />
+      <module fileurl="file://$PROJECT_DIR$/nhglib-ios/nhglib-ios.iml" filepath="$PROJECT_DIR$/nhglib-ios/nhglib-ios.iml" group="nhglib-ios" />
+      <module fileurl="file://$PROJECT_DIR$/nhglib-ios/nhglib-ios_main.iml" filepath="$PROJECT_DIR$/nhglib-ios/nhglib-ios_main.iml" group="nhglib-ios" />
+      <module fileurl="file://$PROJECT_DIR$/nhglib-ios/nhglib-ios_test.iml" filepath="$PROJECT_DIR$/nhglib-ios/nhglib-ios_test.iml" group="nhglib-ios" />
+      <module fileurl="file://$PROJECT_DIR$/nhglib-tests/nhglib-tests.iml" filepath="$PROJECT_DIR$/nhglib-tests/nhglib-tests.iml" group="nhglib-tests" />
+      <module fileurl="file://$PROJECT_DIR$/nhglib-tests/nhglib-tests_main.iml" filepath="$PROJECT_DIR$/nhglib-tests/nhglib-tests_main.iml" group="nhglib-tests" />
+      <module fileurl="file://$PROJECT_DIR$/nhglib-tests/nhglib-tests_test.iml" filepath="$PROJECT_DIR$/nhglib-tests/nhglib-tests_test.iml" group="nhglib-tests" />
+      <module fileurl="file://$PROJECT_DIR$/nhglib_main.iml" filepath="$PROJECT_DIR$/nhglib_main.iml" group="nhglib" />
+      <module fileurl="file://$PROJECT_DIR$/nhglib_test.iml" filepath="$PROJECT_DIR$/nhglib_test.iml" group="nhglib" />
+    </modules>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" project-jdk-name="1.8" project-jdk-type="JavaSDK" />
   <component name="RunManager">
     <configuration default="true" type="Applet" factoryName="Applet">
       <option name="WIDTH" value="400" />
@@ -129,13 +152,13 @@
     <mapping directory="" vcs="Git" />
   </component>
   <component name="libraryTable">
-    <library name="Gradle: com.badlogicgames.gdx:gdx-ai:1.8.0">
+    <library name="Gradle: com.badlogicgames.gdx:gdx-ai:1.8.1">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-ai/1.8.0/ec30677d8ab1a8b8aa4b853c5f4e4b1361f50bf5/gdx-ai-1.8.0.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-ai/1.8.1/a52367e373fe52f0d20f162cbf8711c38f002a25/gdx-ai-1.8.1.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-ai/1.8.0/154b2fbb50894a944607cd74f7dba1073d31a967/gdx-ai-1.8.0-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-ai/1.8.1/a0e7e1f3732190d68e376360d894175af72fabf2/gdx-ai-1.8.1-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: com.badlogicgames.gdx:gdx-backend-android:1.6.5">
@@ -147,77 +170,79 @@
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-backend-android/1.6.5/a3b12b5304c7d01e54328688508f564ef502d503/gdx-backend-android-1.6.5-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: com.badlogicgames.gdx:gdx-backend-android:1.9.7-SNAPSHOT">
+    <library name="Gradle: com.badlogicgames.gdx:gdx-backend-android:1.9.8">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-backend-android/1.9.7-SNAPSHOT/93e7a9ecc7ee17b6963bf03f6b7ed128089bdccb/gdx-backend-android-1.9.7-SNAPSHOT.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-backend-android/1.9.8/84024cd60ad6f26370891fbcd17de9f0167e662/gdx-backend-android-1.9.8.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-backend-android/1.9.7-SNAPSHOT/a57907c0fb59f0fc264bd94bf11e492533759721/gdx-backend-android-1.9.7-SNAPSHOT-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-backend-android/1.9.8/fa6c464c1a911ce39f252cb2b86e9d05eecb6a1d/gdx-backend-android-1.9.8-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Gradle: com.badlogicgames.gdx:gdx-backend-lwjgl:1.9.7-SNAPSHOT">
+    <library name="Gradle: com.badlogicgames.gdx:gdx-backend-lwjgl3:1.9.8">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/badlogicgames/gdx/gdx-backend-lwjgl/1.9.7-SNAPSHOT/gdx-backend-lwjgl-1.9.7-SNAPSHOT.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-backend-lwjgl3/1.9.8/ac74d4b336b8354c42ef352c368c03da47ffa015/gdx-backend-lwjgl3-1.9.8.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-backend-lwjgl3/1.9.8/30667890c34763b3d8193acd1734e66f7b9b0404/gdx-backend-lwjgl3-1.9.8-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: com.badlogicgames.gdx:gdx-bullet-platform:natives-desktop:1.9.8">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-bullet-platform/1.9.8/be27849ed15241692302a3e8b1c209a7d48276f4/gdx-bullet-platform-1.9.8-natives-desktop.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />
     </library>
-    <library name="Gradle: com.badlogicgames.gdx:gdx-bullet-platform:natives-desktop:1.9.7-SNAPSHOT">
+    <library name="Gradle: com.badlogicgames.gdx:gdx-bullet-platform:natives-ios:1.9.8">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-bullet-platform/1.9.7-SNAPSHOT/e16788dc86abcc49a1e721393af3fa3dfd702609/gdx-bullet-platform-1.9.7-SNAPSHOT-natives-desktop.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-bullet-platform/1.9.8/44de3e9678419ae2a4cfe7fd674b1bf82d56ae20/gdx-bullet-platform-1.9.8-natives-ios.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />
     </library>
-    <library name="Gradle: com.badlogicgames.gdx:gdx-bullet-platform:natives-ios:1.9.7-SNAPSHOT">
+    <library name="Gradle: com.badlogicgames.gdx:gdx-bullet:1.9.8">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-bullet-platform/1.9.7-SNAPSHOT/8de58f0aacaa3620d3269ddefa228cb249af976b/gdx-bullet-platform-1.9.7-SNAPSHOT-natives-ios.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-bullet/1.9.8/7f6d7421bc365d49246b65f0528978fd0c8524ed/gdx-bullet-1.9.8.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-bullet/1.9.8/e37e48ef3e095fae02f5d8832ee44fb0e347a583/gdx-bullet-1.9.8-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: com.badlogicgames.gdx:gdx-controllers-android:1.9.8">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-controllers-android/1.9.8/2648f2bf0caac922da2643ac57dd93b45846eff5/gdx-controllers-android-1.9.8.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-controllers-android/1.9.8/1b9f04a15f79fc37a8c9a9882316356198650555/gdx-controllers-android-1.9.8-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: com.badlogicgames.gdx:gdx-controllers-desktop:1.9.8">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-controllers-desktop/1.9.8/631f8e4bc387dbf8a7122e2e8729ec1cdc0dc45a/gdx-controllers-desktop-1.9.8.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-controllers-desktop/1.9.8/5911bf10d33a049fa27b72d0b800d0eb0c7ba0f4/gdx-controllers-desktop-1.9.8-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: com.badlogicgames.gdx:gdx-controllers-platform:natives-desktop:1.9.8">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-controllers-platform/1.9.8/deef23cee3884f579312b2987afd6a377b6eda2e/gdx-controllers-platform-1.9.8-natives-desktop.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />
     </library>
-    <library name="Gradle: com.badlogicgames.gdx:gdx-bullet:1.9.7-SNAPSHOT">
+    <library name="Gradle: com.badlogicgames.gdx:gdx-controllers:1.9.8">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-bullet/1.9.7-SNAPSHOT/fcf92e3c5bdf85dc395c64a4d9d574d52af3d3e6/gdx-bullet-1.9.7-SNAPSHOT.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-controllers/1.9.8/8cdc9ab6826a74594c3b0084d8a7669f8124592b/gdx-controllers-1.9.8.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-bullet/1.9.7-SNAPSHOT/6ad04628d0edf66135afc60cdd512ddbdc155213/gdx-bullet-1.9.7-SNAPSHOT-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Gradle: com.badlogicgames.gdx:gdx-controllers-android:1.9.7-SNAPSHOT">
-      <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-controllers-android/1.9.7-SNAPSHOT/d16e0a09b26640dc0710ff06d589f635446b9c3e/gdx-controllers-android-1.9.7-SNAPSHOT.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-controllers-android/1.9.7-SNAPSHOT/2da8dde0050dccc72748e6039763418b2a955c9c/gdx-controllers-android-1.9.7-SNAPSHOT-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Gradle: com.badlogicgames.gdx:gdx-controllers-desktop:1.9.7-SNAPSHOT">
-      <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-controllers-desktop/1.9.7-SNAPSHOT/ba6747a9f83e123189bfcae6ef05a72fb8f1f00e/gdx-controllers-desktop-1.9.7-SNAPSHOT.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-controllers-desktop/1.9.7-SNAPSHOT/2adf9310c79cd7335162b94957262ca1f4007918/gdx-controllers-desktop-1.9.7-SNAPSHOT-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Gradle: com.badlogicgames.gdx:gdx-controllers-platform:natives-desktop:1.9.7-SNAPSHOT">
-      <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-controllers-platform/1.9.7-SNAPSHOT/f37f1fea034a530b1ebbf9373f99d9cd8bf54422/gdx-controllers-platform-1.9.7-SNAPSHOT-natives-desktop.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES />
-    </library>
-    <library name="Gradle: com.badlogicgames.gdx:gdx-controllers:1.9.7-SNAPSHOT">
-      <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-controllers/1.9.7-SNAPSHOT/7f2eba251cf9d648184e970ab9b1ae40e37308cb/gdx-controllers-1.9.7-SNAPSHOT.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-controllers/1.9.7-SNAPSHOT/41c271eb8ddda290153bcd7816302b2bd1eaef75/gdx-controllers-1.9.7-SNAPSHOT-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-controllers/1.9.8/5be4e61f2a04718e82f5fecbaffeff0035021902/gdx-controllers-1.9.8-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: com.badlogicgames.gdx:gdx-platform:natives-desktop:1.6.5">
@@ -227,26 +252,58 @@
       <JAVADOC />
       <SOURCES />
     </library>
-    <library name="Gradle: com.badlogicgames.gdx:gdx-platform:natives-desktop:1.9.7-SNAPSHOT">
+    <library name="Gradle: com.badlogicgames.gdx:gdx-platform:natives-desktop:1.9.8">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-platform/1.9.7-SNAPSHOT/44847e457a32c08a20acfb0dd9cb06c6727074ae/gdx-platform-1.9.7-SNAPSHOT-natives-desktop.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-platform/1.9.8/604a2ef2c7c92a5900114757cbd3fb4dcbb8270c/gdx-platform-1.9.8-natives-desktop.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />
     </library>
-    <library name="Gradle: com.badlogicgames.gdx:gdx:1.9.7-SNAPSHOT">
+    <library name="Gradle: com.badlogicgames.gdx:gdx:1.9.8">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/badlogicgames/gdx/gdx/1.9.7-SNAPSHOT/gdx-1.9.7-SNAPSHOT.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.8/a35a0076fbce873f9c2d5a1a1c8066244231bb3c/gdx-1.9.8.jar!/" />
       </CLASSES>
       <JAVADOC />
-      <SOURCES />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.8/bac17f395be5010619b31280fe84e9f53118d0b9/gdx-1.9.8-sources.jar!/" />
+      </SOURCES>
     </library>
     <library name="Gradle: com.badlogicgames.jlayer:jlayer:1.0.1-gdx">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/com/badlogicgames/jlayer/jlayer/1.0.1-gdx/jlayer-1.0.1-gdx.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.jlayer/jlayer/1.0.1-gdx/7cca83cec5c1b2f011362f4d85aabd71a73b049d/jlayer-1.0.1-gdx.jar!/" />
       </CLASSES>
       <JAVADOC />
-      <SOURCES />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.jlayer/jlayer/1.0.1-gdx/f1c4ffebc5e4f68be914404faab580c20de8ea1f/jlayer-1.0.1-gdx-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.9.0">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.9.0/7c10d545325e3a6e72e06381afe469fd40eb701/jackson-annotations-2.9.0.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.9.0/a0ad4e203304ccab7e01266fa814115850edb8a9/jackson-annotations-2.9.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: com.fasterxml.jackson.core:jackson-core:2.9.6">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.9.6/4e393793c37c77e042ccc7be5a914ae39251b365/jackson-core-2.9.6.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.9.6/297b561cc2ca89e07bf4cb6445c08260b524aa4d/jackson-core-2.9.6-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.9.6">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.9.6/cfa4f316351a91bfd95cb0644c6a2c95f52db1fc/jackson-databind-2.9.6.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.9.6/dad3a9fbbedf8781dfd138539cd82638ebad5678/jackson-databind-2.9.6-sources.jar!/" />
+      </SOURCES>
     </library>
     <library name="Gradle: com.github.peakgames.libgdx-stagebuilder:stagebuilder-core:v3.25.0">
       <CLASSES>
@@ -269,52 +326,20 @@
     <library name="Gradle: junit:junit:4.11">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/junit/junit/4.11/junit-4.11.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES />
-    </library>
-    <library name="Gradle: net.java.jinput:jinput-platform:natives-linux:2.0.5">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/net/java/jinput/jinput-platform/2.0.5/jinput-platform-2.0.5-natives-linux.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES />
-    </library>
-    <library name="Gradle: net.java.jinput:jinput-platform:natives-osx:2.0.5">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/net/java/jinput/jinput-platform/2.0.5/jinput-platform-2.0.5-natives-osx.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES />
-    </library>
-    <library name="Gradle: net.java.jinput:jinput-platform:natives-windows:2.0.5">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/net/java/jinput/jinput-platform/2.0.5/jinput-platform-2.0.5-natives-windows.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES />
-    </library>
-    <library name="Gradle: net.java.jinput:jinput:2.0.5">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/net/java/jinput/jinput/2.0.5/jinput-2.0.5.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES />
-    </library>
-    <library name="Gradle: net.java.jutils:jutils:1.0.0">
-      <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/net/java/jutils/jutils/1.0.0/jutils-1.0.0.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES />
-    </library>
-    <library name="Gradle: net.onedaybeard.artemis:artemis-odb:2.0.0">
-      <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.onedaybeard.artemis/artemis-odb/2.0.0/bc89f3ee4394f74a00dcb6302b72704c74916a7e/artemis-odb-2.0.0.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/junit/junit/4.11/4e031bb61df09069aeb2bffb4019e7a5034a4ee0/junit-4.11.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.onedaybeard.artemis/artemis-odb/2.0.0/879514fa3a89bbd6fbd6d2f10385db70465f2739/artemis-odb-2.0.0-sources.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/junit/junit/4.11/28e0ad201304e4a4abf999ca0570b7cffc352c3c/junit-4.11-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: net.onedaybeard.artemis:artemis-odb:2.2.0-SNAPSHOT">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.onedaybeard.artemis/artemis-odb/2.2.0-SNAPSHOT/2e4a55e8626752bb49d05b669117a3acc6e23a5a/artemis-odb-2.2.0-SNAPSHOT.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.onedaybeard.artemis/artemis-odb/2.2.0-SNAPSHOT/12cfc38a7f56faab0a8d42a557abbd7ba2ae910d/artemis-odb-2.2.0-SNAPSHOT-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: net.sf.kxml:kxml2:2.3.0">
@@ -329,51 +354,202 @@
     <library name="Gradle: org.hamcrest:hamcrest-core:1.3">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.hamcrest/hamcrest-core/1.3/42a25dc3219429f0e5d060061f71acb49bf010a0/hamcrest-core-1.3.jar!/" />
       </CLASSES>
       <JAVADOC />
-      <SOURCES />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.hamcrest/hamcrest-core/1.3/1dc37250fbc78e23a65a67fbbaf71d2e9cbc3c0b/hamcrest-core-1.3-sources.jar!/" />
+      </SOURCES>
     </library>
     <library name="Gradle: org.jcraft:jorbis:0.0.17">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/org/jcraft/jorbis/0.0.17/jorbis-0.0.17.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jcraft/jorbis/0.0.17/8872d22b293e8f5d7d56ff92be966e6dc28ebdc6/jorbis-0.0.17.jar!/" />
       </CLASSES>
       <JAVADOC />
-      <SOURCES />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jcraft/jorbis/0.0.17/5446be5d62e4c6b347c8e6cd28dc00a936417ba2/jorbis-0.0.17-sources.jar!/" />
+      </SOURCES>
     </library>
-    <library name="Gradle: org.lwjgl.lwjgl:lwjgl-platform:natives-linux:2.9.2">
+    <library name="Gradle: org.lwjgl:lwjgl-glfw:3.1.3">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/lwjgl/lwjgl/lwjgl-platform/2.9.2/lwjgl-platform-2.9.2-natives-linux.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-glfw/3.1.3/cf45ad83170e9391ec2bbd68d7ca0e1bf8cdb0e3/lwjgl-glfw-3.1.3.jar!/" />
       </CLASSES>
       <JAVADOC />
-      <SOURCES />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-glfw/3.1.3/27630c904f49900b8a3f9490e8b411dbb7c72ad8/lwjgl-glfw-3.1.3-sources.jar!/" />
+      </SOURCES>
     </library>
-    <library name="Gradle: org.lwjgl.lwjgl:lwjgl-platform:natives-osx:2.9.2">
+    <library name="Gradle: org.lwjgl:lwjgl-glfw:natives-linux:3.1.3">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/lwjgl/lwjgl/lwjgl-platform/2.9.2/lwjgl-platform-2.9.2-natives-osx.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-glfw/3.1.3/9b1a82cc253af775eb8ca5916d02dd4d4448ec3d/lwjgl-glfw-3.1.3-natives-linux.jar!/" />
       </CLASSES>
       <JAVADOC />
-      <SOURCES />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-glfw/3.1.3/27630c904f49900b8a3f9490e8b411dbb7c72ad8/lwjgl-glfw-3.1.3-sources.jar!/" />
+      </SOURCES>
     </library>
-    <library name="Gradle: org.lwjgl.lwjgl:lwjgl-platform:natives-windows:2.9.2">
+    <library name="Gradle: org.lwjgl:lwjgl-glfw:natives-macos:3.1.3">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/lwjgl/lwjgl/lwjgl-platform/2.9.2/lwjgl-platform-2.9.2-natives-windows.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-glfw/3.1.3/150f4a526e4e968e156091dba7ee3abbe2455537/lwjgl-glfw-3.1.3-natives-macos.jar!/" />
       </CLASSES>
       <JAVADOC />
-      <SOURCES />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-glfw/3.1.3/27630c904f49900b8a3f9490e8b411dbb7c72ad8/lwjgl-glfw-3.1.3-sources.jar!/" />
+      </SOURCES>
     </library>
-    <library name="Gradle: org.lwjgl.lwjgl:lwjgl:2.9.2">
+    <library name="Gradle: org.lwjgl:lwjgl-glfw:natives-windows:3.1.3">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/lwjgl/lwjgl/lwjgl/2.9.2/lwjgl-2.9.2.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-glfw/3.1.3/fc6d066d65d101bbb82e157522f3c41a175245d5/lwjgl-glfw-3.1.3-natives-windows.jar!/" />
       </CLASSES>
       <JAVADOC />
-      <SOURCES />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-glfw/3.1.3/27630c904f49900b8a3f9490e8b411dbb7c72ad8/lwjgl-glfw-3.1.3-sources.jar!/" />
+      </SOURCES>
     </library>
-    <library name="Gradle: org.lwjgl.lwjgl:lwjgl_util:2.9.2">
+    <library name="Gradle: org.lwjgl:lwjgl-jemalloc:3.1.3">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/org/lwjgl/lwjgl/lwjgl_util/2.9.2/lwjgl_util-2.9.2.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-jemalloc/3.1.3/673974cb7b575fe1c37b2f3b8e5096fd791aec3d/lwjgl-jemalloc-3.1.3.jar!/" />
       </CLASSES>
       <JAVADOC />
-      <SOURCES />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-jemalloc/3.1.3/2d8e66a4ae0905558e3e43ec29edd4f1017f06b6/lwjgl-jemalloc-3.1.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.lwjgl:lwjgl-jemalloc:natives-linux:3.1.3">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-jemalloc/3.1.3/8f00b5fb94b84d68d44f2be2fe62c73f672e9757/lwjgl-jemalloc-3.1.3-natives-linux.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-jemalloc/3.1.3/2d8e66a4ae0905558e3e43ec29edd4f1017f06b6/lwjgl-jemalloc-3.1.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.lwjgl:lwjgl-jemalloc:natives-macos:3.1.3">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-jemalloc/3.1.3/3235da206ca947644c817dfa60feb67944939aed/lwjgl-jemalloc-3.1.3-natives-macos.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-jemalloc/3.1.3/2d8e66a4ae0905558e3e43ec29edd4f1017f06b6/lwjgl-jemalloc-3.1.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.lwjgl:lwjgl-jemalloc:natives-windows:3.1.3">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-jemalloc/3.1.3/d000f5f1570624d2400053ec533ae6324897b48f/lwjgl-jemalloc-3.1.3-natives-windows.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-jemalloc/3.1.3/2d8e66a4ae0905558e3e43ec29edd4f1017f06b6/lwjgl-jemalloc-3.1.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.lwjgl:lwjgl-openal:3.1.3">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-openal/3.1.3/4eb9561918c4baa8ca1385723e68c336840ab01e/lwjgl-openal-3.1.3.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-openal/3.1.3/caada2f2bf098f7ba999d1a22b76cd8033e686a9/lwjgl-openal-3.1.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.lwjgl:lwjgl-openal:natives-linux:3.1.3">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-openal/3.1.3/d0dff62cb773499ab21df802de1700e04b2720b2/lwjgl-openal-3.1.3-natives-linux.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-openal/3.1.3/caada2f2bf098f7ba999d1a22b76cd8033e686a9/lwjgl-openal-3.1.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.lwjgl:lwjgl-openal:natives-macos:3.1.3">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-openal/3.1.3/c725c21c0d8f1aaea9e5f64e77baadae4e0e415d/lwjgl-openal-3.1.3-natives-macos.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-openal/3.1.3/caada2f2bf098f7ba999d1a22b76cd8033e686a9/lwjgl-openal-3.1.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.lwjgl:lwjgl-openal:natives-windows:3.1.3">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-openal/3.1.3/55450662bd7c20e7c18555dcca259bc712448600/lwjgl-openal-3.1.3-natives-windows.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-openal/3.1.3/caada2f2bf098f7ba999d1a22b76cd8033e686a9/lwjgl-openal-3.1.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.lwjgl:lwjgl-opengl:3.1.3">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-opengl/3.1.3/6850ed80dcaa393c3a21b7d3e3f6063289f5c8be/lwjgl-opengl-3.1.3.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-opengl/3.1.3/87acffa06651ab8c7d81b09310a9a88aa0b6c5f8/lwjgl-opengl-3.1.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.lwjgl:lwjgl-opengl:natives-linux:3.1.3">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-opengl/3.1.3/ca930f0b37248694add00102179efad0530759bf/lwjgl-opengl-3.1.3-natives-linux.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-opengl/3.1.3/87acffa06651ab8c7d81b09310a9a88aa0b6c5f8/lwjgl-opengl-3.1.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.lwjgl:lwjgl-opengl:natives-macos:3.1.3">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-opengl/3.1.3/abbb06240087df4a75cd571c019f591297848a/lwjgl-opengl-3.1.3-natives-macos.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-opengl/3.1.3/87acffa06651ab8c7d81b09310a9a88aa0b6c5f8/lwjgl-opengl-3.1.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.lwjgl:lwjgl-opengl:natives-windows:3.1.3">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-opengl/3.1.3/4609a33435a0eaa01840b34ec93ee85a58913025/lwjgl-opengl-3.1.3-natives-windows.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl-opengl/3.1.3/87acffa06651ab8c7d81b09310a9a88aa0b6c5f8/lwjgl-opengl-3.1.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.lwjgl:lwjgl:3.1.3">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.1.3/13bf03e4969284e1cc05085dd13cab8dd0415c13/lwjgl-3.1.3.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.1.3/a7f937b0f0163ec125f88ebe912d7293d94f918f/lwjgl-3.1.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.lwjgl:lwjgl:natives-linux:3.1.3">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.1.3/1c0a6a77387581301dd1983dcf1e2d2475c13443/lwjgl-3.1.3-natives-linux.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.1.3/a7f937b0f0163ec125f88ebe912d7293d94f918f/lwjgl-3.1.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.lwjgl:lwjgl:natives-macos:3.1.3">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.1.3/2e066143f1793c657e705f6599cc0b134a4edfc1/lwjgl-3.1.3-natives-macos.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.1.3/a7f937b0f0163ec125f88ebe912d7293d94f918f/lwjgl-3.1.3-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: org.lwjgl:lwjgl:natives-windows:3.1.3">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.1.3/da731ce107407662b16f9823a9667ae13d30c5c3/lwjgl-3.1.3-natives-windows.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.1.3/a7f937b0f0163ec125f88ebe912d7293d94f918f/lwjgl-3.1.3-sources.jar!/" />
+      </SOURCES>
     </library>
     <library name="Gradle: org.reactivestreams:reactive-streams:1.0.0">
       <CLASSES>

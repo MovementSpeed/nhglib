@@ -12,9 +12,11 @@ import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Disposable;
 import io.github.movementspeed.nhglib.assets.Assets;
 import io.github.movementspeed.nhglib.physics.MotionState;
+import io.github.movementspeed.nhglib.physics.enums.RigidBodyType;
 import io.github.movementspeed.nhglib.physics.models.*;
 
 import static com.badlogic.gdx.physics.bullet.collision.CollisionConstants.DISABLE_DEACTIVATION;
+import static com.badlogic.gdx.physics.bullet.collision.btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK;
 import static com.badlogic.gdx.physics.bullet.collision.btCollisionObject.CollisionFlags.CF_KINEMATIC_OBJECT;
 
 /**
@@ -154,6 +156,10 @@ public class RigidBodyComponent extends Component implements Disposable {
                 body.setSleepingThresholds(1f / 1000f, 1f / 1000f);
                 body.setFriction(friction);
                 body.setRestitution(restitution);
+
+                if (rigidBodyShape.type == RigidBodyType.BVH_TRIANGLE_MESH) {
+                    body.setCollisionFlags(body.getCollisionFlags() | CF_CUSTOM_MATERIAL_CALLBACK);
+                }
             }
         }
     }
@@ -202,6 +208,9 @@ public class RigidBodyComponent extends Component implements Disposable {
                 BvhTriangleMeshRigidBodyShape bvhTriangleMeshRigidBodyShape = (BvhTriangleMeshRigidBodyShape) rigidBodyShape;
                 Model bvhTriangleModel = assets.get(bvhTriangleMeshRigidBodyShape.asset);
                 collisionShape = new btBvhTriangleMeshShape(bvhTriangleModel.meshParts, bvhTriangleMeshRigidBodyShape.quantization, bvhTriangleMeshRigidBodyShape.buildBvh);
+
+                btTriangleInfoMap triangleInfoMap = new btTriangleInfoMap();
+                Collision.btGenerateInternalEdgeInfo((btBvhTriangleMeshShape) collisionShape, triangleInfoMap);
                 break;
 
             case CONVEX_TRIANGLE_MESH:
