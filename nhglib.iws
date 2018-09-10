@@ -1,28 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c2b930b7-a3bc-4f88-9213-a7b37e289064" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/nhglib-android/nhglib-android.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nhglib-core/nhglib-core.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nhglib-desktop/nhglib-desktop.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nhglib-ios/nhglib-ios.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nhglib-tests/nhglib-tests.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nhglib-android/nhglib-android_main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib-android/nhglib-android_main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nhglib-android/nhglib-android_test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib-android/nhglib-android_test.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nhglib-core/nhglib-core_main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib-core/nhglib-core_main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nhglib-core/nhglib-core_test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib-core/nhglib-core_test.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/components/physics/RigidBodyComponent.java" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/components/physics/RigidBodyComponent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nhglib-desktop/nhglib-desktop_main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib-desktop/nhglib-desktop_main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nhglib-desktop/nhglib-desktop_test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib-desktop/nhglib-desktop_test.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nhglib-ios/nhglib-ios_main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib-ios/nhglib-ios_main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nhglib-ios/nhglib-ios_test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib-ios/nhglib-ios_test.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nhglib-tests/nhglib-tests_main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib-tests/nhglib-tests_main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nhglib-tests/nhglib-tests_test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib-tests/nhglib-tests_test.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nhglib.iml" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nhglib.ipr" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib.ipr" afterDir="false" />
+    <list default="true" id="c2b930b7-a3bc-4f88-9213-a7b37e289064" name="Default" comment="- Internal edge collision handling">
       <change beforePath="$PROJECT_DIR$/nhglib.iws" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib.iws" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nhglib_main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib_main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nhglib_test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib_test.iml" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/nhglib-core/.gradle/" />
     <ignored path="$PROJECT_DIR$/nhglib-core/build/" />
@@ -74,10 +54,11 @@
     <session id="540552098">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="1" />
+          <entry key="project.closed" value="2" />
           <entry key="project.open.time.0" value="1" />
           <entry key="project.open.time.1" value="1" />
-          <entry key="project.opened" value="2" />
+          <entry key="project.open.time.11" value="1" />
+          <entry key="project.opened" value="3" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages">
@@ -88,64 +69,48 @@
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="gradle" value="1" />
-          <entry key="java" value="3" />
+          <entry key="java" value="7" />
+          <entry key="json" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="Groovy" value="1" />
-          <entry key="JAVA" value="3" />
+          <entry key="JAVA" value="7" />
+          <entry key="JSON" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="gradle" value="16" />
-          <entry key="java" value="108" />
+          <entry key="java" value="140" />
+          <entry key="txt" value="34" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="Groovy" value="16" />
-          <entry key="JAVA" value="108" />
+          <entry key="JAVA" value="140" />
+          <entry key="PLAIN_TEXT" value="34" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="450">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/build.gradle">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="67" column="18" lean-forward="true" selection-start-line="67" selection-start-column="18" selection-end-line="67" selection-end-column="18" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/physics/models/BvhTriangleMeshRigidBodyShape.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="34">
-              <caret line="2" column="27" lean-forward="true" selection-start-line="2" selection-start-column="27" selection-end-line="2" selection-end-column="27" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/components/physics/RigidBodyComponent.java">
+        <entry file="file://$PROJECT_DIR$/nhglib-tests/src/io/github/movementspeed/tests/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="284">
-              <caret line="160" column="99" selection-start-line="160" selection-start-column="99" selection-end-line="160" selection-end-column="99" />
+            <state relative-caret-position="459">
+              <caret line="104" column="8" selection-start-line="104" selection-start-column="8" selection-end-line="104" selection-end-column="47" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/utils/UiManager.java">
+        <entry file="file://$PROJECT_DIR$/nhglib-tests/assets/scenes/fel_lord_scene.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="12" column="52" selection-start-line="12" selection-start-column="52" selection-end-line="12" selection-end-column="52" />
-            </state>
+            <state relative-caret-position="-765" />
           </provider>
         </entry>
       </file>
@@ -1288,7 +1253,7 @@
     <option name="modificationStamps">
       <map>
         <entry key="$PROJECT_DIR$" value="12291503035062" />
-        <entry key="$PROJECT_DIR$/build.gradle" value="3841493854" />
+        <entry key="$PROJECT_DIR$/build.gradle" value="3634253460" />
         <entry key="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" value="4075531486" />
         <entry key="$PROJECT_DIR$/nhglib-android/build.gradle" value="2982682740" />
         <entry key="$PROJECT_DIR$/nhglib-core/build.gradle" value="476374271" />
@@ -2180,6 +2145,7 @@
         <option value="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/Nhg.java" />
         <option value="$PROJECT_DIR$/build.gradle" />
         <option value="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/components/physics/RigidBodyComponent.java" />
+        <option value="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/systems/impl/PhysicsSystem.java" />
       </list>
     </option>
   </component>
@@ -2189,7 +2155,7 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="953" />
     <option name="width" value="974" />
     <option name="height" value="1087" />
@@ -2199,8 +2165,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
-      <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -2208,18 +2172,31 @@
               <item name="nhglib" type="b2602c69:ProjectViewProjectNode" />
               <item name="nhglib" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
             </path>
+            <path>
+              <item name="nhglib" type="b2602c69:ProjectViewProjectNode" />
+              <item name="nhglib" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="nhglib-tests" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+            </path>
+            <path>
+              <item name="nhglib" type="b2602c69:ProjectViewProjectNode" />
+              <item name="nhglib" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="nhglib-tests" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="assets" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
       <pane id="Scope" />
+      <pane id="PackagesPane" />
+      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="SearchEverywhereHistoryKey" value="Phys&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.core.ecs.systems.impl.PhysicsSystem&#10;Shape&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.physics.models.BvhTriangleMeshRigidBodyShape" />
+    <property name="SearchEverywhereHistoryKey" value="Dire&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.utils.BoundingSphereDirectionalAnalyzer&#10;Base&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.system.BaseShadowSystem&#10;Main&#9;PSI&#9;JAVA://io.github.movementspeed.tests.Main&#10;LinearMathC&#9;PSI&#9;JAVA://com.badlogic.gdx.physics.bullet.linearmath.LinearMathConstants&#10;Phys&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.core.ecs.systems.impl.PhysicsSystem&#10;Shape&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.physics.models.BvhTriangleMeshRigidBodyShape" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1536519713078" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1536590919581" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.project.gradle" />
   </component>
@@ -2279,18 +2256,26 @@
       <workItem from="1530216755725" duration="80000" />
       <workItem from="1530216853553" duration="14000" />
       <workItem from="1536508521435" duration="883000" />
-      <workItem from="1536519359076" duration="354000" />
+      <workItem from="1536519359076" duration="3030000" />
+      <workItem from="1536582688417" duration="1990000" />
     </task>
+    <task id="LOCAL-00001" summary="- Internal edge collision handling">
+      <created>1536519851148</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1536519851148</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1635000" />
+    <option name="totallyTimeSpent" value="6301000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="953" y="0" width="974" height="1087" extended-state="0" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" weight="0.27680525" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.23304157" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -2328,6 +2313,10 @@
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="- Internal edge collision handling" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Internal edge collision handling" />
+  </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/Nhg.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -2336,10 +2325,38 @@
         </state>
       </provider>
     </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-bullet/1.9.8/e37e48ef3e095fae02f5d8832ee44fb0e347a583/gdx-bullet-1.9.8-sources.jar!/com/badlogic/gdx/physics/bullet/linearmath/LinearMathConstants.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="16" column="17" selection-start-line="16" selection-start-column="17" selection-end-line="16" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="67" column="18" lean-forward="true" selection-start-line="67" selection-start-column="18" selection-end-line="67" selection-end-column="18" />
+        <state relative-caret-position="1139">
+          <caret line="67" column="18" selection-start-line="67" selection-start-column="18" selection-end-line="67" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/physics/models/BvhTriangleMeshRigidBodyShape.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="27" selection-start-line="2" selection-start-column="27" selection-end-line="2" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/data/models/serialization/components/RigidBodyComponentJson.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="425">
+          <caret line="28" selection-start-line="28" selection-end-line="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/systems/impl/PhysicsSystem.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2788">
+          <caret line="197" column="5" selection-start-line="197" selection-start-column="5" selection-end-line="197" selection-end-column="5" />
         </state>
       </provider>
     </entry>
@@ -2350,17 +2367,25 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/physics/models/BvhTriangleMeshRigidBodyShape.java">
+    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/components/physics/RigidBodyComponent.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="27" lean-forward="true" selection-start-line="2" selection-start-column="27" selection-end-line="2" selection-end-column="27" />
+        <state relative-caret-position="425">
+          <caret line="153" column="62" lean-forward="true" selection-start-line="153" selection-start-column="62" selection-end-line="153" selection-end-column="62" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/components/physics/RigidBodyComponent.java">
+    <entry file="file://$PROJECT_DIR$/nhglib-tests/assets/scenes/scene.json">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-tests/assets/scenes/fel_lord_scene.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="284">
-          <caret line="160" column="99" selection-start-line="160" selection-start-column="99" selection-end-line="160" selection-end-column="99" />
+        <state relative-caret-position="-765" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-tests/src/io/github/movementspeed/tests/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="104" column="8" selection-start-line="104" selection-start-column="8" selection-end-line="104" selection-end-column="47" />
         </state>
       </provider>
     </entry>

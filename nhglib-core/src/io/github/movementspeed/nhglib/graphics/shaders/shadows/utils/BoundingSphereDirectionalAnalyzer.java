@@ -35,7 +35,7 @@ public class BoundingSphereDirectionalAnalyzer implements DirectionalAnalyzer {
 
 		// Create bounding box encompassing main camera frustum
 		for (int i = 0; i < mainCamera.frustum.planePoints.length; i++) {
-			bb.ext(mainCamera.frustum.planePoints[i].scl(0.02f));
+			bb.ext(mainCamera.frustum.planePoints[i]);
 		}
 		// TODO : this ^ for calculates a wrong bounding box, it's scaled for now
 
