@@ -20,6 +20,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import io.github.movementspeed.nhglib.Nhg;
+import io.github.movementspeed.nhglib.enums.LightType;
 
 /** This shader pack the depth data into the texture
  * @author realitix */
@@ -62,5 +64,27 @@ public class Pass1Shader extends DefaultShader {
 
 	public Pass1Shader (final Renderable renderable, final Config config, final ShaderProgram shaderProgram) {
 		super(renderable, config, shaderProgram);
+	}
+
+	public static String createPrefix(final Renderable renderable, final Pass1Shader.Config config) {
+		String prefix = "";
+
+		if (Gdx.graphics.isGL30Available()) {
+			switch (Nhg.glVersion) {
+				case VERSION_2:
+					prefix = "#define GLVERSION 2\n";
+					break;
+
+				case VERSION_3:
+					prefix = "#version 300 es\n";
+					prefix += "#define GLVERSION 3\n";
+					break;
+			}
+		} else {
+			prefix = "#define GLVERSION 2\n";
+		}
+
+		prefix += DefaultShader.createPrefix(renderable, config);
+		return prefix;
 	}
 }
