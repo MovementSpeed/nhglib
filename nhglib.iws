@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c2b930b7-a3bc-4f88-9213-a7b37e289064" name="Default" comment="- Shadows fix test">
-      <change beforePath="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass1Shader.java" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass1Shader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/utils/BoundingSphereDirectionalAnalyzer.java" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/utils/BoundingSphereDirectionalAnalyzer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nhglib.iws" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib.iws" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/nhglib-core/.gradle/" />
@@ -56,7 +54,7 @@
     <session id="540552098">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="3" />
+          <entry key="project.closed" value="4" />
           <entry key="project.open.time.0" value="1" />
           <entry key="project.open.time.1" value="2" />
           <entry key="project.open.time.10" value="1" />
@@ -2198,10 +2196,10 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="SearchEverywhereHistoryKey" value="Pass2&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.system.classical.Pass2Shader&#10;Pass&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.system.classical.Pass1Shader&#10;Classi&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.system.classical.ClassicalShadowsRenderPass&#10;Dire&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.utils.BoundingSphereDirectionalAnalyzer&#10;Base&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.system.BaseShadowSystem&#10;Main&#9;PSI&#9;JAVA://io.github.movementspeed.tests.Main&#10;LinearMathC&#9;PSI&#9;JAVA://com.badlogic.gdx.physics.bullet.linearmath.LinearMathConstants&#10;Phys&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.core.ecs.systems.impl.PhysicsSystem&#10;Shape&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.physics.models.BvhTriangleMeshRigidBodyShape" />
+    <property name="SearchEverywhereHistoryKey" value="Pass1&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass1Shader.java&#10;Pass2&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass2Shader.java&#10;PBRSha&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.tiled.TiledPBRShader&#10;Pass&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.system.classical.Pass1Shader&#10;Classi&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.system.classical.ClassicalShadowsRenderPass&#10;Dire&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.utils.BoundingSphereDirectionalAnalyzer&#10;Base&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.system.BaseShadowSystem&#10;Main&#9;PSI&#9;JAVA://io.github.movementspeed.tests.Main&#10;LinearMathC&#9;PSI&#9;JAVA://com.badlogic.gdx.physics.bullet.linearmath.LinearMathConstants&#10;Phys&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.core.ecs.systems.impl.PhysicsSystem&#10;Shape&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.physics.models.BvhTriangleMeshRigidBodyShape" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1536614235844" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1536616778839" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.project.gradle" />
   </component>
@@ -2264,7 +2262,7 @@
       <workItem from="1536519359076" duration="3030000" />
       <workItem from="1536582688417" duration="1990000" />
       <workItem from="1536600523956" duration="1792000" />
-      <workItem from="1536614149456" duration="308000" />
+      <workItem from="1536614149456" duration="919000" />
     </task>
     <task id="LOCAL-00001" summary="- Internal edge collision handling">
       <created>1536519851148</created>
@@ -2280,11 +2278,18 @@
       <option name="project" value="LOCAL" />
       <updated>1536600643719</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="- Shadows fix test">
+      <created>1536614466940</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1536614466940</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="8401000" />
+    <option name="totallyTimeSpent" value="9012000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="681" y="0" width="1246" height="1087" extended-state="0" />

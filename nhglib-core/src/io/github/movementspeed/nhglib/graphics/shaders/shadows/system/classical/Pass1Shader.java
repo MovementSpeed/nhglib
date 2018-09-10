@@ -17,6 +17,7 @@
 package io.github.movementspeed.nhglib.graphics.shaders.shadows.system.classical;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
@@ -83,6 +84,14 @@ public class Pass1Shader extends DefaultShader {
 		} else {
 			prefix = "#define GLVERSION 2\n";
 		}
+
+        String renderer = Gdx.gl.glGetString(GL30.GL_RENDERER).toUpperCase();
+
+        if (renderer.contains("MALI")) {
+            prefix += "#define GPU_MALI\n";
+        } else if (renderer.contains("ADRENO")) {
+            prefix += "#define GPU_ADRENO\n";
+        }
 
 		prefix += DefaultShader.createPrefix(renderable, config);
 		return prefix;
