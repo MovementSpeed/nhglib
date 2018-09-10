@@ -211,6 +211,7 @@ public class RigidBodyComponent extends Component implements Disposable {
 
                 btTriangleInfoMap triangleInfoMap = new btTriangleInfoMap();
                 Collision.btGenerateInternalEdgeInfo((btBvhTriangleMeshShape) collisionShape, triangleInfoMap);
+                triangleInfoMap.dispose();
                 break;
 
             case CONVEX_TRIANGLE_MESH:

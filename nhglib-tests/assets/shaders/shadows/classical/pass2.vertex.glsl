@@ -31,7 +31,7 @@
 IN HIGHP vec4 a_position;
 IN HIGHP vec3 a_binormal;
 IN HIGHP vec3 a_tangent;
-IN LOWP vec2 a_texCoord0;
+IN HIGHP vec2 a_texCoord0;
 IN LOWP vec3 a_normal;
 
 #ifdef boneWeight0Flag
@@ -82,17 +82,17 @@ IN LOWP vec3 a_normal;
 uniform HIGHP mat4 u_projViewTrans;
 uniform HIGHP mat4 u_viewTrans;
 uniform HIGHP mat4 u_worldTrans;
-uniform mat4 u_shadowMapProjViewTrans;
+uniform HIGHP mat4 u_shadowMapProjViewTrans;
 
 OUT HIGHP vec3 v_position;
 OUT HIGHP vec3 v_binormal;
 OUT HIGHP vec3 v_tangent;
 OUT HIGHP vec4 v_shadowMapUv;
-OUT LOWP vec2 v_texCoord;
+OUT HIGHP vec2 v_texCoord;
 OUT LOWP vec3 v_normal;
 
 void main() {
-    LOWP vec4 position;
+    HIGHP vec4 position;
     LOWP vec3 normal;
 
     #ifdef numBones

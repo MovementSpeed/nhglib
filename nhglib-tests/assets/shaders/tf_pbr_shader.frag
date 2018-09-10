@@ -57,22 +57,22 @@ uniform LOWP vec2 u_resolution;
 
 #ifdef defAlbedo
     uniform LOWP sampler2D u_albedo;
-    uniform LOWP vec2 u_albedoTiles;
+    uniform HIGHP vec2 u_albedoTiles;
 #endif
 
 #ifdef defRMA
     uniform LOWP sampler2D u_rma;
-    uniform LOWP vec2 u_rmaTiles;
+    uniform HIGHP vec2 u_rmaTiles;
 #endif
 
 #ifdef defNormal
     uniform LOWP sampler2D u_normal;
-    uniform LOWP vec2 u_normalTiles;
+    uniform HIGHP vec2 u_normalTiles;
 #endif
 
 #ifdef defEmissive
     uniform LOWP sampler2D u_emissive;
-    uniform LOWP vec2 u_emissiveTiles;
+    uniform HIGHP vec2 u_emissiveTiles;
 #endif
 
 #ifdef defImageBasedLighting
@@ -84,7 +84,7 @@ uniform LOWP vec2 u_resolution;
 IN HIGHP vec3 v_position;
 IN HIGHP vec3 v_binormal;
 IN HIGHP vec3 v_tangent;
-IN LOWP vec2 v_texCoord;
+IN HIGHP vec2 v_texCoord;
 IN LOWP vec3 v_normal;
 
 vec3 fresnelSchlick(float cosTheta, vec3 F0) {
@@ -154,7 +154,7 @@ vec3 getRMA() {
         LOWP vec2 rmaCoords = fract(v_texCoord / u_rmaTiles);
         LOWP vec3 rma = TEXTURE(u_rma, rmaCoords).rgb;
     #else
-        LOWP vec3 rma = vec3(0.1, 0.5, 1.0);
+        LOWP vec3 rma = vec3(1.0, 0.01, 1.0);
     #endif
 
     return rma;
@@ -275,6 +275,7 @@ vec3 getAmbient(vec4 albedo, vec3 normal, vec3 V, vec3 F0, vec3 rma) {
 
 vec3 getColor(vec3 ambient, vec3 emissive, vec3 lighting, vec3 shadow) {
     LOWP vec3 color = emissive + ambient + (lighting * (1.0 - shadow));
+    color = saturation(color, 1.2);
 
     #ifdef defGammaCorrection
         color = color / (color + vec3(1.0));

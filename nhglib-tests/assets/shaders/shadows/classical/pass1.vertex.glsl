@@ -1,58 +1,88 @@
-attribute vec3 a_position;
-uniform mat4 u_projViewWorldTrans;
+#ifdef GL_ES
+    #ifdef GPU_MALI
+        #define LOWP lowp
+        #define MEDP mediump
+        #define HIGHP highp
+    #elif defined GPU_ADRENO
+        #define LOWP
+        #define MEDP
+        #define HIGHP
+    #else
+        #define MEDP
+        #define LOWP
+        #define HIGHP
+    #endif
+
+    precision mediump float;
+#else
+    #define MEDP
+    #define LOWP
+    #define HIGHP
+#endif
+
+#if GLVERSION == 2
+    #define IN attribute
+    #define OUT varying
+#else
+    #define IN in
+    #define OUT out
+#endif
+
+IN HIGHP vec3 a_position;
+uniform HIGHP mat4 u_projViewWorldTrans;
 
 #ifdef boneWeight0Flag
 #define boneWeightsFlag
-attribute vec2 a_boneWeight0;
+IN vec2 a_boneWeight0;
 #endif //boneWeight0Flag
 
 #ifdef boneWeight1Flag
 #ifndef boneWeightsFlag
 #define boneWeightsFlag
 #endif
-attribute vec2 a_boneWeight1;
+IN vec2 a_boneWeight1;
 #endif //boneWeight1Flag
 
 #ifdef boneWeight2Flag
 #ifndef boneWeightsFlag
 #define boneWeightsFlag
 #endif
-attribute vec2 a_boneWeight2;
+IN vec2 a_boneWeight2;
 #endif //boneWeight2Flag
 
 #ifdef boneWeight3Flag
 #ifndef boneWeightsFlag
 #define boneWeightsFlag
 #endif
-attribute vec2 a_boneWeight3;
+IN vec2 a_boneWeight3;
 #endif //boneWeight3Flag
 
 #ifdef boneWeight4Flag
 #ifndef boneWeightsFlag
 #define boneWeightsFlag
 #endif
-attribute vec2 a_boneWeight4;
+IN vec2 a_boneWeight4;
 #endif //boneWeight4Flag
 
 #ifdef boneWeight5Flag
 #ifndef boneWeightsFlag
 #define boneWeightsFlag
 #endif
-attribute vec2 a_boneWeight5;
+IN vec2 a_boneWeight5;
 #endif //boneWeight5Flag
 
 #ifdef boneWeight6Flag
 #ifndef boneWeightsFlag
 #define boneWeightsFlag
 #endif
-attribute vec2 a_boneWeight6;
+IN vec2 a_boneWeight6;
 #endif //boneWeight6Flag
 
 #ifdef boneWeight7Flag
 #ifndef boneWeightsFlag
 #define boneWeightsFlag
 #endif
-attribute vec2 a_boneWeight7;
+IN vec2 a_boneWeight7;
 #endif //boneWeight7Flag
 
 #if defined(numBones) && defined(boneWeightsFlag)
@@ -63,14 +93,14 @@ attribute vec2 a_boneWeight7;
 
 #if defined(numBones)
 #if numBones > 0
-uniform mat4 u_bones[numBones];
+uniform HIGHP mat4 u_bones[numBones];
 #endif //numBones
 #endif
 
 void main()
 {
 	#ifdef skinningFlag
-		mat4 skinning = mat4(0.0);
+		HIGHP mat4 skinning = mat4(0.0);
 		#ifdef boneWeight0Flag
 			skinning += (a_boneWeight0.y) * u_bones[int(a_boneWeight0.x)];
 		#endif //boneWeight0Flag
@@ -98,9 +128,9 @@ void main()
 	#endif //skinningFlag
 
 	#ifdef skinningFlag
-		vec4 pos = u_projViewWorldTrans * skinning * vec4(a_position, 1.0);
+		HIGHP vec4 pos = u_projViewWorldTrans * skinning * vec4(a_position, 1.0);
 	#else
-		vec4 pos = u_projViewWorldTrans * vec4(a_position, 1.0);
+		HIGHP vec4 pos = u_projViewWorldTrans * vec4(a_position, 1.0);
 	#endif
 
 	gl_Position = pos;

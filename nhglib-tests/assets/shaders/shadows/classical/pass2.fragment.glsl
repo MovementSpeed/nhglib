@@ -64,7 +64,7 @@ float unpack (vec4 colour) {
 
 void main()
 {
-	const float bias = 0.0026;
+    const float bias = 0.0026;
 	vec3 depth = (v_shadowMapUv.xyz / v_shadowMapUv.w)*0.5+0.5;
 	vec2 uv = u_uvTransform.xy + depth.xy * u_uvTransform.zw;
 	float lenDepthMap = unpack(TEXTURE(u_shadowTexture, uv));
