@@ -73,7 +73,7 @@ public class Main extends NhgEntry implements InputListener {
                 new DefaultWorldStrategy(),
                 new Bounds(2f, 2f, 2f));
 
-        nhg.assets.queueAsset(new Asset("scene", "scenes/fel_lord_scene.json", Scene.class));
+        nhg.assets.queueAsset(new Asset("scene", "scenes/flaregun_scene.json", Scene.class));
 
         InputSystem inputSystem = nhg.entities.getEntitySystem(InputSystem.class);
         inputSystem.loadMapping("input/input.json");
@@ -86,6 +86,7 @@ public class Main extends NhgEntry implements InputListener {
 
         renderingSystem = nhg.entities.getEntitySystem(RenderingSystem.class);
         renderingSystem.setClearColor(Color.GRAY);
+        renderingSystem.setRenderResolution(640, 360);
 
         environment = renderingSystem.getEnvironment();
 
@@ -102,10 +103,10 @@ public class Main extends NhgEntry implements InputListener {
         environment.set(lightsAttribute);
         environment.set(gammaCorrectionAttribute);
         environment.set(ambientLightingAttribute);
-        environment.set(shadowSystemAttribute);
+        //environment.set(shadowSystemAttribute);
 
-        renderingSystem.setRenderPass(0, new ClassicalShadowsRenderPass());
-        renderingSystem.setRenderPass(1, new TiledPBRRenderPass());
+        //renderingSystem.setRenderPass(0, new ClassicalShadowsRenderPass());
+        //renderingSystem.setRenderPass(1, new TiledPBRRenderPass());
 
         // Subscribe to asset events
         nhg.messaging.get(Strings.Events.assetLoaded, Strings.Events.assetLoadingFinished, Strings.Events.sceneLoaded)
@@ -149,12 +150,12 @@ public class Main extends NhgEntry implements InputListener {
                             environment.set(prefilterAttribute);
                             environment.set(brdfAttribute);
 
-                            for (int i = 0; i < 3; i++) {
+                            /*for (int i = 0; i < 3; i++) {
                                 int light = scene.sceneGraph.getSceneEntity("l" + i);
                                 LightComponent lightComponent = nhg.entities.getComponent(light, LightComponent.class);
                                 NhgLight nhgLight = lightComponent.light;
                                 shadowSystem.addLight(nhgLight);
-                            }
+                            }*/
                         }
                     }
                 });

@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c2b930b7-a3bc-4f88-9213-a7b37e289064" name="Default" comment="- Shadows fix test">
+    <list default="true" id="c2b930b7-a3bc-4f88-9213-a7b37e289064" name="Default" comment="- Updated shadows shaders">
+      <change beforePath="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/systems/impl/CameraSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/systems/impl/CameraSystem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/systems/impl/RenderingSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/systems/impl/RenderingSystem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/data/models/serialization/components/CameraComponentJson.java" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/data/models/serialization/components/CameraComponentJson.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nhglib-tests/src/io/github/movementspeed/tests/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib-tests/src/io/github/movementspeed/tests/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nhglib.iws" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib.iws" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/nhglib-core/.gradle/" />
@@ -54,47 +58,52 @@
     <session id="540552098">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="4" />
-          <entry key="project.open.time.0" value="1" />
-          <entry key="project.open.time.1" value="2" />
+          <entry key="project.closed" value="5" />
+          <entry key="project.open.time.0" value="2" />
+          <entry key="project.open.time.1" value="3" />
           <entry key="project.open.time.10" value="1" />
           <entry key="project.open.time.11" value="1" />
-          <entry key="project.opened" value="5" />
+          <entry key="project.open.time.7" value="1" />
+          <entry key="project.opened" value="8" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages">
         <counts>
           <entry key="git.branch.checkout.remote" value="1" />
+          <entry key="git.branch.compare" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="glsl" value="1" />
+          <entry key="class" value="1" />
+          <entry key="frag" value="1" />
+          <entry key="glsl" value="5" />
           <entry key="gradle" value="1" />
-          <entry key="java" value="16" />
+          <entry key="java" value="40" />
           <entry key="json" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="GLSL shader file" value="1" />
+          <entry key="CLASS" value="1" />
+          <entry key="GLSL shader file" value="6" />
           <entry key="Groovy" value="1" />
-          <entry key="JAVA" value="16" />
+          <entry key="JAVA" value="40" />
           <entry key="JSON" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="gradle" value="16" />
-          <entry key="java" value="153" />
-          <entry key="txt" value="51" />
+          <entry key="java" value="606" />
+          <entry key="txt" value="74" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="Groovy" value="16" />
-          <entry key="JAVA" value="153" />
-          <entry key="PLAIN_TEXT" value="51" />
+          <entry key="JAVA" value="606" />
+          <entry key="PLAIN_TEXT" value="74" />
         </counts>
       </usages-collector>
     </session>
@@ -102,14 +111,10 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="450">
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass1Shader.java">
+        <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/tiled/TiledPBRShader.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="733">
-              <caret line="86" column="38" selection-start-line="86" selection-start-column="38" selection-end-line="86" selection-end-column="38" />
-              <folding>
-                <element signature="e#1782#1783#0" expanded="true" />
-                <element signature="e#1819#1820#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="442">
+              <caret line="291" column="8" lean-forward="true" selection-start-line="291" selection-start-column="8" selection-end-line="291" selection-end-column="8" />
             </state>
           </provider>
         </entry>
@@ -2145,10 +2150,21 @@
       <list>
         <option value="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/Nhg.java" />
         <option value="$PROJECT_DIR$/build.gradle" />
-        <option value="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/components/physics/RigidBodyComponent.java" />
         <option value="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/systems/impl/PhysicsSystem.java" />
         <option value="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/utils/BoundingSphereDirectionalAnalyzer.java" />
+        <option value="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass2Shader.java" />
         <option value="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass1Shader.java" />
+        <option value="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/components/physics/RigidBodyComponent.java" />
+        <option value="$PROJECT_DIR$/nhglib-tests/assets/shaders/shadows/classical/pass1.fragment.glsl" />
+        <option value="$PROJECT_DIR$/nhglib-tests/assets/shaders/shadows/classical/pass1.vertex.glsl" />
+        <option value="$PROJECT_DIR$/nhglib-tests/assets/shaders/shadows/classical/pass2.fragment.glsl" />
+        <option value="$PROJECT_DIR$/nhglib-tests/assets/shaders/shadows/classical/pass2.vertex.glsl" />
+        <option value="$PROJECT_DIR$/nhglib-tests/assets/shaders/tf_pbr_shader.frag" />
+        <option value="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/data/models/serialization/components/CameraComponentJson.java" />
+        <option value="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/systems/impl/CameraSystem.java" />
+        <option value="$PROJECT_DIR$/nhglib-tests/src/io/github/movementspeed/tests/launchers/DesktopLauncher.java" />
+        <option value="$PROJECT_DIR$/nhglib-tests/src/io/github/movementspeed/tests/Main.java" />
+        <option value="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/systems/impl/RenderingSystem.java" />
       </list>
     </option>
   </component>
@@ -2158,7 +2174,7 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="681" />
     <option name="width" value="1246" />
     <option name="height" value="1087" />
@@ -2168,8 +2184,9 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
+      <pane id="PackagesPane" />
+      <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -2188,18 +2205,24 @@
               <item name="nhglib-tests" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="assets" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="nhglib" type="b2602c69:ProjectViewProjectNode" />
+              <item name="nhglib" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="nhglib-tests" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="assets" type="462c0819:PsiDirectoryNode" />
+              <item name="scenes" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="SearchEverywhereHistoryKey" value="Pass1&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass1Shader.java&#10;Pass2&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass2Shader.java&#10;PBRSha&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.tiled.TiledPBRShader&#10;Pass&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.system.classical.Pass1Shader&#10;Classi&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.system.classical.ClassicalShadowsRenderPass&#10;Dire&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.utils.BoundingSphereDirectionalAnalyzer&#10;Base&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.system.BaseShadowSystem&#10;Main&#9;PSI&#9;JAVA://io.github.movementspeed.tests.Main&#10;LinearMathC&#9;PSI&#9;JAVA://com.badlogic.gdx.physics.bullet.linearmath.LinearMathConstants&#10;Phys&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.core.ecs.systems.impl.PhysicsSystem&#10;Shape&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.physics.models.BvhTriangleMeshRigidBodyShape" />
+    <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-core/src/io/github/movementspeed/nhglib/data/models/serialization/components/CameraComponentJson.java&#10;TiledPbr&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/tiled/TiledPBRShader.java&#10;Tiled&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/tiled/TiledPBRRenderPass.java&#10;Deskto&#9;PSI&#9;JAVA://io.github.movementspeed.tests.launchers.DesktopLauncher&#10;Viewpor&#9;PSI&#9;JAVA://com.badlogic.gdx.utils.viewport.Viewport&#10;Camera&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.data.models.serialization.components.CameraComponentJson&#10;Persp&#9;FILE&#9;jar://C:/Users/worse/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.8/a35a0076fbce873f9c2d5a1a1c8066244231bb3c/gdx-1.9.8.jar!/com/badlogic/gdx/graphics/PerspectiveCamera.class&#10;CameraSys&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.core.ecs.systems.impl.CameraSystem&#10;Main&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-tests/src/io/github/movementspeed/tests/Main.java&#10;Rendering&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem&#10;Rigi&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/components/physics/RigidBodyComponent.java&#10;Pass1&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass1Shader.java&#10;Pass2&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass2Shader.java&#10;PBRSha&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.tiled.TiledPBRShader&#10;Pass&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.system.classical.Pass1Shader&#10;Classi&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.system.classical.ClassicalShadowsRenderPass&#10;Dire&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.utils.BoundingSphereDirectionalAnalyzer&#10;Base&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.system.BaseShadowSystem&#10;LinearMathC&#9;PSI&#9;JAVA://com.badlogic.gdx.physics.bullet.linearmath.LinearMathConstants&#10;Phys&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.core.ecs.systems.impl.PhysicsSystem&#10;Shape&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.physics.models.BvhTriangleMeshRigidBodyShape" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1536616778839" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1536687764540" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.project.gradle" />
   </component>
@@ -2218,6 +2241,14 @@
   <component name="RunManager">
     <configuration default="true" type="Applet" factoryName="Applet">
       <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Unnamed" type="Application" factoryName="Application" singleton="true">
+      <option name="MAIN_CLASS_NAME" value="io.github.movementspeed.tests.launchers.DesktopLauncher" />
+      <module name="nhglib-tests_main" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/nhglib-tests/assets" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -2263,6 +2294,9 @@
       <workItem from="1536582688417" duration="1990000" />
       <workItem from="1536600523956" duration="1792000" />
       <workItem from="1536614149456" duration="919000" />
+      <workItem from="1536618885057" duration="1710000" />
+      <workItem from="1536659782351" duration="5533000" />
+      <workItem from="1536687424580" duration="259000" />
     </task>
     <task id="LOCAL-00001" summary="- Internal edge collision handling">
       <created>1536519851148</created>
@@ -2285,17 +2319,31 @@
       <option name="project" value="LOCAL" />
       <updated>1536614466940</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="- Shadows fix test">
+      <created>1536619084091</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1536619084091</updated>
+    </task>
+    <task id="LOCAL-00005" summary="- Updated shadows shaders">
+      <created>1536621261644</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1536621261644</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="9012000" />
+    <option name="totallyTimeSpent" value="16514000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="681" y="0" width="1246" height="1087" extended-state="0" />
+    <frame x="-8" y="-8" width="1936" height="1096" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.18549748" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.16257995" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -2304,8 +2352,8 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.3281412" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.39875388" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -2314,7 +2362,7 @@
       <window_info anchor="bottom" id="Version Control" order="9" />
       <window_info anchor="bottom" id="Database Changes" order="10" show_stripe_button="false" />
       <window_info anchor="bottom" id="Build" order="11" sideWeight="0.5778252" weight="0.32917964" />
-      <window_info anchor="bottom" id="Messages" order="12" visible="true" weight="0.32917964" />
+      <window_info anchor="bottom" id="Messages" order="12" weight="0.32917964" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -2336,7 +2384,37 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="- Internal edge collision handling" />
     <MESSAGE value="- Shadows fix test" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Shadows fix test" />
+    <MESSAGE value="- Updated shadows shaders" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Updated shadows shaders" />
+  </component>
+  <component name="debuggerHistoryManager">
+    <expressions id="setValue">
+      <expression>
+        <expression-string>640</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>360</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>960</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>360.0</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>640.0</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+    </expressions>
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/Nhg.java">
@@ -2388,13 +2466,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/components/physics/RigidBodyComponent.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="425">
-          <caret line="153" column="62" lean-forward="true" selection-start-line="153" selection-start-column="62" selection-end-line="153" selection-end-column="62" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/nhglib-tests/assets/scenes/scene.json">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -2402,17 +2473,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="385">
           <caret line="49" column="11" selection-start-line="49" selection-start-column="11" selection-end-line="49" selection-end-column="11" />
-          <folding>
-            <element signature="e#2335#2336#0" expanded="true" />
-            <element signature="e#2349#2350#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/nhglib-tests/src/io/github/movementspeed/tests/Main.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="986">
-          <caret line="96" column="48" selection-start-line="96" selection-start-column="48" selection-end-line="96" selection-end-column="48" />
         </state>
       </provider>
     </entry>
@@ -2440,26 +2500,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass2Shader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="586">
-          <caret line="241" column="5" lean-forward="true" selection-start-line="215" selection-start-column="4" selection-end-line="241" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass1ShaderProvider.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="170">
           <caret line="26" column="24" lean-forward="true" selection-start-line="26" selection-start-column="24" selection-end-line="26" selection-end-column="24" />
-          <folding>
-            <element signature="e#1160#1161#0" expanded="true" />
-            <element signature="e#1201#1202#0" expanded="true" />
-          </folding>
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/nhglib-tests/assets/shaders/shadows/classical/pass1.fragment.glsl">
-      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.8/bac17f395be5010619b31280fe84e9f53118d0b9/gdx-1.9.8-sources.jar!/com/badlogic/gdx/graphics/g3d/shaders/DefaultShader.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -2468,14 +2514,214 @@
         </state>
       </provider>
     </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.8/bac17f395be5010619b31280fe84e9f53118d0b9/gdx-1.9.8-sources.jar!/com/badlogic/gdx/Application.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="308">
+          <caret line="134" column="16" selection-start-line="134" selection-start-column="16" selection-end-line="134" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-bullet/1.9.8/e37e48ef3e095fae02f5d8832ee44fb0e347a583/gdx-bullet-1.9.8-sources.jar!/com/badlogic/gdx/physics/bullet/BulletBase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="342">
+          <caret line="101" column="22" selection-start-line="101" selection-start-column="22" selection-end-line="101" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-bullet/1.9.8/e37e48ef3e095fae02f5d8832ee44fb0e347a583/gdx-bullet-1.9.8-sources.jar!/com/badlogic/gdx/physics/bullet/collision/Collision.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="308">
+          <caret line="192" column="21" selection-start-line="192" selection-start-column="21" selection-end-line="192" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass1Shader.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="733">
-          <caret line="86" column="38" selection-start-line="86" selection-start-column="38" selection-end-line="86" selection-end-column="38" />
+        <state relative-caret-position="1207">
+          <caret line="93" column="9" selection-start-line="93" selection-start-column="9" selection-end-line="93" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass2Shader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3400">
+          <caret line="228" column="26" selection-start-line="228" selection-start-column="26" selection-end-line="228" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/components/physics/RigidBodyComponent.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3026">
+          <caret line="213" column="42" selection-start-line="213" selection-start-column="42" selection-end-line="213" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-tests/assets/shaders/shadows/classical/pass1.fragment.glsl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="833">
+          <caret line="49" selection-start-line="49" selection-end-line="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-tests/assets/shaders/shadows/classical/pass1.vertex.glsl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2312">
+          <caret line="136" column="1" selection-start-line="136" selection-start-column="1" selection-end-line="136" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-tests/assets/shaders/shadows/classical/pass2.fragment.glsl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2006">
+          <caret line="118" selection-start-line="118" selection-end-line="118" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-tests/assets/shaders/shadows/classical/pass2.vertex.glsl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2516">
+          <caret line="148" selection-start-line="148" selection-end-line="148" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-tests/assets/shaders/tf_pbr_shader.frag">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="297">
+          <caret line="285" column="1" lean-forward="true" selection-start-line="285" selection-start-column="1" selection-end-line="285" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.8/a35a0076fbce873f9c2d5a1a1c8066244231bb3c/gdx-1.9.8.jar!/com/badlogic/gdx/graphics/PerspectiveCamera.class">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.8/bac17f395be5010619b31280fe84e9f53118d0b9/gdx-1.9.8-sources.jar!/com/badlogic/gdx/Graphics.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="283">
+          <caret line="150" column="32" lean-forward="true" selection-start-line="150" selection-start-column="32" selection-end-line="150" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/systems/impl/UiSystem.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="206">
+          <caret line="49" column="14" selection-start-line="49" selection-start-column="14" selection-end-line="49" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.8/bac17f395be5010619b31280fe84e9f53118d0b9/gdx-1.9.8-sources.jar!/com/badlogic/gdx/utils/viewport/Viewport.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="41" column="16" selection-start-line="41" selection-start-column="16" selection-end-line="41" selection-end-column="16" />
           <folding>
-            <element signature="e#1782#1783#0" expanded="true" />
-            <element signature="e#1819#1820#0" expanded="true" />
+            <element signature="e#1687#1688#0" expanded="true" />
+            <element signature="e#1706#1707#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.8/bac17f395be5010619b31280fe84e9f53118d0b9/gdx-1.9.8-sources.jar!/com/badlogic/gdx/utils/Scaling.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-327">
+          <caret line="50" column="19" selection-start-line="50" selection-start-column="19" selection-end-line="50" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.8/bac17f395be5010619b31280fe84e9f53118d0b9/gdx-1.9.8-sources.jar!/com/badlogic/gdx/graphics/glutils/GLFrameBuffer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="297" column="19" selection-start-line="297" selection-start-column="19" selection-end-line="297" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/interfaces/RenderingSystemInterface.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="12" column="17" selection-start-line="12" selection-start-column="17" selection-end-line="12" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/rendering/RenderPass.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="493">
+          <caret line="36" column="47" selection-start-line="36" selection-start-column="47" selection-end-line="36" selection-end-column="47" />
+          <folding>
+            <element signature="e#1314#1315#0" expanded="true" />
+            <element signature="e#1352#1353#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/systems/impl/CameraSystem.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="37" column="37" selection-start-line="37" selection-start-column="37" selection-end-line="37" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.8/bac17f395be5010619b31280fe84e9f53118d0b9/gdx-1.9.8-sources.jar!/com/badlogic/gdx/utils/viewport/ScalingViewport.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="612">
+          <caret line="54" column="35" selection-start-line="54" selection-start-column="35" selection-end-line="54" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/data/models/serialization/components/CameraComponentJson.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="476">
+          <caret line="35" column="44" selection-start-line="35" selection-start-column="44" selection-end-line="35" selection-end-column="44" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.8/bac17f395be5010619b31280fe84e9f53118d0b9/gdx-1.9.8-sources.jar!/com/badlogic/gdx/graphics/PerspectiveCamera.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="561">
+          <caret line="48" column="16" selection-start-line="48" selection-start-column="16" selection-end-line="48" selection-end-column="16" />
+          <folding>
+            <element signature="e#1816#1817#0" expanded="true" />
+            <element signature="e#1835#1836#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-tests/src/io/github/movementspeed/tests/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1139">
+          <caret line="105" column="10" selection-start-line="105" selection-start-column="10" selection-end-line="105" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-tests/src/io/github/movementspeed/tests/launchers/DesktopLauncher.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="16" column="35" selection-start-line="16" selection-start-column="31" selection-end-line="16" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/systems/impl/RenderingSystem.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="924">
+          <caret line="107" column="79" selection-start-line="107" selection-start-column="79" selection-end-line="107" selection-end-column="79" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/tiled/TiledPBRRenderPass.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="19" selection-start-line="19" selection-end-line="19" />
+          <folding>
+            <element signature="e#436#437#0" expanded="true" />
+            <element signature="e#510#511#0" expanded="true" />
+            <element signature="e#613#614#0" expanded="true" />
+            <element signature="e#830#831#0" expanded="true" />
+            <element signature="e#860#861#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/tiled/TiledPBRShader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="442">
+          <caret line="291" column="8" lean-forward="true" selection-start-line="291" selection-start-column="8" selection-end-line="291" selection-end-column="8" />
         </state>
       </provider>
     </entry>

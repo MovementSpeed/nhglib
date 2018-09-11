@@ -5,6 +5,9 @@ import com.artemis.ComponentMapper;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Scaling;
+import com.badlogic.gdx.utils.viewport.ScalingViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import io.github.movementspeed.nhglib.core.ecs.components.graphics.CameraComponent;
 import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
 import io.github.movementspeed.nhglib.core.ecs.systems.base.NhgIteratingSystem;
@@ -16,13 +19,13 @@ public class CameraSystem extends NhgIteratingSystem {
     private ComponentMapper<NodeComponent> nodeMapper;
     private ComponentMapper<CameraComponent> cameraMapper;
 
-    Vector3 vec = new Vector3();
-
     public final Array<Camera> cameras;
+    //private Viewport viewport;
 
     public CameraSystem() {
         super(Aspect.all(NodeComponent.class, CameraComponent.class));
         cameras = new Array<>();
+        //viewport = new ScalingViewport(Scaling.stretch, 640, 360);
     }
 
     @Override
@@ -35,6 +38,15 @@ public class CameraSystem extends NhgIteratingSystem {
         camera.direction.set(0, 0, -1);
         camera.up.set(0, 1, 0);
         camera.transform(nodeComponent.getTransform());
+
+        /*viewport.setCamera(camera);
+        viewport.update(640, 360);*/
+
+        /*if (camera.viewportWidth != RenderingSystem.renderWidth ||
+                camera.viewportHeight != RenderingSystem.renderHeight) {
+            camera.viewportWidth = RenderingSystem.renderWidth;
+            camera.viewportHeight = RenderingSystem.renderHeight;
+        }*/
 
         /*camera.position.set(nodeComponent.getTranslation());
 

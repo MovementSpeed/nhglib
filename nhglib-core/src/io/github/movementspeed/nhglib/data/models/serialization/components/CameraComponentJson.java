@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.utils.JsonValue;
 import io.github.movementspeed.nhglib.core.ecs.components.graphics.CameraComponent;
+import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
 import io.github.movementspeed.nhglib.data.models.serialization.ComponentJson;
 
 /**

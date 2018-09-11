@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.IntArray;
 import io.github.movementspeed.nhglib.Nhg;
+import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
 import io.github.movementspeed.nhglib.enums.LightType;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
 import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
@@ -289,7 +290,7 @@ public class TiledPBRShader extends BaseShader {
         context.setDepthTest(GL20.GL_LEQUAL);
         context.setDepthMask(true);
 
-        Gdx.gl.glViewport(0, 0, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
+        Gdx.gl.glViewport(0, 0, RenderingSystem.renderWidth, RenderingSystem.renderHeight);
 
         lightGrid.setFrustums(((PerspectiveCamera) camera));
 
