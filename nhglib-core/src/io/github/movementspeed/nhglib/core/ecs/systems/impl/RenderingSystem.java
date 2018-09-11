@@ -55,7 +55,7 @@ public class RenderingSystem extends BaseSystem implements Disposable {
         spriteBatch = new SpriteBatch();
         spriteBatch.enableBlending();
 
-        updateFramebuffer(Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
+        setRenderScale(1);
         setRenderPass(0, new TiledPBRRenderPass());
     }
 

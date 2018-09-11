@@ -22,6 +22,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
 import io.github.movementspeed.nhglib.graphics.shaders.shadows.system.FirstPassBaseShadowSystem;
 import io.github.movementspeed.nhglib.graphics.shaders.shadows.utils.DirectionalAnalyzer;
 import io.github.movementspeed.nhglib.graphics.shaders.shadows.utils.LightFilter;
@@ -74,7 +75,7 @@ public class ClassicalShadowSystem extends FirstPassBaseShadowSystem {
 	}
 
 	protected void init2 () {
-		frameBuffers[SECOND_PASS] = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), true);
+		frameBuffers[SECOND_PASS] = new FrameBuffer(Pixmap.Format.RGBA8888, RenderingSystem.renderWidth, RenderingSystem.renderHeight, true);
 		passShaderProviders[SECOND_PASS] = new Pass2ShaderProvider(new Pass2Shader.Config(this));
 	}
 

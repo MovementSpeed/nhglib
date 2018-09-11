@@ -406,8 +406,8 @@ public class TiledPBRShader extends BaseShader {
             bindValue = context.textureBinder.bind(shadowSystem.getMainTexture());
             shaderProgram.setUniformi("u_shadowTexture", bindValue);
             shaderProgram.setUniformf("u_resolution",
-                    (float) Gdx.graphics.getBackBufferWidth(),
-                    (float) Gdx.graphics.getBackBufferHeight());
+                    (float) RenderingSystem.renderWidth,
+                    (float) RenderingSystem.renderHeight);
         }
 
         // Irradiance

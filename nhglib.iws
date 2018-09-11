@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c2b930b7-a3bc-4f88-9213-a7b37e289064" name="Default" comment="- Updated shadows shaders">
-      <change beforePath="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/systems/impl/CameraSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/systems/impl/CameraSystem.java" afterDir="false" />
+    <list default="true" id="c2b930b7-a3bc-4f88-9213-a7b37e289064" name="Default" comment="- Fixed render resolution scaling">
       <change beforePath="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/systems/impl/RenderingSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/systems/impl/RenderingSystem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/data/models/serialization/components/CameraComponentJson.java" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/data/models/serialization/components/CameraComponentJson.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/ClassicalShadowSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/ClassicalShadowSystem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/tiled/TiledPBRShader.java" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/tiled/TiledPBRShader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nhglib-tests/assets/scenes/flaregun_scene.json" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib-tests/assets/scenes/flaregun_scene.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nhglib-tests/src/io/github/movementspeed/tests/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib-tests/src/io/github/movementspeed/tests/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nhglib.iws" beforeDir="false" afterPath="$PROJECT_DIR$/nhglib.iws" afterDir="false" />
     </list>
@@ -76,45 +77,135 @@
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="class" value="1" />
-          <entry key="frag" value="1" />
-          <entry key="glsl" value="5" />
+          <entry key="frag" value="2" />
+          <entry key="glsl" value="7" />
           <entry key="gradle" value="1" />
-          <entry key="java" value="40" />
-          <entry key="json" value="2" />
+          <entry key="java" value="48" />
+          <entry key="json" value="4" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="CLASS" value="1" />
-          <entry key="GLSL shader file" value="6" />
+          <entry key="GLSL shader file" value="9" />
           <entry key="Groovy" value="1" />
-          <entry key="JAVA" value="40" />
-          <entry key="JSON" value="2" />
+          <entry key="JAVA" value="48" />
+          <entry key="JSON" value="4" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="gradle" value="16" />
-          <entry key="java" value="606" />
-          <entry key="txt" value="74" />
+          <entry key="java" value="662" />
+          <entry key="json" value="18" />
+          <entry key="txt" value="110" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="Groovy" value="16" />
-          <entry key="JAVA" value="606" />
-          <entry key="PLAIN_TEXT" value="74" />
+          <entry key="JAVA" value="662" />
+          <entry key="JSON" value="18" />
+          <entry key="PLAIN_TEXT" value="110" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="450">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/nhglib-tests/assets/scenes/flaregun_scene.json">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="375">
+              <caret line="139" column="27" selection-start-line="139" selection-start-column="27" selection-end-line="139" selection-end-column="27" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/nhglib-tests/src/io/github/movementspeed/tests/Main.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="296">
+              <caret line="88" column="43" selection-start-line="88" selection-start-column="43" selection-end-line="88" selection-end-column="43" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/ClassicalShadowsRenderPass.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="120">
+              <caret line="35" column="29" selection-start-line="35" selection-start-column="29" selection-end-line="35" selection-end-column="29" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/ClassicalShadowSystem.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-57">
+              <caret line="77" column="133" selection-start-line="77" selection-start-column="133" selection-end-line="77" selection-end-column="133" />
+              <folding>
+                <element signature="e#2335#2336#0" expanded="true" />
+                <element signature="e#2349#2350#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass2Shader.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="537">
+              <caret line="239" column="45" selection-start-line="239" selection-start-column="45" selection-end-line="239" selection-end-column="45" />
+              <folding>
+                <element signature="n#!!doc" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass1Shader.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="520">
+              <caret line="81" column="26" selection-start-line="81" selection-start-column="26" selection-end-line="81" selection-end-column="26" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/nhglib-tests/assets/shaders/shadows/classical/pass1.fragment.glsl">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="517">
+              <caret line="49" selection-start-line="49" selection-end-line="49" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/nhglib-tests/assets/shaders/shadows/classical/pass2.fragment.glsl">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1248">
+              <caret line="118" selection-start-line="118" selection-end-line="118" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/nhglib-tests/assets/shaders/tf_pbr_shader.frag">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-3837">
+              <caret line="55" column="30" selection-start-line="55" selection-start-column="18" selection-end-line="55" selection-end-column="30" />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/tiled/TiledPBRShader.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="442">
-              <caret line="291" column="8" lean-forward="true" selection-start-line="291" selection-start-column="8" selection-end-line="291" selection-end-column="8" />
+            <state relative-caret-position="326">
+              <caret line="409" column="56" selection-start-line="409" selection-start-column="56" selection-end-line="409" selection-end-column="56" />
             </state>
           </provider>
         </entry>
@@ -2163,8 +2254,11 @@
         <option value="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/data/models/serialization/components/CameraComponentJson.java" />
         <option value="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/systems/impl/CameraSystem.java" />
         <option value="$PROJECT_DIR$/nhglib-tests/src/io/github/movementspeed/tests/launchers/DesktopLauncher.java" />
-        <option value="$PROJECT_DIR$/nhglib-tests/src/io/github/movementspeed/tests/Main.java" />
         <option value="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/systems/impl/RenderingSystem.java" />
+        <option value="$PROJECT_DIR$/nhglib-tests/assets/scenes/flaregun_scene.json" />
+        <option value="$PROJECT_DIR$/nhglib-tests/src/io/github/movementspeed/tests/Main.java" />
+        <option value="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/ClassicalShadowSystem.java" />
+        <option value="$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/tiled/TiledPBRShader.java" />
       </list>
     </option>
   </component>
@@ -2210,7 +2304,24 @@
               <item name="nhglib" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="nhglib-tests" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="assets" type="462c0819:PsiDirectoryNode" />
-              <item name="scenes" type="462c0819:PsiDirectoryNode" />
+              <item name="shaders" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="nhglib" type="b2602c69:ProjectViewProjectNode" />
+              <item name="nhglib" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="nhglib-tests" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="assets" type="462c0819:PsiDirectoryNode" />
+              <item name="shaders" type="462c0819:PsiDirectoryNode" />
+              <item name="shadows" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="nhglib" type="b2602c69:ProjectViewProjectNode" />
+              <item name="nhglib" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="nhglib-tests" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="assets" type="462c0819:PsiDirectoryNode" />
+              <item name="shaders" type="462c0819:PsiDirectoryNode" />
+              <item name="shadows" type="462c0819:PsiDirectoryNode" />
+              <item name="classical" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -2219,10 +2330,10 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-core/src/io/github/movementspeed/nhglib/data/models/serialization/components/CameraComponentJson.java&#10;TiledPbr&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/tiled/TiledPBRShader.java&#10;Tiled&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/tiled/TiledPBRRenderPass.java&#10;Deskto&#9;PSI&#9;JAVA://io.github.movementspeed.tests.launchers.DesktopLauncher&#10;Viewpor&#9;PSI&#9;JAVA://com.badlogic.gdx.utils.viewport.Viewport&#10;Camera&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.data.models.serialization.components.CameraComponentJson&#10;Persp&#9;FILE&#9;jar://C:/Users/worse/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.8/a35a0076fbce873f9c2d5a1a1c8066244231bb3c/gdx-1.9.8.jar!/com/badlogic/gdx/graphics/PerspectiveCamera.class&#10;CameraSys&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.core.ecs.systems.impl.CameraSystem&#10;Main&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-tests/src/io/github/movementspeed/tests/Main.java&#10;Rendering&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem&#10;Rigi&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/components/physics/RigidBodyComponent.java&#10;Pass1&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass1Shader.java&#10;Pass2&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass2Shader.java&#10;PBRSha&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.tiled.TiledPBRShader&#10;Pass&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.system.classical.Pass1Shader&#10;Classi&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.system.classical.ClassicalShadowsRenderPass&#10;Dire&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.utils.BoundingSphereDirectionalAnalyzer&#10;Base&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.system.BaseShadowSystem&#10;LinearMathC&#9;PSI&#9;JAVA://com.badlogic.gdx.physics.bullet.linearmath.LinearMathConstants&#10;Phys&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.core.ecs.systems.impl.PhysicsSystem&#10;Shape&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.physics.models.BvhTriangleMeshRigidBodyShape" />
+    <property name="SearchEverywhereHistoryKey" value="Tiled&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/tiled/TiledPBRShader.java&#10;Pass1Sha&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass1Shader.java&#10;Pass2Sh&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass2Shader.java&#10;Classical&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/ClassicalShadowSystem.java&#10;RenderPa&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.system.classical.ClassicalShadowsRenderPass&#10;Main&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-tests/src/io/github/movementspeed/tests/Main.java&#10;TiledPbr&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/tiled/TiledPBRShader.java&#10;Deskto&#9;PSI&#9;JAVA://io.github.movementspeed.tests.launchers.DesktopLauncher&#10;Viewpor&#9;PSI&#9;JAVA://com.badlogic.gdx.utils.viewport.Viewport&#10;Camera&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.data.models.serialization.components.CameraComponentJson&#10;Persp&#9;FILE&#9;jar://C:/Users/worse/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.8/a35a0076fbce873f9c2d5a1a1c8066244231bb3c/gdx-1.9.8.jar!/com/badlogic/gdx/graphics/PerspectiveCamera.class&#10;CameraSys&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.core.ecs.systems.impl.CameraSystem&#10;Rendering&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem&#10;Rigi&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/components/physics/RigidBodyComponent.java&#10;Pass1&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass1Shader.java&#10;Pass2&#9;FILE&#9;file://D:/Repos/nhglib/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass2Shader.java&#10;PBRSha&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.tiled.TiledPBRShader&#10;Pass&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.system.classical.Pass1Shader&#10;Classi&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.system.classical.ClassicalShadowsRenderPass&#10;Dire&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.utils.BoundingSphereDirectionalAnalyzer&#10;Base&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.graphics.shaders.shadows.system.BaseShadowSystem&#10;LinearMathC&#9;PSI&#9;JAVA://com.badlogic.gdx.physics.bullet.linearmath.LinearMathConstants&#10;Phys&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.core.ecs.systems.impl.PhysicsSystem&#10;Shape&#9;PSI&#9;JAVA://io.github.movementspeed.nhglib.physics.models.BvhTriangleMeshRigidBodyShape" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1536687764540" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1536688582560" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.project.gradle" />
   </component>
@@ -2296,7 +2407,7 @@
       <workItem from="1536614149456" duration="919000" />
       <workItem from="1536618885057" duration="1710000" />
       <workItem from="1536659782351" duration="5533000" />
-      <workItem from="1536687424580" duration="259000" />
+      <workItem from="1536687424580" duration="1154000" />
     </task>
     <task id="LOCAL-00001" summary="- Internal edge collision handling">
       <created>1536519851148</created>
@@ -2333,17 +2444,24 @@
       <option name="project" value="LOCAL" />
       <updated>1536621261644</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="- Fixed render resolution scaling">
+      <created>1536687790147</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1536687790147</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="16514000" />
+    <option name="totallyTimeSpent" value="17409000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1096" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.16257995" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16257995" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -2352,7 +2470,7 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.3281412" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.3281412" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39875388" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -2385,7 +2503,8 @@
     <MESSAGE value="- Internal edge collision handling" />
     <MESSAGE value="- Shadows fix test" />
     <MESSAGE value="- Updated shadows shaders" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Updated shadows shaders" />
+    <MESSAGE value="- Fixed render resolution scaling" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Fixed render resolution scaling" />
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="setValue">
@@ -2469,29 +2588,12 @@
     <entry file="file://$PROJECT_DIR$/nhglib-tests/assets/scenes/scene.json">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/ClassicalShadowSystem.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="385">
-          <caret line="49" column="11" selection-start-line="49" selection-start-column="11" selection-end-line="49" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/BaseShadowSystem.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3723">
           <caret line="256" column="29" selection-start-line="256" selection-start-column="29" selection-end-line="256" selection-end-column="29" />
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/ClassicalShadowsRenderPass.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="442">
-          <caret line="35" column="29" selection-start-line="35" selection-start-column="29" selection-end-line="35" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/nhglib-tests/assets/scenes/fel_lord_scene.json">
-      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/utils/BoundingSphereDirectionalAnalyzer.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -2535,31 +2637,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass1Shader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1207">
-          <caret line="93" column="9" selection-start-line="93" selection-start-column="9" selection-end-line="93" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass2Shader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3400">
-          <caret line="228" column="26" selection-start-line="228" selection-start-column="26" selection-end-line="228" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/components/physics/RigidBodyComponent.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3026">
           <caret line="213" column="42" selection-start-line="213" selection-start-column="42" selection-end-line="213" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/nhglib-tests/assets/shaders/shadows/classical/pass1.fragment.glsl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="833">
-          <caret line="49" selection-start-line="49" selection-end-line="49" />
         </state>
       </provider>
     </entry>
@@ -2570,24 +2651,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/nhglib-tests/assets/shaders/shadows/classical/pass2.fragment.glsl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2006">
-          <caret line="118" selection-start-line="118" selection-end-line="118" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/nhglib-tests/assets/shaders/shadows/classical/pass2.vertex.glsl">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2516">
           <caret line="148" selection-start-line="148" selection-end-line="148" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/nhglib-tests/assets/shaders/tf_pbr_shader.frag">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="297">
-          <caret line="285" column="1" lean-forward="true" selection-start-line="285" selection-start-column="1" selection-end-line="285" selection-end-column="1" />
         </state>
       </provider>
     </entry>
@@ -2630,6 +2697,12 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="198">
           <caret line="297" column="19" selection-start-line="297" selection-start-column="19" selection-end-line="297" selection-end-column="19" />
+          <folding>
+            <element signature="e#11626#11627#0" expanded="true" />
+            <element signature="e#11699#11700#0" expanded="true" />
+            <element signature="e#12208#12209#0" expanded="true" />
+            <element signature="e#12283#12284#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -2665,13 +2738,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/data/models/serialization/components/CameraComponentJson.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="476">
-          <caret line="35" column="44" selection-start-line="35" selection-start-column="44" selection-end-line="35" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.9.8/bac17f395be5010619b31280fe84e9f53118d0b9/gdx-1.9.8-sources.jar!/com/badlogic/gdx/graphics/PerspectiveCamera.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="561">
@@ -2683,24 +2749,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/nhglib-tests/src/io/github/movementspeed/tests/Main.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1139">
-          <caret line="105" column="10" selection-start-line="105" selection-start-column="10" selection-end-line="105" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/nhglib-tests/src/io/github/movementspeed/tests/launchers/DesktopLauncher.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
           <caret line="16" column="35" selection-start-line="16" selection-start-column="31" selection-end-line="16" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/systems/impl/RenderingSystem.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="924">
-          <caret line="107" column="79" selection-start-line="107" selection-start-column="79" selection-end-line="107" selection-end-column="79" />
         </state>
       </provider>
     </entry>
@@ -2718,10 +2770,101 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/data/models/serialization/components/CameraComponentJson.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="307">
+          <caret line="42" column="9" selection-start-line="42" selection-start-column="9" selection-end-line="42" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-tests/assets/scenes/fel_lord_scene.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="13" column="8" lean-forward="true" selection-start-line="9" selection-start-column="6" selection-end-line="13" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/core/ecs/systems/impl/RenderingSystem.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="155" column="16" selection-start-line="155" selection-start-column="16" selection-end-line="155" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-tests/assets/scenes/flaregun_scene.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="375">
+          <caret line="139" column="27" selection-start-line="139" selection-start-column="27" selection-end-line="139" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-tests/src/io/github/movementspeed/tests/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="296">
+          <caret line="88" column="43" selection-start-line="88" selection-start-column="43" selection-end-line="88" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/ClassicalShadowsRenderPass.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="35" column="29" selection-start-line="35" selection-start-column="29" selection-end-line="35" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/ClassicalShadowSystem.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-57">
+          <caret line="77" column="133" selection-start-line="77" selection-start-column="133" selection-end-line="77" selection-end-column="133" />
+          <folding>
+            <element signature="e#2335#2336#0" expanded="true" />
+            <element signature="e#2349#2350#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass2Shader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="537">
+          <caret line="239" column="45" selection-start-line="239" selection-start-column="45" selection-end-line="239" selection-end-column="45" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/shadows/system/classical/Pass1Shader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="520">
+          <caret line="81" column="26" selection-start-line="81" selection-start-column="26" selection-end-line="81" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-tests/assets/shaders/shadows/classical/pass1.fragment.glsl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="517">
+          <caret line="49" selection-start-line="49" selection-end-line="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-tests/assets/shaders/shadows/classical/pass2.fragment.glsl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1248">
+          <caret line="118" selection-start-line="118" selection-end-line="118" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nhglib-tests/assets/shaders/tf_pbr_shader.frag">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3837">
+          <caret line="55" column="30" selection-start-line="55" selection-start-column="18" selection-end-line="55" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/nhglib-core/src/io/github/movementspeed/nhglib/graphics/shaders/tiled/TiledPBRShader.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="442">
-          <caret line="291" column="8" lean-forward="true" selection-start-line="291" selection-start-column="8" selection-end-line="291" selection-end-column="8" />
+        <state relative-caret-position="326">
+          <caret line="409" column="56" selection-start-line="409" selection-start-column="56" selection-end-line="409" selection-end-column="56" />
         </state>
       </provider>
     </entry>

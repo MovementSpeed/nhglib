@@ -17,6 +17,11 @@
         "alias": "newport_loft",
         "source": "textures/tears_of_steel_bridge_2k.hdr",
         "classAlias": "hdr"
+      },
+      {
+        "alias": "cube",
+        "source": "models/cube.g3db",
+        "classAlias": "model"
       }
     ],
     "entities": [
@@ -49,6 +54,65 @@
         ]
       },
       {
+        "id": "l0",
+        "transform": {
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          }
+        },
+        "components": [
+          {
+            "type": "light",
+            "lightType": "directionalLight",
+            "intensity": 10,
+            "innerAngle": 10,
+            "outerAngle": 12,
+            "range": 15,
+            "direction": {
+              "x": 0.57735,
+              "y": -0.57735,
+              "z": 0.57735
+            },
+            "color": {
+              "r": 1,
+              "g": 1,
+              "b": 1,
+              "a": 1
+            }
+          }
+        ]
+      },
+      {
+        "id":"floor",
+        "transform": {
+          "position": {
+            "x": 0,
+            "y": -0.16,
+            "z": 0
+          },
+          "scale": {
+            "x": 3,
+            "y": 0.2,
+            "z": 3
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          }
+        },
+        "components": [
+          {
+            "type": "model",
+            "enabled": true,
+            "graphicsType": "dynamic",
+            "asset": "cube"
+          }
+        ]
+      },
+      {
         "id": "camera",
         "transform": {
           "position": {
@@ -72,8 +136,8 @@
             "type": "camera",
             "cameraType": "perspective",
             "fieldOfView": 67,
-            "nearPlane": 0.01,
-            "farPlane": 30.0
+            "nearPlane": 0.1,
+            "farPlane": 1.0
           }
         ]
       }
