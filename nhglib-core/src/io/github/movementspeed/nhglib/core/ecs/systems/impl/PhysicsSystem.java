@@ -19,7 +19,7 @@ import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
 import io.github.movementspeed.nhglib.core.ecs.components.physics.RigidBodyComponent;
 import io.github.movementspeed.nhglib.core.ecs.components.physics.VehicleComponent;
-import io.github.movementspeed.nhglib.core.ecs.components.physics.WheelComponent;
+import io.github.movementspeed.nhglib.core.ecs.components.physics.TyreComponent;
 import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
 import io.github.movementspeed.nhglib.core.ecs.systems.base.NhgIteratingSystem;
 
@@ -40,12 +40,12 @@ public class PhysicsSystem extends NhgIteratingSystem {
     private ComponentMapper<NodeComponent> nodeMapper;
     private ComponentMapper<RigidBodyComponent> rigidBodyMapper;
     private ComponentMapper<VehicleComponent> vehicleMapper;
-    private ComponentMapper<WheelComponent> wheelMapper;
+    private ComponentMapper<TyreComponent> wheelMapper;
 
     public PhysicsSystem() {
         super(Aspect
                 .all(NodeComponent.class)
-                .one(RigidBodyComponent.class, VehicleComponent.class, WheelComponent.class));
+                .one(RigidBodyComponent.class, VehicleComponent.class, TyreComponent.class));
 
         initPhysics();
     }
@@ -84,22 +84,22 @@ public class PhysicsSystem extends NhgIteratingSystem {
     protected void process(int entityId) {
         RigidBodyComponent bodyComponent = null;
         VehicleComponent vehicleComponent = null;
-        WheelComponent wheelComponent = null;
+        TyreComponent tyreComponent = null;
 
         NodeComponent nodeComponent = nodeMapper.get(entityId);
 
         if (rigidBodyMapper.has(entityId)) {
             bodyComponent = rigidBodyMapper.get(entityId);
         } else if (wheelMapper.has(entityId)) {
-            wheelComponent = wheelMapper.get(entityId);
+            tyreComponent = wheelMapper.get(entityId);
         } else if (vehicleMapper.has(entityId)) {
             vehicleComponent = vehicleMapper.get(entityId);
         }
 
         if (bodyComponent != null) {
             processBodyComponent(bodyComponent, nodeComponent);
-        } else if (wheelComponent != null) {
-            processWheelComponent(wheelComponent, nodeComponent);
+        } else if (tyreComponent != null) {
+            processWheelComponent(tyreComponent, nodeComponent);
         } else if (vehicleComponent != null) {
             processVehicleComponent(vehicleComponent, nodeComponent);
         }
@@ -187,10 +187,10 @@ public class PhysicsSystem extends NhgIteratingSystem {
         }
     }
 
-    private void processWheelComponent(WheelComponent wheelComponent, NodeComponent nodeComponent) {
-        if (wheelComponent.state == WheelComponent.State.READY) {
-            float rotation = (wheelComponent.getRotation() * MathUtils.radiansToDegrees) % 360;
-            float steering = wheelComponent.getSteering() * MathUtils.radiansToDegrees;
+    private void processWheelComponent(TyreComponent tyreComponent, NodeComponent nodeComponent) {
+        if (tyreComponent.state == TyreComponent.State.READY) {
+            float rotation = (tyreComponent.getRotation() * MathUtils.radiansToDegrees) % 360;
+            float steering = tyreComponent.getSteering() * MathUtils.radiansToDegrees;
 
             nodeComponent.setRotation(rotation, steering, 0);
             nodeComponent.applyTransforms();

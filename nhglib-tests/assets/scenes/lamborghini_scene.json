@@ -8,6 +8,11 @@
         "classAlias": "model"
       },
       {
+        "alias": "cube",
+        "source": "models/cube.g3db",
+        "classAlias": "model"
+      },
+      {
         "alias": "target",
         "source": "models/Lamborghini.g3db",
         "classAlias": "model",
@@ -45,6 +50,65 @@
             "enabled": true,
             "graphicsType": "dynamic",
             "asset": "target"
+          }
+        ]
+      },
+      {
+        "id": "l0",
+        "transform": {
+          "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          }
+        },
+        "components": [
+          {
+            "type": "light",
+            "lightType": "directionalLight",
+            "intensity": 10,
+            "innerAngle": 10,
+            "outerAngle": 12,
+            "range": 15,
+            "direction": {
+              "x": 0.57735,
+              "y": -0.57735,
+              "z": 0.57735
+            },
+            "color": {
+              "r": 1,
+              "g": 1,
+              "b": 1,
+              "a": 1
+            }
+          }
+        ]
+      },
+      {
+        "id":"floor",
+        "transform": {
+          "position": {
+            "x": 0,
+            "y": -0.1,
+            "z": 0
+          },
+          "scale": {
+            "x": 3,
+            "y": 0.2,
+            "z": 3
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          }
+        },
+        "components": [
+          {
+            "type": "model",
+            "enabled": true,
+            "graphicsType": "dynamic",
+            "asset": "cube"
           }
         ]
       },

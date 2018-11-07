@@ -15,7 +15,7 @@ import io.github.movementspeed.nhglib.assets.Assets;
  * Created by Fausto Napoli on 11/06/2017.
  */
 public class VehicleComponent extends RigidBodyComponent implements Disposable {
-    private int wheelNumber;
+    private int tyreNumber;
 
     public btRaycastVehicle.btVehicleTuning vehicleTuning;
     public btVehicleRaycaster vehicleRaycaster;
@@ -46,8 +46,8 @@ public class VehicleComponent extends RigidBodyComponent implements Disposable {
         vehicle.setBrake(brake, wheelIndex);
     }
 
-    public int getWheelNumber() {
-        return wheelNumber;
+    public int getTyreNumber() {
+        return tyreNumber;
     }
 
     public VehicleComponent build(btDynamicsWorld world, btCollisionShape chassisShape, float mass) {
@@ -86,14 +86,14 @@ public class VehicleComponent extends RigidBodyComponent implements Disposable {
         return this;
     }
 
-    public VehicleComponent addWheel(Vector3 attachPoint, float radius, boolean frontWheel) {
-        return addWheel(attachPoint, new Vector3(0, -1, 0), new Vector3(-1, 0, 0), radius,
+    public VehicleComponent addTyre(Vector3 attachPoint, float radius, boolean frontWheel) {
+        return addTyre(attachPoint, new Vector3(0, -1, 0), new Vector3(-1, 0, 0), radius,
                 radius * 0.3f, 10f, frontWheel);
     }
 
-    public VehicleComponent addWheel(Vector3 attachPoint, Vector3 direction, Vector3 axis, float radius,
-                                     float suspensionRestLength, float friction, boolean frontWheel) {
-        wheelNumber++;
+    public VehicleComponent addTyre(Vector3 attachPoint, Vector3 direction, Vector3 axis, float radius,
+                                    float suspensionRestLength, float friction, boolean frontWheel) {
+        tyreNumber++;
 
         vehicle.addWheel(attachPoint, direction, axis, suspensionRestLength, radius, vehicleTuning, frontWheel)
                 .setFrictionSlip(friction);

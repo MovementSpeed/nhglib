@@ -9,7 +9,7 @@ import io.github.movementspeed.nhglib.assets.Asset;
 import io.github.movementspeed.nhglib.assets.Assets;
 import io.github.movementspeed.nhglib.core.ecs.components.graphics.ModelComponent;
 import io.github.movementspeed.nhglib.core.ecs.components.physics.VehicleComponent;
-import io.github.movementspeed.nhglib.core.ecs.components.physics.WheelComponent;
+import io.github.movementspeed.nhglib.core.ecs.components.physics.TyreComponent;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.PhysicsSystem;
 import io.github.movementspeed.nhglib.core.ecs.utils.Entities;
 import io.github.movementspeed.nhglib.graphics.scenes.Scene;
@@ -139,11 +139,11 @@ public class VehicleBuilder {
     public VehicleBuilder buildWheel(Vector3 point, Vector3 direction, Vector3 axis, float radius,
                                      float suspensionRestLength, float friction, boolean frontWheel) {
         if (builtWheels < wheelEntities.length) {
-            vehicleComponent.addWheel(point, direction, axis, radius, suspensionRestLength, friction, frontWheel);
+            vehicleComponent.addTyre(point, direction, axis, radius, suspensionRestLength, friction, frontWheel);
 
-            WheelComponent wheelComponent = entities.createComponent(wheelEntities[builtWheels], WheelComponent.class);
-            wheelComponent.build();
-            wheelComponent.wheelIndex = builtWheels;
+            TyreComponent tyreComponent = entities.createComponent(wheelEntities[builtWheels], TyreComponent.class);
+            tyreComponent.build();
+            tyreComponent.index = builtWheels;
 
             builtWheels++;
         }

@@ -10,9 +10,9 @@ import com.badlogic.gdx.physics.bullet.dynamics.btWheelInfo;
 /**
  * Created by Fausto Napoli on 05/06/2017.
  */
-public class WheelComponent extends Component {
-    public boolean frontWheel;
-    public int wheelIndex;
+public class TyreComponent extends Component {
+    public boolean frontTyre;
+    public int index;
 
     public float radius;
     public float suspensionRestLength;
@@ -28,7 +28,7 @@ public class WheelComponent extends Component {
 
     public VehicleComponent vehicleComponent;
 
-    public WheelComponent() {
+    public TyreComponent() {
         state = State.NOT_INITIALIZED;
     }
 
@@ -36,27 +36,27 @@ public class WheelComponent extends Component {
         translation = new Vector3();
         rotation = new Quaternion();
 
-        vehicleComponent.addWheel(attachmentPoint, direction, axis, radius,
-                suspensionRestLength, wheelFriction, frontWheel);
+        vehicleComponent.addTyre(attachmentPoint, direction, axis, radius,
+                suspensionRestLength, wheelFriction, frontTyre);
     }
 
     public float getRotation() {
-        btWheelInfo info = vehicleComponent.vehicle.getWheelInfo(wheelIndex);
+        btWheelInfo info = vehicleComponent.vehicle.getWheelInfo(index);
         return info.getRotation();
     }
 
     public float getSteering() {
-        btWheelInfo info = vehicleComponent.vehicle.getWheelInfo(wheelIndex);
+        btWheelInfo info = vehicleComponent.vehicle.getWheelInfo(index);
         return info.getSteering();
     }
 
     public Vector3 getTranslation() {
-        Matrix4 mat = vehicleComponent.vehicle.getWheelTransformWS(wheelIndex);
+        Matrix4 mat = vehicleComponent.vehicle.getWheelTransformWS(index);
         return mat.getTranslation(translation);
     }
 
     public Quaternion getRotationQuaternion() {
-        Matrix4 mat = vehicleComponent.vehicle.getWheelTransformWS(wheelIndex);
+        Matrix4 mat = vehicleComponent.vehicle.getWheelTransformWS(index);
         return mat.getRotation(rotation);
     }
 

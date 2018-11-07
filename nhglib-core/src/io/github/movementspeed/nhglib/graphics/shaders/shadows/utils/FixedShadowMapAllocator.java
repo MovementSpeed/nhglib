@@ -34,7 +34,8 @@ public class FixedShadowMapAllocator implements ShadowMapAllocator {
 	public static final int QUALITY_MAX = 4096;
 
 	/** Helpers to choose number of supported shadows */
-	public static final int QUANTITY_MAP_MIN = 4;
+	public static final int QUANTITY_MAP_MIN = 1;
+	public static final int QUANTITY_MAP_LOW = 4;
 	public static final int QUANTITY_MAP_MED = 16;
 	public static final int QUANTITY_MAP_MAX = 32;
 

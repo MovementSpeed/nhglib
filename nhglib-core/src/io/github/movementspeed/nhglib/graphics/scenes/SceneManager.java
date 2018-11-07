@@ -20,7 +20,7 @@ import io.github.movementspeed.nhglib.core.ecs.components.graphics.ModelComponen
 import io.github.movementspeed.nhglib.core.ecs.components.graphics.ParticleEffectComponent;
 import io.github.movementspeed.nhglib.core.ecs.components.physics.RigidBodyComponent;
 import io.github.movementspeed.nhglib.core.ecs.components.physics.VehicleComponent;
-import io.github.movementspeed.nhglib.core.ecs.components.physics.WheelComponent;
+import io.github.movementspeed.nhglib.core.ecs.components.physics.TyreComponent;
 import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.ParticleRenderingSystem;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.PhysicsSystem;
@@ -53,7 +53,7 @@ public class SceneManager {
     private ComponentMapper<ModelComponent> modelMapper;
     private ComponentMapper<RigidBodyComponent> rigidBodyMapper;
     private ComponentMapper<VehicleComponent> vehicleMapper;
-    private ComponentMapper<WheelComponent> vehicleWheelMapper;
+    private ComponentMapper<TyreComponent> vehicleWheelMapper;
     private ComponentMapper<ParticleEffectComponent> particleEffectMapper;
 
     public SceneManager(Messaging messaging, Entities entities, Assets assets) {
@@ -65,7 +65,7 @@ public class SceneManager {
         modelMapper = entities.getMapper(ModelComponent.class);
         rigidBodyMapper = entities.getMapper(RigidBodyComponent.class);
         vehicleMapper = entities.getMapper(VehicleComponent.class);
-        vehicleWheelMapper = entities.getMapper(WheelComponent.class);
+        vehicleWheelMapper = entities.getMapper(TyreComponent.class);
         particleEffectMapper = entities.getMapper(ParticleEffectComponent.class);
 
         SceneMappings.addComponentJsonMapping("message", MessageComponentJson.class);
@@ -74,7 +74,7 @@ public class SceneManager {
         SceneMappings.addComponentJsonMapping("model", ModelComponentJson.class);
         SceneMappings.addComponentJsonMapping("rigidBody", RigidBodyComponentJson.class);
         SceneMappings.addComponentJsonMapping("vehicle", VehicleComponentJson.class);
-        SceneMappings.addComponentJsonMapping("wheel", WheelComponentJson.class);
+        SceneMappings.addComponentJsonMapping("wheel", TyreComponentJson.class);
         SceneMappings.addComponentJsonMapping("particleEffect", ParticleEffectComponentJson.class);
         SceneMappings.addComponentJsonMapping("ui", UiComponentJson.class);
 
@@ -342,9 +342,9 @@ public class SceneManager {
     }
 
     private void processWheelComponent(int entity) {
-        WheelComponent wheelComponent = vehicleWheelMapper.get(entity);
-        wheelComponent.build();
-        wheelComponent.state = WheelComponent.State.READY;
+        TyreComponent tyreComponent = vehicleWheelMapper.get(entity);
+        tyreComponent.build();
+        tyreComponent.state = TyreComponent.State.READY;
     }
 
     private void processParticleEffectComponent(int entity, boolean load) {

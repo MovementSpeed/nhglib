@@ -3,12 +3,18 @@ package io.github.movementspeed.tests;
 import com.artemis.BaseSystem;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.bullet.dynamics.btGeneric6DofSpring2Constraint;
+import com.badlogic.gdx.physics.bullet.dynamics.btGeneric6DofSpringConstraint;
+import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
 import io.github.movementspeed.nhglib.Nhg;
 import io.github.movementspeed.nhglib.assets.Asset;
 import io.github.movementspeed.nhglib.core.ecs.components.graphics.CameraComponent;
 import io.github.movementspeed.nhglib.core.ecs.components.graphics.LightComponent;
+import io.github.movementspeed.nhglib.core.ecs.components.physics.RigidBodyComponent;
 import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.InputSystem;
 import io.github.movementspeed.nhglib.core.ecs.systems.impl.PhysicsSystem;
@@ -61,7 +67,7 @@ public class Main extends NhgEntry implements InputListener {
         super.onStart();
         Nhg.debugLogs = true;
         Nhg.debugFpsLogs = true;
-        Nhg.debugDrawPhysics = false;
+        Nhg.debugDrawPhysics = true;
         ParticleShader.softParticles = false;
         targetVec = new Vector3(0, 0.5f, 0);
     }
@@ -73,7 +79,7 @@ public class Main extends NhgEntry implements InputListener {
                 new DefaultWorldStrategy(),
                 new Bounds(2f, 2f, 2f));
 
-        nhg.assets.queueAsset(new Asset("scene", "scenes/flaregun_scene.json", Scene.class));
+        nhg.assets.queueAsset(new Asset("scene", "scenes/car_physics_scene.json", Scene.class));
 
         InputSystem inputSystem = nhg.entities.getEntitySystem(InputSystem.class);
         inputSystem.loadMapping("input/input.json");
@@ -86,7 +92,7 @@ public class Main extends NhgEntry implements InputListener {
 
         renderingSystem = nhg.entities.getEntitySystem(RenderingSystem.class);
         renderingSystem.setClearColor(Color.GRAY);
-        renderingSystem.setRenderScale(0.5f);
+        renderingSystem.setRenderScale(1.0f);
 
         environment = renderingSystem.getEnvironment();
 
@@ -127,9 +133,6 @@ public class Main extends NhgEntry implements InputListener {
                                         cameraEntity, NodeComponent.class);
 
                                 cameraComponent = nhg.entities.getComponent(cameraEntity, CameraComponent.class);
-
-                                int targetEntity = scene.sceneGraph.getSceneEntity("target");
-                                target = nhg.entities.getComponent(targetEntity, NodeComponent.class);
                             }
                         } else if (message.is(Strings.Events.sceneLoaded)) {
                             NhgLogger.log(this, "Scene loaded");
@@ -165,7 +168,7 @@ public class Main extends NhgEntry implements InputListener {
     public void onUpdate(float delta) {
         super.onUpdate(delta);
         world.update();
-        if (target != null) target.rotate(targetVec, true);
+        //if (target != null) target.rotate(targetVec, true);
     }
 
     @Override
