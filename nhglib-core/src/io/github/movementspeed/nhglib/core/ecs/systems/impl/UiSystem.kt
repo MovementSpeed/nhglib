@@ -1,90 +1,79 @@
-package io.github.movementspeed.nhglib.core.ecs.systems.impl;
+package io.github.movementspeed.nhglib.core.ecs.systems.impl
 
-import com.artemis.Aspect;
-import com.artemis.ComponentMapper;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
-import io.github.movementspeed.nhglib.core.ecs.components.graphics.ModelComponent;
-import io.github.movementspeed.nhglib.core.ecs.components.graphics.UiComponent;
-import io.github.movementspeed.nhglib.core.ecs.systems.base.BaseRenderingSystem;
-import io.github.movementspeed.nhglib.core.ecs.utils.Entities;
-import io.github.movementspeed.nhglib.graphics.shaders.attributes.PBRTextureAttribute;
+import com.artemis.Aspect
+import com.artemis.ComponentMapper
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.utils.Array
+import io.github.movementspeed.nhglib.core.ecs.components.graphics.ModelComponent
+import io.github.movementspeed.nhglib.core.ecs.components.graphics.UiComponent
+import io.github.movementspeed.nhglib.core.ecs.systems.base.BaseRenderingSystem
+import io.github.movementspeed.nhglib.core.ecs.utils.Entities
+import io.github.movementspeed.nhglib.graphics.shaders.attributes.PBRTextureAttribute
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.ArrayList
 
-public class UiSystem extends BaseRenderingSystem {
-    private InputSystem inputSystem;
-    private ComponentMapper<UiComponent> uiMapper;
-    private ComponentMapper<ModelComponent> modelMapper;
+class UiSystem(entities: Entities) : BaseRenderingSystem(Aspect.all(UiComponent::class.java), entities) {
+    private val inputSystem: InputSystem? = null
+    private val uiMapper: ComponentMapper<UiComponent>? = null
+    private val modelMapper: ComponentMapper<ModelComponent>? = null
 
-    private List<Vector2> supportedRes;
-    private Array<UiComponent> uiComponents;
+    private val supportedRes: MutableList<Vector2>
+    private val uiComponents: Array<UiComponent>
 
-    public UiSystem(Entities entities) {
-        super(Aspect.all(UiComponent.class), entities);
+    init {
 
-        supportedRes = new ArrayList<>();
-        supportedRes.add(new Vector2(1280, 720));
-        supportedRes.add(new Vector2(1920, 1080));
+        supportedRes = ArrayList()
+        supportedRes.add(Vector2(1280f, 720f))
+        supportedRes.add(Vector2(1920f, 1080f))
 
-        uiComponents = new Array<>();
+        uiComponents = Array()
     }
 
-    @Override
-    public void onPostRender() {
-        super.onPostRender();
-        for (UiComponent uiComponent : uiComponents) {
+    override fun onPostRender() {
+        super.onPostRender()
+        for (uiComponent in uiComponents) {
             if (uiComponent.type == UiComponent.Type.SCREEN) {
-                uiComponent.uiManager.renderUi(Gdx.graphics.getDeltaTime());
+                uiComponent.uiManager.renderUi(Gdx.graphics.deltaTime)
             }
         }
 
-        uiComponents.clear();
+        uiComponents.clear()
     }
 
-    @Override
-    public void onUpdatedRenderer(int renderingWidth, int renderingHeight) {
-        super.onUpdatedRenderer(renderingWidth, renderingHeight);
+    override fun onUpdatedRenderer(renderingWidth: Int, renderingHeight: Int) {
+        super.onUpdatedRenderer(renderingWidth, renderingHeight)
 
-        for (UiComponent uiComponent : uiComponents) {
-            uiComponent.uiManager.resize(renderingWidth, renderingHeight);
+        for (uiComponent in uiComponents) {
+            uiComponent.uiManager.resize(renderingWidth, renderingHeight)
         }
     }
 
-    @Override
-    protected void process(int entityId) {
-        UiComponent uiComponent = uiMapper.get(entityId);
+    override fun process(entityId: Int) {
+        val uiComponent = uiMapper!!.get(entityId)
 
-        switch (uiComponent.state) {
-            case READY:
-                switch (uiComponent.type) {
-                    case SCREEN:
-                        uiComponents.add(uiComponent);
-                        break;
+        when (uiComponent.state) {
+            UiComponent.State.READY -> when (uiComponent.type) {
+                UiComponent.Type.SCREEN -> uiComponents.add(uiComponent)
 
-                    case PANEL:
-                        // Currently not used, not completely implemented.
-                        ModelComponent modelComponent = modelMapper.get(entityId);
+                UiComponent.Type.PANEL -> {
+                    // Currently not used, not completely implemented.
+                    val modelComponent = modelMapper!!.get(entityId)
 
-                        if (modelComponent != null && modelComponent.state == ModelComponent.State.READY) {
-                            TextureRegion texture = uiComponent.uiManager.renderUiToTexture(Gdx.graphics.getDeltaTime());
-                            PBRTextureAttribute textureAttribute = (PBRTextureAttribute) modelComponent.model.materials
-                                    .first().get(PBRTextureAttribute.Albedo);
+                    if (modelComponent != null && modelComponent.state == ModelComponent.State.READY) {
+                        val texture = uiComponent.uiManager.renderUiToTexture(Gdx.graphics.deltaTime)
+                        val textureAttribute = modelComponent.model.materials
+                                .first().get(PBRTextureAttribute.Albedo) as PBRTextureAttribute
 
-                            textureAttribute.set(texture);
-                        }
-                        break;
+                        textureAttribute.set(texture)
+                    }
                 }
-                break;
+            }
 
-            case NOT_INITIALIZED:
-                if (inputSystem.getInputProxy() != null) {
-                    uiComponent.build(inputSystem.getInputProxy(), supportedRes);
-                }
-                break;
+            UiComponent.State.NOT_INITIALIZED -> if (inputSystem!!.inputProxy != null) {
+                uiComponent.build(inputSystem.inputProxy!!, supportedRes)
+            }
         }
     }
 }

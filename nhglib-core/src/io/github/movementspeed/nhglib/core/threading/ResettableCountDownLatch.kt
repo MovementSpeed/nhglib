@@ -1,77 +1,77 @@
-package io.github.movementspeed.nhglib.core.threading;
+package io.github.movementspeed.nhglib.core.threading
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.AbstractQueuedSynchronizer;
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.locks.AbstractQueuedSynchronizer
 
-public class ResettableCountDownLatch {
+class ResettableCountDownLatch(count: Int) {
+
+    private val sync: Sync
+
+    val count: Long
+        get() = sync.count.toLong()
+
     /**
      * Synchronization control For CountDownLatch.
      * Uses AQS state to represent count.
      */
-    private static final class Sync extends AbstractQueuedSynchronizer {
-        private static final long serialVersionUID = 4982264981922014374L;
+    private class Sync internal constructor(val startCount: Int) : AbstractQueuedSynchronizer() {
 
-        public final int startCount;
+        internal val count: Int
+            get() = state
 
-        Sync(int count) {
-            this.startCount = count;
-            setState(startCount);
+        init {
+            state = startCount
         }
 
-        int getCount() {
-            return getState();
+        public override fun tryAcquireShared(acquires: Int): Int {
+            return if (state == 0) 1 else -1
         }
 
-        public int tryAcquireShared(int acquires) {
-            return getState() == 0 ? 1 : -1;
-        }
-
-        public boolean tryReleaseShared(int releases) {
+        public override fun tryReleaseShared(releases: Int): Boolean {
             // Decrement count; signal when transition to zero
-            for (; ; ) {
-                int c = getState();
+            while (true) {
+                val c = state
                 if (c == 0)
-                    return false;
-                int nextc = c - 1;
+                    return false
+                val nextc = c - 1
                 if (compareAndSetState(c, nextc))
-                    return nextc == 0;
+                    return nextc == 0
             }
         }
 
-        public void reset() {
-            setState(startCount);
+        fun reset() {
+            state = startCount
+        }
+
+        companion object {
+            private val serialVersionUID = 4982264981922014374L
         }
     }
 
-    private final Sync sync;
-
-    public ResettableCountDownLatch(int count) {
-        if (count < 0) throw new IllegalArgumentException("count < 0");
-        this.sync = new Sync(count);
+    init {
+        require(count >= 0) { "count < 0" }
+        this.sync = Sync(count)
     }
 
-    public void await() throws InterruptedException {
-        sync.acquireSharedInterruptibly(1);
+    @Throws(InterruptedException::class)
+    fun await() {
+        sync.acquireSharedInterruptibly(1)
     }
 
-    public void reset() {
-        sync.reset();
+    fun reset() {
+        sync.reset()
     }
 
-    public boolean await(long timeout, TimeUnit unit)
-            throws InterruptedException {
-        return sync.tryAcquireSharedNanos(1, unit.toNanos(timeout));
+    @Throws(InterruptedException::class)
+    fun await(timeout: Long, unit: TimeUnit): Boolean {
+        return sync.tryAcquireSharedNanos(1, unit.toNanos(timeout))
     }
 
-    public void countDown() {
-        sync.releaseShared(1);
+    fun countDown() {
+        sync.releaseShared(1)
     }
 
-    public long getCount() {
-        return sync.getCount();
-    }
-
-    public String toString() {
-        return super.toString() + "[Count = " + sync.getCount() + "]";
+    override fun toString(): String {
+        return super.toString() + "[Count = " + sync.count + "]"
     }
 }

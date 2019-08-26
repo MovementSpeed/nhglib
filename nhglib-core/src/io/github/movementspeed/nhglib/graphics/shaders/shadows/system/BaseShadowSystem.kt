@@ -5,433 +5,378 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ */
 
-package io.github.movementspeed.nhglib.graphics.shaders.shadows.system;
+package io.github.movementspeed.nhglib.graphics.shaders.shadows.system
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Cubemap.CubemapSide;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.RenderableProvider;
-import com.badlogic.gdx.graphics.g3d.utils.ShaderProvider;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.ObjectMap.Entries;
-import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
-import io.github.movementspeed.nhglib.graphics.shaders.shadows.utils.*;
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Camera
+import com.badlogic.gdx.graphics.Cubemap.CubemapSide
+import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.PerspectiveCamera
+import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.graphics.g3d.RenderableProvider
+import com.badlogic.gdx.graphics.g3d.utils.ShaderProvider
+import com.badlogic.gdx.graphics.glutils.FrameBuffer
+import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.Disposable
+import com.badlogic.gdx.utils.GdxRuntimeException
+import com.badlogic.gdx.utils.ObjectMap
+import com.badlogic.gdx.utils.ObjectMap.Entries
+import io.github.movementspeed.nhglib.enums.LightType
+import io.github.movementspeed.nhglib.graphics.lights.NhgLight
+import io.github.movementspeed.nhglib.graphics.shaders.shadows.utils.*
 
-import java.util.EnumSet;
-import java.util.Set;
+import java.util.EnumSet
 
 /** BaseShadowSystem allows to easily create custom shadow system.
- * @author realitix */
-public abstract class BaseShadowSystem implements ShadowSystem, Disposable {
-	/** This class handles camera and texture region.
-	 * @author realitix */
-	public static class LightProperties {
-		public Camera camera;
-		public TextureRegion region = new TextureRegion();
+ * @author realitix
+ */
+abstract class BaseShadowSystem
+/** Construct the system with the needed params.
+ * @param nearFarAnalyzer Analyzer of near and far
+ * @param allocator Allocator of shadow maps
+ * @param directionalAnalyzer Analyze directional light to create orthographic camera
+ * @param lightFilter Filter light to render
+ */
+@JvmOverloads constructor(
+        /** Analyzer of near and far for spot and point lights  */
+        protected var nearFarAnalyzer: NearFarAnalyzer = AABBNearFarAnalyzer(),
+        /** Allocator which choose where to render shadow map in texture  */
+        protected var allocator: ShadowMapAllocator = FixedShadowMapAllocator(FixedShadowMapAllocator.QUALITY_MED,
+                FixedShadowMapAllocator.QUANTITY_MAP_MED),
+        /** Analyzer which compute how to create the camera for directional light  */
+        protected var directionalAnalyzer: DirectionalAnalyzer = BoundingSphereDirectionalAnalyzer(),
+        /** Filter that choose if light must be rendered  */
+        protected var lightFilter: LightFilter = FrustumLightFilter()) : ShadowSystem, Disposable {
 
-		public LightProperties (Camera camera) {
-			this.camera = camera;
-		}
-	}
+    /** Main camera  */
+    protected var camera: Camera? = null
+    /** Renderable providers  */
+    protected var renderableProviders: Iterable<RenderableProvider>? = null
+    /** Cameras linked with spot lights  */
+    var spotCameras = ObjectMap<NhgLight, LightProperties>()
+        protected set
+    /** Cameras linked with directional lights  */
+    var directionalCameras = ObjectMap<NhgLight, LightProperties>()
+        protected set
+    /** Cameras linked with point lights  */
+    var pointCameras = ObjectMap<NhgLight, PointLightProperties>()
+        protected set
+    /** Framebuffer used to render all the depth maps  */
+    protected var frameBuffers: Array<FrameBuffer>? = null
+    /** Current pass in the depth process  */
+    var currentPass = -1
+        protected set
+    /** Iterators for cameras  */
+    protected var spotCameraIterator: Entries<NhgLight, LightProperties>? = null
+    protected var dirCameraIterator: Entries<NhgLight, LightProperties>? = null
+    protected var pointCameraIterator: Entries<NhgLight, PointLightProperties>? = null
+    /** Current side in the point light cubemap  */
+    protected var currentPointSide: Int = 0
+    protected var currentPointProperties: PointLightProperties? = null
+    /** Shader providers used by this system  */
+    protected var passShaderProviders: Array<ShaderProvider>? = null
+    /** Current light and properties during shadowmap generation  */
+    var currentLightProperties: LightProperties? = null
+        protected set
+    var currentLight: NhgLight? = null
+        protected set
 
-	/** This class handles LightProperties for each side of PointLight.
-	 * @author realitix */
-	public static class PointLightProperties {
-		public ObjectMap<CubemapSide, LightProperties> properties = new ObjectMap<CubemapSide, LightProperties>(6);
-	}
+    /** getPassQuantity should return at leat one.  */
+    abstract override val passQuantity: Int
 
-	/** Main camera */
-	protected Camera camera;
-	/** Renderable providers */
-	protected Iterable<RenderableProvider> renderableProviders;
-	/** Cameras linked with spot lights */
-	protected ObjectMap<NhgLight, LightProperties> spotCameras = new ObjectMap<NhgLight, LightProperties>();
-	/** Cameras linked with directional lights */
-	protected ObjectMap<NhgLight, LightProperties> dirCameras = new ObjectMap<NhgLight, LightProperties>();
-	/** Cameras linked with point lights */
-	protected ObjectMap<NhgLight, PointLightProperties> pointCameras = new ObjectMap<NhgLight, PointLightProperties>();
-	/** Analyzer of near and far for spot and point lights */
-	protected NearFarAnalyzer nearFarAnalyzer;
-	/** Allocator which choose where to render shadow map in texture */
-	protected ShadowMapAllocator allocator;
-	/** Analyzer which compute how to create the camera for directional light */
-	protected DirectionalAnalyzer directionalAnalyzer;
-	/** Filter that choose if light must be rendered */
-	protected LightFilter lightFilter;
-	/** Framebuffer used to render all the depth maps */
-	protected FrameBuffer[] frameBuffers;
-	/** Current pass in the depth process */
-	protected int currentPass = -1;
-	/** Iterators for cameras */
-	protected Entries<NhgLight, LightProperties> spotCameraIterator;
-	protected Entries<NhgLight, LightProperties> dirCameraIterator;
-	protected Entries<NhgLight, PointLightProperties> pointCameraIterator;
-	/** Current side in the point light cubemap */
-	protected int currentPointSide;
-	protected PointLightProperties currentPointProperties;
-	/** Shader providers used by this system */
-	protected ShaderProvider[] passShaderProviders;
-	/** Current light and properties during shadowmap generation */
-	protected LightProperties currentLightProperties;
-	protected NhgLight currentLight;
+    /** This class handles camera and texture region.
+     * @author realitix
+     */
+    class LightProperties(var camera: Camera) {
+        var region = TextureRegion()
+    }
 
-	/** Construct the system with the needed params.
-	 * @param nearFarAnalyzer Analyzer of near and far
-	 * @param allocator Allocator of shadow maps
-	 * @param directionalAnalyzer Analyze directional light to create orthographic camera
-	 * @param lightFilter Filter light to render */
-	public BaseShadowSystem (NearFarAnalyzer nearFarAnalyzer, ShadowMapAllocator allocator,
-		DirectionalAnalyzer directionalAnalyzer, LightFilter lightFilter) {
-		this.nearFarAnalyzer = nearFarAnalyzer;
-		this.allocator = allocator;
-		this.directionalAnalyzer = directionalAnalyzer;
-		this.lightFilter = lightFilter;
-	}
+    /** This class handles LightProperties for each side of PointLight.
+     * @author realitix
+     */
+    class PointLightProperties {
+        var properties = ObjectMap<CubemapSide, LightProperties>(6)
+    }
 
-	/** Construct the system with default values */
-	public BaseShadowSystem () {
-		this(new AABBNearFarAnalyzer(), new FixedShadowMapAllocator(FixedShadowMapAllocator.QUALITY_MED,
-			FixedShadowMapAllocator.QUANTITY_MAP_MED), new BoundingSphereDirectionalAnalyzer(), new FrustumLightFilter());
-	}
+    /** Initialize framebuffers and shader providers. You should call super.init() in subclass.  */
+    override fun init() {
+        frameBuffers = Array(passQuantity)
+        passShaderProviders = Array(passQuantity)
 
-	/** Initialize framebuffers and shader providers. You should call super.init() in subclass. */
-	@Override
-	public void init () {
-		frameBuffers = new FrameBuffer[getPassQuantity()];
-		passShaderProviders = new ShaderProvider[getPassQuantity()];
+        for (i in 0 until passQuantity) {
+            init(i)
+        }
+    }
 
-		for (int i = 0; i < getPassQuantity(); i++) {
-			init(i);
-		}
-	};
+    /** Initialize pass n  */
+    protected abstract fun init(n: Int)
 
-	/** Initialize pass n */
-	protected abstract void init (int n);
+    override fun getPassShaderProvider(n: Int): ShaderProvider {
+        return passShaderProviders!![n]
+    }
 
-	/** getPassQuantity should return at leat one. */
-	@Override
-	public abstract int getPassQuantity ();
+    override fun addLight(light: NhgLight) {
+        when (light.type) {
+            LightType.POINT_LIGHT -> addLight(light, EnumSet.of(
+                    CubemapSide.PositiveX, CubemapSide.NegativeX, CubemapSide.PositiveY,
+                    CubemapSide.NegativeY, CubemapSide.PositiveZ, CubemapSide.NegativeZ))
 
-	@Override
-	public ShaderProvider getPassShaderProvider (int n) {
-		return passShaderProviders[n];
-	}
+            LightType.DIRECTIONAL_LIGHT -> {
+                val directionalCamera = OrthographicCamera()
+                directionalCamera.direction.set(light.direction)
+                directionalCamera.near = 0.1f
+                directionalCamera.far = 10f
 
-	@Override
-	public void addLight(NhgLight light) {
-		switch (light.type) {
-			case POINT_LIGHT:
-				addLight(light, EnumSet.of(
-						CubemapSide.PositiveX, CubemapSide.NegativeX, CubemapSide.PositiveY,
-						CubemapSide.NegativeY, CubemapSide.PositiveZ, CubemapSide.NegativeZ));
-				break;
+                directionalCameras.put(light, LightProperties(directionalCamera))
+            }
 
-			case DIRECTIONAL_LIGHT:
-				OrthographicCamera directionalCamera = new OrthographicCamera();
-				directionalCamera.direction.set(light.direction);
-				directionalCamera.near = 0.1f;
-				directionalCamera.far = 10;
+            LightType.SPOT_LIGHT -> {
+                val spotCamera = PerspectiveCamera(light.outerAngle * 2f, 0f, 0f)
+                spotCamera.position.set(light.position)
+                spotCamera.direction.set(light.direction)
+                spotCamera.near = 0.1f
+                spotCamera.far = 10f
+                spotCamera.up.set(spotCamera.direction.y, spotCamera.direction.z, spotCamera.direction.x)
 
-				dirCameras.put(light, new LightProperties(directionalCamera));
-				break;
+                spotCameras.put(light, LightProperties(spotCamera))
+            }
+        }
+    }
 
-			case SPOT_LIGHT:
-				PerspectiveCamera spotCamera = new PerspectiveCamera(light.outerAngle * 2f, 0, 0);
-				spotCamera.position.set(light.position);
-				spotCamera.direction.set(light.direction);
-				spotCamera.near = 0.1f;
-				spotCamera.far = 10;
-				spotCamera.up.set(spotCamera.direction.y, spotCamera.direction.z, spotCamera.direction.x);
+    override fun addLight(point: NhgLight, sides: Set<CubemapSide>) {
+        val plProperty = PointLightProperties()
+        for (i in 0..5) {
+            val cubemapSide = CubemapSide.values()[i]
+            if (sides.contains(cubemapSide)) {
+                val camera = PerspectiveCamera(90f, 0f, 0f)
+                camera.position.set(point.position)
+                camera.direction.set(cubemapSide.direction)
+                camera.up.set(cubemapSide.up)
+                camera.near = 0.1f
+                camera.far = 10f
 
-				spotCameras.put(light, new LightProperties(spotCamera));
-				break;
-		}
-	}
+                val p = LightProperties(camera)
+                plProperty.properties.put(cubemapSide, p)
+            }
+        }
+        pointCameras.put(point, plProperty)
+    }
 
-	@Override
-	public void addLight(NhgLight point, Set<CubemapSide> sides) {
-		PointLightProperties plProperty = new PointLightProperties();
-		for (int i = 0; i < 6; i++) {
-			CubemapSide cubemapSide = CubemapSide.values()[i];
-			if (sides.contains(cubemapSide)) {
-				PerspectiveCamera camera = new PerspectiveCamera(90, 0, 0);
-				camera.position.set(point.position);
-				camera.direction.set(cubemapSide.direction);
-				camera.up.set(cubemapSide.up);
-				camera.near = 0.1f;
-				camera.far = 10;
+    override fun removeLight(light: NhgLight) {
+        when (light.type) {
+            LightType.SPOT_LIGHT -> spotCameras.remove(light)
 
-				LightProperties p = new LightProperties(camera);
-				plProperty.properties.put(cubemapSide, p);
-			}
-		}
-		pointCameras.put(point, plProperty);
-	}
+            LightType.DIRECTIONAL_LIGHT -> directionalCameras.remove(light)
 
-	@Override
-	public void removeLight(NhgLight light) {
-		switch (light.type) {
-			case SPOT_LIGHT:
-				spotCameras.remove(light);
-				break;
+            LightType.POINT_LIGHT -> pointCameras.remove(light)
+        }
+    }
 
-			case DIRECTIONAL_LIGHT:
-				dirCameras.remove(light);
-				break;
+    override fun hasLight(light: NhgLight): Boolean {
+        when (light.type) {
+            LightType.POINT_LIGHT -> if (pointCameras.containsKey(light)) return true
 
-			case POINT_LIGHT:
-				pointCameras.remove(light);
-				break;
-		}
-	}
+            LightType.DIRECTIONAL_LIGHT -> if (directionalCameras.containsKey(light)) return true
 
-	@Override
-	public boolean hasLight(NhgLight light) {
-		switch (light.type) {
-			case POINT_LIGHT:
-				if (pointCameras.containsKey(light)) return true;
-				break;
+            LightType.SPOT_LIGHT -> if (spotCameras.containsKey(light)) return true
+        }
 
-			case DIRECTIONAL_LIGHT:
-				if (dirCameras.containsKey(light)) return true;
-				break;
+        return false
+    }
 
-			case SPOT_LIGHT:
-				if (spotCameras.containsKey(light)) return true;
-				break;
-		}
-
-		return false;
-	}
-
-	@Override
-	public void update () {
-		for (ObjectMap.Entry<NhgLight, LightProperties> e : spotCameras) {
-		    // Reset camera
-            e.value.camera.position.set(Vector3.Zero);
-            e.value.camera.direction.set(0, 0, -1);
-            e.value.camera.up.set(0, 1, 0);
+    override fun update() {
+        for (e in spotCameras) {
+            // Reset camera
+            e.value.camera.position.set(Vector3.Zero)
+            e.value.camera.direction.set(0f, 0f, -1f)
+            e.value.camera.up.set(0f, 1f, 0f)
 
             // Look at the direction of the light
-            e.value.camera.lookAt(e.key.direction);
+            e.value.camera.lookAt(e.key.direction)
 
             // Set at the light's position
-			e.value.camera.position.set(e.key.position);
+            e.value.camera.position.set(e.key.position)
 
-			nearFarAnalyzer.analyze(e.key, e.value.camera, renderableProviders);
-		}
+            nearFarAnalyzer.analyze(e.key, e.value.camera, renderableProviders!!)
+        }
 
-		for (ObjectMap.Entry<NhgLight, LightProperties> e : dirCameras) {
-			directionalAnalyzer.analyze(e.key, e.value.camera, camera).update();
-		}
+        for (e in directionalCameras) {
+            directionalAnalyzer.analyze(e.key, e.value.camera, camera!!).update()
+        }
 
-		for (ObjectMap.Entry<NhgLight, PointLightProperties> e : pointCameras) {
-			for (ObjectMap.Entry<CubemapSide, LightProperties> c : e.value.properties) {
-				c.value.camera.position.set(e.key.position);
-				nearFarAnalyzer.analyze(e.key, c.value.camera, renderableProviders);
-			}
-		}
-	}
+        for (e in pointCameras) {
+            for (c in e.value.properties) {
+                c.value.camera.position.set(e.key.position)
+                nearFarAnalyzer.analyze(e.key, c.value.camera, renderableProviders!!)
+            }
+        }
+    }
 
-	@Override
-	public <T extends RenderableProvider> void begin (Camera camera, final Iterable<T> renderableProviders) {
-		if (this.renderableProviders != null || this.camera != null) throw new GdxRuntimeException("Call end() first.");
+    override fun <T : RenderableProvider> begin(camera: Camera, renderableProviders: Iterable<T>) {
+        if (this.renderableProviders != null || this.camera != null) throw GdxRuntimeException("Call end() first.")
 
-		this.camera = camera;
-		this.renderableProviders = (Iterable<RenderableProvider>)renderableProviders;
-	}
+        this.camera = camera
+        this.renderableProviders = renderableProviders
+    }
 
-	@Override
-	public void begin (int n) {
-		if (n >= passShaderProviders.length)
-			throw new GdxRuntimeException("Pass " + n + " doesn't exist in " + getClass().getName());
+    override fun begin(n: Int) {
+        if (n >= passShaderProviders?.size ?: Int.MAX_VALUE)
+            throw GdxRuntimeException("Pass " + n + " doesn't exist in " + javaClass.name)
 
-		currentPass = n;
-		spotCameraIterator = spotCameras.iterator();
-		dirCameraIterator = dirCameras.iterator();
-		pointCameraIterator = pointCameras.iterator();
-		currentPointSide = 6;
+        currentPass = n
+        spotCameraIterator = spotCameras.iterator()
+        dirCameraIterator = directionalCameras.iterator()
+        pointCameraIterator = pointCameras.iterator()
+        currentPointSide = 6
 
-		beginPass(n);
-	}
+        beginPass(n)
+    }
 
-	/** Begin pass n.
-	 * @param n Pass number */
-	protected void beginPass (int n) {
-		frameBuffers[n].begin();
-	};
+    /** Begin pass n.
+     * @param n Pass number
+     */
+    protected open fun beginPass(n: Int) {
+        frameBuffers!![n].begin()
+    }
 
-	@Override
-	public void end () {
-		this.camera = null;
-		this.renderableProviders = null;
-		currentPass = -1;
-	}
+    override fun end() {
+        this.camera = null
+        this.renderableProviders = null
+        currentPass = -1
+    }
 
-	@Override
-	public void end (int n) {
-		if (currentPass != n) throw new GdxRuntimeException("Begin " + n + " must be called before end " + n);
-		endPass(n);
-	}
+    override fun end(n: Int) {
+        if (currentPass != n) throw GdxRuntimeException("Begin $n must be called before end $n")
+        endPass(n)
+    }
 
-	/** End pass n.
-	 * @param n Pass number */
-	protected void endPass (int n) {
-		frameBuffers[n].end();
-	}
+    /** End pass n.
+     * @param n Pass number
+     */
+    protected open fun endPass(n: Int) {
+        frameBuffers!![n].end()
+    }
 
-	@Override
-	public Camera next () {
-		LightProperties lp = nextDirectional();
-		if (lp != null) return interceptCamera(lp);
+    override fun next(): Camera? {
+        var lp = nextDirectional()
+        if (lp != null) return interceptCamera(lp)
 
-		lp = nextSpot();
-		if (lp != null) return interceptCamera(lp);
+        lp = nextSpot()
+        if (lp != null) return interceptCamera(lp)
 
-		lp = nextPoint();
-		if (lp != null) return interceptCamera(lp);
+        lp = nextPoint()
+        return if (lp != null) interceptCamera(lp) else null
 
-		return null;
-	}
+    }
 
-	/** Allows to return custom camera if needed.
-	 * @param lp Returned LightProperties
-	 * @return Camera */
-	protected Camera interceptCamera (LightProperties lp) {
-		return lp.camera;
-	}
+    /** Allows to return custom camera if needed.
+     * @param lp Returned LightProperties
+     * @return Camera
+     */
+    protected open fun interceptCamera(lp: LightProperties): Camera? {
+        return lp.camera
+    }
 
-	protected LightProperties nextDirectional () {
-		if (!dirCameraIterator.hasNext()) return null;
+    protected fun nextDirectional(): LightProperties? {
+        if (dirCameraIterator?.hasNext() == false) return null
 
-		ObjectMap.Entry<NhgLight, LightProperties> e = dirCameraIterator.next();
-		currentLight = e.key;
-		currentLightProperties = e.value;
-		LightProperties lp = e.value;
-		processViewport(lp, false);
-		return lp;
-	}
+        val e = dirCameraIterator?.next()
+        currentLight = e?.key
+        currentLightProperties = e?.value
+        val lp = e?.value
+        processViewport(lp!!, false)
+        return lp
+    }
 
-	protected LightProperties nextSpot () {
-		if (!spotCameraIterator.hasNext()) return null;
+    protected fun nextSpot(): LightProperties? {
+        if (spotCameraIterator?.hasNext() == false) return null
 
-		ObjectMap.Entry<NhgLight, LightProperties> e = spotCameraIterator.next();
-		currentLight = e.key;
-		currentLightProperties = e.value;
-		LightProperties lp = e.value;
+        val e = spotCameraIterator?.next()
+        currentLight = e?.key
+        currentLightProperties = e?.value
+        val lp = e?.value
 
-		if (!lightFilter.filter(spotCameras.findKey(lp, true), lp.camera, this.camera)) {
-			return nextSpot();
-		}
+        if (!lightFilter.filter(spotCameras.findKey(lp, true), lp?.camera!!, this.camera!!)) {
+            return nextSpot()
+        }
 
-		processViewport(lp, true);
-		return lp;
-	}
+        processViewport(lp, true)
+        return lp
+    }
 
-	protected LightProperties nextPoint () {
-		if (!pointCameraIterator.hasNext() && currentPointSide > 5) return null;
+    protected fun nextPoint(): LightProperties? {
+        if (pointCameraIterator?.hasNext() == false && currentPointSide > 5) return null
 
-		if (currentPointSide > 5) currentPointSide = 0;
+        if (currentPointSide > 5) currentPointSide = 0
 
-		if (currentPointSide == 0) {
-			ObjectMap.Entry<NhgLight, PointLightProperties> e = pointCameraIterator.next();
-			currentLight = e.key;
-			currentPointProperties = e.value;
-		}
+        if (currentPointSide == 0) {
+            val e = pointCameraIterator?.next()
+            currentLight = e?.key
+            currentPointProperties = e?.value
+        }
 
-		if (currentPointProperties.properties.containsKey(CubemapSide.values()[currentPointSide])) {
-			LightProperties lp = currentPointProperties.properties.get(CubemapSide.values()[currentPointSide]);
-			currentLightProperties = lp;
-			currentPointSide += 1;
+        if (currentPointProperties?.properties?.containsKey(CubemapSide.values()[currentPointSide]) == true) {
+            val lp = currentPointProperties?.properties?.get(CubemapSide.values()[currentPointSide])
+            currentLightProperties = lp
+            currentPointSide += 1
 
-			if (!lightFilter.filter(pointCameras.findKey(currentPointProperties, true), lp.camera, this.camera)) {
-				return nextPoint();
-			}
+            if (!lightFilter.filter(pointCameras.findKey(currentPointProperties, true), lp?.camera!!, this.camera!!)) {
+                return nextPoint()
+            }
 
-			processViewport(lp, true);
-			return lp;
-		}
+            processViewport(lp, true)
+            return lp
+        }
 
-		currentPointSide += 1;
-		return nextPoint();
-	}
+        currentPointSide += 1
+        return nextPoint()
+    }
 
-	/** Set viewport according to allocator.
-	 * @param lp LightProperties to process.
-	 * @param cameraViewport Set camera viewport if true. */
-	protected void processViewport (LightProperties lp, boolean cameraViewport) {
-		Camera camera = lp.camera;
-		ShadowMapAllocator.ShadowMapRegion r = allocator.nextResult(currentLight);
+    /** Set viewport according to allocator.
+     * @param lp LightProperties to process.
+     * @param cameraViewport Set camera viewport if true.
+     */
+    protected open fun processViewport(lp: LightProperties, cameraViewport: Boolean) {
+        val camera = lp.camera
+        val r = allocator.nextResult(currentLight!!) ?: return
 
-		if (r == null) return;
+        val region = lp.region
+        region.texture = frameBuffers!![currentPass].colorBufferTexture
 
-		TextureRegion region = lp.region;
-		region.setTexture(frameBuffers[currentPass].getColorBufferTexture());
-		
-		// We don't use HdpiUtils
-		// gl commands related to shadow map size and not to screen size
-		Gdx.gl.glViewport(r.x, r.y, r.width, r.height);
-		Gdx.gl.glScissor(r.x + 1, r.y + 1, r.width - 2, r.height - 2);
-		region.setRegion(r.x, r.y, r.width, r.height);
+        // We don't use HdpiUtils
+        // gl commands related to shadow map size and not to screen size
+        Gdx.gl.glViewport(r.x, r.y, r.width, r.height)
+        Gdx.gl.glScissor(r.x + 1, r.y + 1, r.width - 2, r.height - 2)
+        region.setRegion(r.x, r.y, r.width, r.height)
 
-		if (cameraViewport) {
-			camera.viewportHeight = r.height;
-			camera.viewportWidth = r.width;
-			camera.update();
-		}
-	}
+        if (cameraViewport) {
+            camera.viewportHeight = r.height.toFloat()
+            camera.viewportWidth = r.width.toFloat()
+            camera.update()
+        }
+    }
 
-	public ObjectMap<NhgLight, LightProperties> getDirectionalCameras () {
-		return dirCameras;
-	}
+    fun getTexture(n: Int): Texture {
+        if (n >= passQuantity) throw GdxRuntimeException("Can't get texture $n")
+        return frameBuffers!![n].colorBufferTexture
+    }
 
-	public ObjectMap<NhgLight, LightProperties> getSpotCameras () {
-		return spotCameras;
-	}
-
-	public ObjectMap<NhgLight, PointLightProperties> getPointCameras () {
-		return pointCameras;
-	}
-
-	public Texture getTexture (int n) {
-		if (n >= getPassQuantity()) throw new GdxRuntimeException("Can't get texture " + n);
-		return frameBuffers[n].getColorBufferTexture();
-	}
-
-	public LightProperties getCurrentLightProperties () {
-		return currentLightProperties;
-	}
-
-	public NhgLight getCurrentLight () {
-		return currentLight;
-	}
-
-	public int getCurrentPass () {
-		return currentPass;
-	}
-
-	@Override
-	public void dispose () {
-		for (int i = 0; i < getPassQuantity(); i++) {
-			frameBuffers[i].dispose();
-			passShaderProviders[i].dispose();
-		}
-	}
+    override fun dispose() {
+        for (i in 0 until passQuantity) {
+            frameBuffers!![i].dispose()
+            passShaderProviders!![i].dispose()
+        }
+    }
 }
+/** Construct the system with default values  */

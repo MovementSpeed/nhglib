@@ -1,75 +1,73 @@
-package io.github.movementspeed.nhglib.data.models.serialization.physics.shapes;
+package io.github.movementspeed.nhglib.data.models.serialization.physics.shapes
 
-import com.badlogic.gdx.utils.JsonValue;
-import io.github.movementspeed.nhglib.interfaces.JsonParseable;
-import io.github.movementspeed.nhglib.physics.enums.RigidBodyType;
-import io.github.movementspeed.nhglib.physics.models.RigidBodyShape;
+import com.badlogic.gdx.utils.JsonValue
+import io.github.movementspeed.nhglib.interfaces.JsonParseable
+import io.github.movementspeed.nhglib.physics.enums.RigidBodyType
+import io.github.movementspeed.nhglib.physics.models.RigidBodyShape
 
 /**
  * Created by Fausto Napoli on 16/05/2017.
  */
-public class ShapeJson implements JsonParseable<RigidBodyShape> {
-    public RigidBodyShape output;
+open class ShapeJson : JsonParseable<RigidBodyShape> {
+    var output: RigidBodyShape? = null
 
-    @Override
-    public void parse(JsonValue shapeJson) {
-        RigidBodyType type = RigidBodyType.fromString(shapeJson.getString("type"));
+    override fun parse(shapeJson: JsonValue) {
+        val type = RigidBodyType.fromString(shapeJson.getString("type"))
 
-        switch (type) {
-            case SPHERE:
-                SphereShapeJson sphereShapeJson = new SphereShapeJson();
-                sphereShapeJson.parse(shapeJson);
-                output = sphereShapeJson.get();
-                break;
+        when (type) {
+            RigidBodyType.SPHERE -> {
+                val sphereShapeJson = SphereShapeJson()
+                sphereShapeJson.parse(shapeJson)
+                output = sphereShapeJson.get()
+            }
 
-            case BOX:
-                BoxShapeJson boxShapeJson = new BoxShapeJson();
-                boxShapeJson.parse(shapeJson);
-                output = boxShapeJson.get();
-                break;
+            RigidBodyType.BOX -> {
+                val boxShapeJson = BoxShapeJson()
+                boxShapeJson.parse(shapeJson)
+                output = boxShapeJson.get()
+            }
 
-            case CYLINDER:
-                CylinderShapeJson cylinderShapeJson = new CylinderShapeJson();
-                cylinderShapeJson.parse(shapeJson);
-                output = cylinderShapeJson.get();
-                break;
+            RigidBodyType.CYLINDER -> {
+                val cylinderShapeJson = CylinderShapeJson()
+                cylinderShapeJson.parse(shapeJson)
+                output = cylinderShapeJson.get()
+            }
 
-            case CONE:
-                ConeShapeJson coneShapeJson = new ConeShapeJson();
-                coneShapeJson.parse(shapeJson);
-                output = coneShapeJson.get();
-                break;
+            RigidBodyType.CONE -> {
+                val coneShapeJson = ConeShapeJson()
+                coneShapeJson.parse(shapeJson)
+                output = coneShapeJson.get()
+            }
 
-            case CAPSULE:
-                CapsuleShapeJson capsuleShapeJson = new CapsuleShapeJson();
-                capsuleShapeJson.parse(shapeJson);
-                output = capsuleShapeJson.get();
-                break;
+            RigidBodyType.CAPSULE -> {
+                val capsuleShapeJson = CapsuleShapeJson()
+                capsuleShapeJson.parse(shapeJson)
+                output = capsuleShapeJson.get()
+            }
 
-            case CONVEX_HULL:
-                ConvexHullShapeJson convexHullShapeJson = new ConvexHullShapeJson();
-                convexHullShapeJson.parse(shapeJson);
-                output = convexHullShapeJson.get();
-                break;
+            RigidBodyType.CONVEX_HULL -> {
+                val convexHullShapeJson = ConvexHullShapeJson()
+                convexHullShapeJson.parse(shapeJson)
+                output = convexHullShapeJson.get()
+            }
 
-            case BVH_TRIANGLE_MESH:
-                BvhTriangleMeshShapeJson bvhTriangleMeshShapeJson = new BvhTriangleMeshShapeJson();
-                bvhTriangleMeshShapeJson.parse(shapeJson);
-                output = bvhTriangleMeshShapeJson.get();
-                break;
+            RigidBodyType.BVH_TRIANGLE_MESH -> {
+                val bvhTriangleMeshShapeJson = BvhTriangleMeshShapeJson()
+                bvhTriangleMeshShapeJson.parse(shapeJson)
+                output = bvhTriangleMeshShapeJson.get()
+            }
 
-            case CONVEX_TRIANGLE_MESH:
-                ConvexTriangleMeshShapeJson convexTriangleMeshShapeJson = new ConvexTriangleMeshShapeJson();
-                convexTriangleMeshShapeJson.parse(shapeJson);
-                output = convexTriangleMeshShapeJson.get();
-                break;
+            RigidBodyType.CONVEX_TRIANGLE_MESH -> {
+                val convexTriangleMeshShapeJson = ConvexTriangleMeshShapeJson()
+                convexTriangleMeshShapeJson.parse(shapeJson)
+                output = convexTriangleMeshShapeJson.get()
+            }
         }
 
-        output.type = type;
+        output!!.type = type
     }
 
-    @Override
-    public RigidBodyShape get() {
-        return output;
+    override fun get(): RigidBodyShape {
+        return output
     }
 }

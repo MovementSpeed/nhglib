@@ -5,73 +5,53 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ */
 
-package io.github.movementspeed.nhglib.graphics.shaders.shadows.system.realistic;
+package io.github.movementspeed.nhglib.graphics.shaders.shadows.system.realistic
 
-import com.badlogic.gdx.graphics.Cubemap.CubemapSide;
-import com.badlogic.gdx.graphics.Texture;
-import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
-import io.github.movementspeed.nhglib.graphics.shaders.shadows.system.FirstPassBaseShadowSystem;
-import io.github.movementspeed.nhglib.graphics.shaders.shadows.utils.DirectionalAnalyzer;
-import io.github.movementspeed.nhglib.graphics.shaders.shadows.utils.LightFilter;
-import io.github.movementspeed.nhglib.graphics.shaders.shadows.utils.NearFarAnalyzer;
-import io.github.movementspeed.nhglib.graphics.shaders.shadows.utils.ShadowMapAllocator;
-
-import java.util.Set;
+import com.badlogic.gdx.graphics.Cubemap.CubemapSide
+import com.badlogic.gdx.graphics.Texture
+import io.github.movementspeed.nhglib.graphics.lights.NhgLight
+import io.github.movementspeed.nhglib.graphics.shaders.shadows.system.FirstPassBaseShadowSystem
+import io.github.movementspeed.nhglib.graphics.shaders.shadows.utils.DirectionalAnalyzer
+import io.github.movementspeed.nhglib.graphics.shaders.shadows.utils.LightFilter
+import io.github.movementspeed.nhglib.graphics.shaders.shadows.utils.NearFarAnalyzer
+import io.github.movementspeed.nhglib.graphics.shaders.shadows.utils.ShadowMapAllocator
 
 /** The Realistic shadow system creates real shadows. Indeed, with this system, a shadow is the absence of light. This system
  * performs only one render pass for each light and then render the scene.
- * @author realitix */
-public class RealisticShadowSystem extends FirstPassBaseShadowSystem {
+ * @author realitix
+ */
+class RealisticShadowSystem(nearFarAnalyzer: NearFarAnalyzer, allocator: ShadowMapAllocator, directionalAnalyzer: DirectionalAnalyzer, lightFilter: LightFilter) : FirstPassBaseShadowSystem(nearFarAnalyzer, allocator, directionalAnalyzer, lightFilter) {
+    override val passQuantity: Int
+        get() = PASS_QUANTITY
 
-	/** Number of pass before render the scene */
-	public static final int PASS_QUANTITY = 1;
+    /** @return First pass texture containing all depth maps.
+     */
+    val texture: Texture
+        get() = this.getTexture(FIRST_PASS)
 
-	public RealisticShadowSystem () {
-		super();
-	}
+    override fun init1() {
+        super.init1()
+        passShaderProviders?.set(FIRST_PASS, Pass1ShaderProvider())
+    }
 
-	public RealisticShadowSystem (NearFarAnalyzer nearFarAnalyzer, ShadowMapAllocator allocator,
-								  DirectionalAnalyzer directionalAnalyzer, LightFilter lightFilter) {
-		super(nearFarAnalyzer, allocator, directionalAnalyzer, lightFilter);
-	}
+    /** No point light support  */
+    override fun addLight(point: NhgLight, sides: Set<CubemapSide>) {}
 
-	@Override
-	public int getPassQuantity () {
-		return PASS_QUANTITY;
-	}
+    override fun toString(): String {
+        return "RealisticShadowSystem"
+    }
 
-	@Override
-	public void init () {
-		super.init();
-	}
-
-	@Override
-	protected void init1 () {
-		super.init1();
-		passShaderProviders[FIRST_PASS] = new Pass1ShaderProvider();
-	}
-
-	/** No point light support */
-	@Override
-	public void addLight (NhgLight point, Set<CubemapSide> sides) {
-	}
-
-	/** @return First pass texture containing all depth maps. */
-	public Texture getTexture () {
-		return this.getTexture(FIRST_PASS);
-	}
-
-	@Override
-	public String toString () {
-		return "RealisticShadowSystem";
-	}
+    companion object {
+        /** Number of pass before render the scene  */
+        const val PASS_QUANTITY = 1
+    }
 }

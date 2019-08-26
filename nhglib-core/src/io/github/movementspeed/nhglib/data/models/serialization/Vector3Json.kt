@@ -1,25 +1,23 @@
-package io.github.movementspeed.nhglib.data.models.serialization;
+package io.github.movementspeed.nhglib.data.models.serialization
 
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.JsonValue;
-import io.github.movementspeed.nhglib.interfaces.JsonParseable;
+import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.utils.JsonValue
+import io.github.movementspeed.nhglib.interfaces.JsonParseable
 
 /**
  * Created by Fausto Napoli on 11/06/2017.
  */
-public class Vector3Json implements JsonParseable<Vector3> {
-    private Vector3 vec;
+class Vector3Json : JsonParseable<Vector3> {
+    private var vec: Vector3? = null
 
-    @Override
-    public void parse(JsonValue jsonValue) {
-        vec = new Vector3(
+    override fun parse(jsonValue: JsonValue) {
+        vec = Vector3(
                 jsonValue.getFloat("x"),
                 jsonValue.getFloat("y"),
-                jsonValue.getFloat("z"));
+                jsonValue.getFloat("z"))
     }
 
-    @Override
-    public Vector3 get() {
-        return vec;
+    override fun get(): Vector3? {
+        return vec
     }
 }

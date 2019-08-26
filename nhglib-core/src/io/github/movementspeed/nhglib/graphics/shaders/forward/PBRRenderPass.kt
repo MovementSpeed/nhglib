@@ -1,32 +1,25 @@
-package io.github.movementspeed.nhglib.graphics.shaders.forward;
+package io.github.movementspeed.nhglib.graphics.shaders.forward
 
-import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.g3d.RenderableProvider;
-import com.badlogic.gdx.utils.Array;
-import io.github.movementspeed.nhglib.graphics.rendering.RenderPass;
+import com.badlogic.gdx.graphics.PerspectiveCamera
+import com.badlogic.gdx.graphics.g3d.RenderableProvider
+import com.badlogic.gdx.utils.Array
+import io.github.movementspeed.nhglib.graphics.rendering.RenderPass
 
-public class PBRRenderPass extends RenderPass {
-    public PBRRenderPass() {
-        super(false);
+class PBRRenderPass : RenderPass(false) {
+
+    override fun created() {
+        setShaderProvider(PBRShaderProvider())
     }
 
-    @Override
-    public void created() {
-        setShaderProvider(new PBRShaderProvider());
+    override fun begin(camera: PerspectiveCamera) {
+        renderer.begin(camera)
     }
 
-    @Override
-    public void begin(PerspectiveCamera camera) {
-        renderer.begin(camera);
+    override fun render(camera: PerspectiveCamera, renderableProviders: Array<RenderableProvider>) {
+        renderer.render(renderableProviders, environment)
     }
 
-    @Override
-    public void render(PerspectiveCamera camera, Array<RenderableProvider> renderableProviders) {
-        renderer.render(renderableProviders, environment);
-    }
-
-    @Override
-    public void end() {
-        renderer.end();
+    override fun end() {
+        renderer.end()
     }
 }

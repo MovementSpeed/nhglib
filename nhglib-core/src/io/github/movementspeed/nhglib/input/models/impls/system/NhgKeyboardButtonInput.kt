@@ -1,21 +1,12 @@
-package io.github.movementspeed.nhglib.input.models.impls.system;
+package io.github.movementspeed.nhglib.input.models.impls.system
 
-import io.github.movementspeed.nhglib.input.enums.InputType;
-import io.github.movementspeed.nhglib.input.models.base.NhgInput;
+import io.github.movementspeed.nhglib.input.enums.InputType
+import io.github.movementspeed.nhglib.input.models.base.NhgInput
 
-public class NhgKeyboardButtonInput extends NhgInput {
-    private int keyCode;
+class NhgKeyboardButtonInput(name: String) : NhgInput(name) {
+    var keyCode: Int = 0
 
-    public NhgKeyboardButtonInput(String name) {
-        super(name);
-        setType(InputType.KEYBOARD_BUTTON);
-    }
-
-    public int getKeyCode() {
-        return keyCode;
-    }
-
-    public void setKeyCode(int keyCode) {
-        this.keyCode = keyCode;
+    init {
+        type = InputType.KEYBOARD_BUTTON
     }
 }

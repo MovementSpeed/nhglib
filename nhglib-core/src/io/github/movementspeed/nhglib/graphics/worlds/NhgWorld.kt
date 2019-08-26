@@ -1,83 +1,63 @@
-package io.github.movementspeed.nhglib.graphics.worlds;
+package io.github.movementspeed.nhglib.graphics.worlds
 
-import com.badlogic.gdx.utils.ArrayMap;
-import io.github.movementspeed.nhglib.assets.Assets;
-import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
-import io.github.movementspeed.nhglib.core.ecs.utils.Entities;
-import io.github.movementspeed.nhglib.core.messaging.Messaging;
-import io.github.movementspeed.nhglib.graphics.scenes.Scene;
-import io.github.movementspeed.nhglib.graphics.scenes.SceneManager;
-import io.github.movementspeed.nhglib.graphics.worlds.strategies.base.WorldStrategy;
-import io.github.movementspeed.nhglib.utils.data.Bounds;
+import com.badlogic.gdx.utils.ArrayMap
+import io.github.movementspeed.nhglib.assets.Assets
+import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent
+import io.github.movementspeed.nhglib.core.ecs.utils.Entities
+import io.github.movementspeed.nhglib.core.messaging.Messaging
+import io.github.movementspeed.nhglib.graphics.scenes.Scene
+import io.github.movementspeed.nhglib.graphics.scenes.SceneManager
+import io.github.movementspeed.nhglib.graphics.worlds.strategies.base.WorldStrategy
+import io.github.movementspeed.nhglib.utils.data.Bounds
 
 /**
  * Created by Fausto Napoli on 28/12/2016.
  * Manages how the engine should handle the game world\space.
  */
-public class NhgWorld {
-    private Entities entities;
-    private Bounds bounds;
-    private SceneManager sceneManager;
-    private WorldStrategy worldStrategy;
-    private NodeComponent referenceNodeComponent;
+class NhgWorld(messaging: Messaging,
+               private val entities: Entities,
+               assets: Assets,
+               private val worldStrategy: WorldStrategy,
+               private val bounds: Bounds = Bounds(1f, 1f, 1f)) {
+    val sceneManager = SceneManager(messaging, entities, assets)
+    private var referenceNodeComponent: NodeComponent? = null
 
-    private ArrayMap<String, Scene> scenes;
+    private val scenes: ArrayMap<String, Scene> = ArrayMap()
 
-    public NhgWorld(Messaging messaging, Entities entities, Assets assets, WorldStrategy strategy) {
-        this(messaging, entities, assets, strategy, new Bounds(1f, 1f, 1f));
+    val currentScene: Scene?
+        get() = sceneManager.currentScene
+
+    fun addScene(scene: Scene) {
+        scenes.put(scene.name, scene)
     }
 
-    public NhgWorld(Messaging messaging, Entities entities, Assets assets, WorldStrategy strategy, Bounds bounds) {
-        this.entities = entities;
-        this.worldStrategy = strategy;
-        this.bounds = bounds;
-
-        sceneManager = new SceneManager(messaging, entities, assets);
-        scenes = new ArrayMap<>();
+    fun loadScene(scene: Scene) {
+        addScene(scene)
+        loadScene(scene.name)
     }
 
-    public void addScene(Scene scene) {
-        scenes.put(scene.name, scene);
+    fun loadScene(name: String?) {
+        val scene = getScene(name)
+        sceneManager.loadScene(scene)
     }
 
-    public void loadScene(Scene scene) {
-        addScene(scene);
-        loadScene(scene.name);
+    fun unloadScene(name: String) {
+        val scene = getScene(name)
+        sceneManager.unloadScene(scene)
     }
 
-    public void loadScene(String name) {
-        Scene scene = getScene(name);
-        sceneManager.loadScene(scene);
+    fun update() {
+        worldStrategy.update(sceneManager.currentScene!!, bounds, referenceNodeComponent!!)
     }
 
-    public void unloadScene(String name) {
-        Scene scene = getScene(name);
-        sceneManager.unloadScene(scene);
-    }
-
-    public void update() {
-        worldStrategy.update(sceneManager.getCurrentScene(), bounds, referenceNodeComponent);
-    }
-
-    public void setReferenceEntity(String entityName) {
-        if (entityName != null && !entityName.isEmpty()) {
-            int referenceEntity =
-                    sceneManager.getCurrentScene().sceneGraph.getSceneEntity(entityName);
-
-            referenceNodeComponent =
-                    entities.getComponent(referenceEntity, NodeComponent.class);
+    fun setReferenceEntity(entityName: String?) {
+        if (entityName != null && entityName.isNotEmpty()) {
+            val referenceEntity = sceneManager.currentScene!!.sceneGraph.getSceneEntity(entityName)
+            referenceNodeComponent = entities.getComponent(referenceEntity, NodeComponent::class.java)
         }
     }
 
-    public Scene getScene(String name) {
-        return scenes.get(name);
-    }
-
-    public Scene getCurrentScene() {
-        return sceneManager.getCurrentScene();
-    }
-
-    public SceneManager getSceneManager() {
-        return sceneManager;
+    fun getScene(name: String?): Scene {
+        return scenes.get(name)
     }
 }

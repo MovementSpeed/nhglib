@@ -1,42 +1,45 @@
-package io.github.movementspeed.nhglib.utils.scenes;
+package io.github.movementspeed.nhglib.utils.scenes
 
-import io.github.movementspeed.nhglib.data.models.serialization.ComponentJson;
+import io.github.movementspeed.nhglib.data.models.serialization.ComponentJson
 
-import java.util.HashMap;
+import kotlin.collections.HashMap
+import kotlin.reflect.KClass
 
 /**
  * Created by Fausto Napoli on 20/12/2016.
  */
-public class SceneMappings {
-    private static HashMap<String, Class<?>> assetClassesMapping = new HashMap<>();
-    private static HashMap<String, Class<? extends ComponentJson>> componentJsonClassesMapping = new HashMap<>();
+object SceneMappings {
+    private val assetClassesMapping = HashMap<String, KClass<*>>()
+    private val componentJsonClassesMapping = HashMap<String, KClass<out ComponentJson>>()
 
-    public static void addAssetClassMapping(String type, Class<?> assetClass) {
-        assetClassesMapping.put(type, assetClass);
+    fun addAssetClassMapping(type: String, assetClass: KClass<*>) {
+        assetClassesMapping[type] = assetClass
     }
 
-    public static void addComponentJsonMapping(String type, Class<? extends ComponentJson> componentClass) {
-        componentJsonClassesMapping.put(type, componentClass);
+    fun addComponentJsonMapping(type: String, componentClass: KClass<out ComponentJson>) {
+        componentJsonClassesMapping[type] = componentClass
     }
 
-    public static Class assetClassFromAlias(String alias) {
-        return assetClassesMapping.get(alias);
+    fun assetClassFromAlias(alias: String): KClass<*>? {
+        return assetClassesMapping[alias]
     }
 
-    public static ComponentJson componentJsonFromType(String type) {
-        ComponentJson componentJson = null;
+    fun componentJsonFromType(type: String): ComponentJson? {
+        var componentJson: ComponentJson? = null
 
         try {
-            Class componentJsonClass = componentJsonClassFromType(type);
-            componentJson = (ComponentJson) componentJsonClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
+            val componentJsonClass = componentJsonClassFromType(type)
+            componentJson = componentJsonClass?.objectInstance
+        } catch (e: InstantiationException) {
+            e.printStackTrace()
+        } catch (e: IllegalAccessException) {
+            e.printStackTrace()
         }
 
-        return componentJson;
+        return componentJson
     }
 
-    private static Class<? extends ComponentJson> componentJsonClassFromType(String type) {
-        return componentJsonClassesMapping.get(type);
+    private fun componentJsonClassFromType(type: String): KClass<out ComponentJson>? {
+        return componentJsonClassesMapping[type]
     }
 }

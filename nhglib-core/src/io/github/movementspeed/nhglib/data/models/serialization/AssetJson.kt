@@ -1,68 +1,66 @@
-package io.github.movementspeed.nhglib.data.models.serialization;
+package io.github.movementspeed.nhglib.data.models.serialization
 
-import com.badlogic.gdx.utils.JsonValue;
-import io.github.movementspeed.nhglib.assets.Asset;
-import io.github.movementspeed.nhglib.interfaces.JsonParseable;
-import io.github.movementspeed.nhglib.utils.data.Bundle;
-import io.github.movementspeed.nhglib.utils.scenes.SceneMappings;
+import com.badlogic.gdx.utils.JsonValue
+import io.github.movementspeed.nhglib.assets.Asset
+import io.github.movementspeed.nhglib.interfaces.JsonParseable
+import io.github.movementspeed.nhglib.utils.data.Bundle
+import io.github.movementspeed.nhglib.utils.scenes.SceneMappings
 
 /**
  * Created by Fausto Napoli on 19/12/2016.
  */
-public class AssetJson implements JsonParseable<Asset> {
-    private Asset output;
+class AssetJson : JsonParseable<Asset> {
+    private var output: Asset? = null
 
-    @Override
-    public void parse(JsonValue jsonValue) {
-        String alias = jsonValue.getString("alias");
-        String source = jsonValue.getString("source");
-        String classString = jsonValue.getString("classAlias");
+    override fun parse(jsonValue: JsonValue) {
+        val alias = jsonValue.getString("alias")
+        val source = jsonValue.getString("source")
+        val classString = jsonValue.getString("classAlias")
 
-        String dependenciesPath = jsonValue.getString(
+        var dependenciesPath = jsonValue.getString(
                 "dependenciesPath",
-                getDefaultDependenciesPath(source));
+                getDefaultDependenciesPath(source))
 
         if (!dependenciesPath.endsWith("/")) {
-            dependenciesPath += "/";
+            dependenciesPath += "/"
         }
 
-        Class assetClass = SceneMappings.assetClassFromAlias(classString);
+        val assetClass = SceneMappings.assetClassFromAlias(classString)
 
-        JsonValue parameters = jsonValue.get("parameters");
+        val parameters = jsonValue.get("parameters")
 
-        output = new Asset(alias, source, assetClass);
-        output.dependenciesPath = dependenciesPath;
-        output.parametersBundle = new Bundle();
+        output = Asset(alias, source, assetClass)
+        output!!.dependenciesPath = dependenciesPath
+        output!!.parametersBundle = Bundle()
 
         if (parameters != null) {
-            for (JsonValue value : parameters) {
-                JsonValue internalValue = value.get(0);
+            for (value in parameters) {
+                val internalValue = value.get(0)
 
-                if (internalValue.isBoolean()) {
-                    output.parametersBundle.put(internalValue.name, internalValue.asBoolean());
-                } else if (internalValue.isDouble()) {
-                    output.parametersBundle.put(internalValue.name, internalValue.asDouble());
-                } else if (internalValue.isLong()) {
-                    output.parametersBundle.put(internalValue.name, internalValue.asLong());
-                } else if (internalValue.isString()) {
-                    output.parametersBundle.put(internalValue.name, internalValue.asString());
+                if (internalValue.isBoolean) {
+                    output!!.parametersBundle!![internalValue.name] = internalValue.asBoolean()
+                } else if (internalValue.isDouble) {
+                    output!!.parametersBundle!![internalValue.name] = internalValue.asDouble()
+                } else if (internalValue.isLong) {
+                    output!!.parametersBundle!![internalValue.name] = internalValue.asLong()
+                } else if (internalValue.isString) {
+                    output!!.parametersBundle!![internalValue.name] = internalValue.asString()
                 }
             }
         }
     }
 
-    @Override
-    public Asset get() {
-        return output;
+    override fun get(): Asset? {
+        return output
     }
 
-    private String getDefaultDependenciesPath(String sourcePath) {
-        String res = sourcePath;
+    private fun getDefaultDependenciesPath(sourcePath: String): String {
+        var res = sourcePath
 
         if (sourcePath.contains("/")) {
-            res = sourcePath.substring(0, sourcePath.lastIndexOf("/"));
+            res = sourcePath.substring(0, sourcePath.lastIndexOf("/"))
         }
 
-        return res;
+        return res
     }
 }

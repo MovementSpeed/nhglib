@@ -1,38 +1,14 @@
-package io.github.movementspeed.nhglib.input.configuration.impls;
+package io.github.movementspeed.nhglib.input.configuration.impls
 
-import io.github.movementspeed.nhglib.input.configuration.base.InputConfiguration;
-import io.github.movementspeed.nhglib.input.enums.MouseSourceType;
+import io.github.movementspeed.nhglib.input.configuration.base.InputConfiguration
+import io.github.movementspeed.nhglib.input.enums.MouseSourceType
 
 /**
  * Created by Fausto Napoli on 24/01/2017.
  */
-public class MouseInputConfiguration extends InputConfiguration {
-    private float horizontalSensitivity;
-    private float verticalSensitivity;
+class MouseInputConfiguration : InputConfiguration() {
+    var horizontalSensitivity: Float = 0.toFloat()
+    var verticalSensitivity: Float = 0.toFloat()
 
-    private MouseSourceType mouseSourceType;
-
-    public void setHorizontalSensitivity(float horizontalSensitivity) {
-        this.horizontalSensitivity = horizontalSensitivity;
-    }
-
-    public void setVerticalSensitivity(float verticalSensitivity) {
-        this.verticalSensitivity = verticalSensitivity;
-    }
-
-    public void setMouseSourceType(MouseSourceType mouseSourceType) {
-        this.mouseSourceType = mouseSourceType;
-    }
-
-    public float getHorizontalSensitivity() {
-        return horizontalSensitivity;
-    }
-
-    public float getVerticalSensitivity() {
-        return verticalSensitivity;
-    }
-
-    public MouseSourceType getMouseSourceType() {
-        return mouseSourceType;
-    }
+    var mouseSourceType: MouseSourceType? = null
 }

@@ -1,42 +1,41 @@
-package io.github.movementspeed.nhglib.data.models.serialization.components;
+package io.github.movementspeed.nhglib.data.models.serialization.components
 
-import com.badlogic.gdx.utils.JsonValue;
-import io.github.movementspeed.nhglib.assets.Asset;
-import io.github.movementspeed.nhglib.core.ecs.components.graphics.UiComponent;
-import io.github.movementspeed.nhglib.data.models.serialization.AssetJson;
-import io.github.movementspeed.nhglib.data.models.serialization.ComponentJson;
+import com.badlogic.gdx.utils.JsonValue
+import io.github.movementspeed.nhglib.assets.Asset
+import io.github.movementspeed.nhglib.core.ecs.components.graphics.UiComponent
+import io.github.movementspeed.nhglib.data.models.serialization.AssetJson
+import io.github.movementspeed.nhglib.data.models.serialization.ComponentJson
 
-public class UiComponentJson extends ComponentJson {
-    @Override
-    public void parse(JsonValue jsonValue) {
-        UiComponent uiComponent = nhg.entities.createComponent(entity, UiComponent.class);
-        uiComponent.fileName = jsonValue.getString("fileName", "");
+class UiComponentJson : ComponentJson() {
+    override fun parse(jsonValue: JsonValue) {
+        val uiComponent = nhg!!.entities.createComponent(entity, UiComponent::class.java)
+        uiComponent.fileName = jsonValue.getString("fileName", "")
 
-        String uiType = jsonValue.getString("uiType", "screen").toLowerCase();
+        val uiType = jsonValue.getString("uiType", "screen").toLowerCase()
 
         if (uiType.contentEquals("screen")) {
-            uiComponent.type = UiComponent.Type.SCREEN;
+            uiComponent.type = UiComponent.Type.SCREEN
         } else if (uiType.contentEquals("panel")) {
-            uiComponent.type = UiComponent.Type.PANEL;
+            uiComponent.type = UiComponent.Type.PANEL
         }
 
-        JsonValue dependenciesJson = jsonValue.get("dependencies");
+        val dependenciesJson = jsonValue.get("dependencies")
 
-        for (int i = 0; i < dependenciesJson.size; i++) {
-            AssetJson assetJson = new AssetJson();
-            assetJson.parse(dependenciesJson.get(i));
+        for (i in 0 until dependenciesJson.size) {
+            val assetJson = AssetJson()
+            assetJson.parse(dependenciesJson.get(i))
 
-            Asset dependency = assetJson.get();
-            uiComponent.dependencies.add(dependency);
+            val dependency = assetJson.get()
+            uiComponent.dependencies.add(dependency)
         }
 
-        JsonValue actorNamesJson = jsonValue.get("actors");
+        val actorNamesJson = jsonValue.get("actors")
 
-        for (int i = 0; i < actorNamesJson.size; i++) {
-            String actor = actorNamesJson.getString(i);
-            uiComponent.actorNames.add(actor);
+        for (i in 0 until actorNamesJson.size) {
+            val actor = actorNamesJson.getString(i)
+            uiComponent.actorNames.add(actor)
         }
 
-        output = uiComponent;
+        output = uiComponent
     }
 }

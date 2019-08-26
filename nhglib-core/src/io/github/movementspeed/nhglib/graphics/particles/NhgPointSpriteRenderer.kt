@@ -1,48 +1,41 @@
-package io.github.movementspeed.nhglib.graphics.particles;
+package io.github.movementspeed.nhglib.graphics.particles
 
-import com.badlogic.gdx.graphics.g3d.particles.ParticleChannels;
-import com.badlogic.gdx.graphics.g3d.particles.ParticleChannels.ColorInitializer;
-import com.badlogic.gdx.graphics.g3d.particles.ParticleChannels.Rotation2dInitializer;
-import com.badlogic.gdx.graphics.g3d.particles.ParticleChannels.ScaleInitializer;
-import com.badlogic.gdx.graphics.g3d.particles.ParticleChannels.TextureRegionInitializer;
-import com.badlogic.gdx.graphics.g3d.particles.ParticleControllerComponent;
-import com.badlogic.gdx.graphics.g3d.particles.batches.ParticleBatch;
-import com.badlogic.gdx.graphics.g3d.particles.batches.PointSpriteParticleBatch;
-import com.badlogic.gdx.graphics.g3d.particles.renderers.ParticleControllerRenderer;
-import com.badlogic.gdx.graphics.g3d.particles.renderers.PointSpriteControllerRenderData;
+import com.badlogic.gdx.graphics.g3d.particles.ParticleChannels
+import com.badlogic.gdx.graphics.g3d.particles.ParticleChannels.ColorInitializer
+import com.badlogic.gdx.graphics.g3d.particles.ParticleChannels.Rotation2dInitializer
+import com.badlogic.gdx.graphics.g3d.particles.ParticleChannels.ScaleInitializer
+import com.badlogic.gdx.graphics.g3d.particles.ParticleChannels.TextureRegionInitializer
+import com.badlogic.gdx.graphics.g3d.particles.ParticleControllerComponent
+import com.badlogic.gdx.graphics.g3d.particles.batches.ParticleBatch
+import com.badlogic.gdx.graphics.g3d.particles.batches.PointSpriteParticleBatch
+import com.badlogic.gdx.graphics.g3d.particles.renderers.ParticleControllerRenderer
+import com.badlogic.gdx.graphics.g3d.particles.renderers.PointSpriteControllerRenderData
 
 /**
- * A {@link ParticleControllerRenderer} which will render particles as point sprites to a {@link PointSpriteParticleBatch} .
+ * A [ParticleControllerRenderer] which will render particles as point sprites to a [PointSpriteParticleBatch] .
  *
  * @author Inferno
  */
-public class NhgPointSpriteRenderer extends ParticleControllerRenderer<PointSpriteControllerRenderData, PointSpriteSoftParticleBatch> {
-    public NhgPointSpriteRenderer() {
-        super(new PointSpriteControllerRenderData());
+class NhgPointSpriteRenderer() : ParticleControllerRenderer<PointSpriteControllerRenderData, PointSpriteSoftParticleBatch>(PointSpriteControllerRenderData()) {
+
+    constructor(batch: PointSpriteSoftParticleBatch) : this() {
+        setBatch(batch)
     }
 
-    public NhgPointSpriteRenderer(PointSpriteSoftParticleBatch batch) {
-        this();
-        setBatch(batch);
+    override fun allocateChannels() {
+        renderData.positionChannel = controller.particles.addChannel<ParallelArray.FloatChannel>(ParticleChannels.Position)
+        renderData.regionChannel = controller.particles.addChannel<FloatChannel>(ParticleChannels.TextureRegion, TextureRegionInitializer.get())
+        renderData.colorChannel = controller.particles.addChannel<FloatChannel>(ParticleChannels.Color, ColorInitializer.get())
+        renderData.scaleChannel = controller.particles.addChannel<FloatChannel>(ParticleChannels.Scale, ScaleInitializer.get())
+        renderData.rotationChannel = controller.particles.addChannel<FloatChannel>(ParticleChannels.Rotation2D, Rotation2dInitializer.get())
     }
 
-    @Override
-    public void allocateChannels() {
-        renderData.positionChannel = controller.particles.addChannel(ParticleChannels.Position);
-        renderData.regionChannel = controller.particles.addChannel(ParticleChannels.TextureRegion, TextureRegionInitializer.get());
-        renderData.colorChannel = controller.particles.addChannel(ParticleChannels.Color, ColorInitializer.get());
-        renderData.scaleChannel = controller.particles.addChannel(ParticleChannels.Scale, ScaleInitializer.get());
-        renderData.rotationChannel = controller.particles.addChannel(ParticleChannels.Rotation2D, Rotation2dInitializer.get());
+    override fun isCompatible(batch: ParticleBatch<*>): Boolean {
+        return batch is PointSpriteSoftParticleBatch
     }
 
-    @Override
-    public boolean isCompatible(ParticleBatch<?> batch) {
-        return batch instanceof PointSpriteSoftParticleBatch;
-    }
-
-    @Override
-    public ParticleControllerComponent copy() {
-        return new NhgPointSpriteRenderer(batch);
+    override fun copy(): ParticleControllerComponent {
+        return NhgPointSpriteRenderer(batch)
     }
 
 }

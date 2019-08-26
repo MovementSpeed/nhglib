@@ -1,113 +1,103 @@
-package io.github.movementspeed.nhglib.core.ecs.systems.base;
+package io.github.movementspeed.nhglib.core.ecs.systems.base
 
-import com.artemis.Aspect;
-import com.artemis.utils.IntBag;
-import com.badlogic.gdx.math.MathUtils;
-import io.github.movementspeed.nhglib.core.threading.Threading;
-import io.github.movementspeed.nhglib.core.threading.Work;
+import com.artemis.Aspect
+import com.artemis.utils.IntBag
+import com.badlogic.gdx.math.MathUtils
+import io.github.movementspeed.nhglib.core.threading.Threading
+import io.github.movementspeed.nhglib.core.threading.Work
 
-import java.util.Arrays;
+import java.util.Arrays
 
 /**
  * Created by Fausto Napoli on 02/11/2016.
  */
-public abstract class ThreadedIteratingSystem extends NhgBaseEntitySystem {
-    private int split;
-    private int rows;
-    private int latchId;
-    private Threading threading;
+abstract class ThreadedIteratingSystem(aspect: Aspect.Builder, private val threading: Threading) : NhgBaseEntitySystem(aspect) {
+    private var split: Int = 0
+    private var rows: Int = 0
+    private val latchId: Int
 
-    private int[][] splitEntities;
+    private var splitEntities: Array<IntArray>? = null
 
-    public ThreadedIteratingSystem(Aspect.Builder aspect, Threading threading) {
-        super(aspect);
-        this.threading = threading;
+    init {
 
-        latchId = 2165;
-        threading.createLatch(latchId, Threading.cores);
+        latchId = 2165
+        threading.createLatch(latchId, Threading.cores)
     }
 
-    @Override
-    protected final void processSystem() {
-        IntBag actives = subscription.getEntities();
-        int activesSize = actives.size();
+    override fun processSystem() {
+        val actives = subscription.entities
+        val activesSize = actives.size()
 
         if (activesSize > 0) {
-            int previousSplit = split;
-            split = MathUtils.ceil((float) actives.size() / (float) Threading.cores);
+            val previousSplit = split
+            split = MathUtils.ceil(actives.size().toFloat() / Threading.cores.toFloat())
 
-            int previousRows = rows;
+            val previousRows = rows
             if (activesSize > Threading.cores) {
-                rows = Threading.cores;
+                rows = Threading.cores
             } else {
-                rows = activesSize;
+                rows = activesSize
             }
 
             if (previousRows != rows) {
-                threading.setLatchCount(latchId, rows);
+                threading.setLatchCount(latchId, rows)
             }
 
             if (previousRows != rows || previousSplit != split) {
-                splitEntities = new int[rows][split];
+                splitEntities = Array(rows) { IntArray(split) }
 
-                int from;
-                int to;
-                int[] data = actives.getData();
+                var from: Int
+                var to: Int
+                val data = actives.data
 
-                for (int i = 0; i < rows; i++) {
+                for (i in 0 until rows) {
                     if (split == 1) {
-                        splitEntities[i][0] = data[i];
+                        splitEntities!![i][0] = data[i]
                     } else {
-                        from = i * split;
-                        to = from + split;
+                        from = i * split
+                        to = from + split
 
-                        splitEntities[i] = Arrays.copyOfRange(data, from, to);
+                        splitEntities[i] = Arrays.copyOfRange(data, from, to)
                     }
 
                     if (i > 0) {
-                        postProcessList(splitEntities[i]);
+                        postProcessList(splitEntities!![i])
                     }
                 }
             }
 
-            for (int i = 0; i < rows; i++) {
-                threading.execute(new ProcessWork(splitEntities[i]));
+            for (i in 0 until rows) {
+                threading.execute(ProcessWork(splitEntities!![i]))
             }
 
-            threading.awaitLatch(latchId);
+            threading.awaitLatch(latchId)
         }
     }
 
-    protected abstract void process(int entityId);
+    protected abstract fun process(entityId: Int)
 
-    private void postProcessList(int[] list) {
-        for (int i = 0; i < list.length; i++) {
-            int entity = list[i];
+    private fun postProcessList(list: IntArray) {
+        for (i in list.indices) {
+            val entity = list[i]
 
             if (entity == 0) {
-                list[i] = -1;
+                list[i] = -1
             }
         }
     }
 
-    private class ProcessWork extends Work {
-        private int[] entitiesPart;
+    private inner class ProcessWork internal constructor(private val entitiesPart: IntArray?) : Work() {
 
-        ProcessWork(int[] entitiesPart) {
-            this.entitiesPart = entitiesPart;
-        }
-
-        @Override
-        public void run() {
+        override fun run() {
             if (entitiesPart != null) {
-                for (int entity : entitiesPart) {
+                for (entity in entitiesPart) {
                     if (entity != -1) {
-                        process(entity);
+                        process(entity)
                     }
                 }
             }
 
-            threading.countDownLatch(latchId);
+            threading.countDownLatch(latchId)
         }
     }
 }

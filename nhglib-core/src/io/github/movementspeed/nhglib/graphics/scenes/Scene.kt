@@ -1,20 +1,20 @@
-package io.github.movementspeed.nhglib.graphics.scenes;
+package io.github.movementspeed.nhglib.graphics.scenes
 
-import com.badlogic.gdx.utils.Array;
-import io.github.movementspeed.nhglib.Nhg;
-import io.github.movementspeed.nhglib.assets.Asset;
+import com.badlogic.gdx.utils.Array
+import io.github.movementspeed.nhglib.Nhg
+import io.github.movementspeed.nhglib.assets.Asset
 
 /**
  * Created by Fausto Napoli on 15/12/2016.
  */
-public class Scene {
-    public String name;
-    public SceneGraph sceneGraph;
+class Scene(nhg: Nhg, rootId: String) {
+    var name: String? = null
+    var sceneGraph: SceneGraph
 
-    public Array<Asset> assets;
+    var assets: Array<Asset>
 
-    public Scene(Nhg nhg, String rootId) {
-        sceneGraph = new SceneGraph(nhg, rootId);
-        assets = new Array<>();
+    init {
+        sceneGraph = SceneGraph(nhg, rootId)
+        assets = Array()
     }
 }

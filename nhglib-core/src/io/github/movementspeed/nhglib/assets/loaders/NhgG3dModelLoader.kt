@@ -1,448 +1,465 @@
-package io.github.movementspeed.nhglib.assets.loaders;
+package io.github.movementspeed.nhglib.assets.loaders
 
-import com.badlogic.gdx.assets.loaders.FileHandleResolver;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.VertexAttribute;
-import com.badlogic.gdx.graphics.g3d.model.data.*;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Quaternion;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.*;
-import io.github.movementspeed.nhglib.assets.Asset;
-import io.github.movementspeed.nhglib.assets.Assets;
+import com.badlogic.gdx.assets.loaders.FileHandleResolver
+import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.graphics.VertexAttribute
+import com.badlogic.gdx.graphics.g3d.model.data.*
+import com.badlogic.gdx.math.Matrix4
+import com.badlogic.gdx.math.Quaternion
+import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.utils.*
+import io.github.movementspeed.nhglib.assets.Asset
+import io.github.movementspeed.nhglib.assets.Assets
 
-public class NhgG3dModelLoader extends NhgModelLoader<NhgModelLoader.ModelParameters> {
-    public static final short VERSION_HI = 0;
-    public static final short VERSION_LO = 1;
-    protected final BaseJsonReader reader;
+class NhgG3dModelLoader @JvmOverloads constructor(private val assets: Assets, protected val reader: BaseJsonReader, resolver: FileHandleResolver? = null) : NhgModelLoader<NhgModelLoader.ModelParameters>(resolver) {
 
-    private Assets assets;
+    private val tempQ = Quaternion()
 
-    public NhgG3dModelLoader(Assets assets, final BaseJsonReader reader) {
-        this(assets, reader, null);
+    override fun loadModelData(fileHandle: FileHandle, parameters: NhgModelLoader.ModelParameters?): ModelData? {
+        return parseModel(fileHandle)
     }
 
-    public NhgG3dModelLoader(Assets assets, BaseJsonReader reader, FileHandleResolver resolver) {
-        super(resolver);
-        this.assets = assets;
-        this.reader = reader;
-    }
-
-    @Override
-    public ModelData loadModelData(FileHandle fileHandle, NhgModelLoader.ModelParameters parameters) {
-        return parseModel(fileHandle);
-    }
-
-    public ModelData parseModel(FileHandle handle) {
-        JsonValue json = reader.parse(handle);
-        ModelData model = new ModelData();
-        JsonValue version = json.require("version");
-        model.version[0] = version.getShort(0);
-        model.version[1] = version.getShort(1);
+    fun parseModel(handle: FileHandle): ModelData {
+        val json = reader.parse(handle)
+        val model = ModelData()
+        val version = json.require("version")
+        model.version[0] = version.getShort(0)
+        model.version[1] = version.getShort(1)
         if (model.version[0] != VERSION_HI || model.version[1] != VERSION_LO)
-            throw new GdxRuntimeException("Model version not supported");
+            throw GdxRuntimeException("Model version not supported")
 
         // Get the current asset
-        ArrayMap.Values<Asset> cachedAssets = assets.getCachedAssets();
-        for (Asset asset : cachedAssets) {
+        val cachedAssets = assets.cachedAssets
+        for (asset in cachedAssets) {
             if (asset.source.contentEquals(handle.path())) {
-                currentAsset = asset;
-                break;
+                currentAsset = asset
+                break
             }
         }
 
-        model.id = json.getString("id", "");
-        parseMeshes(model, json);
-        parseMaterials(model, json, currentAsset.dependenciesPath);
-        parseNodes(model, json);
-        parseAnimations(model, json);
-        return model;
+        model.id = json.getString("id", "")
+        parseMeshes(model, json)
+        parseMaterials(model, json, currentAsset.dependenciesPath)
+        parseNodes(model, json)
+        parseAnimations(model, json)
+        return model
     }
 
-    private void parseMeshes(ModelData model, JsonValue json) {
-        JsonValue meshes = json.get("meshes");
+    private fun parseMeshes(model: ModelData, json: JsonValue) {
+        val meshes = json.get("meshes")
         if (meshes != null) {
 
-            model.meshes.ensureCapacity(meshes.size);
-            for (JsonValue mesh = meshes.child; mesh != null; mesh = mesh.next) {
-                ModelMesh jsonMesh = new ModelMesh();
+            model.meshes.ensureCapacity(meshes.size)
+            var mesh: JsonValue? = meshes.child
+            while (mesh != null) {
+                val jsonMesh = ModelMesh()
 
-                String id = mesh.getString("id", "");
-                jsonMesh.id = id;
+                val id = mesh.getString("id", "")
+                jsonMesh.id = id
 
-                JsonValue attributes = mesh.require("attributes");
-                jsonMesh.attributes = parseAttributes(attributes);
-                jsonMesh.vertices = mesh.require("vertices").asFloatArray();
+                val attributes = mesh.require("attributes")
+                jsonMesh.attributes = parseAttributes(attributes)
+                jsonMesh.vertices = mesh.require("vertices").asFloatArray()
 
-                JsonValue meshParts = mesh.require("parts");
-                Array<ModelMeshPart> parts = new Array<ModelMeshPart>();
-                for (JsonValue meshPart = meshParts.child; meshPart != null; meshPart = meshPart.next) {
-                    ModelMeshPart jsonPart = new ModelMeshPart();
-                    String partId = meshPart.getString("id", null);
-                    if (partId == null) {
-                        throw new GdxRuntimeException("Not id given for mesh part");
-                    }
-                    for (ModelMeshPart other : parts) {
-                        if (other.id.equals(partId)) {
-                            throw new GdxRuntimeException("Mesh part with id '" + partId + "' already in defined");
+                val meshParts = mesh.require("parts")
+                val parts = Array<ModelMeshPart>()
+                var meshPart: JsonValue? = meshParts.child
+                while (meshPart != null) {
+                    val jsonPart = ModelMeshPart()
+                    val partId = meshPart.getString("id", null)
+                            ?: throw GdxRuntimeException("Not id given for mesh part")
+                    for (other in parts) {
+                        if (other.id == partId) {
+                            throw GdxRuntimeException("Mesh part with id '$partId' already in defined")
                         }
                     }
-                    jsonPart.id = partId;
+                    jsonPart.id = partId
 
-                    String type = meshPart.getString("type", null);
-                    if (type == null) {
-                        throw new GdxRuntimeException("No primitive type given for mesh part '" + partId + "'");
-                    }
-                    jsonPart.primitiveType = parseType(type);
+                    val type = meshPart.getString("type", null)
+                            ?: throw GdxRuntimeException("No primitive type given for mesh part '$partId'")
+                    jsonPart.primitiveType = parseType(type)
 
-                    jsonPart.indices = meshPart.require("indices").asShortArray();
-                    parts.add(jsonPart);
+                    jsonPart.indices = meshPart.require("indices").asShortArray()
+                    parts.add(jsonPart)
+                    meshPart = meshPart.next
                 }
-                jsonMesh.parts = parts.toArray(ModelMeshPart.class);
-                model.meshes.add(jsonMesh);
+                jsonMesh.parts = parts.toArray(ModelMeshPart::class.java)
+                model.meshes.add(jsonMesh)
+                mesh = mesh.next
             }
         }
     }
 
-    private int parseType(String type) {
-        if (type.equals("TRIANGLES")) {
-            return GL20.GL_TRIANGLES;
-        } else if (type.equals("LINES")) {
-            return GL20.GL_LINES;
-        } else if (type.equals("POINTS")) {
-            return GL20.GL_POINTS;
-        } else if (type.equals("TRIANGLE_STRIP")) {
-            return GL20.GL_TRIANGLE_STRIP;
-        } else if (type.equals("LINE_STRIP")) {
-            return GL20.GL_LINE_STRIP;
+    private fun parseType(type: String): Int {
+        return if (type == "TRIANGLES") {
+            GL20.GL_TRIANGLES
+        } else if (type == "LINES") {
+            GL20.GL_LINES
+        } else if (type == "POINTS") {
+            GL20.GL_POINTS
+        } else if (type == "TRIANGLE_STRIP") {
+            GL20.GL_TRIANGLE_STRIP
+        } else if (type == "LINE_STRIP") {
+            GL20.GL_LINE_STRIP
         } else {
-            throw new GdxRuntimeException("Unknown primitive type '" + type
-                    + "', should be one of triangle, trianglestrip, line, linestrip, lineloop or point");
+            throw GdxRuntimeException("Unknown primitive type '" + type
+                    + "', should be one of triangle, trianglestrip, line, linestrip, lineloop or point")
         }
     }
 
-    private VertexAttribute[] parseAttributes(JsonValue attributes) {
-        Array<VertexAttribute> vertexAttributes = new Array<VertexAttribute>();
-        int unit = 0;
-        int blendWeightCount = 0;
-        for (JsonValue value = attributes.child; value != null; value = value.next) {
-            String attribute = value.asString();
-            String attr = (String) attribute;
-            if (attr.equals("POSITION")) {
-                vertexAttributes.add(VertexAttribute.Position());
-            } else if (attr.equals("NORMAL")) {
-                vertexAttributes.add(VertexAttribute.Normal());
-            } else if (attr.equals("COLOR")) {
-                vertexAttributes.add(VertexAttribute.ColorUnpacked());
-            } else if (attr.equals("COLORPACKED")) {
-                vertexAttributes.add(VertexAttribute.ColorPacked());
-            } else if (attr.equals("TANGENT")) {
-                vertexAttributes.add(VertexAttribute.Tangent());
-            } else if (attr.equals("BINORMAL")) {
-                vertexAttributes.add(VertexAttribute.Binormal());
+    private fun parseAttributes(attributes: JsonValue): Array<VertexAttribute> {
+        val vertexAttributes = Array<VertexAttribute>()
+        var unit = 0
+        var blendWeightCount = 0
+        var value: JsonValue? = attributes.child
+        while (value != null) {
+            val attribute = value.asString()
+            val attr = attribute as String
+            if (attr == "POSITION") {
+                vertexAttributes.add(VertexAttribute.Position())
+            } else if (attr == "NORMAL") {
+                vertexAttributes.add(VertexAttribute.Normal())
+            } else if (attr == "COLOR") {
+                vertexAttributes.add(VertexAttribute.ColorUnpacked())
+            } else if (attr == "COLORPACKED") {
+                vertexAttributes.add(VertexAttribute.ColorPacked())
+            } else if (attr == "TANGENT") {
+                vertexAttributes.add(VertexAttribute.Tangent())
+            } else if (attr == "BINORMAL") {
+                vertexAttributes.add(VertexAttribute.Binormal())
             } else if (attr.startsWith("TEXCOORD")) {
-                vertexAttributes.add(VertexAttribute.TexCoords(unit++));
+                vertexAttributes.add(VertexAttribute.TexCoords(unit++))
             } else if (attr.startsWith("BLENDWEIGHT")) {
-                vertexAttributes.add(VertexAttribute.BoneWeight(blendWeightCount++));
+                vertexAttributes.add(VertexAttribute.BoneWeight(blendWeightCount++))
             } else {
-                throw new GdxRuntimeException("Unknown vertex attribute '" + attr
-                        + "', should be one of position, normal, uv, tangent or binormal");
+                throw GdxRuntimeException("Unknown vertex attribute '" + attr
+                        + "', should be one of position, normal, uv, tangent or binormal")
             }
+            value = value.next
         }
-        return vertexAttributes.toArray(VertexAttribute.class);
+        return vertexAttributes.toArray(VertexAttribute::class.java)
     }
 
-    private void parseMaterials(ModelData model, JsonValue json, String materialDir) {
-        JsonValue materials = json.get("materials");
+    private fun parseMaterials(model: ModelData, json: JsonValue, materialDir: String) {
+        val materials = json.get("materials")
 
         if (materials == null) {
             // we should probably create some default material in this case
         } else {
-            model.materials.ensureCapacity(materials.size);
-            for (JsonValue material = materials.child; material != null; material = material.next) {
-                ModelMaterial jsonMaterial = new ModelMaterial();
+            model.materials.ensureCapacity(materials.size)
+            var material: JsonValue? = materials.child
+            while (material != null) {
+                val jsonMaterial = ModelMaterial()
 
-                String id = material.getString("id", null);
-                if (id == null) throw new GdxRuntimeException("Material needs an id.");
+                val id = material.getString("id", null) ?: throw GdxRuntimeException("Material needs an id.")
 
-                jsonMaterial.id = id;
+                jsonMaterial.id = id
 
                 // Read material colors
-                final JsonValue albedo = material.get("diffuse");
-                if (albedo != null) jsonMaterial.diffuse = parseColor(albedo);
-                
-                final JsonValue ambient = material.get("ambient");
-                if (ambient != null) jsonMaterial.ambient = parseColor(ambient);
-                
+                val albedo = material.get("diffuse")
+                if (albedo != null) jsonMaterial.diffuse = parseColor(albedo)
+
+                val ambient = material.get("ambient")
+                if (ambient != null) jsonMaterial.ambient = parseColor(ambient)
+
                 // Read opacity
-                jsonMaterial.opacity = 1.0f/*material.getFloat("opacity", 1.0f)*/;
+                jsonMaterial.opacity = 1.0f/*material.getFloat("opacity", 1.0f)*/
 
                 // Read textures
-                JsonValue textures = material.get("textures");
+                val textures = material.get("textures")
                 if (textures != null) {
-                    for (JsonValue texture = textures.child; texture != null; texture = texture.next) {
-                        ModelTexture jsonTexture = new ModelTexture();
+                    var texture: JsonValue? = textures.child
+                    while (texture != null) {
+                        val jsonTexture = ModelTexture()
 
-                        String textureId = texture.getString("id", null);
-                        if (textureId == null) throw new GdxRuntimeException("Texture has no id.");
-                        jsonTexture.id = textureId;
+                        val textureId = texture.getString("id", null) ?: throw GdxRuntimeException("Texture has no id.")
+                        jsonTexture.id = textureId
 
-                        String fileName = texture.getString("filename", null);
-                        if (fileName == null) throw new GdxRuntimeException("Texture needs filename.");
-                        jsonTexture.fileName = materialDir + (materialDir.length() == 0 || materialDir.endsWith("/") ? "" : "/")
-                                + fileName;
+                        val fileName = texture.getString("filename", null)
+                                ?: throw GdxRuntimeException("Texture needs filename.")
+                        jsonTexture.fileName = (materialDir + (if (materialDir.length == 0 || materialDir.endsWith("/")) "" else "/")
+                                + fileName)
 
-                        jsonTexture.uvTranslation = readVector2(texture.get("uvTranslation"), 0f, 0f);
-                        jsonTexture.uvScaling = readVector2(texture.get("uvScaling"), 1f, 1f);
+                        jsonTexture.uvTranslation = readVector2(texture.get("uvTranslation"), 0f, 0f)
+                        jsonTexture.uvScaling = readVector2(texture.get("uvScaling"), 1f, 1f)
 
-                        String textureType = texture.getString("type", null);
-                        if (textureType == null) throw new GdxRuntimeException("Texture needs type.");
+                        val textureType = texture.getString("type", null)
+                                ?: throw GdxRuntimeException("Texture needs type.")
 
-                        jsonTexture.usage = parseTextureUsage(textureType);
+                        jsonTexture.usage = parseTextureUsage(textureType)
 
-                        if (jsonMaterial.textures == null) jsonMaterial.textures = new Array<>();
-                        jsonMaterial.textures.add(jsonTexture);
+                        if (jsonMaterial.textures == null) jsonMaterial.textures = Array()
+                        jsonMaterial.textures.add(jsonTexture)
+                        texture = texture.next
                     }
                 }
 
-                model.materials.add(jsonMaterial);
+                model.materials.add(jsonMaterial)
+                material = material.next
             }
         }
     }
 
-    private int parseTextureUsage(final String value) {
-        if (value.equalsIgnoreCase("DIFFUSE"))
-            return ModelTexture.USAGE_DIFFUSE;
+    private fun parseTextureUsage(value: String): Int {
+        if (value.equals("DIFFUSE", ignoreCase = true))
+            return ModelTexture.USAGE_DIFFUSE
+        else if (value.equals("EMISSIVE", ignoreCase = true))
+            return ModelTexture.USAGE_EMISSIVE
+        else if (value.equals("NONE", ignoreCase = true))
+            return ModelTexture.USAGE_NONE
+        else if (value.equals("BUMP", ignoreCase = true))
+            return ModelTexture.USAGE_NORMAL
+        else if (value.equals("SPECULAR", ignoreCase = true))
+            return ModelTexture.USAGE_SPECULAR
+        else if (value.equals("TRANSPARENCY", ignoreCase = true))
+            return ModelTexture.USAGE_TRANSPARENCY
 
-        else if (value.equalsIgnoreCase("EMISSIVE"))
-            return ModelTexture.USAGE_EMISSIVE;
-
-        else if (value.equalsIgnoreCase("NONE"))
-            return ModelTexture.USAGE_NONE;
-
-        else if (value.equalsIgnoreCase("BUMP"))
-            return ModelTexture.USAGE_NORMAL;
-
-        else if (value.equalsIgnoreCase("SPECULAR"))
-            return ModelTexture.USAGE_SPECULAR;
-
-        else if (value.equalsIgnoreCase("TRANSPARENCY"))
-            return ModelTexture.USAGE_TRANSPARENCY;
-
-        return ModelTexture.USAGE_UNKNOWN;
+        return ModelTexture.USAGE_UNKNOWN
     }
 
-    private Color parseColor(JsonValue colorArray) {
-        if (colorArray.size >= 3)
-            return new Color(colorArray.getFloat(0), colorArray.getFloat(1), colorArray.getFloat(2), 1.0f);
+    private fun parseColor(colorArray: JsonValue): Color {
+        return if (colorArray.size >= 3)
+            Color(colorArray.getFloat(0), colorArray.getFloat(1), colorArray.getFloat(2), 1.0f)
         else
-            throw new GdxRuntimeException("Expected Color values <> than three.");
+            throw GdxRuntimeException("Expected Color values <> than three.")
     }
 
-    private Vector2 readVector2(JsonValue vectorArray, float x, float y) {
-        if (vectorArray == null)
-            return new Vector2(x, y);
+    private fun readVector2(vectorArray: JsonValue?, x: Float, y: Float): Vector2 {
+        return if (vectorArray == null)
+            Vector2(x, y)
         else if (vectorArray.size == 2)
-            return new Vector2(vectorArray.getFloat(0), vectorArray.getFloat(1));
+            Vector2(vectorArray.getFloat(0), vectorArray.getFloat(1))
         else
-            throw new GdxRuntimeException("Expected Vector2 values <> than two.");
+            throw GdxRuntimeException("Expected Vector2 values <> than two.")
     }
 
-    private Array<ModelNode> parseNodes(ModelData model, JsonValue json) {
-        JsonValue nodes = json.get("nodes");
+    private fun parseNodes(model: ModelData, json: JsonValue): Array<ModelNode> {
+        val nodes = json.get("nodes")
         if (nodes != null) {
-            model.nodes.ensureCapacity(nodes.size);
-            for (JsonValue node = nodes.child; node != null; node = node.next) {
-                model.nodes.add(parseNodesRecursively(node));
+            model.nodes.ensureCapacity(nodes.size)
+            var node: JsonValue? = nodes.child
+            while (node != null) {
+                model.nodes.add(parseNodesRecursively(node))
+                node = node.next
             }
         }
 
-        return model.nodes;
+        return model.nodes
     }
 
-    private final Quaternion tempQ = new Quaternion();
+    private fun parseNodesRecursively(json: JsonValue): ModelNode {
+        val jsonNode = ModelNode()
 
-    private ModelNode parseNodesRecursively(JsonValue json) {
-        ModelNode jsonNode = new ModelNode();
+        val id = json.getString("id", null) ?: throw GdxRuntimeException("Node id missing.")
+        jsonNode.id = id
 
-        String id = json.getString("id", null);
-        if (id == null) throw new GdxRuntimeException("Node id missing.");
-        jsonNode.id = id;
+        val translation = json.get("translation")
+        if (translation != null && translation.size != 3) throw GdxRuntimeException("Node translation incomplete")
+        jsonNode.translation = if (translation == null)
+            null
+        else
+            Vector3(translation.getFloat(0), translation.getFloat(1),
+                    translation.getFloat(2))
 
-        JsonValue translation = json.get("translation");
-        if (translation != null && translation.size != 3) throw new GdxRuntimeException("Node translation incomplete");
-        jsonNode.translation = translation == null ? null : new Vector3(translation.getFloat(0), translation.getFloat(1),
-                translation.getFloat(2));
+        val rotation = json.get("rotation")
+        if (rotation != null && rotation.size != 4) throw GdxRuntimeException("Node rotation incomplete")
+        jsonNode.rotation = if (rotation == null)
+            null
+        else
+            Quaternion(rotation.getFloat(0), rotation.getFloat(1),
+                    rotation.getFloat(2), rotation.getFloat(3))
 
-        JsonValue rotation = json.get("rotation");
-        if (rotation != null && rotation.size != 4) throw new GdxRuntimeException("Node rotation incomplete");
-        jsonNode.rotation = rotation == null ? null : new Quaternion(rotation.getFloat(0), rotation.getFloat(1),
-                rotation.getFloat(2), rotation.getFloat(3));
+        val scale = json.get("scale")
+        if (scale != null && scale.size != 3) throw GdxRuntimeException("Node scale incomplete")
+        jsonNode.scale = if (scale == null) null else Vector3(scale.getFloat(0), scale.getFloat(1), scale.getFloat(2))
 
-        JsonValue scale = json.get("scale");
-        if (scale != null && scale.size != 3) throw new GdxRuntimeException("Node scale incomplete");
-        jsonNode.scale = scale == null ? null : new Vector3(scale.getFloat(0), scale.getFloat(1), scale.getFloat(2));
+        val meshId = json.getString("mesh", null)
+        if (meshId != null) jsonNode.meshId = meshId
 
-        String meshId = json.getString("mesh", null);
-        if (meshId != null) jsonNode.meshId = meshId;
-
-        JsonValue materials = json.get("parts");
+        val materials = json.get("parts")
         if (materials != null) {
-            jsonNode.parts = new ModelNodePart[materials.size];
-            int i = 0;
-            for (JsonValue material = materials.child; material != null; material = material.next, i++) {
-                ModelNodePart nodePart = new ModelNodePart();
+            jsonNode.parts = arrayOfNulls(materials.size)
+            var i = 0
+            var material: JsonValue? = materials.child
+            while (material != null) {
+                val nodePart = ModelNodePart()
 
-                String meshPartId = material.getString("meshpartid", null);
-                String materialId = material.getString("materialid", null);
+                val meshPartId = material.getString("meshpartid", null)
+                val materialId = material.getString("materialid", null)
                 if (meshPartId == null || materialId == null) {
-                    throw new GdxRuntimeException("Node " + id + " part is missing meshPartId or materialId");
+                    throw GdxRuntimeException("Node $id part is missing meshPartId or materialId")
                 }
-                nodePart.materialId = materialId;
-                nodePart.meshPartId = meshPartId;
+                nodePart.materialId = materialId
+                nodePart.meshPartId = meshPartId
 
-                JsonValue bones = material.get("bones");
+                val bones = material.get("bones")
                 if (bones != null) {
-                    nodePart.bones = new ArrayMap<String, Matrix4>(true, bones.size, String.class, Matrix4.class);
-                    int j = 0;
-                    for (JsonValue bone = bones.child; bone != null; bone = bone.next, j++) {
-                        String nodeId = bone.getString("node", null);
-                        if (nodeId == null) throw new GdxRuntimeException("Bone node ID missing");
+                    nodePart.bones = ArrayMap(true, bones.size, String::class.java, Matrix4::class.java)
+                    var j = 0
+                    var bone: JsonValue? = bones.child
+                    while (bone != null) {
+                        val nodeId = bone.getString("node", null) ?: throw GdxRuntimeException("Bone node ID missing")
 
-                        Matrix4 transform = new Matrix4();
+                        val transform = Matrix4()
 
-                        JsonValue val = bone.get("translation");
-                        if (val != null && val.size >= 3)
-                            transform.translate(val.getFloat(0), val.getFloat(1), val.getFloat(2));
+                        var `val`: JsonValue? = bone.get("translation")
+                        if (`val` != null && `val`.size >= 3)
+                            transform.translate(`val`.getFloat(0), `val`.getFloat(1), `val`.getFloat(2))
 
-                        val = bone.get("rotation");
-                        if (val != null && val.size >= 4)
-                            transform.rotate(tempQ.set(val.getFloat(0), val.getFloat(1), val.getFloat(2), val.getFloat(3)));
+                        `val` = bone.get("rotation")
+                        if (`val` != null && `val`.size >= 4)
+                            transform.rotate(tempQ.set(`val`.getFloat(0), `val`.getFloat(1), `val`.getFloat(2), `val`.getFloat(3)))
 
-                        val = bone.get("scale");
-                        if (val != null && val.size >= 3)
-                            transform.scale(val.getFloat(0), val.getFloat(1), val.getFloat(2));
+                        `val` = bone.get("scale")
+                        if (`val` != null && `val`.size >= 3)
+                            transform.scale(`val`.getFloat(0), `val`.getFloat(1), `val`.getFloat(2))
 
-                        nodePart.bones.put(nodeId, transform);
+                        nodePart.bones.put(nodeId, transform)
+                        bone = bone.next
+                        j++
                     }
                 }
 
-                jsonNode.parts[i] = nodePart;
+                jsonNode.parts[i] = nodePart
+                material = material.next
+                i++
             }
         }
 
-        JsonValue children = json.get("children");
+        val children = json.get("children")
         if (children != null) {
-            jsonNode.children = new ModelNode[children.size];
+            jsonNode.children = arrayOfNulls(children.size)
 
-            int i = 0;
-            for (JsonValue child = children.child; child != null; child = child.next, i++) {
-                jsonNode.children[i] = parseNodesRecursively(child);
+            var i = 0
+            var child: JsonValue? = children.child
+            while (child != null) {
+                jsonNode.children[i] = parseNodesRecursively(child)
+                child = child.next
+                i++
             }
         }
 
-        return jsonNode;
+        return jsonNode
     }
 
-    private void parseAnimations(ModelData model, JsonValue json) {
-        JsonValue animations = json.get("animations");
-        if (animations == null) return;
+    private fun parseAnimations(model: ModelData, json: JsonValue) {
+        val animations = json.get("animations") ?: return
 
-        model.animations.ensureCapacity(animations.size);
+        model.animations.ensureCapacity(animations.size)
 
-        for (JsonValue anim = animations.child; anim != null; anim = anim.next) {
-            JsonValue nodes = anim.get("bones");
-            if (nodes == null) continue;
-            ModelAnimation animation = new ModelAnimation();
-            model.animations.add(animation);
-            animation.nodeAnimations.ensureCapacity(nodes.size);
-            animation.id = anim.getString("id");
-            for (JsonValue node = nodes.child; node != null; node = node.next) {
-                ModelNodeAnimation nodeAnim = new ModelNodeAnimation();
-                animation.nodeAnimations.add(nodeAnim);
-                nodeAnim.nodeId = node.getString("boneId");
+        var anim: JsonValue? = animations.child
+        while (anim != null) {
+            val nodes = anim.get("bones")
+            if (nodes == null) {
+                anim = anim.next
+                continue
+            }
+            val animation = ModelAnimation()
+            model.animations.add(animation)
+            animation.nodeAnimations.ensureCapacity(nodes.size)
+            animation.id = anim.getString("id")
+            var node: JsonValue? = nodes.child
+            while (node != null) {
+                val nodeAnim = ModelNodeAnimation()
+                animation.nodeAnimations.add(nodeAnim)
+                nodeAnim.nodeId = node.getString("boneId")
 
                 // For backwards compatibility (version 0.1):
-                JsonValue keyframes = node.get("keyframes");
-                if (keyframes != null && keyframes.isArray()) {
-                    for (JsonValue keyframe = keyframes.child; keyframe != null; keyframe = keyframe.next) {
-                        final float keytime = keyframe.getFloat("keytime", 0f) / 1000.f;
-                        JsonValue translation = keyframe.get("translation");
+                val keyframes = node.get("keyframes")
+                if (keyframes != null && keyframes.isArray) {
+                    var keyframe: JsonValue? = keyframes.child
+                    while (keyframe != null) {
+                        val keytime = keyframe.getFloat("keytime", 0f) / 1000f
+                        val translation = keyframe.get("translation")
                         if (translation != null && translation.size == 3) {
                             if (nodeAnim.translation == null)
-                                nodeAnim.translation = new Array<ModelNodeKeyframe<Vector3>>();
-                            ModelNodeKeyframe<Vector3> tkf = new ModelNodeKeyframe<Vector3>();
-                            tkf.keytime = keytime;
-                            tkf.value = new Vector3(translation.getFloat(0), translation.getFloat(1), translation.getFloat(2));
-                            nodeAnim.translation.add(tkf);
+                                nodeAnim.translation = Array()
+                            val tkf = ModelNodeKeyframe<Vector3>()
+                            tkf.keytime = keytime
+                            tkf.value = Vector3(translation.getFloat(0), translation.getFloat(1), translation.getFloat(2))
+                            nodeAnim.translation.add(tkf)
                         }
-                        JsonValue rotation = keyframe.get("rotation");
+                        val rotation = keyframe.get("rotation")
                         if (rotation != null && rotation.size == 4) {
                             if (nodeAnim.rotation == null)
-                                nodeAnim.rotation = new Array<ModelNodeKeyframe<Quaternion>>();
-                            ModelNodeKeyframe<Quaternion> rkf = new ModelNodeKeyframe<Quaternion>();
-                            rkf.keytime = keytime;
-                            rkf.value = new Quaternion(rotation.getFloat(0), rotation.getFloat(1), rotation.getFloat(2), rotation.getFloat(3));
-                            nodeAnim.rotation.add(rkf);
+                                nodeAnim.rotation = Array()
+                            val rkf = ModelNodeKeyframe<Quaternion>()
+                            rkf.keytime = keytime
+                            rkf.value = Quaternion(rotation.getFloat(0), rotation.getFloat(1), rotation.getFloat(2), rotation.getFloat(3))
+                            nodeAnim.rotation.add(rkf)
                         }
-                        JsonValue scale = keyframe.get("scale");
+                        val scale = keyframe.get("scale")
                         if (scale != null && scale.size == 3) {
                             if (nodeAnim.scaling == null)
-                                nodeAnim.scaling = new Array<ModelNodeKeyframe<Vector3>>();
-                            ModelNodeKeyframe<Vector3> skf = new ModelNodeKeyframe();
-                            skf.keytime = keytime;
-                            skf.value = new Vector3(scale.getFloat(0), scale.getFloat(1), scale.getFloat(2));
-                            nodeAnim.scaling.add(skf);
+                                nodeAnim.scaling = Array()
+                            val skf = ModelNodeKeyframe()
+                            skf.keytime = keytime
+                            skf.value = Vector3(scale.getFloat(0), scale.getFloat(1), scale.getFloat(2))
+                            nodeAnim.scaling.add(skf)
                         }
+                        keyframe = keyframe.next
                     }
                 } else { // Version 0.2:
-                    JsonValue translationKF = node.get("translation");
-                    if (translationKF != null && translationKF.isArray()) {
-                        nodeAnim.translation = new Array<ModelNodeKeyframe<Vector3>>();
-                        nodeAnim.translation.ensureCapacity(translationKF.size);
-                        for (JsonValue keyframe = translationKF.child; keyframe != null; keyframe = keyframe.next) {
-                            ModelNodeKeyframe<Vector3> kf = new ModelNodeKeyframe<Vector3>();
-                            nodeAnim.translation.add(kf);
-                            kf.keytime = keyframe.getFloat("keytime", 0f) / 1000.f;
-                            JsonValue translation = keyframe.get("value");
+                    val translationKF = node.get("translation")
+                    if (translationKF != null && translationKF.isArray) {
+                        nodeAnim.translation = Array()
+                        nodeAnim.translation.ensureCapacity(translationKF.size)
+                        var keyframe: JsonValue? = translationKF.child
+                        while (keyframe != null) {
+                            val kf = ModelNodeKeyframe<Vector3>()
+                            nodeAnim.translation.add(kf)
+                            kf.keytime = keyframe.getFloat("keytime", 0f) / 1000f
+                            val translation = keyframe.get("value")
                             if (translation != null && translation.size >= 3)
-                                kf.value = new Vector3(translation.getFloat(0), translation.getFloat(1), translation.getFloat(2));
+                                kf.value = Vector3(translation.getFloat(0), translation.getFloat(1), translation.getFloat(2))
+                            keyframe = keyframe.next
                         }
                     }
 
 
-                    JsonValue rotationKF = node.get("rotation");
-                    if (rotationKF != null && rotationKF.isArray()) {
-                        nodeAnim.rotation = new Array<ModelNodeKeyframe<Quaternion>>();
-                        nodeAnim.rotation.ensureCapacity(rotationKF.size);
-                        for (JsonValue keyframe = rotationKF.child; keyframe != null; keyframe = keyframe.next) {
-                            ModelNodeKeyframe<Quaternion> kf = new ModelNodeKeyframe<Quaternion>();
-                            nodeAnim.rotation.add(kf);
-                            kf.keytime = keyframe.getFloat("keytime", 0f) / 1000.f;
-                            JsonValue rotation = keyframe.get("value");
+                    val rotationKF = node.get("rotation")
+                    if (rotationKF != null && rotationKF.isArray) {
+                        nodeAnim.rotation = Array()
+                        nodeAnim.rotation.ensureCapacity(rotationKF.size)
+                        var keyframe: JsonValue? = rotationKF.child
+                        while (keyframe != null) {
+                            val kf = ModelNodeKeyframe<Quaternion>()
+                            nodeAnim.rotation.add(kf)
+                            kf.keytime = keyframe.getFloat("keytime", 0f) / 1000f
+                            val rotation = keyframe.get("value")
                             if (rotation != null && rotation.size >= 4)
-                                kf.value = new Quaternion(rotation.getFloat(0), rotation.getFloat(1), rotation.getFloat(2), rotation.getFloat(3));
+                                kf.value = Quaternion(rotation.getFloat(0), rotation.getFloat(1), rotation.getFloat(2), rotation.getFloat(3))
+                            keyframe = keyframe.next
                         }
                     }
 
-                    JsonValue scalingKF = node.get("scaling");
-                    if (scalingKF != null && scalingKF.isArray()) {
-                        nodeAnim.scaling = new Array<ModelNodeKeyframe<Vector3>>();
-                        nodeAnim.scaling.ensureCapacity(scalingKF.size);
-                        for (JsonValue keyframe = scalingKF.child; keyframe != null; keyframe = keyframe.next) {
-                            ModelNodeKeyframe<Vector3> kf = new ModelNodeKeyframe<Vector3>();
-                            nodeAnim.scaling.add(kf);
-                            kf.keytime = keyframe.getFloat("keytime", 0f) / 1000.f;
-                            JsonValue scaling = keyframe.get("value");
+                    val scalingKF = node.get("scaling")
+                    if (scalingKF != null && scalingKF.isArray) {
+                        nodeAnim.scaling = Array()
+                        nodeAnim.scaling.ensureCapacity(scalingKF.size)
+                        var keyframe: JsonValue? = scalingKF.child
+                        while (keyframe != null) {
+                            val kf = ModelNodeKeyframe<Vector3>()
+                            nodeAnim.scaling.add(kf)
+                            kf.keytime = keyframe.getFloat("keytime", 0f) / 1000f
+                            val scaling = keyframe.get("value")
                             if (scaling != null && scaling.size >= 3)
-                                kf.value = new Vector3(scaling.getFloat(0), scaling.getFloat(1), scaling.getFloat(2));
+                                kf.value = Vector3(scaling.getFloat(0), scaling.getFloat(1), scaling.getFloat(2))
+                            keyframe = keyframe.next
                         }
                     }
                 }
+                node = node.next
             }
+            anim = anim.next
         }
+    }
+
+    companion object {
+        val VERSION_HI: Short = 0
+        val VERSION_LO: Short = 1
     }
 }

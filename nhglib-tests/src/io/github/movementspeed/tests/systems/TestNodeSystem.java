@@ -29,8 +29,8 @@ public class TestNodeSystem extends NhgIteratingSystem {
 
         for (Message message : messages) {
             if (message.is("printNode")) {
-                NhgLogger.log(this, "id: %d, x: %f, y: %f, z: %f",
-                        nodeComponent.id,
+                NhgLogger.INSTANCE.log(this, "id: %d, x: %f, y: %f, z: %f",
+                        nodeComponent.getId(),
                         nodeComponent.getX(),
                         nodeComponent.getY(),
                         nodeComponent.getZ());

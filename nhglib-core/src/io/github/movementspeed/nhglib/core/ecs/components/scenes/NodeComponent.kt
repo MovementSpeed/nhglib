@@ -1,142 +1,238 @@
-package io.github.movementspeed.nhglib.core.ecs.components.scenes;
+package io.github.movementspeed.nhglib.core.ecs.components.scenes
 
-import com.artemis.PooledComponent;
-import com.badlogic.gdx.graphics.g3d.model.Node;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Quaternion;
-import com.badlogic.gdx.math.Vector3;
+import com.artemis.PooledComponent
+import com.badlogic.gdx.graphics.g3d.model.Node
+import com.badlogic.gdx.math.Matrix4
+import com.badlogic.gdx.math.Quaternion
+import com.badlogic.gdx.math.Vector3
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
  * The base component needed by the SceneGraph for entity positioning.
  * Should only be created by the SceneGraph together with an entity.
  */
-public class NodeComponent extends PooledComponent {
+class NodeComponent : PooledComponent() {
     /**
      * Unique NodeComponent ID, corresponds with entity itself
      */
-    public int id;
+    var id: Int = 0
+        set(value) {
+            field = value
+            node.id = "node_$value"
+        }
 
     /**
      * Node
      */
-    public Node node;
+    var node = Node()
 
     /**
      * Parent NodeComponent, can be null.
      */
-    public NodeComponent parentNodeComponent;
+    var parentNodeComponent: NodeComponent? = null
 
-    public String parentInternalNodeId;
+    var parentInternalNodeId: String? = null
 
-    private Vector3 tempVec;
-    private Vector3 tempVec2;
-    private Quaternion tempQuat;
+    private val tempVec = Vector3()
+    private val tempVec2 = Vector3()
+    private val tempQuat = Quaternion()
 
-    private Vector3 translation;
-    private Vector3 rotation;
-    private Vector3 scale;
-    
-    private Vector3 localTranslation;
-    private Vector3 localRotation;
-    private Vector3 localScale;
+    private val translation = Vector3()
+    private val rotation = Vector3()
+    private val scale = Vector3(1f, 1f, 1f)
 
-    private Vector3 translationDelta;
-    private Vector3 rotationDelta;
-    private Vector3 scaleDelta;
+    private val localTranslation = Vector3()
+    private val localRotation = Vector3()
+    private val localScale = Vector3(1f, 1f, 1f)
 
-    private Quaternion localRotationQuaternion;
-    private Quaternion rotationQuaternion;
+    private val translationDelta = Vector3()
+    private val rotationDelta = Vector3()
+    private val scaleDelta = Vector3()
 
-    public NodeComponent() {
-        node = new Node();
+    private val localRotationQuaternion = Quaternion()
+    private val rotationQuaternion = Quaternion()
 
-        tempVec = new Vector3();
-        tempVec2 = new Vector3();
-        tempQuat = new Quaternion();
+    val localX: Float
+        get() = getLocalTranslation().x
 
-        translation = new Vector3();
-        rotation = new Vector3();
-        scale = new Vector3(1, 1, 1);
-        
-        localTranslation = new Vector3();
-        localRotation = new Vector3();
-        localScale = new Vector3(1, 1, 1);
+    val localY: Float
+        get() = getLocalTranslation().y
 
-        translationDelta = new Vector3();
-        rotationDelta = new Vector3();
-        scaleDelta = new Vector3();
+    val localZ: Float
+        get() = getLocalTranslation().z
 
-        localRotationQuaternion = new Quaternion();
-        rotationQuaternion = new Quaternion();
+    val localXRotation: Float
+        get() = getLocalRotation().x
+
+    val localYRotation: Float
+        get() = getLocalRotation().y
+
+    val localZRotation: Float
+        get() = getLocalRotation().z
+
+    val localXScale: Float
+        get() = getLocalScale().x
+
+    val localYScale: Float
+        get() = getLocalScale().y
+
+    val localZScale: Float
+        get() = getLocalScale().z
+
+    val x: Float
+        get() = getTranslation().x
+
+    val y: Float
+        get() = getTranslation().y
+
+    val z: Float
+        get() = getTranslation().z
+
+    val xRotation: Float
+        get() = getRotation().x
+
+    val yRotation: Float
+        get() = getRotation().y
+
+    val zRotation: Float
+        get() = getRotation().z
+
+    val xScale: Float
+        get() = getScale().x
+
+    val yScale: Float
+        get() = getScale().y
+
+    val zScale: Float
+        get() = getScale().z
+
+    val xDelta: Float
+        get() {
+            val res = translationDelta.x
+            translationDelta.x = 0f
+            return res
+        }
+
+    val yDelta: Float
+        get() {
+            val res = translationDelta.y
+            translationDelta.y = 0f
+            return res
+        }
+
+    val zDelta: Float
+        get() {
+            val res = translationDelta.z
+            translationDelta.z = 0f
+            return res
+        }
+
+    val xRotationDelta: Float
+        get() {
+            val res = rotationDelta.x
+            rotationDelta.x = 0f
+            return res
+        }
+
+    val yRotationDelta: Float
+        get() {
+            val res = rotationDelta.y
+            rotationDelta.y = 0f
+            return res
+        }
+
+    val zRotationDelta: Float
+        get() {
+            val res = rotationDelta.z
+            rotationDelta.z = 0f
+            return res
+        }
+
+    val xScaleDelta: Float
+        get() {
+            val res = scaleDelta.x
+            scaleDelta.x = 0f
+            return res
+        }
+
+    val yScaleDelta: Float
+        get() {
+            val res = scaleDelta.y
+            scaleDelta.y = 0f
+            return res
+        }
+
+    val zScaleDelta: Float
+        get() {
+            val res = scaleDelta.z
+            scaleDelta.z = 0f
+            return res
+        }
+
+    val localTransform: Matrix4
+        get() = node.localTransform
+
+    var transform: Matrix4?
+        get() = node.globalTransform
+        set(transform) {
+            if (transform != null) {
+                transform.getTranslation(tempVec)
+                transform.getRotation(tempQuat)
+                transform.getScale(tempVec2)
+
+                setTranslation(tempVec)
+                setRotation(tempQuat)
+                setScale(tempVec2)
+            }
+        }
+
+    override fun reset() {
+        node.translation.set(Vector3())
+        node.rotation.set(Quaternion())
+        node.scale.set(Vector3())
+
+        translationDelta.set(Vector3.Zero)
+        rotationDelta.set(Vector3.Zero)
+        scaleDelta.set(Vector3.Zero)
     }
 
-    @Override
-    protected void reset() {
-        node.translation.set(new Vector3());
-        node.rotation.set(new Quaternion());
-        node.scale.set(new Vector3());
-
-        translationDelta.set(Vector3.Zero);
-        rotationDelta.set(Vector3.Zero);
-        scaleDelta.set(Vector3.Zero);
+    @JvmOverloads
+    fun setTranslation(translation: Vector3, apply: Boolean = false) {
+        setTranslation(translation.x, translation.y, translation.z, apply)
     }
 
-    public void setId(int id) {
-        this.id = id;
-        node.id = "node_" + id;
-    }
-
-    public void setTranslation(Vector3 translation) {
-        setTranslation(translation, false);
-    }
-
-    public void setTranslation(Vector3 translation, boolean apply) {
-        setTranslation(translation.x, translation.y, translation.z, apply);
-    }
-
-    public void setTranslation(float x, float y, float z) {
-        setTranslation(x, y, z, false);
-    }
-
-    public void setTranslation(float x, float y, float z, boolean apply) {
+    @JvmOverloads
+    fun setTranslation(x: Float, y: Float, z: Float, apply: Boolean = false) {
         translationDelta.set(
                 translation.x - x,
                 translation.y - y,
-                translation.z - z);
+                translation.z - z)
 
-        node.translation.set(x, y, z);
+        node.translation.set(x, y, z)
 
         if (apply) {
-            applyTransforms();
+            applyTransforms()
         }
     }
 
-    public void setTranslationX(float x) {
-        translationDelta.x = translation.x - x;
-        node.translation.x = x;
+    fun setTranslationX(x: Float) {
+        translationDelta.x = translation.x - x
+        node.translation.x = x
     }
 
-    public void setTranslationY(float y) {
-        translationDelta.y = translation.y - y;
-        node.translation.y = y;
+    fun setTranslationY(y: Float) {
+        translationDelta.y = translation.y - y
+        node.translation.y = y
     }
 
-    public void setTranslationZ(float z) {
-        translationDelta.z = translation.z - z;
-        node.translation.z = z;
+    fun setTranslationZ(z: Float) {
+        translationDelta.z = translation.z - z
+        node.translation.z = z
     }
 
-    public void translate(Vector3 translation) {
-        translate(translation, false);
-    }
-
-    public void translate(Vector3 translation, boolean apply) {
-        translate(translation.x, translation.y, translation.z, apply);
-    }
-
-    public void translate(float x, float y, float z) {
-        translate(x, y, z, false);
+    @JvmOverloads
+    fun translate(translation: Vector3, apply: Boolean = false) {
+        translate(translation.x, translation.y, translation.z, apply)
     }
 
     /**
@@ -146,62 +242,57 @@ public class NodeComponent extends PooledComponent {
      * @param y     translation.
      * @param z     translation.
      * @param apply if true, transforms will be calculated immediately. It's not recommended, instead use
-     *              {@link #applyTransforms() applyTransforms()} after you've completed all transforms on the node.
+     * [applyTransforms()][.applyTransforms] after you've completed all transforms on the node.
      */
-    public void translate(float x, float y, float z, boolean apply) {
+    @JvmOverloads
+    fun translate(x: Float, y: Float, z: Float, apply: Boolean = false) {
         translationDelta.set(
                 translation.x - x,
                 translation.y - y,
-                translation.z - z);
+                translation.z - z)
 
-        tempVec.set(x, y, z);
+        tempVec.set(x, y, z)
 
-        float len = tempVec.len();
-        tempVec.rot(node.localTransform).nor().scl(len);
+        val len = tempVec.len()
+        tempVec.rot(node.localTransform).nor().scl(len)
 
-        node.translation.add(tempVec);
+        node.translation.add(tempVec)
 
         if (apply) {
-            applyTransforms();
+            applyTransforms()
         }
     }
 
-    public void setRotation(Vector3 rotation) {
-        setRotation(rotation, false);
+    @JvmOverloads
+    fun setRotation(rotation: Vector3, apply: Boolean = false) {
+        setRotation(rotation.x, rotation.y, rotation.z, apply)
     }
 
-    public void setRotation(Vector3 rotation, boolean apply) {
-        setRotation(rotation.x, rotation.y, rotation.z, apply);
-    }
-
-    public void setRotation(float x, float y, float z) {
-        setRotation(x, y, z, false);
-    }
-
-    public void setRotation(float x, float y, float z, boolean apply) {
+    @JvmOverloads
+    fun setRotation(x: Float, y: Float, z: Float, apply: Boolean = false) {
         rotationDelta.set(
                 rotation.x - x,
                 rotation.y - y,
-                rotation.z - z);
+                rotation.z - z)
 
-        node.rotation.setEulerAngles(y, x, z);
+        node.rotation.setEulerAngles(y, x, z)
 
         if (apply) {
-            applyTransforms();
+            applyTransforms()
         }
     }
 
-    public void setRotation(Quaternion rotation) {
+    fun setRotation(rotation: Quaternion) {
         rotationDelta.set(
-                rotation.x - rotation.getPitch(),
-                rotation.y - rotation.getYaw(),
-                rotation.z - rotation.getRoll());
+                rotation.x - rotation.pitch,
+                rotation.y - rotation.yaw,
+                rotation.z - rotation.roll)
 
-        node.rotation.set(rotation);
+        node.rotation.set(rotation)
     }
 
-    public void rotate(Quaternion quaternion) {
-        rotate(quaternion, false);
+    fun rotate(quaternion: Quaternion) {
+        rotate(quaternion, false)
     }
 
     /**
@@ -209,26 +300,19 @@ public class NodeComponent extends PooledComponent {
      *
      * @param rotation the rotation quaternion added to the node's rotation.
      * @param apply    if true, transforms will be calculated immediately. It's not recommended, instead use
-     *                 {@link #applyTransforms() applyTransforms()} after you've completed all transforms on the node.
+     * [applyTransforms()][.applyTransforms] after you've completed all transforms on the node.
      */
-    public void rotate(Quaternion rotation, boolean apply) {
-        node.rotation.add(rotation);
+    fun rotate(rotation: Quaternion, apply: Boolean) {
+        node.rotation.add(rotation)
 
         if (apply) {
-            applyTransforms();
+            applyTransforms()
         }
     }
 
-    public void rotate(Vector3 rotation) {
-        rotate(rotation, false);
-    }
-
-    public void rotate(Vector3 rotation, boolean apply) {
-        rotate(rotation.x, rotation.y, rotation.z, apply);
-    }
-
-    public void rotate(float x, float y, float z) {
-        rotate(x, y, z, false);
+    @JvmOverloads
+    fun rotate(rotation: Vector3, apply: Boolean = false) {
+        rotate(rotation.x, rotation.y, rotation.z, apply)
     }
 
     /**
@@ -238,57 +322,45 @@ public class NodeComponent extends PooledComponent {
      * @param y     rotation, also known as yaw.
      * @param z     rotation, also known as roll.
      * @param apply if true, transforms will be calculated immediately. It's not recommended, instead use
-     *              {@link #applyTransforms() applyTransforms()} after you've completed all transforms on the node.
+     * [applyTransforms()][.applyTransforms] after you've completed all transforms on the node.
      */
-    public void rotate(float x, float y, float z, boolean apply) {
+    @JvmOverloads
+    fun rotate(x: Float, y: Float, z: Float, apply: Boolean = false) {
         rotationDelta.set(
                 rotation.x - x,
                 rotation.y - y,
-                rotation.z - z);
+                rotation.z - z)
 
-        tempQuat.setEulerAngles(y, x, z);
-        node.rotation.mul(tempQuat);
+        tempQuat.setEulerAngles(y, x, z)
+        node.rotation.mul(tempQuat)
 
         if (apply) {
-            applyTransforms();
+            applyTransforms()
         }
     }
 
-    public void setScale(Vector3 scale) {
-        setScale(scale, false);
+    @JvmOverloads
+    fun setScale(scale: Vector3, apply: Boolean = false) {
+        setScale(scale.x, scale.y, scale.z, apply)
     }
 
-    public void setScale(Vector3 scale, boolean apply) {
-        setScale(scale.x, scale.y, scale.z, apply);
-    }
-
-    public void setScale(float x, float y, float z) {
-        setScale(x, y, z, false);
-    }
-
-    public void setScale(float x, float y, float z, boolean apply) {
+    @JvmOverloads
+    fun setScale(x: Float, y: Float, z: Float, apply: Boolean = false) {
         scaleDelta.set(
                 scale.x - x,
                 scale.y - y,
-                scale.z - z);
+                scale.z - z)
 
-        node.scale.set(x, y, z);
+        node.scale.set(x, y, z)
 
         if (apply) {
-            applyTransforms();
+            applyTransforms()
         }
     }
 
-    public void scale(Vector3 scale) {
-        scale(scale, false);
-    }
-
-    public void scale(Vector3 scale, boolean apply) {
-        scale(scale.x, scale.y, scale.y, apply);
-    }
-
-    public void scale(float x, float y, float z) {
-        scale(x, y, z, false);
+    @JvmOverloads
+    fun scale(scale: Vector3, apply: Boolean = false) {
+        scale(scale.x, scale.y, scale.y, apply)
     }
 
     /**
@@ -298,249 +370,101 @@ public class NodeComponent extends PooledComponent {
      * @param y     scale.
      * @param z     scale.
      * @param apply if true, transforms will be calculated immediately. It's not recommended, instead use
-     *              {@link #applyTransforms() applyTransforms()} after you've completed all transforms on the node.
+     * [applyTransforms()][.applyTransforms] after you've completed all transforms on the node.
      */
-    public void scale(float x, float y, float z, boolean apply) {
+    @JvmOverloads
+    fun scale(x: Float, y: Float, z: Float, apply: Boolean = false) {
         scaleDelta.set(
                 scale.x - x,
                 scale.y - y,
-                scale.z - z);
+                scale.z - z)
 
-        node.scale.add(x, y, z);
+        node.scale.add(x, y, z)
 
         if (apply) {
-            applyTransforms();
+            applyTransforms()
         }
     }
 
-    public void setTransform(Matrix4 transform) {
-        if (transform != null) {
-            transform.getTranslation(tempVec);
-            transform.getRotation(tempQuat);
-            transform.getScale(tempVec2);
-
-            setTranslation(tempVec);
-            setRotation(tempQuat);
-            setScale(tempVec2);
-        }
+    fun setTransform(translation: Vector3, rotation: Vector3, scale: Vector3) {
+        setTranslation(translation)
+        setRotation(rotation)
+        setScale(scale)
     }
 
-    public void setTransform(Vector3 translation, Vector3 rotation, Vector3 scale) {
-        setTranslation(translation);
-        setRotation(rotation);
-        setScale(scale);
+    @JvmOverloads
+    fun applyTransforms(recursive: Boolean = true) {
+        node.calculateTransforms(recursive)
     }
 
-    public void applyTransforms() {
-        applyTransforms(true);
+    fun getLocalTranslation(): Vector3 {
+        node.localTransform.getTranslation(localTranslation)
+        return localTranslation
     }
 
-    public void applyTransforms(boolean recursive) {
-        node.calculateTransforms(recursive);
+    fun getTranslation(): Vector3 {
+        node.globalTransform.getTranslation(translation)
+        return translation
     }
 
-    public float getLocalX() {
-        return getLocalTranslation().x;
-    }
-
-    public float getLocalY() {
-        return getLocalTranslation().y;
-    }
-
-    public float getLocalZ() {
-        return getLocalTranslation().z;
-    }
-
-    public float getLocalXRotation() {
-        return getLocalRotation().x;
-    }
-
-    public float getLocalYRotation() {
-        return getLocalRotation().y;
-    }
-
-    public float getLocalZRotation() {
-        return getLocalRotation().z;
-    }
-
-    public float getLocalXScale() {
-        return getLocalScale().x;
-    }
-
-    public float getLocalYScale() {
-        return getLocalScale().y;
-    }
-
-    public float getLocalZScale() {
-        return getLocalScale().z;
-    }
-
-    public float getX() {
-        return getTranslation().x;
-    }
-
-    public float getY() {
-        return getTranslation().y;
-    }
-
-    public float getZ() {
-        return getTranslation().z;
-    }
-
-    public float getXRotation() {
-        return getRotation().x;
-    }
-
-    public float getYRotation() {
-        return getRotation().y;
-    }
-
-    public float getZRotation() {
-        return getRotation().z;
-    }
-
-    public float getXScale() {
-        return getScale().x;
-    }
-
-    public float getYScale() {
-        return getScale().y;
-    }
-
-    public float getZScale() {
-        return getScale().z;
-    }
-
-    public float getXDelta() {
-        float res = translationDelta.x;
-        translationDelta.x = 0;
-        return res;
-    }
-
-    public float getYDelta() {
-        float res = translationDelta.y;
-        translationDelta.y = 0;
-        return res;
-    }
-
-    public float getZDelta() {
-        float res = translationDelta.z;
-        translationDelta.z = 0;
-        return res;
-    }
-
-    public float getXRotationDelta() {
-        float res = rotationDelta.x;
-        rotationDelta.x = 0;
-        return res;
-    }
-
-    public float getYRotationDelta() {
-        float res = rotationDelta.y;
-        rotationDelta.y = 0;
-        return res;
-    }
-
-    public float getZRotationDelta() {
-        float res = rotationDelta.z;
-        rotationDelta.z = 0;
-        return res;
-    }
-
-    public float getXScaleDelta() {
-        float res = scaleDelta.x;
-        scaleDelta.x = 0;
-        return res;
-    }
-
-    public float getYScaleDelta() {
-        float res = scaleDelta.y;
-        scaleDelta.y = 0;
-        return res;
-    }
-
-    public float getZScaleDelta() {
-        float res = scaleDelta.z;
-        scaleDelta.z = 0;
-        return res;
-    }
-    
-    public Matrix4 getLocalTransform() {
-        return node.localTransform;
-    }
-
-    public Matrix4 getTransform() {
-        return node.globalTransform;
-    }
-    
-    public Vector3 getLocalTranslation() {
-        node.localTransform.getTranslation(localTranslation);
-        return localTranslation;
-    }
-
-    public Vector3 getTranslation() {
-        node.globalTransform.getTranslation(translation);
-        return translation;
-    }
-
-    public Vector3 getLocalRotation() {
-        node.localTransform.getRotation(localRotationQuaternion);
+    fun getLocalRotation(): Vector3 {
+        node.localTransform.getRotation(localRotationQuaternion)
         localRotation.set(
-                localRotationQuaternion.getPitch(),
-                localRotationQuaternion.getYaw(),
-                localRotationQuaternion.getRoll());
+                localRotationQuaternion.pitch,
+                localRotationQuaternion.yaw,
+                localRotationQuaternion.roll)
 
-        return localRotation;
+        return localRotation
     }
 
-    public Vector3 getRotation() {
-        node.globalTransform.getRotation(rotationQuaternion);
+    fun getRotation(): Vector3 {
+        node.globalTransform.getRotation(rotationQuaternion)
         rotation.set(
-                rotationQuaternion.getPitch(),
-                rotationQuaternion.getYaw(),
-                rotationQuaternion.getRoll());
+                rotationQuaternion.pitch,
+                rotationQuaternion.yaw,
+                rotationQuaternion.roll)
 
-        return rotation;
+        return rotation
     }
 
-    public Vector3 getLocalScale() {
-        node.localTransform.getScale(localScale);
-        return localScale;
+    fun getLocalScale(): Vector3 {
+        node.localTransform.getScale(localScale)
+        return localScale
     }
 
-    public Vector3 getScale() {
-        node.globalTransform.getScale(scale);
-        return scale;
+    fun getScale(): Vector3 {
+        node.globalTransform.getScale(scale)
+        return scale
     }
 
-    public Vector3 getTranslationDelta() {
-        Vector3 res = tempVec.set(translationDelta);
-        translationDelta.set(Vector3.Zero);
+    fun getTranslationDelta(): Vector3 {
+        val res = tempVec.set(translationDelta)
+        translationDelta.set(Vector3.Zero)
 
-        return res;
+        return res
     }
 
-    public Vector3 getRotationDelta() {
-        Vector3 res = tempVec.set(rotationDelta);
-        rotationDelta.set(Vector3.Zero);
+    fun getRotationDelta(): Vector3 {
+        val res = tempVec.set(rotationDelta)
+        rotationDelta.set(Vector3.Zero)
 
-        return res;
+        return res
     }
 
-    public Vector3 getScaleDelta() {
-        Vector3 res = tempVec.set(scaleDelta);
-        scaleDelta.set(Vector3.Zero);
+    fun getScaleDelta(): Vector3 {
+        val res = tempVec.set(scaleDelta)
+        scaleDelta.set(Vector3.Zero)
 
-        return res;
+        return res
     }
 
-    public Quaternion getLocalRotationQuaternion() {
-        getLocalRotation();
-        return localRotationQuaternion;
+    fun getLocalRotationQuaternion(): Quaternion {
+        getLocalRotation()
+        return localRotationQuaternion
     }
 
-    public Quaternion getRotationQuaternion() {
-        getRotation();
-        return rotationQuaternion;
+    fun getRotationQuaternion(): Quaternion {
+        getRotation()
+        return rotationQuaternion
     }
 }

@@ -1,22 +1,20 @@
-package io.github.movementspeed.nhglib.data.models.serialization.physics.shapes;
+package io.github.movementspeed.nhglib.data.models.serialization.physics.shapes
 
-import com.badlogic.gdx.utils.JsonValue;
-import io.github.movementspeed.nhglib.physics.models.SphereRigidBodyShape;
+import com.badlogic.gdx.utils.JsonValue
+import io.github.movementspeed.nhglib.physics.models.SphereRigidBodyShape
 
 /**
  * Created by Fausto Napoli on 16/05/2017.
  */
-public class SphereShapeJson extends ShapeJson {
-    private SphereRigidBodyShape shape;
+class SphereShapeJson : ShapeJson() {
+    private var shape: SphereRigidBodyShape? = null
 
-    @Override
-    public void parse(JsonValue jsonValue) {
-        float radius = jsonValue.getFloat("radius");
-        shape = new SphereRigidBodyShape(radius);
+    override fun parse(jsonValue: JsonValue) {
+        val radius = jsonValue.getFloat("radius")
+        shape = SphereRigidBodyShape(radius)
     }
 
-    @Override
-    public SphereRigidBodyShape get() {
-        return shape;
+    override fun get(): SphereRigidBodyShape? {
+        return shape
     }
 }

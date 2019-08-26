@@ -1,50 +1,49 @@
-package io.github.movementspeed.nhglib.data.models.serialization.components;
+package io.github.movementspeed.nhglib.data.models.serialization.components
 
-import com.badlogic.gdx.utils.JsonValue;
-import io.github.movementspeed.nhglib.core.ecs.components.physics.VehicleComponent;
-import io.github.movementspeed.nhglib.core.ecs.components.physics.TyreComponent;
-import io.github.movementspeed.nhglib.data.models.serialization.ComponentJson;
-import io.github.movementspeed.nhglib.data.models.serialization.Vector3Json;
+import com.badlogic.gdx.utils.JsonValue
+import io.github.movementspeed.nhglib.core.ecs.components.physics.VehicleComponent
+import io.github.movementspeed.nhglib.core.ecs.components.physics.TyreComponent
+import io.github.movementspeed.nhglib.data.models.serialization.ComponentJson
+import io.github.movementspeed.nhglib.data.models.serialization.Vector3Json
 
 /**
  * Created by Fausto Napoli on 11/06/2017.
  */
-public class TyreComponentJson extends ComponentJson {
-    @Override
-    public void parse(JsonValue wheelJson) {
-        TyreComponent tyreComponent = null;
-        VehicleComponent vehicleComponent = nhg.entities.getComponent(parentEntity, VehicleComponent.class);
+class TyreComponentJson : ComponentJson() {
+    override fun parse(wheelJson: JsonValue) {
+        var tyreComponent: TyreComponent? = null
+        val vehicleComponent = nhg!!.entities.getComponent(parentEntity, VehicleComponent::class.java)
 
         if (vehicleComponent != null) {
-            Vector3Json attachmentPointJson = new Vector3Json();
-            attachmentPointJson.parse(wheelJson.get("attachmentPoint"));
+            val attachmentPointJson = Vector3Json()
+            attachmentPointJson.parse(wheelJson.get("attachmentPoint"))
 
-            Vector3Json directionJson = new Vector3Json();
-            directionJson.parse(wheelJson.get("direction"));
+            val directionJson = Vector3Json()
+            directionJson.parse(wheelJson.get("direction"))
 
-            Vector3Json axisJson = new Vector3Json();
-            axisJson.parse(wheelJson.get("axis"));
+            val axisJson = Vector3Json()
+            axisJson.parse(wheelJson.get("axis"))
 
-            int wheelIndex = wheelJson.getInt("index");
+            val wheelIndex = wheelJson.getInt("index")
 
-            float radius = wheelJson.getFloat("radius", 0.1f);
-            float suspensionRestLength = wheelJson.getFloat("suspensionRestLength", radius * 0.3f);
-            float wheelFriction = wheelJson.getFloat("friction", 1f);
+            val radius = wheelJson.getFloat("radius", 0.1f)
+            val suspensionRestLength = wheelJson.getFloat("suspensionRestLength", radius * 0.3f)
+            val wheelFriction = wheelJson.getFloat("friction", 1f)
 
-            boolean frontWheel = wheelJson.getBoolean("frontTyre", false);
+            val frontWheel = wheelJson.getBoolean("frontTyre", false)
 
-            tyreComponent = nhg.entities.createComponent(entity, TyreComponent.class);
-            tyreComponent.index = wheelIndex;
-            tyreComponent.suspensionRestLength = suspensionRestLength;
-            tyreComponent.wheelFriction = wheelFriction;
-            tyreComponent.radius = radius;
-            tyreComponent.frontTyre = frontWheel;
-            tyreComponent.attachmentPoint = attachmentPointJson.get();
-            tyreComponent.direction = directionJson.get();
-            tyreComponent.axis = axisJson.get();
-            tyreComponent.vehicleComponent = vehicleComponent;
+            tyreComponent = nhg!!.entities.createComponent(entity, TyreComponent::class.java)
+            tyreComponent!!.index = wheelIndex
+            tyreComponent.suspensionRestLength = suspensionRestLength
+            tyreComponent.wheelFriction = wheelFriction
+            tyreComponent.radius = radius
+            tyreComponent.frontTyre = frontWheel
+            tyreComponent.attachmentPoint = attachmentPointJson.get()
+            tyreComponent.direction = directionJson.get()
+            tyreComponent.axis = axisJson.get()
+            tyreComponent.vehicleComponent = vehicleComponent
         }
 
-        output = tyreComponent;
+        output = tyreComponent
     }
 }

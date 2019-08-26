@@ -1,58 +1,57 @@
-package io.github.movementspeed.nhglib.core.ecs.utils;
+package io.github.movementspeed.nhglib.core.ecs.utils
 
-import com.artemis.*;
-import com.artemis.utils.ImmutableBag;
+import com.artemis.*
+import com.artemis.utils.ImmutableBag
 
 /**
  * Created by Fausto Napoli on 07/12/2016.
  */
-public class Entities {
-    private World entityWorld;
+class Entities {
+    private var entityWorld: World? = null
 
-    public void update(float delta) {
-        entityWorld.setDelta(delta);
-        entityWorld.process();
+    val entitySystems: ImmutableBag<BaseSystem>
+        get() = entityWorld!!.systems
+
+    fun update(delta: Float) {
+        entityWorld!!.setDelta(delta)
+        entityWorld!!.process()
     }
 
-    public void setEntityWorld(World entityWorld) {
-        this.entityWorld = entityWorld;
+    fun setEntityWorld(entityWorld: World) {
+        this.entityWorld = entityWorld
     }
 
-    public void removeComponent(int entity, Class<? extends Component> type) {
-        entityWorld.edit(entity).remove(type);
+    fun removeComponent(entity: Int, type: Class<out Component>) {
+        entityWorld!!.edit(entity).remove(type)
     }
 
-    public int createEntity() {
-        return entityWorld.create();
+    fun createEntity(): Int {
+        return entityWorld!!.create()
     }
 
-    public int createEntity(Archetype archetype) {
-        return entityWorld.create(archetype);
+    fun createEntity(archetype: Archetype): Int {
+        return entityWorld!!.create(archetype)
     }
 
-    public Archetype createArchetype(Class<? extends Component>... components) {
-        return new ArchetypeBuilder()
-                .add(components)
-                .build(entityWorld);
+    fun createArchetype(vararg components: Class<out Component>): Archetype {
+        return ArchetypeBuilder()
+                .add(*components)
+                .build(entityWorld!!)
     }
 
-    public <T extends BaseSystem> T getEntitySystem(Class<T> systemClass) {
-        return entityWorld.getSystem(systemClass);
+    fun <T : BaseSystem> getEntitySystem(systemClass: Class<T>): T {
+        return entityWorld!!.getSystem(systemClass)
     }
 
-    public <T extends Component> T createComponent(int entity, Class<T> type) {
-        return entityWorld.getMapper(type).create(entity);
+    fun <T : Component> createComponent(entity: Int, type: Class<T>): T {
+        return entityWorld!!.getMapper(type).create(entity)
     }
 
-    public <T extends Component> T getComponent(int entity, Class<T> type) {
-        return entityWorld.getMapper(type).get(entity);
+    fun <T : Component> getComponent(entity: Int, type: Class<T>): T {
+        return entityWorld!!.getMapper(type).get(entity)
     }
 
-    public <T extends Component> ComponentMapper<T> getMapper(Class<T> type) {
-        return entityWorld.getMapper(type);
-    }
-
-    public ImmutableBag<BaseSystem> getEntitySystems() {
-        return entityWorld.getSystems();
+    fun <T : Component> getMapper(type: Class<T>): ComponentMapper<T> {
+        return entityWorld!!.getMapper(type)
     }
 }

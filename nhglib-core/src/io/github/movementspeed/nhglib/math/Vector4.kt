@@ -1,302 +1,258 @@
-package io.github.movementspeed.nhglib.math;
+package io.github.movementspeed.nhglib.math
 
-import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector;
-import com.badlogic.gdx.utils.NumberUtils;
+import com.badlogic.gdx.math.Interpolation
+import com.badlogic.gdx.math.MathUtils
+import com.badlogic.gdx.math.Vector
+import com.badlogic.gdx.utils.NumberUtils
+import kotlin.math.abs
+import kotlin.math.sqrt
 
 /**
  * Created by Fausto Napoli on 01/03/2017.
  */
-public class Vector4 implements Vector<Vector4> {
-    public final static Vector4 X = new Vector4(1, 0, 0, 0);
-    public final static Vector4 Y = new Vector4(0, 1, 0, 0);
-    public final static Vector4 Z = new Vector4(0, 0, 1, 0);
-    public final static Vector4 K = new Vector4(0, 0, 0, 1);
-    public final static Vector4 Zero = new Vector4(0, 0, 0, 0);
+class Vector4 : Vector<Vector4> {
+    var x: Float = 0f
+    var y: Float = 0f
+    var z: Float = 0f
+    var k: Float = 0f
 
-    public float x;
-    public float y;
-    public float z;
-    public float k;
-
-    public Vector4(float x, float y, float z, float k) {
-        this.set(x, y, z, k);
+    constructor(x: Float, y: Float, z: Float, k: Float) {
+        this[x, y, z] = k
     }
 
-    public Vector4(Vector4 vector) {
-        this.set(vector);
+    constructor(vector: Vector4) {
+        this.set(vector)
     }
 
-    @Override
-    public Vector4 cpy() {
-        return new Vector4(this);
+    override fun cpy(): Vector4 {
+        return Vector4(this)
     }
 
-    @Override
-    public float len() {
-        return (float) Math.sqrt(x * x + y * y + z * z + k * k);
+    override fun len(): Float {
+        return sqrt((x * x + y * y + z * z + k * k).toDouble()).toFloat()
     }
 
-    @Override
-    public float len2() {
-        return x * x + y * y + z * z + k * k;
+    override fun len2(): Float {
+        return x * x + y * y + z * z + k * k
     }
 
-    @Override
-    public Vector4 limit(float limit) {
-        return limit2(limit * limit);
+    override fun limit(limit: Float): Vector4 {
+        return limit2(limit * limit)
     }
 
-    @Override
-    public Vector4 limit2(float limit2) {
-        float len2 = len2();
+    override fun limit2(limit2: Float): Vector4 {
+        val len2 = len2()
 
         if (len2 > limit2) {
-            scl((float) Math.sqrt(limit2 / len2));
+            scl(Math.sqrt((limit2 / len2).toDouble()).toFloat())
         }
 
-        return this;
+        return this
     }
 
-    @Override
-    public Vector4 setLength(float len) {
-        return setLength2(len * len);
+    override fun setLength(len: Float): Vector4 {
+        return setLength2(len * len)
     }
 
-    @Override
-    public Vector4 setLength2(float len2) {
-        float oldLen2 = len2();
-        return (oldLen2 == 0 || oldLen2 == len2) ? this : scl((float) Math.sqrt(len2 / oldLen2));
+    override fun setLength2(len2: Float): Vector4 {
+        val oldLen2 = len2()
+        return if (oldLen2 == 0f || oldLen2 == len2) this else scl(Math.sqrt((len2 / oldLen2).toDouble()).toFloat())
     }
 
-    @Override
-    public Vector4 clamp(float min, float max) {
-        final float len2 = len2();
-        if (len2 == 0f) return this;
-        float max2 = max * max;
-        if (len2 > max2) return scl((float) Math.sqrt(max2 / len2));
-        float min2 = min * min;
-        if (len2 < min2) return scl((float) Math.sqrt(min2 / len2));
+    override fun clamp(min: Float, max: Float): Vector4 {
+        val len2 = len2()
+        if (len2 == 0f) return this
+        val max2 = max * max
+        if (len2 > max2) return scl(Math.sqrt((max2 / len2).toDouble()).toFloat())
+        val min2 = min * min
+        return if (len2 < min2) scl(Math.sqrt((min2 / len2).toDouble()).toFloat()) else this
 
-        return this;
     }
 
-    @Override
-    public Vector4 set(Vector4 v) {
-        this.set(v.x, v.y, v.z, v.k);
-        return this;
+    override fun set(v: Vector4): Vector4 {
+        this[v.x, v.y, v.z] = v.k
+        return this
     }
 
-    @Override
-    public Vector4 sub(Vector4 v) {
-        return this.sub(v.x, v.y, v.z, v.k);
+    override fun sub(v: Vector4): Vector4 {
+        return this.sub(v.x, v.y, v.z, v.k)
     }
 
-    @Override
-    public Vector4 nor() {
-        final float len2 = this.len2();
-        if (len2 == 0f || len2 == 1f) return this;
-        return this.scl(1f / (float) Math.sqrt(len2));
+    override fun nor(): Vector4 {
+        val len2 = this.len2()
+        return if (len2 == 0f || len2 == 1f) this else this.scl(1f / Math.sqrt(len2.toDouble()).toFloat())
     }
 
-    @Override
-    public Vector4 add(Vector4 v) {
-        return this.add(v.x, v.y, v.z, v.k);
+    override fun add(v: Vector4): Vector4 {
+        return this.add(v.x, v.y, v.z, v.k)
     }
 
-    @Override
-    public float dot(Vector4 v) {
-        return x * v.x + y * v.y + z * v.z + k * v.k;
+    override fun dot(v: Vector4): Float {
+        return x * v.x + y * v.y + z * v.z + k * v.k
     }
 
-    @Override
-    public Vector4 scl(float scalar) {
-        return this.set(this.x * scalar, this.y * scalar, this.z * scalar, this.k * scalar);
+    override fun scl(scalar: Float): Vector4 {
+        return this.set(this.x * scalar, this.y * scalar, this.z * scalar, this.k * scalar)
     }
 
-    @Override
-    public Vector4 scl(Vector4 v) {
-        return this.set(x * v.x, y * v.y, z * v.z, k * v.k);
+    override fun scl(v: Vector4): Vector4 {
+        return this.set(x * v.x, y * v.y, z * v.z, k * v.k)
     }
 
-    @Override
-    public float dst(Vector4 v) {
-        final float a = v.x - x;
-        final float b = v.y - y;
-        final float c = v.z - z;
-        final float d = v.k - k;
+    override fun dst(v: Vector4): Float {
+        val a = v.x - x
+        val b = v.y - y
+        val c = v.z - z
+        val d = v.k - k
 
-        return (float) Math.sqrt(a * a + b * b + c * c + d * d);
+        return Math.sqrt((a * a + b * b + c * c + d * d).toDouble()).toFloat()
     }
 
-    @Override
-    public float dst2(Vector4 v) {
-        final float a = v.x - x;
-        final float b = v.y - y;
-        final float c = v.z - z;
-        final float d = v.k - k;
+    override fun dst2(v: Vector4): Float {
+        val a = v.x - x
+        val b = v.y - y
+        val c = v.z - z
+        val d = v.k - k
 
-        return a * a + b * b + c * c + d * d;
+        return a * a + b * b + c * c + d * d
     }
 
-    @Override
-    public Vector4 lerp(Vector4 target, float alpha) {
-        x += alpha * (target.x - x);
-        y += alpha * (target.y - y);
-        z += alpha * (target.z - z);
-        k += alpha * (target.k - k);
+    override fun lerp(target: Vector4, alpha: Float): Vector4 {
+        x += alpha * (target.x - x)
+        y += alpha * (target.y - y)
+        z += alpha * (target.z - z)
+        k += alpha * (target.k - k)
 
-        return this;
+        return this
     }
 
-    @Override
-    public Vector4 interpolate(Vector4 target, float alpha, Interpolation interpolator) {
-        return lerp(target, interpolator.apply(0f, 1f, alpha));
+    override fun interpolate(target: Vector4, alpha: Float, interpolator: Interpolation): Vector4 {
+        return lerp(target, interpolator.apply(0f, 1f, alpha))
     }
 
-    @Override
-    public Vector4 setToRandomDirection() {
-        return new Vector4(0, 0, 0, 0);
+    override fun setToRandomDirection(): Vector4 {
+        return Vector4(0f, 0f, 0f, 0f)
     }
 
-    @Override
-    public boolean isUnit() {
-        return isUnit(0.000000001f);
+    override fun isUnit(): Boolean {
+        return isUnit(0.000000001f)
     }
 
-    @Override
-    public boolean isUnit(float margin) {
-        return Math.abs(len2() - 1f) < margin;
+    override fun isUnit(margin: Float): Boolean {
+        return Math.abs(len2() - 1f) < margin
     }
 
-    @Override
-    public boolean isZero() {
-        return x == 0 && y == 0 && z == 0 && k == 0;
+    override fun isZero(): Boolean {
+        return x == 0f && y == 0f && z == 0f && k == 0f
     }
 
-    @Override
-    public boolean isZero(final float margin) {
-        return len2() < margin;
+    override fun isZero(margin: Float): Boolean {
+        return len2() < margin
     }
 
-    @Override
-    public boolean isOnLine(Vector4 other, float epsilon) {
-        return false;
+    override fun isOnLine(other: Vector4, epsilon: Float): Boolean {
+        return false
     }
 
-    @Override
-    public boolean isOnLine(Vector4 other) {
-        return false;
+    override fun isOnLine(other: Vector4): Boolean {
+        return false
     }
 
-    @Override
-    public boolean isCollinear(Vector4 other, float epsilon) {
-        return false;
+    override fun isCollinear(other: Vector4, epsilon: Float): Boolean {
+        return false
     }
 
-    @Override
-    public boolean isCollinear(Vector4 other) {
-        return false;
+    override fun isCollinear(other: Vector4): Boolean {
+        return false
     }
 
-    @Override
-    public boolean isCollinearOpposite(Vector4 other, float epsilon) {
-        return false;
+    override fun isCollinearOpposite(other: Vector4, epsilon: Float): Boolean {
+        return false
     }
 
-    @Override
-    public boolean isCollinearOpposite(Vector4 other) {
-        return false;
+    override fun isCollinearOpposite(other: Vector4): Boolean {
+        return false
     }
 
-    @Override
-    public boolean isPerpendicular(Vector4 other) {
-        return MathUtils.isZero(dot(other));
+    override fun isPerpendicular(other: Vector4): Boolean {
+        return MathUtils.isZero(dot(other))
     }
 
-    @Override
-    public boolean isPerpendicular(Vector4 other, float epsilon) {
-        return MathUtils.isZero(dot(other), epsilon);
+    override fun isPerpendicular(other: Vector4, epsilon: Float): Boolean {
+        return MathUtils.isZero(dot(other), epsilon)
     }
 
-    @Override
-    public boolean hasSameDirection(Vector4 other) {
-        return dot(other) > 0;
+    override fun hasSameDirection(other: Vector4): Boolean {
+        return dot(other) > 0
     }
 
-    @Override
-    public boolean hasOppositeDirection(Vector4 other) {
-        return dot(other) < 0;
+    override fun hasOppositeDirection(other: Vector4): Boolean {
+        return dot(other) < 0
     }
 
-    @Override
-    public boolean epsilonEquals(Vector4 other, float epsilon) {
-        if (other == null) return false;
-        if (Math.abs(other.x - x) > epsilon) return false;
-        if (Math.abs(other.y - y) > epsilon) return false;
-        if (Math.abs(other.z - z) > epsilon) return false;
-        if (Math.abs(other.k - k) > epsilon) return false;
-
-        return true;
+    override fun epsilonEquals(other: Vector4?, epsilon: Float): Boolean {
+        if (other == null) return false
+        if (abs(other.x - x) > epsilon) return false
+        if (abs(other.y - y) > epsilon) return false
+        if (abs(other.z - z) > epsilon) return false
+        return abs(other.k - k) <= epsilon
     }
 
-    @Override
-    public Vector4 mulAdd(Vector4 vec, float scalar) {
-        this.x += vec.x * scalar;
-        this.y += vec.y * scalar;
-        this.z += vec.z * scalar;
-        this.k += vec.k * scalar;
+    override fun mulAdd(vec: Vector4, scalar: Float): Vector4 {
+        this.x += vec.x * scalar
+        this.y += vec.y * scalar
+        this.z += vec.z * scalar
+        this.k += vec.k * scalar
 
-        return this;
+        return this
     }
 
-    @Override
-    public Vector4 mulAdd(Vector4 vec, Vector4 mulVec) {
-        this.x += vec.x * mulVec.x;
-        this.y += vec.y * mulVec.y;
-        this.z += vec.z * mulVec.z;
-        this.k += vec.k * mulVec.k;
+    override fun mulAdd(vec: Vector4, mulVec: Vector4): Vector4 {
+        this.x += vec.x * mulVec.x
+        this.y += vec.y * mulVec.y
+        this.z += vec.z * mulVec.z
+        this.k += vec.k * mulVec.k
 
-        return this;
+        return this
     }
 
-    @Override
-    public Vector4 setZero() {
-        return set(0, 0, 0, 0);
+    override fun setZero(): Vector4 {
+        return set(0f, 0f, 0f, 0f)
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + NumberUtils.floatToIntBits(x);
-        result = prime * result + NumberUtils.floatToIntBits(y);
-        result = prime * result + NumberUtils.floatToIntBits(z);
-        result = prime * result + NumberUtils.floatToIntBits(k);
-        return result;
+    override fun hashCode(): Int {
+        val prime = 31
+        var result = 1
+        result = prime * result + NumberUtils.floatToIntBits(x)
+        result = prime * result + NumberUtils.floatToIntBits(y)
+        result = prime * result + NumberUtils.floatToIntBits(z)
+        result = prime * result + NumberUtils.floatToIntBits(k)
+        return result
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
-        Vector4 other = (Vector4) obj;
-        if (NumberUtils.floatToIntBits(x) != NumberUtils.floatToIntBits(other.x)) return false;
-        if (NumberUtils.floatToIntBits(y) != NumberUtils.floatToIntBits(other.y)) return false;
-        if (NumberUtils.floatToIntBits(z) != NumberUtils.floatToIntBits(other.z)) return false;
-        if (NumberUtils.floatToIntBits(k) != NumberUtils.floatToIntBits(other.k)) return false;
-        return true;
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null) return false
+        if (javaClass != other.javaClass) return false
+        val vec4 = other as? Vector4
+
+        vec4?.let {
+            if (NumberUtils.floatToIntBits(x) != NumberUtils.floatToIntBits(it.x)) return false
+            if (NumberUtils.floatToIntBits(y) != NumberUtils.floatToIntBits(it.y)) return false
+            if (NumberUtils.floatToIntBits(z) != NumberUtils.floatToIntBits(it.z)) return false
+            return NumberUtils.floatToIntBits(k) == NumberUtils.floatToIntBits(it.k)
+        }
+
+        return false
     }
 
-    public Vector4 set(float x, float y, float z, float k) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.k = k;
+    operator fun set(x: Float, y: Float, z: Float, k: Float): Vector4 {
+        this.x = x
+        this.y = y
+        this.z = z
+        this.k = k
 
-        return this;
+        return this
     }
 
     /**
@@ -307,8 +263,8 @@ public class Vector4 implements Vector<Vector4> {
      * @param z The z-component of the other vector
      * @return This vector for chaining
      */
-    public Vector4 sub(float x, float y, float z, float k) {
-        return this.set(this.x - x, this.y - y, this.z - z, this.k - k);
+    fun sub(x: Float, y: Float, z: Float, k: Float): Vector4 {
+        return this.set(this.x - x, this.y - y, this.z - z, this.k - k)
     }
 
     /**
@@ -317,8 +273,8 @@ public class Vector4 implements Vector<Vector4> {
      * @param value The value
      * @return This vector for chaining
      */
-    public Vector4 sub(float value) {
-        return this.set(this.x - value, this.y - value, this.z - value, this.k - value);
+    fun sub(value: Float): Vector4 {
+        return this.set(this.x - value, this.y - value, this.z - value, this.k - value)
     }
 
     /**
@@ -329,8 +285,8 @@ public class Vector4 implements Vector<Vector4> {
      * @param z The z-component of the other vector
      * @return This vector for chaining.
      */
-    public Vector4 add(float x, float y, float z, float k) {
-        return this.set(this.x + x, this.y + y, this.z + z, this.k + k);
+    fun add(x: Float, y: Float, z: Float, k: Float): Vector4 {
+        return this.set(this.x + x, this.y + y, this.z + z, this.k + k)
     }
 
     /**
@@ -339,8 +295,8 @@ public class Vector4 implements Vector<Vector4> {
      * @param values The value
      * @return This vector for chaining
      */
-    public Vector4 add(float values) {
-        return this.set(this.x + values, this.y + values, this.z + values, this.k + values);
+    fun add(values: Float): Vector4 {
+        return this.set(this.x + values, this.y + values, this.z + values, this.k + values)
     }
 
     /**
@@ -351,7 +307,15 @@ public class Vector4 implements Vector<Vector4> {
      * @param vz Z value
      * @return This vector for chaining
      */
-    public Vector4 scl(float vx, float vy, float vz, float kz) {
-        return this.set(this.x * vx, this.y * vy, this.z * vz, this.k * kz);
+    fun scl(vx: Float, vy: Float, vz: Float, kz: Float): Vector4 {
+        return this.set(this.x * vx, this.y * vy, this.z * vz, this.k * kz)
+    }
+
+    companion object {
+        val X = Vector4(1f, 0f, 0f, 0f)
+        val Y = Vector4(0f, 1f, 0f, 0f)
+        val Z = Vector4(0f, 0f, 1f, 0f)
+        val K = Vector4(0f, 0f, 0f, 1f)
+        val Zero = Vector4(0f, 0f, 0f, 0f)
     }
 }

@@ -1,23 +1,16 @@
-package io.github.movementspeed.nhglib.graphics.particles;
+package io.github.movementspeed.nhglib.graphics.particles
 
-import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
-import com.badlogic.gdx.utils.Pool;
+import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect
+import com.badlogic.gdx.utils.Pool
 
-public class ParticleEffectPool extends Pool<ParticleEffect> {
-    private ParticleEffect originalEffect;
+class ParticleEffectPool(private val originalEffect: ParticleEffect) : Pool<ParticleEffect>() {
 
-    public ParticleEffectPool(ParticleEffect originalEffect) {
-        this.originalEffect = originalEffect;
+    override fun free(`object`: ParticleEffect) {
+        `object`.reset()
+        super.free(`object`)
     }
 
-    @Override
-    public void free(ParticleEffect object) {
-        object.reset();
-        super.free(object);
-    }
-
-    @Override
-    protected ParticleEffect newObject() {
-        return originalEffect.copy();
+    override fun newObject(): ParticleEffect {
+        return originalEffect.copy()
     }
 }

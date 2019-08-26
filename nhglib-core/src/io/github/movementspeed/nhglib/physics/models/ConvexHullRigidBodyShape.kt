@@ -1,11 +1,3 @@
-package io.github.movementspeed.nhglib.physics.models;
+package io.github.movementspeed.nhglib.physics.models
 
-public class ConvexHullRigidBodyShape extends RigidBodyShape {
-    public boolean optimize;
-    public String asset;
-
-    public ConvexHullRigidBodyShape(String asset, boolean optimize) {
-        this.asset = asset;
-        this.optimize = optimize;
-    }
-}
+class ConvexHullRigidBodyShape(var asset: String, var optimize: Boolean) : RigidBodyShape()

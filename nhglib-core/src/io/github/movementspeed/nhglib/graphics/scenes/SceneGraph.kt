@@ -1,83 +1,65 @@
-package io.github.movementspeed.nhglib.graphics.scenes;
+package io.github.movementspeed.nhglib.graphics.scenes
 
-import com.artemis.Archetype;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ArrayMap;
-import io.github.movementspeed.nhglib.Nhg;
-import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
+import com.artemis.Archetype
+import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.ArrayMap
+import io.github.movementspeed.nhglib.Nhg
+import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
  */
-public class SceneGraph {
-    private int rootEntity;
+class SceneGraph(private val nhg: Nhg, rootId: String) {
+    val rootEntity: Int
+    private val sceneEntityArchetype: Archetype
+    private val rootNodeComponent: NodeComponent
 
-    private Nhg nhg;
-    private Archetype sceneEntityArchetype;
-    private NodeComponent rootNodeComponent;
+    val entities: Array<Int>
+    private val entityIds: ArrayMap<String, Int>
 
-    private Array<Integer> entitiesArray;
-    private ArrayMap<String, Integer> entityIds;
+    init {
 
-    @SuppressWarnings("unchecked")
-    public SceneGraph(Nhg nhg, String rootId) {
-        this.nhg = nhg;
+        this.entities = Array()
+        entityIds = ArrayMap()
+        sceneEntityArchetype = nhg.entities.createArchetype(NodeComponent::class.java)
 
-        this.entitiesArray = new Array<>();
-        entityIds = new ArrayMap<>();
-        sceneEntityArchetype = nhg.entities.createArchetype(NodeComponent.class);
+        rootEntity = createSceneEntity(rootId)
+        rootNodeComponent = nhg.entities.getComponent(rootEntity, NodeComponent::class.java)
+        rootNodeComponent.setId(rootEntity)
 
-        rootEntity = createSceneEntity(rootId);
-        rootNodeComponent = nhg.entities.getComponent(rootEntity, NodeComponent.class);
-        rootNodeComponent.setId(rootEntity);
-
-        this.entitiesArray.add(rootEntity);
+        this.entities.add(rootEntity)
     }
 
-    public int getRootEntity() {
-        return rootEntity;
+    fun createSceneEntity(id: String): Int {
+        val entity = nhg.entities.createEntity(sceneEntityArchetype)
+        entityIds.put(id, entity)
+
+        return entity
     }
 
-    public int createSceneEntity(String id) {
-        int entity = nhg.entities.createEntity(sceneEntityArchetype);
-        entityIds.put(id, entity);
+    @JvmOverloads
+    fun addSceneEntity(entity: Int, parentEntity: Int = rootEntity): Int {
+        val nodeComponent = nhg.entities
+                .getComponent(entity, NodeComponent::class.java)
+        nodeComponent.setId(entity)
 
-        return entity;
+        val parentNodeComponent = nhg.entities
+                .getComponent(parentEntity, NodeComponent::class.java)
+
+        parentNodeComponent.node.addChild<Node>(nodeComponent.node)
+        nodeComponent.parentNodeComponent = parentNodeComponent
+
+        entities.add(entity)
+        return entity
     }
 
-    public int addSceneEntity(int entity, int parentEntity) {
-        NodeComponent nodeComponent = nhg.entities
-                .getComponent(entity, NodeComponent.class);
-        nodeComponent.setId(entity);
-
-        NodeComponent parentNodeComponent = nhg.entities
-                .getComponent(parentEntity, NodeComponent.class);
-
-        parentNodeComponent.node.addChild(nodeComponent.node);
-        nodeComponent.parentNodeComponent = parentNodeComponent;
-
-        entitiesArray.add(entity);
-        return entity;
+    @JvmOverloads
+    fun addSceneEntity(id: String, parentEntity: Int = rootEntity): Int {
+        val entity = createSceneEntity(id)
+        return addSceneEntity(entity, parentEntity)
     }
 
-    public int addSceneEntity(int entity) {
-        return addSceneEntity(entity, rootEntity);
-    }
-
-    public int addSceneEntity(String id) {
-        return addSceneEntity(id, rootEntity);
-    }
-
-    public int addSceneEntity(String id, int parentEntity) {
-        int entity = createSceneEntity(id);
-        return addSceneEntity(entity, parentEntity);
-    }
-
-    public int getSceneEntity(String id) {
-        return entityIds.get(id);
-    }
-
-    public Array<Integer> getEntities() {
-        return entitiesArray;
+    fun getSceneEntity(id: String): Int {
+        return entityIds.get(id)
     }
 }

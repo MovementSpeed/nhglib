@@ -1,29 +1,33 @@
-package io.github.movementspeed.nhglib.core.ecs.components.graphics;
+package io.github.movementspeed.nhglib.core.ecs.components.graphics
 
-import com.artemis.Component;
-import com.badlogic.gdx.graphics.Camera;
+import com.artemis.Component
+import com.badlogic.gdx.graphics.Camera
 
 /**
  * Created by Fausto Napoli on 03/03/2017.
  */
-public class CameraComponent extends Component {
-    public Camera camera;
-    public Type type;
+class CameraComponent : Component() {
+    var camera: Camera? = null
+    var type: Type? = null
 
-    public enum Type {
+    enum class Type {
         PERSPECTIVE,
         ORTHOGRAPHIC;
 
-        public static CameraComponent.Type fromString(String value) {
-            CameraComponent.Type type = null;
 
-            if (value.contentEquals("perspective")) {
-                type = PERSPECTIVE;
-            } else if (value.contentEquals("orthographic")) {
-                type = ORTHOGRAPHIC;
+        companion object {
+
+            fun fromString(value: String): CameraComponent.Type? {
+                var type: CameraComponent.Type? = null
+
+                if (value.contentEquals("perspective")) {
+                    type = PERSPECTIVE
+                } else if (value.contentEquals("orthographic")) {
+                    type = ORTHOGRAPHIC
+                }
+
+                return type
             }
-
-            return type;
         }
     }
 }

@@ -1,211 +1,205 @@
-package io.github.movementspeed.nhglib.graphics.shaders.tiled;
+package io.github.movementspeed.nhglib.graphics.shaders.tiled
 
-import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.math.Frustum;
-import com.badlogic.gdx.math.Plane;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.IntArray;
+import com.badlogic.gdx.graphics.PerspectiveCamera
+import com.badlogic.gdx.math.Frustum
+import com.badlogic.gdx.math.Plane
+import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.IntArray
 
-public class LightGrid {
-    private int sizeX;
-    private int sizeY;
-    private int numTiles;
+class LightGrid(val size: Int) {
+    private val sizeY: Int
+    val numTiles: Int
 
-    private Vector3 nearBotLeft;
-    private Vector3 nearBotRight;
-    private Vector3 nearTopRight;
-    private Vector3 nearTopLeft;
-    private Vector3 farBotLeft;
-    private Vector3 farBotRight;
-    private Vector3 farTopRight;
-    private Vector3 farTopLeft;
+    private val nearBotLeft: Vector3
+    private val nearBotRight: Vector3
+    private val nearTopRight: Vector3
+    private val nearTopLeft: Vector3
+    private val farBotLeft: Vector3
+    private val farBotRight: Vector3
+    private val farTopRight: Vector3
+    private val farTopLeft: Vector3
 
-    private Vector3 ndw = new Vector3();
-    private Vector3 ndh = new Vector3();
-    private Vector3 fdw = new Vector3();
-    private Vector3 fdh = new Vector3();
-    private Vector3 temp = new Vector3();
-    private Vector3 tempNearBotLeft = new Vector3();
-    private Vector3 tempFarBotLeft = new Vector3();
+    private val ndw = Vector3()
+    private val ndh = Vector3()
+    private val fdw = Vector3()
+    private val fdh = Vector3()
+    private val temp = Vector3()
+    private val tempNearBotLeft = Vector3()
+    private val tempFarBotLeft = Vector3()
 
-    private Vector3[] planePoints;
+    private val planePoints: Array<Vector3>
 
-    private Plane[][] verticalPlanes;
-    private Plane[][] horizontalPlanes;
+    private val verticalPlanes: Array<Array<Plane>>
+    private val horizontalPlanes: Array<Array<Plane>>
 
-    public LightGrid(int size) {
-        numTiles = size * size;
-        planePoints = new Vector3[8];
+    init {
+        numTiles = size * size
+        planePoints = Array(8)
 
-        for (int i = 0; i < 8; i++) {
-            planePoints[i] = new Vector3();
+        for (i in 0..7) {
+            planePoints[i] = Vector3()
+        }
+        this.sizeY = size
+
+        verticalPlanes = Array(2)
+        horizontalPlanes = Array(2)
+
+        repeat(2) {
+            verticalPlanes[it] = Array(size)
+            horizontalPlanes[it] = Array(sizeY)
         }
 
-        this.sizeX = size;
-        this.sizeY = size;
-
-        verticalPlanes = new Plane[2][this.sizeX];
-        horizontalPlanes = new Plane[2][this.sizeY];
-
-        for (int i = 0; i < this.sizeX; i++) {
-            for (int j = 0; j < 2; j++) {
-                verticalPlanes[j][i] = new Plane(new Vector3(), 0);
-                horizontalPlanes[j][i] = new Plane(new Vector3(), 0);
+        for (i in 0 until this.size) {
+            for (j in 0..1) {
+                verticalPlanes[j][i] = Plane(Vector3(), 0f)
+                horizontalPlanes[j][i] = Plane(Vector3(), 0f)
             }
         }
-        nearBotLeft = new Vector3();
-        nearBotRight = new Vector3();
-        nearTopRight = new Vector3();
-        nearTopLeft = new Vector3();
-        farBotLeft = new Vector3();
-        farBotRight = new Vector3();
-        farTopRight = new Vector3();
-        farTopLeft = new Vector3();
+
+        nearBotLeft = Vector3()
+        nearBotRight = Vector3()
+        nearTopRight = Vector3()
+        nearTopLeft = Vector3()
+        farBotLeft = Vector3()
+        farBotRight = Vector3()
+        farTopRight = Vector3()
+        farTopLeft = Vector3()
     }
 
     /* Builds the planes used for the sub frustums.
      */
-    public void setFrustums(PerspectiveCamera cam) {
-        Frustum bigFrustum = cam.frustum;
-        nearBotLeft.set(bigFrustum.planePoints[0]);
-        nearBotRight.set(bigFrustum.planePoints[1]);
-        nearTopRight.set(bigFrustum.planePoints[2]);
-        nearTopLeft.set(bigFrustum.planePoints[3]);
-        farBotLeft.set(bigFrustum.planePoints[4]);
-        farBotRight.set(bigFrustum.planePoints[5]);
-        farTopRight.set(bigFrustum.planePoints[6]);
-        farTopLeft.set(bigFrustum.planePoints[7]);
+    fun setFrustums(cam: PerspectiveCamera) {
+        val bigFrustum = cam.frustum
 
-        ndw.set(nearBotRight).sub(nearBotLeft).scl(1f / sizeX);
-        ndh.set(nearTopLeft).sub(nearBotLeft).scl(1f / sizeY);
-        fdw.set(farBotRight).sub(farBotLeft).scl(1f / sizeX);
-        fdh.set(farTopRight).sub(farBotRight).scl(1f / sizeY);
+        nearBotLeft.set(bigFrustum.planePoints[0])
+        nearBotRight.set(bigFrustum.planePoints[1])
+        nearTopRight.set(bigFrustum.planePoints[2])
+        nearTopLeft.set(bigFrustum.planePoints[3])
+        farBotLeft.set(bigFrustum.planePoints[4])
+        farBotRight.set(bigFrustum.planePoints[5])
+        farTopRight.set(bigFrustum.planePoints[6])
+        farTopLeft.set(bigFrustum.planePoints[7])
 
-        for (int x = 0; x < sizeX; x++) {
-            temp.set(ndw).scl(x);
-            tempNearBotLeft.set(nearBotLeft);
-            tempNearBotLeft.add(temp);
+        ndw.set(nearBotRight).sub(nearBotLeft).scl(1f / size)
+        ndh.set(nearTopLeft).sub(nearBotLeft).scl(1f / sizeY)
+        fdw.set(farBotRight).sub(farBotLeft).scl(1f / size)
+        fdh.set(farTopRight).sub(farBotRight).scl(1f / sizeY)
 
-            planePoints[0].set(tempNearBotLeft);
-            planePoints[1].set(tempNearBotLeft).add(ndw);
-            planePoints[2].set(tempNearBotLeft).add(ndw).add(ndh);
-            planePoints[3].set(tempNearBotLeft).add(ndh);
+        for (x in 0 until size) {
+            temp.set(ndw).scl(x.toFloat())
+            tempNearBotLeft.set(nearBotLeft)
+            tempNearBotLeft.add(temp)
 
-            temp.set(fdw).scl(x);
-            tempFarBotLeft.set(farBotLeft);
-            tempFarBotLeft.add(temp);
+            planePoints[0].set(tempNearBotLeft)
+            planePoints[1].set(tempNearBotLeft).add(ndw)
+            planePoints[2].set(tempNearBotLeft).add(ndw).add(ndh)
+            planePoints[3].set(tempNearBotLeft).add(ndh)
 
-            planePoints[4].set(tempFarBotLeft);
-            planePoints[5].set(tempFarBotLeft).add(fdw);
-            planePoints[6].set(tempFarBotLeft).add(fdw).add(fdh);
-            planePoints[7].set(tempFarBotLeft).add(fdh);
-            verticalPlanes[0][x].set(planePoints[0], planePoints[4], planePoints[3]);
-            verticalPlanes[1][x].set(planePoints[5], planePoints[1], planePoints[6]);
+            temp.set(fdw).scl(x.toFloat())
+            tempFarBotLeft.set(farBotLeft)
+            tempFarBotLeft.add(temp)
+
+            planePoints[4].set(tempFarBotLeft)
+            planePoints[5].set(tempFarBotLeft).add(fdw)
+            planePoints[6].set(tempFarBotLeft).add(fdw).add(fdh)
+            planePoints[7].set(tempFarBotLeft).add(fdh)
+            verticalPlanes[0][x].set(planePoints[0], planePoints[4], planePoints[3])
+            verticalPlanes[1][x].set(planePoints[5], planePoints[1], planePoints[6])
         }
 
-        for (int y = 0; y < sizeY; y++) {
-            tempNearBotLeft.set(nearBotLeft);
-            temp.set(ndh).scl(y);
-            tempNearBotLeft.set(tempNearBotLeft);
-            tempNearBotLeft.add(temp);
+        for (y in 0 until sizeY) {
+            tempNearBotLeft.set(nearBotLeft)
+            temp.set(ndh).scl(y.toFloat())
+            tempNearBotLeft.set(tempNearBotLeft)
+            tempNearBotLeft.add(temp)
 
-            planePoints[0].set(tempNearBotLeft);
-            planePoints[1].set(tempNearBotLeft).add(ndw);
-            planePoints[2].set(tempNearBotLeft).add(ndw).add(ndh);
-            planePoints[3].set(tempNearBotLeft).add(ndh);
+            planePoints[0].set(tempNearBotLeft)
+            planePoints[1].set(tempNearBotLeft).add(ndw)
+            planePoints[2].set(tempNearBotLeft).add(ndw).add(ndh)
+            planePoints[3].set(tempNearBotLeft).add(ndh)
 
-            tempFarBotLeft.set(farBotLeft);
+            tempFarBotLeft.set(farBotLeft)
 
-            temp.set(fdh).scl(y);
-            tempFarBotLeft.set(tempFarBotLeft);
-            tempFarBotLeft.add(temp);
-            planePoints[4].set(tempFarBotLeft);
-            planePoints[5].set(tempFarBotLeft).add(fdw);
-            planePoints[6].set(tempFarBotLeft).add(fdw).add(fdh);
-            planePoints[7].set(tempFarBotLeft).add(fdh);
-            horizontalPlanes[0][y].set(planePoints[2], planePoints[3], planePoints[6]);
-            horizontalPlanes[1][y].set(planePoints[4], planePoints[0], planePoints[1]);
+            temp.set(fdh).scl(y.toFloat())
+            tempFarBotLeft.set(tempFarBotLeft)
+            tempFarBotLeft.add(temp)
+            planePoints[4].set(tempFarBotLeft)
+            planePoints[5].set(tempFarBotLeft).add(fdw)
+            planePoints[6].set(tempFarBotLeft).add(fdw).add(fdh)
+            planePoints[7].set(tempFarBotLeft).add(fdh)
+            horizontalPlanes[0][y].set(planePoints[2], planePoints[3], planePoints[6])
+            horizontalPlanes[1][y].set(planePoints[4], planePoints[0], planePoints[1])
         }
     }
 
     /* Check what tiles a given light source intersects
      * and updates the array lights accordingly.
      */
-    public void checkFrustums(Vector3 pos, float radius, Array<IntArray> lights, int lightID) {
-        int startX = 0;
-        int endX = 0;
-        int startY = 0;
-        int endY = 0;
+    fun checkFrustums(pos: Vector3, radius: Float, lights: Array<IntArray>, lightID: Int) {
+        var startX = 0
+        var endX = 0
+        var startY = 0
+        var endY = 0
 
-        boolean foundStart = false;
-        boolean foundEnd = false;
+        var foundStart = false
+        var foundEnd = false
 
-        for (int x = 0; x < sizeX; x++) {
+        for (x in 0 until size) {
             if (insideColumn(x, pos, radius)) {
                 if (!foundStart) {
-                    startX = x;
+                    startX = x
                 }
 
-                foundStart = true;
+                foundStart = true
             } else {
                 if (foundStart) {
-                    endX = x - 1;
-                    foundEnd = true;
-                    break;
+                    endX = x - 1
+                    foundEnd = true
+                    break
                 }
             }
         }
 
         if (!foundEnd && foundStart) {
-            endX = sizeX - 1;
+            endX = size - 1
         }
 
-        foundStart = false;
-        foundEnd = false;
+        foundStart = false
+        foundEnd = false
 
-        for (int y = 0; y < sizeY; y++) {
+        for (y in 0 until sizeY) {
             if (insideRow(y, pos, radius)) {
                 if (!foundStart) {
-                    startY = y;
+                    startY = y
                 }
 
-                foundStart = true;
+                foundStart = true
             } else {
                 if (foundStart) {
-                    endY = y - 1;
-                    foundEnd = true;
-                    break;
+                    endY = y - 1
+                    foundEnd = true
+                    break
                 }
             }
         }
 
         if (!foundEnd && foundStart) {
-            endY = sizeY - 1;
+            endY = sizeY - 1
         }
 
-        for (int x = startX; x <= endX; x++) {
-            for (int y = startY; y <= endY; y++) {
-                lights.get(y * sizeX + x).add(lightID);
+        for (x in startX..endX) {
+            for (y in startY..endY) {
+                lights.get(y * size + x).add(lightID)
             }
         }
     }
 
-    public int getSize() {
-        return sizeX;
+    private fun insideColumn(x: Int, pos: Vector3, radius: Float): Boolean {
+        return if (verticalPlanes[0][x].distance(pos) < -radius) false else verticalPlanes[1][x].distance(pos) >= -radius
     }
 
-    public int getNumTiles() {
-        return numTiles;
-    }
-
-    private boolean insideColumn(int x, Vector3 pos, float radius) {
-        if (verticalPlanes[0][x].distance(pos) < -radius) return false;
-        return !(verticalPlanes[1][x].distance(pos) < -radius);
-    }
-
-    private boolean insideRow(int y, Vector3 pos, float radius) {
-        if (horizontalPlanes[0][y].distance(pos) < -radius) return false;
-        return !(horizontalPlanes[1][y].distance(pos) < -radius);
+    private fun insideRow(y: Int, pos: Vector3, radius: Float): Boolean {
+        return if (horizontalPlanes[0][y].distance(pos) < -radius) false else horizontalPlanes[1][y].distance(pos) >= -radius
     }
 }

@@ -1,11 +1,11 @@
-package io.github.movementspeed.nhglib.core.fsm.interfaces;
+package io.github.movementspeed.nhglib.core.fsm.interfaces
 
-import com.artemis.BaseSystem;
-import com.badlogic.gdx.utils.Array;
+import com.artemis.BaseSystem
+import com.badlogic.gdx.utils.Array
 
 /**
  * Created by Fausto Napoli on 02/11/2016.
  */
-public interface EngineConfigurationListener {
-    Array<BaseSystem> onConfigureEntitySystems();
+interface EngineConfigurationListener {
+    fun onConfigureEntitySystems(): Array<BaseSystem>
 }

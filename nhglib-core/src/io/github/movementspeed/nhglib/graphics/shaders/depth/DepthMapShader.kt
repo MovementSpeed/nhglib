@@ -1,158 +1,145 @@
-package io.github.movementspeed.nhglib.graphics.shaders.depth;
+package io.github.movementspeed.nhglib.graphics.shaders.depth
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.VertexAttribute;
-import com.badlogic.gdx.graphics.VertexAttributes;
-import com.badlogic.gdx.graphics.g3d.Attributes;
-import com.badlogic.gdx.graphics.g3d.Renderable;
-import com.badlogic.gdx.graphics.g3d.Shader;
-import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
-import com.badlogic.gdx.graphics.g3d.shaders.BaseShader;
-import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.GdxRuntimeException;
-import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils;
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Camera
+import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.graphics.VertexAttribute
+import com.badlogic.gdx.graphics.VertexAttributes
+import com.badlogic.gdx.graphics.g3d.Attributes
+import com.badlogic.gdx.graphics.g3d.Renderable
+import com.badlogic.gdx.graphics.g3d.Shader
+import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute
+import com.badlogic.gdx.graphics.g3d.shaders.BaseShader
+import com.badlogic.gdx.graphics.g3d.utils.RenderContext
+import com.badlogic.gdx.graphics.glutils.ShaderProgram
+import com.badlogic.gdx.math.Matrix4
+import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.utils.GdxRuntimeException
+import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils
 
-public class DepthMapShader extends BaseShader {
-    private float bones[];
-    private Params params;
-    private Vector2 tmp;
-    private Matrix4 idtMatrix;
-    private Renderable renderable;
+class DepthMapShader(private var renderable: Renderable?, private val params: Params) : BaseShader() {
+    private var bones: FloatArray? = null
+    private val tmp: Vector2
+    private var idtMatrix: Matrix4? = null
 
-    @Override
-    public void end() {
-        super.end();
+    override fun end() {
+        super.end()
     }
 
-    public DepthMapShader(final Renderable renderable, Params params) {
-        this.renderable = renderable;
-        this.params = params;
+    init {
 
-        tmp = new Vector2();
+        tmp = Vector2()
 
-        String prefix = createPrefix(renderable);
+        val prefix = createPrefix(renderable)
 
-        String vert = prefix + Gdx.files.internal("shaders/depth_shader.vert").readString();
-        String frag = prefix + Gdx.files.internal("shaders/depth_shader.frag").readString();
+        val vert = prefix + Gdx.files.internal("shaders/depth_shader.vert").readString()
+        val frag = prefix + Gdx.files.internal("shaders/depth_shader.frag").readString()
 
-        ShaderProgram.pedantic = false;
-        program = new ShaderProgram(vert, frag);
+        ShaderProgram.pedantic = false
+        program = ShaderProgram(vert, frag)
 
-        String shaderLog = program.getLog();
+        val shaderLog = program.log
 
-        if (!program.isCompiled()) {
-            throw new GdxRuntimeException(shaderLog);
+        if (!program.isCompiled) {
+            throw GdxRuntimeException(shaderLog)
         }
 
-        register("u_mvpMatrix", new GlobalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, shader.camera.combined);
+        register("u_mvpMatrix", object : BaseShader.GlobalSetter() {
+            override fun set(shader: BaseShader, inputID: Int, renderable: Renderable, combinedAttributes: Attributes) {
+                shader.set(inputID, shader.camera.combined)
             }
-        });
+        })
 
-        register("u_viewMatrix", new GlobalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, shader.camera.view);
+        register("u_viewMatrix", object : BaseShader.GlobalSetter() {
+            override fun set(shader: BaseShader, inputID: Int, renderable: Renderable, combinedAttributes: Attributes) {
+                shader.set(inputID, shader.camera.view)
             }
-        });
+        })
 
-        register("u_modelMatrix", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, renderable.worldTransform);
+        register("u_modelMatrix", object : BaseShader.LocalSetter() {
+            override fun set(shader: BaseShader, inputID: Int, renderable: Renderable, combinedAttributes: Attributes) {
+                shader.set(inputID, renderable.worldTransform)
             }
-        });
+        })
 
-        register("u_cameraRange", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, tmp.set(shader.camera.near, shader.camera.far));
+        register("u_cameraRange", object : BaseShader.LocalSetter() {
+            override fun set(shader: BaseShader, inputID: Int, renderable: Renderable, combinedAttributes: Attributes) {
+                shader.set(inputID, tmp.set(shader.camera.near, shader.camera.far))
             }
-        });
+        })
     }
 
-    @Override
-    public void begin(final Camera camera, final RenderContext context) {
-        super.begin(camera, context);
-        context.setDepthTest(GL20.GL_LEQUAL);
-        context.setCullFace(GL20.GL_BACK);
+    override fun begin(camera: Camera, context: RenderContext) {
+        super.begin(camera, context)
+        context.setDepthTest(GL20.GL_LEQUAL)
+        context.setCullFace(GL20.GL_BACK)
     }
 
-    @Override
-    public void render(final Renderable renderable) {
+    override fun render(renderable: Renderable) {
         if (!renderable.material.has(BlendingAttribute.Type)) {
-            context.setBlending(false, GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+            context.setBlending(false, GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
         } else {
-            context.setBlending(true, GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+            context.setBlending(true, GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
         }
 
-        updateBones(renderable);
-        super.render(renderable);
+        updateBones(renderable)
+        super.render(renderable)
     }
 
-    @Override
-    public void init() {
-        final ShaderProgram program = this.program;
-        this.program = null;
-        init(program, renderable);
-        renderable = null;
+    override fun init() {
+        val program = this.program
+        this.program = null
+        init(program, renderable)
+        renderable = null
 
-        idtMatrix = new Matrix4();
-        bones = new float[0];
+        idtMatrix = Matrix4()
+        bones = FloatArray(0)
     }
 
-    @Override
-    public int compareTo(final Shader other) {
-        return 0;
+    override fun compareTo(other: Shader): Int {
+        return 0
     }
 
-    @Override
-    public boolean canRender(final Renderable instance) {
-        boolean bones = ShaderUtils.useBones(instance) == params.useBones;
-        return bones;
+    override fun canRender(instance: Renderable): Boolean {
+        return ShaderUtils.useBones(instance) == params.useBones
     }
 
-    private void updateBones(Renderable renderable) {
+    private fun updateBones(renderable: Renderable) {
         if (renderable.bones != null) {
-            bones = new float[renderable.bones.length * 16];
+            bones = FloatArray(renderable.bones.size * 16)
 
-            for (int i = 0; i < bones.length; i++) {
-                final int idx = i / 16;
-                bones[i] = (idx >= renderable.bones.length || renderable.bones[idx] == null) ?
-                        idtMatrix.val[i % 16] : renderable.bones[idx].val[i % 16];
+            for (i in bones!!.indices) {
+                val idx = i / 16
+                bones[i] = if (idx >= renderable.bones.size || renderable.bones[idx] == null)
+                    idtMatrix!!.`val`[i % 16]
+                else
+                    renderable.bones[idx].`val`[i % 16]
             }
 
-            program.setUniformMatrix4fv("u_bones", bones, 0, bones.length);
+            program.setUniformMatrix4fv("u_bones", bones, 0, bones!!.size)
         }
     }
 
-    private String createPrefix(Renderable renderable) {
-        String prefix = "";
+    private fun createPrefix(renderable: Renderable): String {
+        var prefix = ""
 
         if (params.useBones) {
-            prefix += "#define numBones " + 12 + "\n";
-            final int n = renderable.meshPart.mesh.getVertexAttributes().size();
+            prefix += "#define numBones " + 12 + "\n"
+            val n = renderable.meshPart.mesh.vertexAttributes.size()
 
-            for (int i = 0; i < n; i++) {
-                final VertexAttribute attr = renderable.meshPart.mesh.getVertexAttributes().get(i);
+            for (i in 0 until n) {
+                val attr = renderable.meshPart.mesh.vertexAttributes.get(i)
 
                 if (attr.usage == VertexAttributes.Usage.BoneWeight) {
-                    prefix += "#define boneWeight" + attr.unit + "Flag\n";
+                    prefix += "#define boneWeight" + attr.unit + "Flag\n"
                 }
             }
         }
 
-        return prefix;
+        return prefix
     }
 
-    public static class Params {
-        boolean useBones;
+    class Params {
+        internal var useBones: Boolean = false
     }
 }

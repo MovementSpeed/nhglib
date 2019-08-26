@@ -1,214 +1,196 @@
-package io.github.movementspeed.nhglib.assets.loaders;
+package io.github.movementspeed.nhglib.assets.loaders
 
-import com.badlogic.gdx.assets.AssetDescriptor;
-import com.badlogic.gdx.assets.AssetLoaderParameters;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.assets.loaders.AsynchronousAssetLoader;
-import com.badlogic.gdx.assets.loaders.FileHandleResolver;
-import com.badlogic.gdx.assets.loaders.TextureLoader;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g3d.Material;
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
-import com.badlogic.gdx.graphics.g3d.model.data.ModelData;
-import com.badlogic.gdx.graphics.g3d.model.data.ModelMaterial;
-import com.badlogic.gdx.graphics.g3d.model.data.ModelTexture;
-import com.badlogic.gdx.graphics.g3d.utils.TextureProvider;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ArrayMap;
-import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.ObjectMap;
-import io.github.movementspeed.nhglib.assets.Asset;
-import io.github.movementspeed.nhglib.graphics.shaders.attributes.PBRTextureAttribute;
+import com.badlogic.gdx.assets.AssetDescriptor
+import com.badlogic.gdx.assets.AssetLoaderParameters
+import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.assets.loaders.AsynchronousAssetLoader
+import com.badlogic.gdx.assets.loaders.FileHandleResolver
+import com.badlogic.gdx.assets.loaders.TextureLoader
+import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g3d.Material
+import com.badlogic.gdx.graphics.g3d.Model
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute
+import com.badlogic.gdx.graphics.g3d.model.data.ModelData
+import com.badlogic.gdx.graphics.g3d.model.data.ModelMaterial
+import com.badlogic.gdx.graphics.g3d.model.data.ModelTexture
+import com.badlogic.gdx.graphics.g3d.utils.TextureProvider
+import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.ArrayMap
+import com.badlogic.gdx.utils.Disposable
+import com.badlogic.gdx.utils.ObjectMap
+import io.github.movementspeed.nhglib.assets.Asset
+import io.github.movementspeed.nhglib.graphics.shaders.attributes.PBRTextureAttribute
 
-import java.util.Iterator;
+abstract class NhgModelLoader<P : NhgModelLoader.ModelParameters>(resolver: FileHandleResolver) : AsynchronousAssetLoader<Model, P>(resolver) {
 
-public abstract class NhgModelLoader<P extends NhgModelLoader.ModelParameters> extends AsynchronousAssetLoader<Model, P> {
-    public NhgModelLoader(FileHandleResolver resolver) {
-        super(resolver);
-    }
+    protected var currentAsset: Asset
 
-    protected Asset currentAsset;
+    protected var items = Array<ObjectMap.Entry<String, ModelData>>()
+    protected var defaultParameters = NhgModelLoader.ModelParameters()
 
-    protected Array<ObjectMap.Entry<String, ModelData>> items = new Array<ObjectMap.Entry<String, ModelData>>();
-    protected NhgModelLoader.ModelParameters defaultParameters = new NhgModelLoader.ModelParameters();
-
-    private ArrayMap<ModelMaterial, Array<ModelTexture>> dependencies;
+    private val dependencies: ArrayMap<ModelMaterial, Array<ModelTexture>>? = null
 
     /**
      * Directly load the raw model data on the calling thread.
      */
-    public abstract ModelData loadModelData(final FileHandle fileHandle, P parameters);
+    abstract fun loadModelData(fileHandle: FileHandle, parameters: P?): ModelData?
 
     /**
      * Directly load the raw model data on the calling thread.
      */
-    public ModelData loadModelData(final FileHandle fileHandle) {
-        return loadModelData(fileHandle, null);
+    fun loadModelData(fileHandle: FileHandle): ModelData? {
+        return loadModelData(fileHandle, null)
     }
 
     /**
-     * Directly load the model on the calling thread. The model with not be managed by an {@link AssetManager}.
+     * Directly load the model on the calling thread. The model with not be managed by an [AssetManager].
      */
-    public Model loadModel(final FileHandle fileHandle, TextureProvider textureProvider, P parameters) {
-        final ModelData data = loadModelData(fileHandle, parameters);
-        return data == null ? null : new Model(data, textureProvider);
+    @JvmOverloads
+    fun loadModel(fileHandle: FileHandle, textureProvider: TextureProvider = TextureProvider.FileTextureProvider(), parameters: P? = null): Model? {
+        val data = loadModelData(fileHandle, parameters)
+        return if (data == null) null else Model(data, textureProvider)
     }
 
     /**
-     * Directly load the model on the calling thread. The model with not be managed by an {@link AssetManager}.
+     * Directly load the model on the calling thread. The model with not be managed by an [AssetManager].
      */
-    public Model loadModel(final FileHandle fileHandle, P parameters) {
-        return loadModel(fileHandle, new TextureProvider.FileTextureProvider(), parameters);
+    fun loadModel(fileHandle: FileHandle, parameters: P): Model? {
+        return loadModel(fileHandle, TextureProvider.FileTextureProvider(), parameters)
     }
 
-    /**
-     * Directly load the model on the calling thread. The model with not be managed by an {@link AssetManager}.
-     */
-    public Model loadModel(final FileHandle fileHandle, TextureProvider textureProvider) {
-        return loadModel(fileHandle, textureProvider, null);
-    }
+    override fun getDependencies(fileName: String, file: FileHandle, parameters: P?): Array<AssetDescriptor<*>> {
+        val deps = Array()
+        val data = loadModelData(file, parameters) ?: return deps
 
-    /**
-     * Directly load the model on the calling thread. The model with not be managed by an {@link AssetManager}.
-     */
-    public Model loadModel(final FileHandle fileHandle) {
-        return loadModel(fileHandle, new TextureProvider.FileTextureProvider(), null);
-    }
+        val item = ObjectMap.Entry<String, ModelData>()
+        item.key = fileName
+        item.value = data
 
-    @Override
-    public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, P parameters) {
-        final Array<AssetDescriptor> deps = new Array();
-        ModelData data = loadModelData(file, parameters);
-        if (data == null) return deps;
-
-        ObjectMap.Entry<String, ModelData> item = new ObjectMap.Entry<String, ModelData>();
-        item.key = fileName;
-        item.value = data;
-
-        synchronized (items) {
-            items.add(item);
+        synchronized(items) {
+            items.add(item)
         }
 
-        TextureLoader.TextureParameter textureParameter = (parameters != null)
-                ? parameters.textureParameter
-                : defaultParameters.textureParameter;
+        val textureParameter = parameters?.textureParameter ?: defaultParameters.textureParameter
 
-        for (final ModelMaterial modelMaterial : data.materials) {
+        for (modelMaterial in data.materials) {
             if (modelMaterial.textures != null) {
-                for (final ModelTexture modelTexture : modelMaterial.textures) {
-                    String fName = modelTexture.fileName;
+                for (modelTexture in modelMaterial.textures) {
+                    var fName = modelTexture.fileName
 
                     if (fName.contains("/")) {
-                        fName = fName.substring(fName.lastIndexOf("/") + 1);
+                        fName = fName.substring(fName.lastIndexOf("/") + 1)
                     }
 
-                    textureParameter.genMipMaps = false;
-                    textureParameter.magFilter = Texture.TextureFilter.Linear;
-                    textureParameter.minFilter = Texture.TextureFilter.Linear;
-                    textureParameter.wrapU = Texture.TextureWrap.Repeat;
-                    textureParameter.wrapV = Texture.TextureWrap.Repeat;
+                    textureParameter.genMipMaps = false
+                    textureParameter.magFilter = Texture.TextureFilter.Linear
+                    textureParameter.minFilter = Texture.TextureFilter.Linear
+                    textureParameter.wrapU = Texture.TextureWrap.Repeat
+                    textureParameter.wrapV = Texture.TextureWrap.Repeat
 
-                    deps.add(new AssetDescriptor(currentAsset.dependenciesPath + fName, Texture.class, textureParameter));
+                    deps.add(AssetDescriptor(currentAsset.dependenciesPath + fName, Texture::class.java, textureParameter))
                 }
             }
         }
 
-        return deps;
+        return deps
     }
 
-    @Override
-    public void loadAsync(AssetManager manager, String fileName, FileHandle file, P parameters) {
-    }
+    override fun loadAsync(manager: AssetManager, fileName: String, file: FileHandle, parameters: P) {}
 
-    @Override
-    public Model loadSync(AssetManager manager, String fileName, FileHandle file, P parameters) {
-        ModelData data = null;
-        synchronized (items) {
-            for (int i = 0; i < items.size; i++) {
-                if (items.get(i).key.equals(fileName)) {
-                    data = items.get(i).value;
-                    items.removeIndex(i);
+    override fun loadSync(manager: AssetManager, fileName: String, file: FileHandle, parameters: P): Model? {
+        var data: ModelData? = null
+        synchronized(items) {
+            for (i in 0 until items.size) {
+                if (items.get(i).key == fileName) {
+                    data = items.get(i).value
+                    items.removeIndex(i)
                 }
             }
         }
-        if (data == null) return null;
-        final Model result = new Model(data, new TextureProvider.AssetTextureProvider(manager));
+        if (data == null) return null
+        val result = Model(data, TextureProvider.AssetTextureProvider(manager))
 
-        convertModelMaterialsToPBR(result);
+        convertModelMaterialsToPBR(result)
 
         // need to remove the textures from the managed disposables, or else ref counting
         // doesn't work!
-        Iterator<Disposable> disposables = result.getManagedDisposables().iterator();
+        val disposables = result.managedDisposables.iterator()
         while (disposables.hasNext()) {
-            Disposable disposable = disposables.next();
-            if (disposable instanceof Texture) {
-                disposables.remove();
+            val disposable = disposables.next()
+            if (disposable is Texture) {
+                disposables.remove()
             }
         }
 
-        data = null;
-        return result;
+        data = null
+        return result
     }
 
-    public void setCurrentAsset(Asset asset) {
-        this.currentAsset = asset;
+    fun setCurrentAsset(asset: Asset) {
+        this.currentAsset = asset
     }
 
-    private void convertModelMaterialsToPBR(Model model) {
-        Array<Material> materials = model.materials;
+    private fun convertModelMaterialsToPBR(model: Model) {
+        val materials = model.materials
 
-        for (int i = 0; i < materials.size; i++) {
-            Material material = materials.get(i);
+        for (i in 0 until materials.size) {
+            val material = materials.get(i)
 
             if (material.has(TextureAttribute.Diffuse)) {
-                TextureAttribute ta = (TextureAttribute) material.get(TextureAttribute.Diffuse);
-                Texture texture = ta.textureDescription.texture;
-                material.set(PBRTextureAttribute.createAlbedo(texture, ta.offsetU, ta.offsetV, ta.scaleU, ta.scaleV));
-                material.remove(TextureAttribute.Diffuse);
+                val ta = material.get(TextureAttribute.Diffuse) as TextureAttribute
+                val texture = ta.textureDescription.texture
+                material.set(PBRTextureAttribute.createAlbedo(texture, ta.offsetU, ta.offsetV, ta.scaleU, ta.scaleV))
+                material.remove(TextureAttribute.Diffuse)
             } else if (material.has(ColorAttribute.Diffuse)) {
-                ColorAttribute ca = (ColorAttribute) material.get(ColorAttribute.Diffuse);
-                Color color = ca.color;
-                material.set(PBRTextureAttribute.createAlbedo(color));
-                material.remove(TextureAttribute.Diffuse);
+                val ca = material.get(ColorAttribute.Diffuse) as ColorAttribute
+                val color = ca.color
+                material.set(PBRTextureAttribute.createAlbedo(color))
+                material.remove(TextureAttribute.Diffuse)
             }
 
             if (material.has(TextureAttribute.Bump)) {
-                TextureAttribute ta = (TextureAttribute) material.get(TextureAttribute.Bump);
-                Texture texture = ta.textureDescription.texture;
-                material.set(PBRTextureAttribute.createNormal(texture, ta.offsetU, ta.offsetV, ta.scaleU, ta.scaleV));
-                material.remove(TextureAttribute.Normal);
-                material.remove(TextureAttribute.Bump);
+                val ta = material.get(TextureAttribute.Bump) as TextureAttribute
+                val texture = ta.textureDescription.texture
+                material.set(PBRTextureAttribute.createNormal(texture, ta.offsetU, ta.offsetV, ta.scaleU, ta.scaleV))
+                material.remove(TextureAttribute.Normal)
+                material.remove(TextureAttribute.Bump)
             }
 
             if (material.has(TextureAttribute.Specular)) {
-                TextureAttribute ta = (TextureAttribute) material.get(TextureAttribute.Specular);
-                Texture texture = ta.textureDescription.texture;
-                material.set(PBRTextureAttribute.createRMA(texture, ta.offsetU, ta.offsetV, ta.scaleU, ta.scaleV));
-                material.remove(TextureAttribute.Specular);
+                val ta = material.get(TextureAttribute.Specular) as TextureAttribute
+                val texture = ta.textureDescription.texture
+                material.set(PBRTextureAttribute.createRMA(texture, ta.offsetU, ta.offsetV, ta.scaleU, ta.scaleV))
+                material.remove(TextureAttribute.Specular)
             }
 
             if (material.has(TextureAttribute.Emissive)) {
-                TextureAttribute ta = (TextureAttribute) material.get(TextureAttribute.Emissive);
-                Texture texture = ta.textureDescription.texture;
-                material.set(PBRTextureAttribute.createEmissive(texture, ta.offsetU, ta.offsetV, ta.scaleU, ta.scaleV));
-                material.remove(TextureAttribute.Emissive);
+                val ta = material.get(TextureAttribute.Emissive) as TextureAttribute
+                val texture = ta.textureDescription.texture
+                material.set(PBRTextureAttribute.createEmissive(texture, ta.offsetU, ta.offsetV, ta.scaleU, ta.scaleV))
+                material.remove(TextureAttribute.Emissive)
             }
         }
     }
 
-    static public class ModelParameters extends AssetLoaderParameters<Model> {
-        public TextureLoader.TextureParameter textureParameter;
+    class ModelParameters : AssetLoaderParameters<Model>() {
+        var textureParameter: TextureLoader.TextureParameter
 
-        public ModelParameters() {
-            textureParameter = new TextureLoader.TextureParameter();
-            textureParameter.minFilter = Texture.TextureFilter.Linear;
-            textureParameter.magFilter = Texture.TextureFilter.Linear;
-            textureParameter.wrapU = textureParameter.wrapV = Texture.TextureWrap.Repeat;
-            textureParameter.genMipMaps = false;
+        init {
+            textureParameter = TextureLoader.TextureParameter()
+            textureParameter.minFilter = Texture.TextureFilter.Linear
+            textureParameter.magFilter = Texture.TextureFilter.Linear
+            textureParameter.wrapV = Texture.TextureWrap.Repeat
+            textureParameter.wrapU = textureParameter.wrapV
+            textureParameter.genMipMaps = false
         }
     }
 }
+/**
+ * Directly load the model on the calling thread. The model with not be managed by an [AssetManager].
+ */
+/**
+ * Directly load the model on the calling thread. The model with not be managed by an [AssetManager].
+ */

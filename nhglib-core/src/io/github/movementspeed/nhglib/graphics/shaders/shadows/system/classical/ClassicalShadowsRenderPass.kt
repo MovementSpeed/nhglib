@@ -1,59 +1,52 @@
-package io.github.movementspeed.nhglib.graphics.shaders.shadows.system.classical;
+package io.github.movementspeed.nhglib.graphics.shaders.shadows.system.classical
 
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.RenderableProvider;
-import com.badlogic.gdx.utils.Array;
-import io.github.movementspeed.nhglib.graphics.rendering.RenderPass;
-import io.github.movementspeed.nhglib.graphics.shaders.attributes.ShadowSystemAttribute;
-import io.github.movementspeed.nhglib.graphics.shaders.shadows.system.ShadowSystem;
+import com.badlogic.gdx.graphics.Camera
+import com.badlogic.gdx.graphics.PerspectiveCamera
+import com.badlogic.gdx.graphics.g3d.ModelBatch
+import com.badlogic.gdx.graphics.g3d.RenderableProvider
+import com.badlogic.gdx.utils.Array
+import io.github.movementspeed.nhglib.graphics.rendering.RenderPass
+import io.github.movementspeed.nhglib.graphics.shaders.attributes.ShadowSystemAttribute
+import io.github.movementspeed.nhglib.graphics.shaders.shadows.system.ShadowSystem
 
-public class ClassicalShadowsRenderPass extends RenderPass {
-    private ShadowSystem shadowSystem;
-    private Array<ModelBatch> passBatches;
+class ClassicalShadowsRenderPass : RenderPass(false) {
+    private var shadowSystem: ShadowSystem? = null
+    private var passBatches: Array<ModelBatch>? = null
 
-    public ClassicalShadowsRenderPass() {
-        super(false);
-    }
+    override fun created() {
+        shadowSystem = (environment?.get(ShadowSystemAttribute.Type) as? ShadowSystemAttribute)?.shadowSystem
+        passBatches = Array()
 
-    @Override
-    public void created() {
-        shadowSystem = ((ShadowSystemAttribute) environment.get(ShadowSystemAttribute.Type)).shadowSystem;
-
-        passBatches = new Array<>();
-        for (int i = 0; i < shadowSystem.getPassQuantity(); i++) {
-            passBatches.add(new ModelBatch(shadowSystem.getPassShaderProvider(i)));
+        repeat(shadowSystem?.passQuantity ?: 0) {
+            passBatches?.add(ModelBatch(shadowSystem?.getPassShaderProvider(it)))
         }
     }
 
-    @Override
-    public void begin(PerspectiveCamera camera) {
-    }
+    override fun begin(camera: PerspectiveCamera) {}
 
-    @Override
-    public void render(PerspectiveCamera camera, Array<RenderableProvider> renderableProviders) {
-        shadowSystem.begin(camera, renderableProviders);
-        shadowSystem.update();
+    override fun render(camera: PerspectiveCamera, renderableProviders: Array<RenderableProvider>) {
+        shadowSystem?.begin(camera, renderableProviders)
+        shadowSystem?.update()
 
-        for (int i = 0; i < shadowSystem.getPassQuantity(); i++) {
-            shadowSystem.begin(i);
-            Camera lightCamera;
+        repeat(shadowSystem?.passQuantity ?: 0) { i ->
+            shadowSystem?.begin(i)
+            var lightCamera = shadowSystem?.next()
 
-            while ((lightCamera = shadowSystem.next()) != null) {
-                passBatches.get(i).begin(lightCamera);
-                passBatches.get(i).render(renderableProviders, environment);
-                passBatches.get(i).end();
+            while (lightCamera != null) {
+                passBatches?.get(i)?.begin(lightCamera)
+                passBatches?.get(i)?.render(renderableProviders, environment)
+                passBatches?.get(i)?.end()
+
+                lightCamera = shadowSystem?.next()
             }
 
-            shadowSystem.end(i);
+            shadowSystem?.end(i)
         }
 
-        shadowSystem.end();
+        shadowSystem?.end()
     }
 
-    @Override
-    public void end() {
-        mainFBO.begin();
+    override fun end() {
+        mainFBO?.begin()
     }
 }

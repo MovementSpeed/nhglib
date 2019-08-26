@@ -1,107 +1,93 @@
-package io.github.movementspeed.nhglib.core.ecs.components.physics;
+package io.github.movementspeed.nhglib.core.ecs.components.physics
 
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.bullet.collision.Collision;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
-import com.badlogic.gdx.physics.bullet.dynamics.btDefaultVehicleRaycaster;
-import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
-import com.badlogic.gdx.physics.bullet.dynamics.btRaycastVehicle;
-import com.badlogic.gdx.physics.bullet.dynamics.btVehicleRaycaster;
-import com.badlogic.gdx.utils.Disposable;
-import io.github.movementspeed.nhglib.assets.Assets;
+import com.badlogic.gdx.math.Matrix4
+import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.physics.bullet.collision.Collision
+import com.badlogic.gdx.physics.bullet.collision.btCollisionShape
+import com.badlogic.gdx.physics.bullet.dynamics.btDefaultVehicleRaycaster
+import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld
+import com.badlogic.gdx.physics.bullet.dynamics.btRaycastVehicle
+import com.badlogic.gdx.physics.bullet.dynamics.btVehicleRaycaster
+import com.badlogic.gdx.utils.Disposable
+import io.github.movementspeed.nhglib.assets.Assets
 
 /**
  * Created by Fausto Napoli on 11/06/2017.
  */
-public class VehicleComponent extends RigidBodyComponent implements Disposable {
-    private int tyreNumber;
+class VehicleComponent : RigidBodyComponent(), Disposable {
+    var tyreNumber: Int = 0
+        private set
 
-    public btRaycastVehicle.btVehicleTuning vehicleTuning;
-    public btVehicleRaycaster vehicleRaycaster;
-    public btRaycastVehicle vehicle;
+    var vehicleTuning: btRaycastVehicle.btVehicleTuning
+    var vehicleRaycaster: btVehicleRaycaster
+    var vehicle: btRaycastVehicle
 
-    @Override
-    public void addToWorld(btDynamicsWorld world, Matrix4 transform) {
-        world.addVehicle(vehicle);
-        super.addToWorld(world, transform);
+    override fun addToWorld(world: btDynamicsWorld, transform: Matrix4) {
+        world.addVehicle(vehicle)
+        super.addToWorld(world, transform)
     }
 
-    @Override
-    public void dispose() {
-        vehicle.dispose();
-        vehicleTuning.dispose();
-        vehicleRaycaster.dispose();
+    override fun dispose() {
+        vehicle.dispose()
+        vehicleTuning.dispose()
+        vehicleRaycaster.dispose()
     }
 
-    public void setSteeringValue(float steering, int wheel) {
-        vehicle.setSteeringValue(steering, wheel);
+    fun setSteeringValue(steering: Float, wheel: Int) {
+        vehicle.setSteeringValue(steering, wheel)
     }
 
-    public void applyEngineForce(float force, int wheel) {
-        vehicle.applyEngineForce(force, wheel);
+    fun applyEngineForce(force: Float, wheel: Int) {
+        vehicle.applyEngineForce(force, wheel)
     }
 
-    public void setBrake(float brake, int wheelIndex) {
-        vehicle.setBrake(brake, wheelIndex);
+    fun setBrake(brake: Float, wheelIndex: Int) {
+        vehicle.setBrake(brake, wheelIndex)
     }
 
-    public int getTyreNumber() {
-        return tyreNumber;
+    fun build(world: btDynamicsWorld, chassisShape: btCollisionShape, mass: Float): VehicleComponent {
+        return build(world, chassisShape, btRaycastVehicle.btVehicleTuning(), mass)
     }
 
-    public VehicleComponent build(btDynamicsWorld world, btCollisionShape chassisShape, float mass) {
-        return build(world, chassisShape, new btRaycastVehicle.btVehicleTuning(), mass);
+    @JvmOverloads
+    fun build(world: btDynamicsWorld, chassisShape: btCollisionShape,
+              vehicleTuning: btRaycastVehicle.btVehicleTuning, mass: Float, friction: Float = 1f, restitution: Float = 0f, group: Short = (-1).toShort(), masks: ShortArray = shortArrayOf()): VehicleComponent {
+        this.vehicleTuning = vehicleTuning
+
+        build(chassisShape, mass, friction, restitution, group, masks)
+        body!!.activationState = Collision.DISABLE_DEACTIVATION
+
+        vehicleRaycaster = btDefaultVehicleRaycaster(world)
+
+        vehicle = btRaycastVehicle(vehicleTuning, body, vehicleRaycaster)
+        vehicle.setCoordinateSystem(0, 1, 2)
+
+        return this
     }
 
-    public VehicleComponent build(btDynamicsWorld world, btCollisionShape chassisShape,
-                                  btRaycastVehicle.btVehicleTuning vehicleTuning, float mass) {
-        return build(world, chassisShape, vehicleTuning, mass, 1f, 0f, (short) -1, new short[]{});
+    fun build(assets: Assets, world: btDynamicsWorld): VehicleComponent {
+        super.build(assets)
+
+        body!!.activationState = Collision.DISABLE_DEACTIVATION
+        vehicleRaycaster = btDefaultVehicleRaycaster(world)
+
+        vehicle = btRaycastVehicle(vehicleTuning, body, vehicleRaycaster)
+        vehicle.setCoordinateSystem(0, 1, 2)
+
+        return this
     }
 
-    public VehicleComponent build(btDynamicsWorld world, btCollisionShape chassisShape,
-                                  btRaycastVehicle.btVehicleTuning vehicleTuning, float mass, float friction, float restitution, short group, short[] masks) {
-        this.vehicleTuning = vehicleTuning;
-
-        build(chassisShape, mass, friction, restitution, group, masks);
-        getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
-
-        vehicleRaycaster = new btDefaultVehicleRaycaster(world);
-
-        vehicle = new btRaycastVehicle(vehicleTuning, getBody(), vehicleRaycaster);
-        vehicle.setCoordinateSystem(0, 1, 2);
-
-        return this;
+    fun addTyre(attachPoint: Vector3, radius: Float, frontWheel: Boolean): VehicleComponent {
+        return addTyre(attachPoint, Vector3(0f, -1f, 0f), Vector3(-1f, 0f, 0f), radius,
+                radius * 0.3f, 10f, frontWheel)
     }
 
-    public VehicleComponent build(Assets assets, btDynamicsWorld world) {
-        super.build(assets);
+    fun addTyre(attachPoint: Vector3, direction: Vector3, axis: Vector3, radius: Float,
+                suspensionRestLength: Float, friction: Float, frontWheel: Boolean): VehicleComponent {
+        tyreNumber++
 
-        getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
-        vehicleRaycaster = new btDefaultVehicleRaycaster(world);
+        vehicle.addWheel(attachPoint, direction, axis, suspensionRestLength, radius, vehicleTuning, frontWheel).frictionSlip = friction
 
-        vehicle = new btRaycastVehicle(vehicleTuning, getBody(), vehicleRaycaster);
-        vehicle.setCoordinateSystem(0, 1, 2);
-
-        return this;
-    }
-
-    public VehicleComponent addTyre(Vector3 attachPoint, float radius, boolean frontWheel) {
-        return addTyre(attachPoint, new Vector3(0, -1, 0), new Vector3(-1, 0, 0), radius,
-                radius * 0.3f, 10f, frontWheel);
-    }
-
-    public VehicleComponent addTyre(Vector3 attachPoint, Vector3 direction, Vector3 axis, float radius,
-                                    float suspensionRestLength, float friction, boolean frontWheel) {
-        tyreNumber++;
-
-        vehicle.addWheel(attachPoint, direction, axis, suspensionRestLength, radius, vehicleTuning, frontWheel)
-                .setFrictionSlip(friction);
-
-        return this;
-    }
-
-    public btRaycastVehicle getVehicle() {
-        return vehicle;
+        return this
     }
 }

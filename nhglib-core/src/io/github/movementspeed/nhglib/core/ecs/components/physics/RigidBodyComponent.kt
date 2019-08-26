@@ -1,246 +1,232 @@
-package io.github.movementspeed.nhglib.core.ecs.components.physics;
+package io.github.movementspeed.nhglib.core.ecs.components.physics
 
-import com.artemis.Component;
-import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Quaternion;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.bullet.collision.*;
-import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
-import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
-import com.badlogic.gdx.utils.Disposable;
-import io.github.movementspeed.nhglib.assets.Assets;
-import io.github.movementspeed.nhglib.physics.MotionState;
-import io.github.movementspeed.nhglib.physics.enums.RigidBodyType;
-import io.github.movementspeed.nhglib.physics.models.*;
+import com.artemis.Component
+import com.badlogic.gdx.graphics.Mesh
+import com.badlogic.gdx.graphics.g3d.Model
+import com.badlogic.gdx.math.Matrix4
+import com.badlogic.gdx.math.Quaternion
+import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.physics.bullet.collision.*
+import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld
+import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody
+import com.badlogic.gdx.utils.Disposable
+import io.github.movementspeed.nhglib.assets.Assets
+import io.github.movementspeed.nhglib.physics.MotionState
+import io.github.movementspeed.nhglib.physics.enums.RigidBodyType
+import io.github.movementspeed.nhglib.physics.models.*
 
-import static com.badlogic.gdx.physics.bullet.collision.CollisionConstants.DISABLE_DEACTIVATION;
-import static com.badlogic.gdx.physics.bullet.collision.btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK;
-import static com.badlogic.gdx.physics.bullet.collision.btCollisionObject.CollisionFlags.CF_KINEMATIC_OBJECT;
+import com.badlogic.gdx.physics.bullet.collision.CollisionConstants.DISABLE_DEACTIVATION
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject.CollisionFlags.CF_KINEMATIC_OBJECT
 
 /**
  * Created by Fausto Napoli on 03/05/2017.
  */
-public class RigidBodyComponent extends Component implements Disposable {
-    public boolean added;
-    public boolean collisionFiltering;
-    public boolean kinematic;
+open class RigidBodyComponent : Component(), Disposable {
+    var isAdded: Boolean = false
+    var collisionFiltering: Boolean = false
+    var kinematic: Boolean = false
 
-    public short group;
-    public short mask;
+    var group: Short = 0
+    var mask: Short = 0
 
-    public float mass;
-    public float friction;
-    public float restitution;
+    var mass: Float = 0.toFloat()
+    var friction: Float = 0.toFloat()
+    var restitution: Float = 0.toFloat()
 
-    public State state;
+    var state: State
 
-    public btRigidBody body;
-    public MotionState motionState;
-    public RigidBodyShape rigidBodyShape;
-    public btCollisionShape collisionShape;
-    public btRigidBody.btRigidBodyConstructionInfo constructionInfo;
+    var body: btRigidBody? = null
+    var motionState: MotionState? = null
+    var rigidBodyShape: RigidBodyShape? = null
+    var collisionShape: btCollisionShape? = null
+    var constructionInfo: btRigidBody.btRigidBodyConstructionInfo? = null
 
-    private Vector3 translation;
-    private Vector3 scale;
-    private Quaternion rotation;
-    private Matrix4 initialTransform;
+    private val translation: Vector3
+    private val scale: Vector3
+    private val rotation: Quaternion
+    private val initialTransform: Matrix4
 
-    public RigidBodyComponent() {
-        state = State.NOT_INITIALIZED;
+    var transform: Matrix4
+        get() = motionState!!.transform
+        set(transform) {
+            motionState!!.transform.set(transform)
+        }
 
-        translation = new Vector3();
-        scale = new Vector3();
-        rotation = new Quaternion();
-        initialTransform = new Matrix4();
+    init {
+        state = State.NOT_INITIALIZED
+
+        translation = Vector3()
+        scale = Vector3()
+        rotation = Quaternion()
+        initialTransform = Matrix4()
     }
 
-    @Override
-    public void dispose() {
+    override fun dispose() {
         if (body != null) {
-            body.dispose();
+            body!!.dispose()
         }
 
         if (motionState != null) {
-            motionState.dispose();
+            motionState!!.dispose()
         }
 
         if (collisionShape != null) {
-            collisionShape.dispose();
+            collisionShape!!.dispose()
         }
 
         if (constructionInfo != null) {
-            constructionInfo.dispose();
+            constructionInfo!!.dispose()
         }
     }
 
-    public void build(btCollisionShape collisionShape, float mass) {
-        build(collisionShape, mass, 0.5f, 0f, (short) -1, new short[]{});
+    @JvmOverloads
+    fun build(collisionShape: btCollisionShape, mass: Float, friction: Float = 0.5f, restitution: Float = 0f, group: Short = (-1).toShort(), masks: ShortArray = shortArrayOf()) {
+        this.collisionShape = collisionShape
+        buildBody(mass, friction, restitution)
     }
 
-    public void build(btCollisionShape collisionShape, float mass, float friction, float restitution, short group, short[] masks) {
-        this.collisionShape = collisionShape;
-        buildBody(mass, friction, restitution);
+    fun build(assets: Assets) {
+        buildCollisionShape(assets)
+        buildBody(mass, friction, restitution)
     }
 
-    public void build(Assets assets) {
-        buildCollisionShape(assets);
-        buildBody(mass, friction, restitution);
-    }
-
-    public void addToWorld(btDynamicsWorld world, Matrix4 transform) {
-        if (body != null && !body.isInWorld()) {
-            initialTransform.set(transform);
-            setTransform(transform);
-            body.setMotionState(motionState);
+    open fun addToWorld(world: btDynamicsWorld, transform: Matrix4) {
+        if (body != null && !body!!.isInWorld) {
+            initialTransform.set(transform)
+            transform = transform
+            body!!.motionState = motionState
 
             if (collisionFiltering) {
-                world.addRigidBody(body, group, mask);
+                world.addRigidBody(body, group.toInt(), mask.toInt())
             } else {
-                world.addRigidBody(body);
+                world.addRigidBody(body)
             }
 
-            added = true;
+            isAdded = true
         }
     }
 
-    public void setWorldTransform(Matrix4 transform) {
-        body.setWorldTransform(transform);
+    fun setWorldTransform(transform: Matrix4) {
+        body!!.worldTransform = transform
     }
 
-    public void setTransform(Matrix4 transform) {
-        motionState.transform.set(transform);
+    fun reset() {
+        setWorldTransform(initialTransform)
     }
 
-    public void reset() {
-        setWorldTransform(initialTransform);
+    fun getTranslation(): Vector3 {
+        return motionState!!.transform.getTranslation(translation)
     }
 
-    public boolean isAdded() {
-        return added;
+    fun getScale(): Vector3 {
+        return motionState!!.transform.getScale(scale)
     }
 
-    public btRigidBody getBody() {
-        return body;
+    fun getRotation(): Quaternion {
+        return motionState!!.transform.getRotation(rotation)
     }
 
-    public Matrix4 getTransform() {
-        return motionState.transform;
-    }
-
-    public Vector3 getTranslation() {
-        return motionState.transform.getTranslation(translation);
-    }
-
-    public Vector3 getScale() {
-        return motionState.transform.getScale(scale);
-    }
-
-    public Quaternion getRotation() {
-        return motionState.transform.getRotation(rotation);
-    }
-
-    private void buildBody(float mass, float friction, float restitution) {
-        constructionInfo = getConstructionInfo(collisionShape, mass);
+    private fun buildBody(mass: Float, friction: Float, restitution: Float) {
+        constructionInfo = getConstructionInfo(collisionShape, mass)
 
         if (constructionInfo != null) {
-            motionState = new MotionState();
+            motionState = MotionState()
 
-            body = new btRigidBody(constructionInfo);
+            body = btRigidBody(constructionInfo!!)
 
             if (kinematic) {
-                body.setCollisionFlags(body.getCollisionFlags() | CF_KINEMATIC_OBJECT);
-                body.setActivationState(DISABLE_DEACTIVATION);
+                body!!.collisionFlags = body!!.collisionFlags or CF_KINEMATIC_OBJECT
+                body!!.activationState = DISABLE_DEACTIVATION
             } else {
-                body.setSleepingThresholds(1f / 1000f, 1f / 1000f);
-                body.setFriction(friction);
-                body.setRestitution(restitution);
+                body!!.setSleepingThresholds(1f / 1000f, 1f / 1000f)
+                body!!.friction = friction
+                body!!.restitution = restitution
 
-                if (rigidBodyShape.type == RigidBodyType.BVH_TRIANGLE_MESH) {
-                    body.setCollisionFlags(body.getCollisionFlags() | CF_CUSTOM_MATERIAL_CALLBACK);
+                if (rigidBodyShape!!.type == RigidBodyType.BVH_TRIANGLE_MESH) {
+                    body!!.collisionFlags = body!!.collisionFlags or CF_CUSTOM_MATERIAL_CALLBACK
                 }
             }
         }
     }
 
-    private void buildCollisionShape(Assets assets) {
-        switch (rigidBodyShape.type) {
-            case BOX:
-                BoxRigidBodyShape boxRigidBodyShape = (BoxRigidBodyShape) rigidBodyShape;
-                collisionShape = new btBoxShape(new Vector3(boxRigidBodyShape.width, boxRigidBodyShape.height, boxRigidBodyShape.depth));
-                break;
+    private fun buildCollisionShape(assets: Assets) {
+        when (rigidBodyShape!!.type) {
+            RigidBodyType.BOX -> {
+                val boxRigidBodyShape = rigidBodyShape as BoxRigidBodyShape?
+                collisionShape = btBoxShape(Vector3(boxRigidBodyShape!!.width, boxRigidBodyShape.height, boxRigidBodyShape.depth))
+            }
 
-            case CONE:
-                ConeRigidBodyShape coneRigidBodyShape = (ConeRigidBodyShape) rigidBodyShape;
-                collisionShape = new btConeShape(coneRigidBodyShape.radius, coneRigidBodyShape.height);
-                break;
+            RigidBodyType.CONE -> {
+                val coneRigidBodyShape = rigidBodyShape as ConeRigidBodyShape?
+                collisionShape = btConeShape(coneRigidBodyShape!!.radius, coneRigidBodyShape.height)
+            }
 
-            case SPHERE:
-                SphereRigidBodyShape sphereRigidBodyShape = (SphereRigidBodyShape) rigidBodyShape;
-                collisionShape = new btSphereShape(sphereRigidBodyShape.radius);
-                break;
+            RigidBodyType.SPHERE -> {
+                val sphereRigidBodyShape = rigidBodyShape as SphereRigidBodyShape?
+                collisionShape = btSphereShape(sphereRigidBodyShape!!.radius)
+            }
 
-            case CAPSULE:
-                CapsuleRigidBodyShape capsuleRigidBodyShape = (CapsuleRigidBodyShape) rigidBodyShape;
-                collisionShape = new btCapsuleShape(capsuleRigidBodyShape.radius, capsuleRigidBodyShape.height);
-                break;
+            RigidBodyType.CAPSULE -> {
+                val capsuleRigidBodyShape = rigidBodyShape as CapsuleRigidBodyShape?
+                collisionShape = btCapsuleShape(capsuleRigidBodyShape!!.radius, capsuleRigidBodyShape.height)
+            }
 
-            case CYLINDER:
-                CylinderRigidBodyShape cylinderRigidBodyShape = (CylinderRigidBodyShape) rigidBodyShape;
-                collisionShape = new btCylinderShape(new Vector3(cylinderRigidBodyShape.width, cylinderRigidBodyShape.height, cylinderRigidBodyShape.depth));
-                break;
+            RigidBodyType.CYLINDER -> {
+                val cylinderRigidBodyShape = rigidBodyShape as CylinderRigidBodyShape?
+                collisionShape = btCylinderShape(Vector3(cylinderRigidBodyShape!!.width, cylinderRigidBodyShape.height, cylinderRigidBodyShape.depth))
+            }
 
-            case CONVEX_HULL:
-                ConvexHullRigidBodyShape convexHullRigidBodyShape = (ConvexHullRigidBodyShape) rigidBodyShape;
+            RigidBodyType.CONVEX_HULL -> {
+                val convexHullRigidBodyShape = rigidBodyShape as ConvexHullRigidBodyShape?
 
-                Model convexHull = assets.get(convexHullRigidBodyShape.asset);
-                Mesh convexHullMesh = convexHull.meshes.first();
+                val convexHull = assets.get<Model>(convexHullRigidBodyShape!!.asset)
+                val convexHullMesh = convexHull!!.meshes.first()
 
-                collisionShape = new btConvexHullShape(convexHullMesh.getVerticesBuffer(), convexHullMesh.getNumVertices(), convexHullMesh.getVertexSize());
+                collisionShape = btConvexHullShape(convexHullMesh.verticesBuffer, convexHullMesh.numVertices, convexHullMesh.vertexSize)
 
                 if (convexHullRigidBodyShape.optimize) {
-                    ((btConvexHullShape) collisionShape).optimizeConvexHull();
+                    (collisionShape as btConvexHullShape).optimizeConvexHull()
                 }
-                break;
-
-            case BVH_TRIANGLE_MESH:
-                BvhTriangleMeshRigidBodyShape bvhTriangleMeshRigidBodyShape = (BvhTriangleMeshRigidBodyShape) rigidBodyShape;
-                Model bvhTriangleModel = assets.get(bvhTriangleMeshRigidBodyShape.asset);
-                collisionShape = new btBvhTriangleMeshShape(bvhTriangleModel.meshParts, bvhTriangleMeshRigidBodyShape.quantization, bvhTriangleMeshRigidBodyShape.buildBvh);
-
-                btTriangleInfoMap triangleInfoMap = new btTriangleInfoMap();
-                Collision.btGenerateInternalEdgeInfo((btBvhTriangleMeshShape) collisionShape, triangleInfoMap);
-                triangleInfoMap.dispose();
-                break;
-
-            case CONVEX_TRIANGLE_MESH:
-                ConvexTriangleMeshRigidBodyShape convexTriangleMeshRigidBodyShape = (ConvexTriangleMeshRigidBodyShape) rigidBodyShape;
-                Model convexTriangleModel = assets.get(convexTriangleMeshRigidBodyShape.asset);
-                collisionShape = new btConvexTriangleMeshShape(btTriangleIndexVertexArray.obtain(convexTriangleModel.meshParts), convexTriangleMeshRigidBodyShape.calcAabb);
-                break;
-        }
-    }
-
-    private btRigidBody.btRigidBodyConstructionInfo getConstructionInfo(btCollisionShape shape, float mass) {
-        btRigidBody.btRigidBodyConstructionInfo info = null;
-
-        if (shape != null && mass >= 0) {
-            Vector3 localInertia = new Vector3();
-
-            if (mass > 0f) {
-                shape.calculateLocalInertia(mass, localInertia);
-            } else {
-                localInertia.set(Vector3.Zero);
             }
 
-            info = new btRigidBody.btRigidBodyConstructionInfo(mass, null, shape, localInertia);
-        }
+            RigidBodyType.BVH_TRIANGLE_MESH -> {
+                val bvhTriangleMeshRigidBodyShape = rigidBodyShape as BvhTriangleMeshRigidBodyShape?
+                val bvhTriangleModel = assets.get<Model>(bvhTriangleMeshRigidBodyShape!!.asset)
+                collisionShape = btBvhTriangleMeshShape(bvhTriangleModel!!.meshParts, bvhTriangleMeshRigidBodyShape.quantization, bvhTriangleMeshRigidBodyShape.buildBvh)
 
-        return info;
+                val triangleInfoMap = btTriangleInfoMap()
+                Collision.btGenerateInternalEdgeInfo(collisionShape as btBvhTriangleMeshShape?, triangleInfoMap)
+                triangleInfoMap.dispose()
+            }
+
+            RigidBodyType.CONVEX_TRIANGLE_MESH -> {
+                val convexTriangleMeshRigidBodyShape = rigidBodyShape as ConvexTriangleMeshRigidBodyShape?
+                val convexTriangleModel = assets.get<Model>(convexTriangleMeshRigidBodyShape!!.asset)
+                collisionShape = btConvexTriangleMeshShape(btTriangleIndexVertexArray.obtain<MeshPart>(convexTriangleModel!!.meshParts), convexTriangleMeshRigidBodyShape.calcAabb)
+            }
+        }
     }
 
-    public enum State {
+    private fun getConstructionInfo(shape: btCollisionShape?, mass: Float): btRigidBody.btRigidBodyConstructionInfo? {
+        var info: btRigidBody.btRigidBodyConstructionInfo? = null
+
+        if (shape != null && mass >= 0) {
+            val localInertia = Vector3()
+
+            if (mass > 0f) {
+                shape.calculateLocalInertia(mass, localInertia)
+            } else {
+                localInertia.set(Vector3.Zero)
+            }
+
+            info = btRigidBody.btRigidBodyConstructionInfo(mass, null, shape, localInertia)
+        }
+
+        return info
+    }
+
+    enum class State {
         NOT_INITIALIZED,
         READY
     }

@@ -1,28 +1,28 @@
-package io.github.movementspeed.nhglib.graphics.utils;
+package io.github.movementspeed.nhglib.graphics.utils
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g3d.Material
 
 /**
  * Created by Fausto Napoli on 03/04/2017.
  */
-public class PBRMaterial extends Material {
-    public boolean blended;
+class PBRMaterial : Material() {
+    var blended: Boolean = false
 
-    public float metalnessValue;
-    public float roughnessValue;
-    public float aoValue;
+    var metalnessValue: Float = 0f
+    var roughnessValue: Float = 0f
+    var aoValue: Float = 0f
 
-    public float offsetU;
-    public float offsetV;
-    public float tilesU;
-    public float tilesV;
+    var offsetU: Float = 0f
+    var offsetV: Float = 0f
+    var tilesU: Float = 0f
+    var tilesV: Float = 0f
 
-    public String targetNode;
+    var targetNode: String? = null
 
-    public String albedo;
-    public String normal;
-    public String rma;
+    var albedo: String? = null
+    var normal: String? = null
+    var rma: String? = null
 
-    public Color albedoColor;
+    var albedoColor: Color? = null
 }

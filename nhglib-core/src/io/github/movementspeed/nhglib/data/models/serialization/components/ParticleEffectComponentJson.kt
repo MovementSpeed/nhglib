@@ -1,19 +1,17 @@
-package io.github.movementspeed.nhglib.data.models.serialization.components;
+package io.github.movementspeed.nhglib.data.models.serialization.components
 
-import com.badlogic.gdx.utils.JsonValue;
-import io.github.movementspeed.nhglib.core.ecs.components.graphics.ParticleEffectComponent;
-import io.github.movementspeed.nhglib.data.models.serialization.ComponentJson;
+import com.badlogic.gdx.utils.JsonValue
+import io.github.movementspeed.nhglib.core.ecs.components.graphics.ParticleEffectComponent
+import io.github.movementspeed.nhglib.data.models.serialization.ComponentJson
 
 /**
  * Created by Fausto Napoli on 19/12/2016.
  */
-public class ParticleEffectComponentJson extends ComponentJson {
-    @Override
-    public void parse(JsonValue jsonValue) {
-        ParticleEffectComponent particleEffectComponent =
-                nhg.entities.createComponent(entity, ParticleEffectComponent.class);
+class ParticleEffectComponentJson : ComponentJson() {
+    override fun parse(jsonValue: JsonValue) {
+        val particleEffectComponent = nhg!!.entities.createComponent(entity, ParticleEffectComponent::class.java)
 
-        particleEffectComponent.asset = jsonValue.getString("asset", "");
-        output = particleEffectComponent;
+        particleEffectComponent.asset = jsonValue.getString("asset", "")
+        output = particleEffectComponent
     }
 }

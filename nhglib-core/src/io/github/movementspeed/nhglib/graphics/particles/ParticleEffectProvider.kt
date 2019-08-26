@@ -1,23 +1,23 @@
-package io.github.movementspeed.nhglib.graphics.particles;
+package io.github.movementspeed.nhglib.graphics.particles
 
-import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
-import com.badlogic.gdx.utils.ArrayMap;
+import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect
+import com.badlogic.gdx.utils.ArrayMap
 
-public class ParticleEffectProvider {
-    private ArrayMap<String, ParticleEffectPool> particleEffectPoolMap;
+class ParticleEffectProvider {
+    private val particleEffectPoolMap: ArrayMap<String, ParticleEffectPool>
 
-    public ParticleEffectProvider() {
-        particleEffectPoolMap = new ArrayMap<>();
+    init {
+        particleEffectPoolMap = ArrayMap()
     }
 
-    public void addParticleEffect(String asset, ParticleEffect effect) {
+    fun addParticleEffect(asset: String, effect: ParticleEffect) {
         if (!particleEffectPoolMap.containsKey(asset)) {
-            ParticleEffectPool particleEffectPool = new ParticleEffectPool(effect);
-            particleEffectPoolMap.put(asset, particleEffectPool);
+            val particleEffectPool = ParticleEffectPool(effect)
+            particleEffectPoolMap.put(asset, particleEffectPool)
         }
     }
 
-    public ParticleEffect obtainParticleEffect(String asset) {
-        return particleEffectPoolMap.get(asset).obtain();
+    fun obtainParticleEffect(asset: String): ParticleEffect {
+        return particleEffectPoolMap.get(asset).obtain()
     }
 }

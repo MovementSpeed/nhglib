@@ -1,94 +1,82 @@
-package io.github.movementspeed.nhglib.core.ecs.systems.impl;
+package io.github.movementspeed.nhglib.core.ecs.systems.impl
 
-import com.artemis.Aspect;
-import com.artemis.ComponentMapper;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
-import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem;
-import io.github.movementspeed.nhglib.core.ecs.components.graphics.ParticleEffectComponent;
-import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
-import io.github.movementspeed.nhglib.core.ecs.systems.base.BaseRenderingSystem;
-import io.github.movementspeed.nhglib.core.ecs.utils.Entities;
-import io.github.movementspeed.nhglib.graphics.particles.ParticleEffectProvider;
-import io.github.movementspeed.nhglib.graphics.particles.PointSpriteSoftParticleBatch;
-import io.github.movementspeed.nhglib.graphics.shaders.particles.ParticleShader;
+import com.artemis.Aspect
+import com.artemis.ComponentMapper
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Camera
+import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect
+import com.badlogic.gdx.graphics.g3d.particles.ParticleSystem
+import io.github.movementspeed.nhglib.core.ecs.components.graphics.ParticleEffectComponent
+import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent
+import io.github.movementspeed.nhglib.core.ecs.systems.base.BaseRenderingSystem
+import io.github.movementspeed.nhglib.core.ecs.utils.Entities
+import io.github.movementspeed.nhglib.graphics.particles.ParticleEffectProvider
+import io.github.movementspeed.nhglib.graphics.particles.PointSpriteSoftParticleBatch
+import io.github.movementspeed.nhglib.graphics.shaders.particles.ParticleShader
 
-public class ParticleRenderingSystem extends BaseRenderingSystem {
-    private boolean initialized;
+class ParticleRenderingSystem(entities: Entities) : BaseRenderingSystem(Aspect.all(NodeComponent::class.java, ParticleEffectComponent::class.java), entities) {
+    private var initialized: Boolean = false
 
-    private ParticleSystem particleSystem;
-    private PointSpriteSoftParticleBatch pointSpriteBatch;
-    private ParticleEffectProvider particleEffectProvider;
+    val particleSystem: ParticleSystem
+    private var pointSpriteBatch: PointSpriteSoftParticleBatch? = null
+    val particleEffectProvider: ParticleEffectProvider
 
-    private ComponentMapper<NodeComponent> nodeMapper;
-    private ComponentMapper<ParticleEffectComponent> particleEffectMapper;
+    private val nodeMapper: ComponentMapper<NodeComponent>? = null
+    private val particleEffectMapper: ComponentMapper<ParticleEffectComponent>? = null
 
-    public ParticleRenderingSystem(Entities entities) {
-        super(Aspect.all(NodeComponent.class, ParticleEffectComponent.class), entities);
-        particleSystem = new ParticleSystem();
-        particleEffectProvider = new ParticleEffectProvider();
+    init {
+        particleSystem = ParticleSystem()
+        particleEffectProvider = ParticleEffectProvider()
     }
 
-    @Override
-    protected void begin() {
-        super.begin();
+    override fun begin() {
+        super.begin()
 
         if (!initialized) {
-            initialized = true;
+            initialized = true
 
-            String folder = "shaders/";
+            val folder = "shaders/"
 
-            ParticleShader.Config config = new ParticleShader.Config(
+            val config = ParticleShader.Config(
                     Gdx.files.internal(folder + "particle_shader.vert").readString(),
-                    Gdx.files.internal(folder + "particle_shader.frag").readString());
+                    Gdx.files.internal(folder + "particle_shader.frag").readString())
 
-            config.type = ParticleShader.ParticleType.Point;
-            config.align = ParticleShader.AlignMode.Screen;
+            config.type = ParticleShader.ParticleType.Point
+            config.align = ParticleShader.AlignMode.Screen
 
-            pointSpriteBatch = new PointSpriteSoftParticleBatch(renderingSystem, 1000, config);
-            particleSystem.add(pointSpriteBatch);
+            pointSpriteBatch = PointSpriteSoftParticleBatch(renderingSystem, 1000, config)
+            particleSystem.add(pointSpriteBatch)
         }
     }
 
-    @Override
-    protected void process(int entityId) {
-        NodeComponent nodeComponent = nodeMapper.get(entityId);
-        ParticleEffectComponent particleEffectComponent = particleEffectMapper.get(entityId);
-        renderableProviders.add(particleSystem);
+    override fun process(entityId: Int) {
+        val nodeComponent = nodeMapper!!.get(entityId)
+        val particleEffectComponent = particleEffectMapper!!.get(entityId)
+        renderableProviders.add(particleSystem)
 
         if (particleEffectComponent.state == ParticleEffectComponent.State.READY) {
-            ParticleEffect particleEffect = particleEffectComponent.particleEffect;
+            val particleEffect = particleEffectComponent.particleEffect
 
             if (!particleEffectComponent.added) {
-                particleSystem.add(particleEffect);
-                particleEffectComponent.added = true;
+                particleSystem.add(particleEffect)
+                particleEffectComponent.added = true
             }
 
-            particleEffect.setTransform(nodeComponent.getTransform());
+            particleEffect.setTransform(nodeComponent.transform)
         }
     }
 
-    @Override
-    protected void end() {
-        super.end();
+    override fun end() {
+        super.end()
 
-        for (int i = 0; i < cameras.size; i++) {
-            Camera camera = cameras.get(i);
+        for (i in 0 until cameras!!.size) {
+            val camera = cameras!!.get(i)
 
-            pointSpriteBatch.setCamera(camera);
-            particleSystem.update();
-            particleSystem.begin();
-            particleSystem.draw();
-            particleSystem.end();
+            pointSpriteBatch!!.setCamera(camera)
+            particleSystem.update()
+            particleSystem.begin()
+            particleSystem.draw()
+            particleSystem.end()
         }
-    }
-
-    public ParticleSystem getParticleSystem() {
-        return particleSystem;
-    }
-
-    public ParticleEffectProvider getParticleEffectProvider() {
-        return particleEffectProvider;
     }
 }

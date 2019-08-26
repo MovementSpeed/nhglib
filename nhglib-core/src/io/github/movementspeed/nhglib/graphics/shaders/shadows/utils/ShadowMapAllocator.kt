@@ -5,44 +5,51 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ */
 
-package io.github.movementspeed.nhglib.graphics.shaders.shadows.utils;
+package io.github.movementspeed.nhglib.graphics.shaders.shadows.utils
 
-import com.badlogic.gdx.graphics.g3d.environment.BaseLight;
+import com.badlogic.gdx.graphics.g3d.environment.BaseLight
 
 /** Shadow map allocator return texture region for each light
- * @author realitix */
-public interface ShadowMapAllocator {
+ * @author realitix
+ */
+interface ShadowMapAllocator {
 
-	/** Result of the allocator analyze */
-	public class ShadowMapRegion {
-		public int x, y, width, height;
-	}
+    /** Return shadow map width.
+     * @return int
+     */
+    val width: Int
 
-	/** Begin the texture allocation */
-	public void begin();
+    /** Return shadow map height.
+     * @return int
+     */
+    val height: Int
 
-	/** End the texture allocation */
-	public void end();
+    /** Result of the allocator analyze  */
+    class ShadowMapRegion {
+        var x: Int = 0
+        var y: Int = 0
+        var width: Int = 0
+        var height: Int = 0
+    }
 
-	/** Find the next texture region for the current light
-	 * @param light Current light
-	 * @return ShadowMapRegion or null if no more space on texture */
-	public ShadowMapRegion nextResult(BaseLight light);
+    /** Begin the texture allocation  */
+    fun begin()
 
-	/** Return shadow map width.
-	 * @return int */
-	public int getWidth();
+    /** End the texture allocation  */
+    fun end()
 
-	/** Return shadow map height.
-	 * @return int */
-	public int getHeight();
+    /** Find the next texture region for the current light
+     * @param light Current light
+     * @return ShadowMapRegion or null if no more space on texture
+     */
+    fun nextResult(light: BaseLight<*>): ShadowMapRegion?
 }

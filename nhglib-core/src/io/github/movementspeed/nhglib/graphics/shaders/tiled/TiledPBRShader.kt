@@ -1,465 +1,449 @@
-package io.github.movementspeed.nhglib.graphics.shaders.tiled;
+package io.github.movementspeed.nhglib.graphics.shaders.tiled
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g3d.*;
-import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.DepthTestAttribute;
-import com.badlogic.gdx.graphics.g3d.shaders.BaseShader;
-import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.IntArray;
-import io.github.movementspeed.nhglib.Nhg;
-import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
-import io.github.movementspeed.nhglib.enums.LightType;
-import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
-import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute;
-import io.github.movementspeed.nhglib.graphics.shaders.attributes.IBLAttribute;
-import io.github.movementspeed.nhglib.graphics.shaders.attributes.PBRTextureAttribute;
-import io.github.movementspeed.nhglib.graphics.shaders.attributes.ShadowSystemAttribute;
-import io.github.movementspeed.nhglib.graphics.shaders.shadows.system.classical.ClassicalShadowSystem;
-import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils;
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.*
+import com.badlogic.gdx.graphics.g3d.*
+import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute
+import com.badlogic.gdx.graphics.g3d.attributes.DepthTestAttribute
+import com.badlogic.gdx.graphics.g3d.shaders.BaseShader
+import com.badlogic.gdx.graphics.g3d.utils.RenderContext
+import com.badlogic.gdx.graphics.glutils.ShaderProgram
+import com.badlogic.gdx.math.Matrix4
+import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.GdxRuntimeException
+import com.badlogic.gdx.utils.IntArray
+import io.github.movementspeed.nhglib.Nhg
+import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem
+import io.github.movementspeed.nhglib.enums.LightType
+import io.github.movementspeed.nhglib.enums.OpenGLVersion
+import io.github.movementspeed.nhglib.graphics.lights.NhgLight
+import io.github.movementspeed.nhglib.graphics.lights.NhgLightsAttribute
+import io.github.movementspeed.nhglib.graphics.shaders.attributes.IBLAttribute
+import io.github.movementspeed.nhglib.graphics.shaders.attributes.PBRTextureAttribute
+import io.github.movementspeed.nhglib.graphics.shaders.attributes.ShadowSystemAttribute
+import io.github.movementspeed.nhglib.graphics.shaders.shadows.system.classical.ClassicalShadowSystem
+import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils
+import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils.hasAlbedo
+import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils.hasEmissive
+import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils.hasPbrNormal
+import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils.hasRMA
+import io.github.movementspeed.nhglib.utils.graphics.ShaderUtils.useBones
+import io.github.movementspeed.nhglib.utils.graphics.hasLights
+import io.github.movementspeed.nhglib.utils.graphics.useGammaCorrection
+import io.github.movementspeed.nhglib.utils.graphics.useImageBasedLighting
 
 /**
  * Created by Fausto Napoli on 18/03/2017.
  */
-public class TiledPBRShader extends BaseShader {
-    private int gridSize;
-    private int maxBonesLength = Integer.MIN_VALUE;
+class TiledPBRShader(private var renderable: Renderable?,
+                     private val environment: Environment,
+                     private val params: Params) : BaseShader() {
+    private val gridSize = 10
+    private var maxBonesLength = Integer.MIN_VALUE
 
-    private int bonesIID;
-    private int bonesLoc;
-    private int positionsAndRadiusesLoc;
-    private int directionsAndIntensitiesLoc;
+    private val bonesIID: Int
+    private var bonesLoc: Int = 0
+    private var positionsAndRadiusesLoc: Int = 0
+    private var directionsAndIntensitiesLoc: Int = 0
 
-    private Vector3 vec1;
-    private Vector2 vec2;
-    private Matrix4 idtMatrix;
+    private var vec1: Vector3? = null
+    private var vec2: Vector2? = null
+    private var idtMatrix: Matrix4? = null
 
-    private Color color;
+    private var color: Color? = null
 
-    private Pixmap lightPixmap;
-    private Pixmap lightInfoPixmap;
+    private var lightPixmap: Pixmap? = null
+    private var lightInfoPixmap: Pixmap? = null
 
-    private Texture lightTexture;
-    private Texture lightInfoTexture;
+    private var lightTexture: Texture? = null
+    private var lightInfoTexture: Texture? = null
 
-    private Camera camera;
-    private Params params;
-    private Renderable renderable;
-    private Environment environment;
-    private LightGrid lightGrid;
-    private ShaderProgram shaderProgram;
-    private ClassicalShadowSystem shadowSystem;
+    private var shaderCamera: Camera? = null
+    private var lightGrid: LightGrid? = null
+    private val shaderProgram: ShaderProgram
+    private var shadowSystem: ClassicalShadowSystem? = null
 
-    private int[] lightTypes;
-    private float[] lightAngles;
-    private float[] lightPositionsAndRadiuses;
-    private float[] lightDirectionsAndIntensities;
-    private float[] bones;
+    private val lightTypes: IntArray
+    private val lightAngles: FloatArray
+    private val lightPositionsAndRadiuses: FloatArray
+    private val lightDirectionsAndIntensities: FloatArray
+    private var bones: FloatArray? = null
 
-    private Array<IntArray> lightsFrustum;
-    private Array<NhgLight> lights;
+    private var lightsFrustum: Array<IntArray>? = null
+    private var lights: Array<NhgLight>? = null
 
-    public TiledPBRShader(Renderable renderable, Environment environment, Params params) {
-        this.renderable = renderable;
-        this.environment = environment;
-        this.params = params;
-
-        gridSize = 10;
-
-        ShadowSystemAttribute shadowSystemAttribute = (ShadowSystemAttribute) environment.get(ShadowSystemAttribute.Type);
+    init {
+        val shadowSystemAttribute = environment.get(ShadowSystemAttribute.Type) as? ShadowSystemAttribute
         if (shadowSystemAttribute != null) {
-            shadowSystem = (ClassicalShadowSystem) shadowSystemAttribute.shadowSystem;
+            shadowSystem = shadowSystemAttribute.shadowSystem as ClassicalShadowSystem
         }
 
-        String prefix = createPrefix(renderable);
-        String folder = "shaders/";
+        val prefix = createPrefix(renderable!!)
+        val folder = "shaders/"
 
-        String vert = prefix + Gdx.files.internal(folder + "tf_pbr_shader.vert").readString();
-        String frag = prefix + Gdx.files.internal(folder + "tf_pbr_shader.frag").readString();
+        val vert = prefix + Gdx.files.internal(folder + "tf_pbr_shader.vert").readString()
+        val frag = prefix + Gdx.files.internal(folder + "tf_pbr_shader.frag").readString()
 
-        ShaderProgram.pedantic = false;
-        shaderProgram = new ShaderProgram(vert, frag);
+        ShaderProgram.pedantic = false
+        shaderProgram = ShaderProgram(vert, frag)
 
-        String shaderLog = shaderProgram.getLog();
+        val shaderLog = shaderProgram.log
 
-        if (!shaderProgram.isCompiled()) {
-            throw new GdxRuntimeException(shaderLog);
+        if (!shaderProgram.isCompiled) {
+            throw GdxRuntimeException(shaderLog)
         }
 
-        register("u_mvpMatrix", new GlobalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, shader.camera.combined);
+        register("u_mvpMatrix", object : BaseShader.GlobalSetter() {
+            override fun set(shader: BaseShader, inputID: Int, renderable: Renderable, combinedAttributes: Attributes) {
+                shader.set(inputID, shader.camera.combined)
             }
-        });
+        })
 
-        register("u_viewMatrix", new GlobalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, shader.camera.view);
+        register("u_viewMatrix", object : BaseShader.GlobalSetter() {
+            override fun set(shader: BaseShader, inputID: Int, renderable: Renderable, combinedAttributes: Attributes) {
+                shader.set(inputID, shader.camera.view)
             }
-        });
+        })
 
-        register("u_modelMatrix", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, renderable.worldTransform);
+        register("u_modelMatrix", object : BaseShader.LocalSetter() {
+            override fun set(shader: BaseShader, inputID: Int, renderable: Renderable, combinedAttributes: Attributes) {
+                shader.set(inputID, renderable.worldTransform)
             }
-        });
+        })
 
-        register("u_cameraPosition", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, camera.position);
+        register("u_cameraPosition", object : BaseShader.LocalSetter() {
+            override fun set(shader: BaseShader, inputID: Int, renderable: Renderable, combinedAttributes: Attributes) {
+                shader.set(inputID, shaderCamera!!.position)
             }
-        });
+        })
 
-        register("u_graphicsWidth", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, Gdx.graphics.getWidth());
+        register("u_graphicsWidth", object : BaseShader.LocalSetter() {
+            override fun set(shader: BaseShader, inputID: Int, renderable: Renderable, combinedAttributes: Attributes) {
+                shader.set(inputID, Gdx.graphics.width)
             }
-        });
+        })
 
-        register("u_graphicsHeight", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, Gdx.graphics.getHeight());
+        register("u_graphicsHeight", object : BaseShader.LocalSetter() {
+            override fun set(shader: BaseShader, inputID: Int, renderable: Renderable, combinedAttributes: Attributes) {
+                shader.set(inputID, Gdx.graphics.height)
             }
-        });
+        })
 
-        register("u_albedoTiles", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Albedo);
+        register("u_albedoTiles", object : BaseShader.LocalSetter() {
+            override fun set(shader: BaseShader, inputID: Int, renderable: Renderable, combinedAttributes: Attributes) {
+                val textureAttribute = combinedAttributes.get(PBRTextureAttribute.Albedo) as? PBRTextureAttribute
 
                 if (textureAttribute != null) {
-                    shader.set(inputID, vec2.set(textureAttribute.tilesU, textureAttribute.tilesV));
+                    shader.set(inputID, vec2!!.set(textureAttribute.tilesU, textureAttribute.tilesV))
                 }
             }
-        });
+        })
 
-        register("u_normalTiles", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Normal);
+        register("u_normalTiles", object : BaseShader.LocalSetter() {
+            override fun set(shader: BaseShader, inputID: Int, renderable: Renderable, combinedAttributes: Attributes) {
+                val textureAttribute = combinedAttributes.get(PBRTextureAttribute.Normal) as? PBRTextureAttribute
 
                 if (textureAttribute != null) {
-                    shader.set(inputID, vec2.set(textureAttribute.tilesU, textureAttribute.tilesV));
+                    shader.set(inputID, vec2!!.set(textureAttribute.tilesU, textureAttribute.tilesV))
                 }
             }
-        });
+        })
 
-        register("u_rmaTiles", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.RMA);
+        register("u_rmaTiles", object : BaseShader.LocalSetter() {
+            override fun set(shader: BaseShader, inputID: Int, renderable: Renderable, combinedAttributes: Attributes) {
+                val textureAttribute = combinedAttributes.get(PBRTextureAttribute.RMA) as? PBRTextureAttribute
 
                 if (textureAttribute != null) {
-                    shader.set(inputID, vec2.set(textureAttribute.tilesU, textureAttribute.tilesV));
+                    shader.set(inputID, vec2!!.set(textureAttribute.tilesU, textureAttribute.tilesV))
                 }
             }
-        });
+        })
 
-        register("u_emissiveTiles", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                PBRTextureAttribute textureAttribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Emissive);
+        register("u_emissiveTiles", object : BaseShader.LocalSetter() {
+            override fun set(shader: BaseShader, inputID: Int, renderable: Renderable, combinedAttributes: Attributes) {
+                val textureAttribute = combinedAttributes.get(PBRTextureAttribute.Emissive) as? PBRTextureAttribute
 
                 if (textureAttribute != null) {
-                    shader.set(inputID, vec2.set(textureAttribute.tilesU, textureAttribute.tilesV));
+                    shader.set(inputID, vec2!!.set(textureAttribute.tilesU, textureAttribute.tilesV))
                 }
             }
-        });
+        })
 
-        NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
+        val lightsAttribute = environment.get(NhgLightsAttribute.Type) as? NhgLightsAttribute
+        lights = lightsAttribute?.lights ?: Array()
 
-        if (lightsAttribute != null) {
-            lights = lightsAttribute.lights;
-        } else {
-            lights = new Array<>();
+        val size = lights?.size ?: 0
+        lightTypes = IntArray(size)
+        lightAngles = FloatArray(size * 2)
+        lightPositionsAndRadiuses = FloatArray(size * 4)
+        lightDirectionsAndIntensities = FloatArray(size * 4)
+
+        setLightTypes()
+        setLightAngles()
+
+        shaderProgram.begin()
+        repeat(lightTypes.size) { i ->
+            shaderProgram.setUniformi("u_lightTypes[$i]", lightTypes[i])
         }
 
-        lightTypes = new int[lights.size];
-        lightAngles = new float[lights.size * 2];
-        lightPositionsAndRadiuses = new float[lights.size * 4];
-        lightDirectionsAndIntensities = new float[lights.size * 4];
+        shaderProgram.setUniform2fv("u_lightAngles", lightAngles, 0, lights!!.size * 2)
+        shaderProgram.end()
 
-        setLightTypes();
-        setLightAngles();
-
-        shaderProgram.begin();
-        for (int i = 0; i < lightTypes.length; i++) {
-            shaderProgram.setUniformi("u_lightTypes[" + i + "]", lightTypes[i]);
-        }
-
-        shaderProgram.setUniform2fv("u_lightAngles", lightAngles, 0, lights.size * 2);
-        shaderProgram.end();
-
-        bonesIID = register("u_bones", new LocalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
+        bonesIID = register("u_bones", object : BaseShader.LocalSetter() {
+            override fun set(shader: BaseShader, inputID: Int, renderable: Renderable, combinedAttributes: Attributes) {
                 if (renderable.bones != null) {
-                    int renderableBonesLength = renderable.bones.length * 16;
+                    val renderableBonesLength = renderable.bones.size * 16
 
                     if (renderableBonesLength > maxBonesLength) {
-                        maxBonesLength = renderableBonesLength;
-                        bones = new float[renderableBonesLength];
+                        maxBonesLength = renderableBonesLength
+                        bones = FloatArray(renderableBonesLength)
                     }
 
-                    for (int i = 0; i < renderableBonesLength; i++) {
-                        final int idx = i / 16;
-                        bones[i] = (idx >= renderable.bones.length || renderable.bones[idx] == null) ?
-                                idtMatrix.val[i % 16] : renderable.bones[idx].val[i % 16];
+                    for (i in 0 until renderableBonesLength) {
+                        val idx = i / 16
+                        bones?.set(i, if (idx >= renderable.bones.size || renderable.bones[idx] == null)
+                            idtMatrix!!.`val`[i % 16]
+                        else
+                            renderable.bones[idx].`val`[i % 16])
                     }
 
-                    shaderProgram.setUniformMatrix4fv(bonesLoc, bones, 0, renderableBonesLength);
+                    shaderProgram.setUniformMatrix4fv(bonesLoc, bones, 0, renderableBonesLength)
                 }
             }
-        });
+        })
     }
 
-    @Override
-    public void init() {
-        super.init(shaderProgram, renderable);
+    override fun init() {
+        super.init(shaderProgram, renderable)
 
-        vec1 = new Vector3();
-        vec2 = new Vector2();
+        vec1 = Vector3()
+        vec2 = Vector2()
 
-        idtMatrix = new Matrix4();
-        bones = new float[0];
-        bonesLoc = loc(bonesIID);
+        idtMatrix = Matrix4()
+        bones = FloatArray(0)
+        bonesLoc = loc(bonesIID)
 
-        positionsAndRadiusesLoc = shaderProgram.fetchUniformLocation("u_lightPositionsAndRadiuses", false);
-        directionsAndIntensitiesLoc = shaderProgram.fetchUniformLocation("u_lightDirectionsAndIntensities", false);
+        positionsAndRadiusesLoc = shaderProgram.fetchUniformLocation("u_lightPositionsAndRadiuses", false)
+        directionsAndIntensitiesLoc = shaderProgram.fetchUniformLocation("u_lightDirectionsAndIntensities", false)
 
-        color = new Color();
+        color = Color()
 
-        lightTexture = new Texture(64, 128, Pixmap.Format.RGBA8888);
-        lightTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        lightTexture = Texture(64, 128, Pixmap.Format.RGBA8888)
+        lightTexture?.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest)
 
-        lightInfoTexture = new Texture(1, 128, Pixmap.Format.RGBA8888);
-        lightInfoTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        lightInfoTexture = Texture(1, 128, Pixmap.Format.RGBA8888)
+        lightInfoTexture?.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest)
 
-        lightPixmap = new Pixmap(64, 128, Pixmap.Format.RGBA8888);
-        lightPixmap.setBlending(Pixmap.Blending.None);
+        lightPixmap = Pixmap(64, 128, Pixmap.Format.RGBA8888)
+        lightPixmap?.blending = Pixmap.Blending.None
 
-        lightInfoPixmap = new Pixmap(1, 128, Pixmap.Format.RGBA8888);
-        lightInfoPixmap.setBlending(Pixmap.Blending.None);
+        lightInfoPixmap = Pixmap(1, 128, Pixmap.Format.RGBA8888)
+        lightInfoPixmap?.blending = Pixmap.Blending.None
 
-        lightGrid = new LightGrid(gridSize);
-        lightsFrustum = new Array<>();
+        lightGrid = LightGrid(gridSize)
+        lightsFrustum = Array()
 
-        for (int i = 0; i < lightGrid.getNumTiles(); i++) {
-            lightsFrustum.add(new IntArray());
+        for (i in 0 until (lightGrid?.numTiles ?: 0)) {
+            lightsFrustum?.add(IntArray())
         }
     }
 
 
-    @Override
-    public int compareTo(Shader other) {
-        return 0;
+    override fun compareTo(other: Shader): Int {
+        return 0
     }
 
-    @Override
-    public boolean canRender(Renderable instance) {
-        boolean diffuse = ShaderUtils.hasAlbedo(instance) == params.albedo;
-        boolean rma = ShaderUtils.hasRMA(instance) == params.rma;
-        boolean normal = ShaderUtils.hasPbrNormal(instance) == params.normal;
-        boolean emissive = ShaderUtils.hasEmissive(instance) == params.emissive;
-        boolean bones = ShaderUtils.useBones(instance) == params.useBones;
-        boolean lit = ShaderUtils.hasLights(instance.environment) == params.lit;
-        boolean gammaCorrection = ShaderUtils.useGammaCorrection(instance.environment) == params.gammaCorrection;
-        boolean imageBasedLighting = ShaderUtils.useImageBasedLighting(instance.environment) == params.imageBasedLighting;
+    override fun canRender(instance: Renderable): Boolean {
+        val diffuse = hasAlbedo(instance) == params.albedo
+        val rma = hasRMA(instance) == params.rma
+        val normal = hasPbrNormal(instance) == params.normal
+        val emissive = hasEmissive(instance) == params.emissive
+        val bones = useBones(instance) == params.useBones
+        val lit = hasLights(instance.environment) == params.lit
+        val gammaCorrection = useGammaCorrection(instance.environment) == params.gammaCorrection
+        val imageBasedLighting = useImageBasedLighting(instance.environment) == params.imageBasedLighting
 
-        return diffuse && rma && normal && emissive && bones && lit && gammaCorrection && imageBasedLighting;
+        return diffuse && rma && normal && emissive && bones && lit && gammaCorrection && imageBasedLighting
     }
 
-    @Override
-    public void begin(Camera camera, RenderContext context) {
-        this.camera = camera;
+    override fun begin(camera: Camera, context: RenderContext) {
+        this.shaderCamera = camera
 
-        context.setCullFace(GL20.GL_BACK);
-        context.setDepthTest(GL20.GL_LEQUAL);
-        context.setDepthMask(true);
+        context.setCullFace(GL20.GL_BACK)
+        context.setDepthTest(GL20.GL_LEQUAL)
+        context.setDepthMask(true)
 
-        Gdx.gl.glViewport(0, 0, RenderingSystem.renderWidth, RenderingSystem.renderHeight);
+        Gdx.gl.glViewport(0, 0, RenderingSystem.renderWidth, RenderingSystem.renderHeight)
 
-        lightGrid.setFrustums(((PerspectiveCamera) camera));
+        lightGrid?.setFrustums(camera as PerspectiveCamera)
 
-        makeLightTexture();
-        setLightPositionsAndRadiusesAndDirections();
+        makeLightTexture()
+        setLightPositionsAndRadiusesAndDirections()
 
-        super.begin(camera, context);
+        super.begin(camera, context)
 
-        shaderProgram.setUniform4fv(positionsAndRadiusesLoc, lightPositionsAndRadiuses, 0, lights.size * 4);
-        shaderProgram.setUniform4fv(directionsAndIntensitiesLoc, lightDirectionsAndIntensities, 0, lights.size * 4);
+        lights?.size?.let { size ->
+            shaderProgram.setUniform4fv(positionsAndRadiusesLoc, lightPositionsAndRadiuses, 0, size * 4)
+            shaderProgram.setUniform4fv(directionsAndIntensitiesLoc, lightDirectionsAndIntensities, 0, size * 4)
+        }
     }
 
-    @Override
-    public void render(Renderable renderable, Attributes combinedAttributes) {
-        this.renderable = renderable;
+    override fun render(renderable: Renderable, combinedAttributes: Attributes) {
+        this.renderable = renderable
 
         if (!combinedAttributes.has(BlendingAttribute.Type)) {
-            context.setBlending(false, GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+            context.setBlending(false, GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
         }
 
-        bindMaterial(combinedAttributes);
-        bindTextures(combinedAttributes);
+        bindMaterial(combinedAttributes)
+        bindTextures(combinedAttributes)
 
-        super.render(renderable, combinedAttributes);
+        super.render(renderable, combinedAttributes)
     }
 
-    @Override
-    public void end() {
-        super.end();
+    override fun dispose() {
+        shaderProgram.dispose()
+        super.dispose()
     }
 
-    @Override
-    public void dispose() {
-        shaderProgram.dispose();
-        super.dispose();
-    }
+    private fun bindMaterial(attributes: Attributes) {
+        var depthFunc = GL20.GL_LEQUAL
+        var depthRangeNear = 0f
+        var depthRangeFar = 1f
+        var depthMask = true
 
-    private void bindMaterial (final Attributes attributes) {
-        int depthFunc = GL20.GL_LEQUAL;
-        float depthRangeNear = 0f;
-        float depthRangeFar = 1f;
-        boolean depthMask = true;
+        attributes.forEach { attr ->
+            val t = attr.type
 
-        for (final Attribute attr : attributes) {
-            final long t = attr.type;
-
-            if (BlendingAttribute.is(t)) {
-                context.setBlending(true, ((BlendingAttribute)attr).sourceFunction, ((BlendingAttribute)attr).destFunction);
-            } else if ((t & DepthTestAttribute.Type) == DepthTestAttribute.Type) {
-                DepthTestAttribute dta = (DepthTestAttribute)attr;
-                depthFunc = dta.depthFunc;
-                depthRangeNear = dta.depthRangeNear;
-                depthRangeFar = dta.depthRangeFar;
-                depthMask = dta.depthMask;
+            if (BlendingAttribute.`is`(t)) {
+                context.setBlending(true, (attr as BlendingAttribute).sourceFunction, attr.destFunction)
+            } else if (t and DepthTestAttribute.Type == DepthTestAttribute.Type) {
+                val dta = attr as DepthTestAttribute
+                depthFunc = dta.depthFunc
+                depthRangeNear = dta.depthRangeNear
+                depthRangeFar = dta.depthRangeFar
+                depthMask = dta.depthMask
             }
         }
 
-        context.setDepthTest(depthFunc, depthRangeNear, depthRangeFar);
-        context.setDepthMask(depthMask);
+        context.setDepthTest(depthFunc, depthRangeNear, depthRangeFar)
+        context.setDepthMask(depthMask)
     }
 
-    private void bindTextures(Attributes combinedAttributes) {
-        int bindValue;
-        GLTexture texture;
-        context.textureBinder.begin();
+    private fun bindTextures(combinedAttributes: Attributes) {
+        var bindValue: Int
+        var texture: GLTexture
+        context.textureBinder.begin()
 
         // Albedo
-        PBRTextureAttribute attribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Albedo);
+        var attribute: PBRTextureAttribute? = combinedAttributes.get(PBRTextureAttribute.Albedo) as? PBRTextureAttribute
 
         if (attribute != null) {
-            texture = attribute.textureDescription.texture;
-            bindValue = context.textureBinder.bind(texture);
-            shaderProgram.setUniformi("u_albedo", bindValue);
+            texture = attribute.textureDescription.texture
+            bindValue = context.textureBinder.bind(texture)
+            shaderProgram.setUniformi("u_albedo", bindValue)
         }
 
         // RMA
-        attribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.RMA);
+        attribute = combinedAttributes.get(PBRTextureAttribute.RMA) as? PBRTextureAttribute
 
         if (attribute != null) {
-            texture = attribute.textureDescription.texture;
-            bindValue = context.textureBinder.bind(texture);
-            shaderProgram.setUniformi("u_rma", bindValue);
+            texture = attribute.textureDescription.texture
+            bindValue = context.textureBinder.bind(texture)
+            shaderProgram.setUniformi("u_rma", bindValue)
         }
 
         // Normal
-        attribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Normal);
+        attribute = combinedAttributes.get(PBRTextureAttribute.Normal) as? PBRTextureAttribute
 
         if (attribute != null) {
-            texture = attribute.textureDescription.texture;
-            bindValue = context.textureBinder.bind(texture);
-            shaderProgram.setUniformi("u_normal", bindValue);
+            texture = attribute.textureDescription.texture
+            bindValue = context.textureBinder.bind(texture)
+            shaderProgram.setUniformi("u_normal", bindValue)
         }
 
         // Emissive
-        attribute = (PBRTextureAttribute) combinedAttributes.get(PBRTextureAttribute.Emissive);
+        attribute = combinedAttributes.get(PBRTextureAttribute.Emissive) as? PBRTextureAttribute
 
         if (attribute != null) {
-            texture = attribute.textureDescription.texture;
-            bindValue = context.textureBinder.bind(texture);
-            shaderProgram.setUniformi("u_emissive", bindValue);
+            texture = attribute.textureDescription.texture
+            bindValue = context.textureBinder.bind(texture)
+            shaderProgram.setUniformi("u_emissive", bindValue)
         }
 
         // Lights
-        bindValue = context.textureBinder.bind(lightTexture);
-        shaderProgram.setUniformi("u_lights", bindValue);
+        bindValue = context.textureBinder.bind(lightTexture)
+        shaderProgram.setUniformi("u_lights", bindValue)
 
         // Lights info
-        bindValue = context.textureBinder.bind(lightInfoTexture);
-        shaderProgram.setUniformi("u_lightInfo", bindValue);
+        bindValue = context.textureBinder.bind(lightInfoTexture)
+        shaderProgram.setUniformi("u_lightInfo", bindValue)
 
         // Shadows
         if (shadowSystem != null) {
-            bindValue = context.textureBinder.bind(shadowSystem.getMainTexture());
-            shaderProgram.setUniformi("u_shadowTexture", bindValue);
+            bindValue = context.textureBinder.bind(shadowSystem!!.mainTexture)
+            shaderProgram.setUniformi("u_shadowTexture", bindValue)
             shaderProgram.setUniformf("u_resolution",
-                    (float) RenderingSystem.renderWidth,
-                    (float) RenderingSystem.renderHeight);
+                    RenderingSystem.renderWidth.toFloat(),
+                    RenderingSystem.renderHeight.toFloat())
         }
 
         // Irradiance
-        IBLAttribute iblAttribute = (IBLAttribute) combinedAttributes.get(IBLAttribute.IrradianceType);
+        var iblAttribute: IBLAttribute? = combinedAttributes.get(IBLAttribute.IrradianceType) as? IBLAttribute
 
         if (iblAttribute != null) {
-            texture = iblAttribute.textureDescription.texture;
-            bindValue = context.textureBinder.bind(texture);
-            shaderProgram.setUniformi("u_irradiance", bindValue);
+            texture = iblAttribute.textureDescription.texture
+            bindValue = context.textureBinder.bind(texture)
+            shaderProgram.setUniformi("u_irradiance", bindValue)
         }
 
         // Prefilter
-        iblAttribute = (IBLAttribute) combinedAttributes.get(IBLAttribute.PrefilterType);
+        iblAttribute = combinedAttributes.get(IBLAttribute.PrefilterType) as? IBLAttribute
 
         if (iblAttribute != null) {
-            texture = iblAttribute.textureDescription.texture;
-            bindValue = context.textureBinder.bind(texture);
-            shaderProgram.setUniformi("u_prefilter", bindValue);
+            texture = iblAttribute.textureDescription.texture
+            bindValue = context.textureBinder.bind(texture)
+            shaderProgram.setUniformi("u_prefilter", bindValue)
         }
 
         // Brdf
-        iblAttribute = (IBLAttribute) combinedAttributes.get(IBLAttribute.BrdfType);
+        iblAttribute = combinedAttributes.get(IBLAttribute.BrdfType) as? IBLAttribute
 
         if (iblAttribute != null) {
-            texture = iblAttribute.textureDescription.texture;
-            bindValue = context.textureBinder.bind(texture);
-            shaderProgram.setUniformi("u_brdf", bindValue);
+            texture = iblAttribute.textureDescription.texture
+            bindValue = context.textureBinder.bind(texture)
+            shaderProgram.setUniformi("u_brdf", bindValue)
         }
 
-        context.textureBinder.end();
+        context.textureBinder.end()
     }
 
-    private void makeLightTexture() {
+    private fun makeLightTexture() {
         /* Calculates what lights are affecting what tiles.
          * This is done by dividing the camera frustum. size + size planes,
          * size rows and size columns to serve as the limits for size x size
          * small frustums (Meaning screen is divided into a size x size grid)
          */
-        for (int i = 0; i < lightGrid.getNumTiles(); i++) {
-            lightsFrustum.get(i).clear();
+        for (i in 0 until (lightGrid?.numTiles ?: 0)) {
+            lightsFrustum?.get(i)?.clear()
         }
 
-        for (int i = 0; i < lights.size; i++) {
-            NhgLight l = lights.get(i);
-
+        lights?.forEachIndexed { index, l ->
             if (l.type != LightType.DIRECTIONAL_LIGHT) {
-                lightGrid.checkFrustums(l.position, l.radius, lightsFrustum, i);
+                lightsFrustum?.let {
+                    lightGrid?.checkFrustums(l.position, l.radius, it, index)
+                }
             } else {
-                for (int j = 0; j < lightGrid.getNumTiles(); j++) {
-                    lightsFrustum.get(j).add(i);
+                for (j in 0 until (lightGrid?.numTiles ?: 0)) {
+                    lightsFrustum?.get(j)?.add(index)
                 }
             }
+
+            color?.set(l.color.r, l.color.g, l.color.b, 1.0f)
+            lightInfoPixmap?.setColor(color!!)
+            lightInfoPixmap?.drawPixel(0, index)
         }
 
         /* Creates a texture containing the color and radius
@@ -467,14 +451,7 @@ public class TiledPBRShader extends BaseShader {
          * be added here, but for this example it is not due to
          * limitations in precision.
          */
-        for (int i = 0; i < lights.size; i++) {
-            NhgLight l = lights.get(i);
-            color.set(l.color.r, l.color.g, l.color.b, 1.0f);
-            lightInfoPixmap.setColor(color);
-            lightInfoPixmap.drawPixel(0, i);
-        }
-
-        lightInfoTexture.draw(lightInfoPixmap, 0, 0);
+        lightInfoTexture?.draw(lightInfoPixmap, 0, 0)
 
         /* Creates a texture that contains a list of
          * light sources that are affecting each specific
@@ -483,151 +460,141 @@ public class TiledPBRShader extends BaseShader {
          * row are used to represent the ID of the light
          * sources.
          */
-        for (int row = 0; row < lightGrid.getNumTiles(); row++) {
-            int col = 0;
-            float r = lightsFrustum.get(row).size;
+        for (row in 0 until (lightGrid?.numTiles ?: 0)) {
+            var col = 0
+            val r = lightsFrustum?.get(row)?.size?.toFloat() ?: 0f
 
-            color.set(r / 255, 0, 0, 0);
-            lightPixmap.setColor(color);
-            lightPixmap.drawPixel(col, row);
+            color?.set(r / 255, 0f, 0f, 0f)
+            lightPixmap?.setColor(color)
+            lightPixmap?.drawPixel(col, row)
 
-            col++;
+            col++
 
-            for (int i = 0; i < lightsFrustum.get(row).size; i++) {
-                int j = lightsFrustum.get(row).get(i);
-
-                color.set(((float) j) / 255, 0, 0, 0);
-                lightPixmap.setColor(color);
-                lightPixmap.drawPixel(col, row);
-                col++;
+            lightsFrustum?.forEachIndexed { index, j ->
+                color?.set(j[index].toFloat() / 255, 0f, 0f, 0f)
+                lightPixmap?.setColor(color)
+                lightPixmap?.drawPixel(col, row)
+                col++
             }
         }
 
-        lightTexture.draw(lightPixmap, 0, 0);
+        lightTexture?.draw(lightPixmap, 0, 0)
     }
 
-    private void setLightTypes() {
-        int i = 0;
-
-        for (int k = 0; k < lights.size; k++) {
-            NhgLight light = lights.get(k);
-            lightTypes[k] = light.type.ordinal();
+    private fun setLightTypes() {
+        lights?.forEachIndexed { index, light ->
+            lightTypes[index] = light.type.ordinal
         }
     }
 
-    private void setLightAngles() {
-        int i = 0;
+    private fun setLightAngles() {
+        var i = 0
 
-        for (int k = 0; k < lights.size; k++) {
-            NhgLight light = lights.get(k);
-            lightAngles[i++] = light.innerAngle;
-            lightAngles[i++] = light.outerAngle;
+        lights?.forEach { light ->
+            lightAngles[i++] = light.innerAngle
+            lightAngles[i++] = light.outerAngle
         }
     }
 
-    private void setLightPositionsAndRadiusesAndDirections() {
-        int i1 = 0;
-        int i2 = 0;
+    private fun setLightPositionsAndRadiusesAndDirections() {
+        var i1 = 0
+        var i2 = 0
 
-        for (int k = 0; k < lights.size; k++) {
-            NhgLight light = lights.get(k);
-            vec1.set(light.position).mul(camera.view);
+        lights?.forEach { light ->
+            vec1?.let {
+                it.set(light.position)?.mul(shaderCamera?.view)
 
-            lightPositionsAndRadiuses[i1++] = vec1.x;
-            lightPositionsAndRadiuses[i1++] = vec1.y;
-            lightPositionsAndRadiuses[i1++] = vec1.z;
-            lightPositionsAndRadiuses[i1++] = light.radius;
+                lightPositionsAndRadiuses[i1++] = it.x
+                lightPositionsAndRadiuses[i1++] = it.y
+                lightPositionsAndRadiuses[i1++] = it.z
+                lightPositionsAndRadiuses[i1++] = light.radius
 
-            vec1.set(light.direction).rot(camera.view);
+                it.set(light.direction).rot(shaderCamera?.view)
 
-            lightDirectionsAndIntensities[i2++] = vec1.x;
-            lightDirectionsAndIntensities[i2++] = vec1.y;
-            lightDirectionsAndIntensities[i2++] = vec1.z;
-            lightDirectionsAndIntensities[i2++] = light.intensity;
+                lightDirectionsAndIntensities[i2++] = it.x
+                lightDirectionsAndIntensities[i2++] = it.y
+                lightDirectionsAndIntensities[i2++] = it.z
+                lightDirectionsAndIntensities[i2++] = light.intensity
+            }
         }
     }
 
-    private String createPrefix(Renderable renderable) {
-        String prefix = "";
+    private fun createPrefix(renderable: Renderable): String {
+        var prefix = ""
 
-        if (Gdx.graphics.isGL30Available()) {
-            switch (Nhg.glVersion) {
-                case VERSION_2:
-                    prefix = "#define GLVERSION 2\n";
-                    break;
+        if (Gdx.graphics.isGL30Available) {
+            when (Nhg.glVersion) {
+                OpenGLVersion.VERSION_2 -> prefix = "#define GLVERSION 2\n"
 
-                case VERSION_3:
-                    prefix = "#version 300 es\n";
-                    prefix += "#define GLVERSION 3\n";
-                    break;
+                OpenGLVersion.VERSION_3 -> {
+                    prefix = "#version 300 es\n"
+                    prefix += "#define GLVERSION 3\n"
+                }
             }
         } else {
-            prefix = "#define GLVERSION 2\n";
+            prefix = "#define GLVERSION 2\n"
         }
 
         if (params.useBones) {
-            prefix += "#define numBones " + 12 + "\n";
-            final int n = renderable.meshPart.mesh.getVertexAttributes().size();
+            prefix += "#define numBones 12\n"
 
-            for (int i = 0; i < n; i++) {
-                final VertexAttribute attr = renderable.meshPart.mesh.getVertexAttributes().get(i);
-
-                if (attr.usage == VertexAttributes.Usage.BoneWeight) {
-                    prefix += "#define boneWeight" + attr.unit + "Flag\n";
+            renderable.meshPart.mesh.vertexAttributes?.forEach {
+                if (it.usage == VertexAttributes.Usage.BoneWeight) {
+                    prefix += "#define boneWeight" + it.unit + "Flag\n"
                 }
             }
         }
 
         if (params.albedo) {
-            prefix += "#define defAlbedo\n";
+            prefix += "#define defAlbedo\n"
         }
 
         if (params.rma) {
-            prefix += "#define defRMA\n";
+            prefix += "#define defRMA\n"
         }
 
         if (params.normal) {
-            prefix += "#define defNormal\n";
+            prefix += "#define defNormal\n"
         }
 
         if (params.emissive) {
-            prefix += "#define defEmissive\n";
+            prefix += "#define defEmissive\n"
         }
 
         if (params.gammaCorrection) {
-            prefix += "#define defGammaCorrection\n";
+            prefix += "#define defGammaCorrection\n"
         }
 
         if (params.imageBasedLighting) {
-            prefix += "#define defImageBasedLighting\n";
+            prefix += "#define defImageBasedLighting\n"
         }
 
         if (params.lit) {
-            NhgLightsAttribute lightsAttribute = (NhgLightsAttribute) environment.get(NhgLightsAttribute.Type);
-            prefix += "#define lights " + lightsAttribute.lights.size + "\n";
+            val lightsAttribute = environment.get(NhgLightsAttribute.Type) as NhgLightsAttribute
+            prefix += "#define lights " + lightsAttribute.lights.size + "\n"
         }
 
-        String renderer = Gdx.gl.glGetString(GL30.GL_RENDERER).toUpperCase();
+        val renderer = Gdx.gl.glGetString(GL30.GL_RENDERER).toUpperCase()
 
         if (renderer.contains("MALI")) {
-            prefix += "#define GPU_MALI\n";
+            prefix += "#define GPU_MALI\n"
         } else if (renderer.contains("ADRENO")) {
-            prefix += "#define GPU_ADRENO\n";
+            prefix += "#define GPU_ADRENO\n"
         }
 
-        prefix += "#define GRID_SIZE " + gridSize + "\n";
+        prefix += "#define GRID_SIZE $gridSize\n"
 
-        return prefix;
+        return prefix
     }
 
-    public static class Params {
-        boolean useBones;
-        boolean albedo;
-        boolean normal;
-        boolean rma;
-        boolean emissive;
-        boolean lit;
-        boolean gammaCorrection;
-        boolean imageBasedLighting;
+    class Params {
+        internal var useBones: Boolean = false
+        internal var albedo: Boolean = false
+        internal var normal: Boolean = false
+        internal var rma: Boolean = false
+        internal var emissive: Boolean = false
+        internal var lit: Boolean = false
+        internal var gammaCorrection: Boolean = false
+        internal var imageBasedLighting: Boolean = false
     }
 }

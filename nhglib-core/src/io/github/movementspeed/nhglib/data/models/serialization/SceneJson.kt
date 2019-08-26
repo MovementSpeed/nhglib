@@ -1,57 +1,50 @@
-package io.github.movementspeed.nhglib.data.models.serialization;
+package io.github.movementspeed.nhglib.data.models.serialization
 
-import com.badlogic.gdx.utils.JsonValue;
-import io.github.movementspeed.nhglib.Nhg;
-import io.github.movementspeed.nhglib.assets.Asset;
-import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
-import io.github.movementspeed.nhglib.graphics.scenes.Scene;
-import io.github.movementspeed.nhglib.interfaces.JsonParseable;
+import com.badlogic.gdx.utils.JsonValue
+import io.github.movementspeed.nhglib.Nhg
+import io.github.movementspeed.nhglib.assets.Asset
+import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent
+import io.github.movementspeed.nhglib.graphics.scenes.Scene
+import io.github.movementspeed.nhglib.interfaces.JsonParseable
 
 /**
  * Created by Fausto Napoli on 19/12/2016.
  */
-public class SceneJson implements JsonParseable<Scene> {
-    private Scene output;
-    private Nhg nhg;
+class SceneJson(private val nhg: Nhg) : JsonParseable<Scene> {
+    private var output: Scene? = null
 
-    public SceneJson(Nhg nhg) {
-        this.nhg = nhg;
-    }
+    override fun parse(jsonValue: JsonValue) {
+        val name = jsonValue.getString("name")
+        val entitiesJson = jsonValue.get("entities")
+        val assetsJson = jsonValue.get("assets")
 
-    @Override
-    public void parse(JsonValue jsonValue) {
-        String name = jsonValue.getString("name");
-        JsonValue entitiesJson = jsonValue.get("entities");
-        JsonValue assetsJson = jsonValue.get("assets");
+        output = Scene(nhg, "root")
+        output!!.name = name
 
-        output = new Scene(nhg, "root");
-        output.name = name;
+        for (assetJson in assetsJson) {
+            val aj = AssetJson()
+            aj.parse(assetJson)
 
-        for (JsonValue assetJson : assetsJson) {
-            AssetJson aj = new AssetJson();
-            aj.parse(assetJson);
-
-            Asset asset = aj.get();
-            output.assets.add(asset);
+            val asset = aj.get()
+            output!!.assets.add(asset)
         }
 
-        int rootEntity = output.sceneGraph.getRootEntity();
+        val rootEntity = output!!.sceneGraph.rootEntity
 
         if (entitiesJson != null) {
-            for (JsonValue entity : entitiesJson) {
-                EntityJson entityJson = new EntityJson(nhg);
-                entityJson.setSceneGraph(output.sceneGraph);
-                entityJson.setParentEntity(rootEntity);
-                entityJson.parse(entity);
+            for (entity in entitiesJson) {
+                val entityJson = EntityJson(nhg)
+                entityJson.setSceneGraph(output!!.sceneGraph)
+                entityJson.setParentEntity(rootEntity)
+                entityJson.parse(entity)
             }
         }
 
-        NodeComponent nodeComponent = nhg.entities.getComponent(rootEntity, NodeComponent.class);
-        nodeComponent.applyTransforms();
+        val nodeComponent = nhg.entities.getComponent(rootEntity, NodeComponent::class.java)
+        nodeComponent.applyTransforms()
     }
 
-    @Override
-    public Scene get() {
-        return output;
+    override fun get(): Scene? {
+        return output
     }
 }

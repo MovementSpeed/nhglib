@@ -1,96 +1,88 @@
-package io.github.movementspeed.nhglib.data.models.serialization;
+package io.github.movementspeed.nhglib.data.models.serialization
 
-import com.badlogic.gdx.utils.JsonValue;
-import io.github.movementspeed.nhglib.Nhg;
-import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
-import io.github.movementspeed.nhglib.graphics.scenes.SceneGraph;
-import io.github.movementspeed.nhglib.interfaces.JsonParseable;
-import io.github.movementspeed.nhglib.utils.scenes.SceneMappings;
+import com.badlogic.gdx.utils.JsonValue
+import io.github.movementspeed.nhglib.Nhg
+import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent
+import io.github.movementspeed.nhglib.graphics.scenes.SceneGraph
+import io.github.movementspeed.nhglib.interfaces.JsonParseable
+import io.github.movementspeed.nhglib.utils.scenes.SceneMappings
 
 /**
  * Created by Fausto Napoli on 19/12/2016.
  */
-public class EntityJson implements JsonParseable<Integer> {
-    public int parentEntity;
+class EntityJson(private val nhg: Nhg) : JsonParseable<Int> {
+    var parentEntity: Int = 0
 
-    private int output;
+    private var output: Int = 0
+    private var sceneGraph: SceneGraph? = null
 
-    private Nhg nhg;
-    private SceneGraph sceneGraph;
+    override fun parse(jsonValue: JsonValue) {
+        val id = jsonValue.getString("id")
+        val attachToParent = jsonValue.getBoolean("attachToParent", true)
 
-    public EntityJson(Nhg nhg) {
-        this.nhg = nhg;
-    }
-
-    @Override
-    public void parse(JsonValue jsonValue) {
-        String id = jsonValue.getString("id");
-        boolean attachToParent = jsonValue.getBoolean("attachToParent", true);
-
-        int entity;
+        val entity: Int
 
         if (attachToParent) {
-            entity = sceneGraph.addSceneEntity(id, parentEntity);
+            entity = sceneGraph!!.addSceneEntity(id, parentEntity)
         } else {
-            entity = sceneGraph.addSceneEntity(id);
+            entity = sceneGraph!!.addSceneEntity(id)
         }
 
-        JsonValue componentsJson = jsonValue.get("components");
+        val componentsJson = jsonValue.get("components")
 
         if (componentsJson != null) {
-            for (JsonValue componentJsonValue : componentsJson) {
-                String type = componentJsonValue.getString("type");
-                ComponentJson componentJson = SceneMappings.componentJsonFromType(type);
+            for (componentJsonValue in componentsJson) {
+                val type = componentJsonValue.getString("type")
+                val componentJson = SceneMappings.componentJsonFromType(type)
 
                 if (componentJson != null) {
-                    componentJson.parentEntity = parentEntity;
-                    componentJson.entity = entity;
-                    componentJson.nhg = nhg;
-                    componentJson.sceneGraph = sceneGraph;
-                    componentJson.parse(componentJsonValue);
+                    componentJson.parentEntity = parentEntity
+                    componentJson.entity = entity
+                    componentJson.nhg = nhg
+                    componentJson.sceneGraph = sceneGraph
+                    componentJson.parse(componentJsonValue)
                 }
             }
         }
 
-        JsonValue entitiesJson = jsonValue.get("entities");
+        val entitiesJson = jsonValue.get("entities")
 
         if (entitiesJson != null) {
-            for (JsonValue entityJsonValue : entitiesJson) {
-                EntityJson entityJson = new EntityJson(nhg);
-                entityJson.sceneGraph = sceneGraph;
-                entityJson.parentEntity = entity;
-                entityJson.parse(entityJsonValue);
+            for (entityJsonValue in entitiesJson) {
+                val entityJson = EntityJson(nhg)
+                entityJson.sceneGraph = sceneGraph
+                entityJson.parentEntity = entity
+                entityJson.parse(entityJsonValue)
             }
         }
 
-        String parentInternalNodeId = jsonValue.getString("parentInternalNodeId", null);
+        val parentInternalNodeId = jsonValue.getString("parentInternalNodeId", null)
 
-        TransformJson transformJson = new TransformJson();
+        val transformJson = TransformJson()
 
         if (jsonValue.has("transform")) {
-            transformJson.parse(jsonValue.get("transform"));
+            transformJson.parse(jsonValue.get("transform"))
 
-            NodeComponent nodeComponent = nhg.entities.getComponent(entity, NodeComponent.class);
-            nodeComponent.parentInternalNodeId = parentInternalNodeId;
+            val nodeComponent = nhg.entities.getComponent(entity, NodeComponent::class.java)
+            nodeComponent.parentInternalNodeId = parentInternalNodeId
             nodeComponent.setTransform(
                     transformJson.position,
                     transformJson.rotation,
-                    transformJson.scale);
+                    transformJson.scale)
         }
 
-        output = entity;
+        output = entity
     }
 
-    public void setParentEntity(int parentEntity) {
-        this.parentEntity = parentEntity;
+    fun setParentEntity(parentEntity: Int) {
+        this.parentEntity = parentEntity
     }
 
-    public void setSceneGraph(SceneGraph sceneGraph) {
-        this.sceneGraph = sceneGraph;
+    fun setSceneGraph(sceneGraph: SceneGraph) {
+        this.sceneGraph = sceneGraph
     }
 
-    @Override
-    public Integer get() {
-        return output;
+    override fun get(): Int? {
+        return output
     }
 }

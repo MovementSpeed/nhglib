@@ -1,9 +1,9 @@
-package io.github.movementspeed.nhglib.input.enums;
+package io.github.movementspeed.nhglib.input.enums
 
 /**
  * Created by Fausto Napoli on 08/01/2017.
  */
-public enum InputType {
+enum class InputType {
     TOUCH,
     KEYBOARD_BUTTON,
     CONTROLLER_BUTTON,
@@ -12,35 +12,20 @@ public enum InputType {
     CONTROLLER_STICK,
     MOUSE_BUTTON;
 
-    public static InputType fromString(String value) {
-        InputType res = null;
+    companion object {
+        fun fromString(value: String): InputType? {
+            var res: InputType? = null
 
-        switch (value) {
-            case "touch":
-                res = TOUCH;
-                break;
+            when (value) {
+                "touch" -> res = TOUCH
+                "keyboardButton" -> res = KEYBOARD_BUTTON
+                "controllerButton" -> res = CONTROLLER_BUTTON
+                "virtualButton" -> res = VIRTUAL_BUTTON
+                "controllerStick" -> res = CONTROLLER_STICK
+                "mouseButton" -> res = MOUSE_BUTTON
+            }
 
-            case "keyboardButton":
-                res = KEYBOARD_BUTTON;
-                break;
-
-            case "controllerButton":
-                res = CONTROLLER_BUTTON;
-                break;
-
-            case "virtualButton":
-                res = VIRTUAL_BUTTON;
-                break;
-
-            case "controllerStick":
-                res = CONTROLLER_STICK;
-                break;
-
-            case "mouseButton":
-                res = MOUSE_BUTTON;
-                break;
+            return res
         }
-
-        return res;
     }
 }

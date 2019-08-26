@@ -1,52 +1,50 @@
-package io.github.movementspeed.nhglib.data.models.serialization.physics.vehicles;
+package io.github.movementspeed.nhglib.data.models.serialization.physics.vehicles
 
-import com.badlogic.gdx.physics.bullet.dynamics.btRaycastVehicle;
-import com.badlogic.gdx.utils.JsonValue;
-import io.github.movementspeed.nhglib.interfaces.JsonParseable;
+import com.badlogic.gdx.physics.bullet.dynamics.btRaycastVehicle
+import com.badlogic.gdx.utils.JsonValue
+import io.github.movementspeed.nhglib.interfaces.JsonParseable
 
 /**
  * Created by Fausto Napoli on 11/06/2017.
  */
-public class VehicleTuningJson implements JsonParseable<btRaycastVehicle.btVehicleTuning> {
-    private btRaycastVehicle.btVehicleTuning vehicleTuning;
+class VehicleTuningJson : JsonParseable<btRaycastVehicle.btVehicleTuning> {
+    private var vehicleTuning: btRaycastVehicle.btVehicleTuning? = null
 
-    @Override
-    public void parse(JsonValue jsonValue) {
-        vehicleTuning = new btRaycastVehicle.btVehicleTuning();
+    override fun parse(jsonValue: JsonValue) {
+        vehicleTuning = btRaycastVehicle.btVehicleTuning()
 
         if (jsonValue.has("suspensionDamping")) {
-            float value = jsonValue.getFloat("suspensionDamping");
-            vehicleTuning.setSuspensionDamping(value);
+            val value = jsonValue.getFloat("suspensionDamping")
+            vehicleTuning!!.suspensionDamping = value
         }
 
         if (jsonValue.has("suspensionCompression")) {
-            float value = jsonValue.getFloat("suspensionCompression");
-            vehicleTuning.setSuspensionCompression(value);
+            val value = jsonValue.getFloat("suspensionCompression")
+            vehicleTuning!!.suspensionCompression = value
         }
 
         if (jsonValue.has("suspensionStiffness")) {
-            float value = jsonValue.getFloat("suspensionStiffness");
-            vehicleTuning.setSuspensionStiffness(value);
+            val value = jsonValue.getFloat("suspensionStiffness")
+            vehicleTuning!!.suspensionStiffness = value
         }
 
         if (jsonValue.has("maxSuspensionTravelCm")) {
-            float value = jsonValue.getFloat("maxSuspensionTravelCm");
-            vehicleTuning.setMaxSuspensionTravelCm(value);
+            val value = jsonValue.getFloat("maxSuspensionTravelCm")
+            vehicleTuning!!.maxSuspensionTravelCm = value
         }
 
         if (jsonValue.has("maxSuspensionForce")) {
-            float value = jsonValue.getFloat("maxSuspensionForce");
-            vehicleTuning.setMaxSuspensionForce(value);
+            val value = jsonValue.getFloat("maxSuspensionForce")
+            vehicleTuning!!.maxSuspensionForce = value
         }
 
         if (jsonValue.has("frictionSlip")) {
-            float value = jsonValue.getFloat("frictionSlip");
-            vehicleTuning.setFrictionSlip(value);
+            val value = jsonValue.getFloat("frictionSlip")
+            vehicleTuning!!.frictionSlip = value
         }
     }
 
-    @Override
-    public btRaycastVehicle.btVehicleTuning get() {
-        return vehicleTuning;
+    override fun get(): btRaycastVehicle.btVehicleTuning? {
+        return vehicleTuning
     }
 }

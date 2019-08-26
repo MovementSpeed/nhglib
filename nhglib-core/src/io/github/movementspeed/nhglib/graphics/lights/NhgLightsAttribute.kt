@@ -1,47 +1,44 @@
-package io.github.movementspeed.nhglib.graphics.lights;
+package io.github.movementspeed.nhglib.graphics.lights
 
-import com.badlogic.gdx.graphics.g3d.Attribute;
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.graphics.g3d.Attribute
+import com.badlogic.gdx.utils.Array
 
 /**
  * Created by Fausto Napoli on 18/03/2017.
  */
-public class NhgLightsAttribute extends Attribute {
-    public final static String Alias = "nhgLights";
-    public final static long Type = register(Alias);
+class NhgLightsAttribute() : Attribute(Type) {
 
-    public final static boolean is(final long mask) {
-        return (mask & Type) == mask;
+    val lights: Array<NhgLight>
+
+    init {
+        lights = Array(1)
     }
 
-    public final Array<NhgLight> lights;
-
-    public NhgLightsAttribute() {
-        super(Type);
-        lights = new Array<>(1);
+    constructor(copyFrom: NhgLightsAttribute) : this() {
+        lights.addAll(copyFrom.lights)
     }
 
-    public NhgLightsAttribute(final NhgLightsAttribute copyFrom) {
-        this();
-        lights.addAll(copyFrom.lights);
+    override fun copy(): NhgLightsAttribute {
+        return NhgLightsAttribute(this)
     }
 
-    @Override
-    public NhgLightsAttribute copy() {
-        return new NhgLightsAttribute(this);
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        for (light in lights)
+            result = 1237 * result + (light?.hashCode() ?: 0)
+        return result
     }
 
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        for (NhgLight light : lights)
-            result = 1237 * result + (light == null ? 0 : light.hashCode());
-        return result;
+    override fun compareTo(o: Attribute): Int {
+        return if (type != o.type) if (type < o.type) -1 else 1 else 0
     }
 
-    @Override
-    public int compareTo(Attribute o) {
-        if (type != o.type) return type < o.type ? -1 : 1;
-        return 0;
+    companion object {
+        val Alias = "nhgLights"
+        val Type = Attribute.register(Alias)
+
+        fun `is`(mask: Long): Boolean {
+            return mask and Type == mask
+        }
     }
 }

@@ -1,43 +1,41 @@
-package io.github.movementspeed.nhglib.core.ecs.systems.impl;
+package io.github.movementspeed.nhglib.core.ecs.systems.impl
 
-import com.artemis.Aspect;
-import com.artemis.ComponentMapper;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Scaling;
-import com.badlogic.gdx.utils.viewport.ScalingViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
-import io.github.movementspeed.nhglib.core.ecs.components.graphics.CameraComponent;
-import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
-import io.github.movementspeed.nhglib.core.ecs.systems.base.NhgIteratingSystem;
+import com.artemis.Aspect
+import com.artemis.ComponentMapper
+import com.badlogic.gdx.graphics.Camera
+import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.Scaling
+import com.badlogic.gdx.utils.viewport.ScalingViewport
+import com.badlogic.gdx.utils.viewport.Viewport
+import io.github.movementspeed.nhglib.core.ecs.components.graphics.CameraComponent
+import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent
+import io.github.movementspeed.nhglib.core.ecs.systems.base.NhgIteratingSystem
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
  */
-public class CameraSystem extends NhgIteratingSystem {
-    private ComponentMapper<NodeComponent> nodeMapper;
-    private ComponentMapper<CameraComponent> cameraMapper;
+class CameraSystem : NhgIteratingSystem(Aspect.all(NodeComponent::class.java, CameraComponent::class.java)) {
+    private val nodeMapper: ComponentMapper<NodeComponent>? = null
+    private val cameraMapper: ComponentMapper<CameraComponent>? = null
 
-    public final Array<Camera> cameras;
+    val cameras: Array<Camera>
     //private Viewport viewport;
 
-    public CameraSystem() {
-        super(Aspect.all(NodeComponent.class, CameraComponent.class));
-        cameras = new Array<>();
+    init {
+        cameras = Array()
         //viewport = new ScalingViewport(Scaling.stretch, 640, 360);
     }
 
-    @Override
-    protected void process(int entityId) {
-        CameraComponent cameraComponent = cameraMapper.get(entityId);
-        NodeComponent nodeComponent = nodeMapper.get(entityId);
+    override fun process(entityId: Int) {
+        val cameraComponent = cameraMapper!!.get(entityId)
+        val nodeComponent = nodeMapper!!.get(entityId)
 
-        Camera camera = cameraComponent.camera;
-        camera.position.set(0, 0, 0);
-        camera.direction.set(0, 0, -1);
-        camera.up.set(0, 1, 0);
-        camera.transform(nodeComponent.getTransform());
+        val camera = cameraComponent.camera
+        camera!!.position.set(0f, 0f, 0f)
+        camera.direction.set(0f, 0f, -1f)
+        camera.up.set(0f, 1f, 0f)
+        camera.transform(nodeComponent.transform)
 
         /*viewport.setCamera(camera);
         viewport.update(640, 360);*/
@@ -58,10 +56,10 @@ public class CameraSystem extends NhgIteratingSystem {
         vec.set(camera.direction).crs(camera.up).nor();
         camera.direction.rotate(vec, rotation.getPitch());*/
 
-        camera.update();
+        camera.update()
 
         if (!cameras.contains(camera, true)) {
-            cameras.add(camera);
+            cameras.add(camera)
         }
     }
 }

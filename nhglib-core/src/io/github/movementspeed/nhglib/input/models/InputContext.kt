@@ -1,26 +1,16 @@
-package io.github.movementspeed.nhglib.input.models;
+package io.github.movementspeed.nhglib.input.models
 
 /**
  * Created by Fausto Napoli on 08/01/2017.
  */
-public class InputContext {
-    private boolean enabled;
-    private String name;
+class InputContext(private val name: String) {
+    var isEnabled: Boolean = false
 
-    public InputContext(String name) {
-        this.name = name;
-        this.enabled = false;
+    init {
+        this.isEnabled = false
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public boolean is(String name) {
-        return name.contentEquals(this.name);
+    fun `is`(name: String): Boolean {
+        return name.contentEquals(this.name)
     }
 }

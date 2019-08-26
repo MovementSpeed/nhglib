@@ -1,70 +1,71 @@
-package io.github.movementspeed.nhglib.core.ecs.components.physics;
+package io.github.movementspeed.nhglib.core.ecs.components.physics
 
-import com.artemis.Component;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Quaternion;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.bullet.dynamics.btRaycastVehicle;
-import com.badlogic.gdx.physics.bullet.dynamics.btWheelInfo;
+import com.artemis.Component
+import com.badlogic.gdx.math.Matrix4
+import com.badlogic.gdx.math.Quaternion
+import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.physics.bullet.dynamics.btRaycastVehicle
+import com.badlogic.gdx.physics.bullet.dynamics.btWheelInfo
 
 /**
  * Created by Fausto Napoli on 05/06/2017.
  */
-public class TyreComponent extends Component {
-    public boolean frontTyre;
-    public int index;
+class TyreComponent : Component() {
+    var frontTyre: Boolean = false
+    var index: Int = 0
 
-    public float radius;
-    public float suspensionRestLength;
-    public float wheelFriction;
+    var radius: Float = 0.toFloat()
+    var suspensionRestLength: Float = 0.toFloat()
+    var wheelFriction: Float = 0.toFloat()
 
-    public State state;
+    var state: State
 
-    public Vector3 attachmentPoint;
-    public Vector3 direction;
-    public Vector3 axis;
-    public Vector3 translation;
-    public Quaternion rotation;
+    var attachmentPoint: Vector3? = null
+    var direction: Vector3? = null
+    var axis: Vector3? = null
+    var translation: Vector3
+    var rotation: Quaternion
 
-    public VehicleComponent vehicleComponent;
+    var vehicleComponent: VehicleComponent? = null
 
-    public TyreComponent() {
-        state = State.NOT_INITIALIZED;
+    val steering: Float
+        get() {
+            val info = vehicleComponent!!.vehicle.getWheelInfo(index)
+            return info.steering
+        }
+
+    val rotationQuaternion: Quaternion
+        get() {
+            val mat = vehicleComponent!!.vehicle.getWheelTransformWS(index)
+            return mat.getRotation(rotation)
+        }
+
+    val vehicle: btRaycastVehicle
+        get() = vehicleComponent!!.vehicle
+
+    init {
+        state = State.NOT_INITIALIZED
     }
 
-    public void build() {
-        translation = new Vector3();
-        rotation = new Quaternion();
+    fun build() {
+        translation = Vector3()
+        rotation = Quaternion()
 
-        vehicleComponent.addTyre(attachmentPoint, direction, axis, radius,
-                suspensionRestLength, wheelFriction, frontTyre);
+        vehicleComponent!!.addTyre(attachmentPoint, direction, axis, radius,
+                suspensionRestLength, wheelFriction, frontTyre)
     }
 
-    public float getRotation() {
-        btWheelInfo info = vehicleComponent.vehicle.getWheelInfo(index);
-        return info.getRotation();
+    fun getRotation(): Float {
+        val info = vehicleComponent!!.vehicle.getWheelInfo(index)
+        return info.rotation
     }
 
-    public float getSteering() {
-        btWheelInfo info = vehicleComponent.vehicle.getWheelInfo(index);
-        return info.getSteering();
+    fun getTranslation(): Vector3 {
+        val mat = vehicleComponent!!.vehicle.getWheelTransformWS(index)
+        return mat.getTranslation(translation)
     }
 
-    public Vector3 getTranslation() {
-        Matrix4 mat = vehicleComponent.vehicle.getWheelTransformWS(index);
-        return mat.getTranslation(translation);
-    }
-
-    public Quaternion getRotationQuaternion() {
-        Matrix4 mat = vehicleComponent.vehicle.getWheelTransformWS(index);
-        return mat.getRotation(rotation);
-    }
-
-    public btRaycastVehicle getVehicle() {
-        return vehicleComponent.vehicle;
-    }
-
-    public enum State {
+    enum class State {
         NOT_INITIALIZED,
         READY
     }

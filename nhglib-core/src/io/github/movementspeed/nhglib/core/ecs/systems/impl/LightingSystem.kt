@@ -1,41 +1,39 @@
-package io.github.movementspeed.nhglib.core.ecs.systems.impl;
+package io.github.movementspeed.nhglib.core.ecs.systems.impl
 
-import com.artemis.Aspect;
-import com.artemis.ComponentMapper;
-import com.artemis.systems.IteratingSystem;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Vector3;
-import io.github.movementspeed.nhglib.core.ecs.components.graphics.LightComponent;
-import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent;
+import com.artemis.Aspect
+import com.artemis.ComponentMapper
+import com.artemis.systems.IteratingSystem
+import com.badlogic.gdx.math.Matrix4
+import com.badlogic.gdx.math.Vector3
+import io.github.movementspeed.nhglib.core.ecs.components.graphics.LightComponent
+import io.github.movementspeed.nhglib.core.ecs.components.scenes.NodeComponent
 
 /**
  * Created by Fausto Napoli on 14/03/2017.
  */
-public class LightingSystem extends IteratingSystem {
-    private ComponentMapper<NodeComponent> nodeMapper;
-    private ComponentMapper<LightComponent> lightMapper;
+class LightingSystem : IteratingSystem(Aspect.all(NodeComponent::class.java, LightComponent::class.java)) {
+    private val nodeMapper: ComponentMapper<NodeComponent>? = null
+    private val lightMapper: ComponentMapper<LightComponent>? = null
 
-    private Matrix4 tempMat;
-    private Vector3 tempVec1;
-    private Vector3 tempVec2;
+    private val tempMat: Matrix4
+    private val tempVec1: Vector3
+    private val tempVec2: Vector3
 
-    public LightingSystem() {
-        super(Aspect.all(NodeComponent.class, LightComponent.class));
+    init {
 
-        tempMat = new Matrix4();
-        tempVec1 = new Vector3();
-        tempVec2 = new Vector3();
+        tempMat = Matrix4()
+        tempVec1 = Vector3()
+        tempVec2 = Vector3()
     }
 
-    @Override
-    protected void process(int entityId) {
-        LightComponent light = lightMapper.get(entityId);
+    override fun process(entityId: Int) {
+        val light = lightMapper!!.get(entityId)
 
-        if (light.light.enabled) {
-            NodeComponent node = nodeMapper.get(entityId);
+        if (light.light!!.enabled) {
+            val node = nodeMapper!!.get(entityId)
 
-            light.light.position.set(node.getTranslation());
-            light.light.setTransform(node.getTransform());
+            light.light!!.position.set(node.translation)
+            light.light!!.transform = node.transform
 
             /*switch (light.type) {
                 case SPOT_LIGHT:

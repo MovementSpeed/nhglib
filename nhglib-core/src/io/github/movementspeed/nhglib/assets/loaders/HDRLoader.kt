@@ -1,51 +1,44 @@
-package io.github.movementspeed.nhglib.assets.loaders;
+package io.github.movementspeed.nhglib.assets.loaders
 
-import com.badlogic.gdx.assets.AssetDescriptor;
-import com.badlogic.gdx.assets.AssetLoaderParameters;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.assets.loaders.AsynchronousAssetLoader;
-import com.badlogic.gdx.assets.loaders.FileHandleResolver;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.utils.Array;
-import io.github.movementspeed.nhglib.files.HDRData;
+import com.badlogic.gdx.assets.AssetDescriptor
+import com.badlogic.gdx.assets.AssetLoaderParameters
+import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.assets.loaders.AsynchronousAssetLoader
+import com.badlogic.gdx.assets.loaders.FileHandleResolver
+import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.utils.Array
+import io.github.movementspeed.nhglib.files.HDRData
 
-import java.io.IOException;
+import java.io.IOException
 
 /**
  * Created by Fausto Napoli on 20/08/2017.
  */
-public class HDRLoader extends AsynchronousAssetLoader<HDRData, HDRLoader.HDRParams> {
-    public HDRLoader(FileHandleResolver fileHandleResolver) {
-        super(fileHandleResolver);
-    }
+class HDRLoader(fileHandleResolver: FileHandleResolver) : AsynchronousAssetLoader<HDRData, HDRLoader.HDRParams>(fileHandleResolver) {
 
-    @Override
-    public void loadAsync(AssetManager manager, String fileName, FileHandle file, HDRParams parameter) {
+    override fun loadAsync(manager: AssetManager, fileName: String, file: FileHandle, parameter: HDRParams) {
 
     }
 
-    @Override
-    public HDRData loadSync(AssetManager manager, String fileName, FileHandle file, HDRParams parameter) {
-        return loadHDR(file);
+    override fun loadSync(manager: AssetManager, fileName: String, file: FileHandle, parameter: HDRParams): HDRData? {
+        return loadHDR(file)
     }
 
-    @Override
-    public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, HDRParams parameter) {
-        return null;
+    override fun getDependencies(fileName: String, file: FileHandle, parameter: HDRParams): Array<AssetDescriptor<*>>? {
+        return null
     }
 
-    public HDRData loadHDR(FileHandle file) {
-        HDRData hdrData = null;
+    fun loadHDR(file: FileHandle): HDRData? {
+        var hdrData: HDRData? = null
 
         try {
-            hdrData = new HDRData(file.readBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
+            hdrData = HDRData(file.readBytes())
+        } catch (e: IOException) {
+            e.printStackTrace()
         }
 
-        return hdrData;
+        return hdrData
     }
 
-    public static class HDRParams extends AssetLoaderParameters<HDRData> {
-    }
+    class HDRParams : AssetLoaderParameters<HDRData>()
 }

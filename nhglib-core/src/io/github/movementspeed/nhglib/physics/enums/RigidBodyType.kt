@@ -1,9 +1,9 @@
-package io.github.movementspeed.nhglib.physics.enums;
+package io.github.movementspeed.nhglib.physics.enums
 
 /**
  * Created by Fausto Napoli on 16/05/2017.
  */
-public enum RigidBodyType {
+enum class RigidBodyType {
     CONVEX_TRIANGLE_MESH,
     BVH_TRIANGLE_MESH,
     CONVEX_HULL,
@@ -13,43 +13,23 @@ public enum RigidBodyType {
     CONE,
     BOX;
 
-    public static RigidBodyType fromString(String name) {
-        RigidBodyType res = null;
+    companion object {
 
-        switch (name) {
-            case "box":
-                res = BOX;
-                break;
+        fun fromString(name: String): RigidBodyType? {
+            var res: RigidBodyType? = null
 
-            case "cone":
-                res = CONE;
-                break;
+            when (name) {
+                "box" -> res = BOX
+                "cone" -> res = CONE
+                "sphere" -> res = SPHERE
+                "capsule" -> res = CAPSULE
+                "cylinder" -> res = CYLINDER
+                "convexHull" -> res = CONVEX_HULL
+                "bvhTriangleMesh" -> res = BVH_TRIANGLE_MESH
+                "convexTriangleMesh" -> res = CONVEX_TRIANGLE_MESH
+            }
 
-            case "sphere":
-                res = SPHERE;
-                break;
-
-            case "capsule":
-                res = CAPSULE;
-                break;
-
-            case "cylinder":
-                res = CYLINDER;
-                break;
-
-            case "convexHull":
-                res = CONVEX_HULL;
-                break;
-
-            case "bvhTriangleMesh":
-                res = BVH_TRIANGLE_MESH;
-                break;
-
-            case "convexTriangleMesh":
-                res = CONVEX_TRIANGLE_MESH;
-                break;
+            return res
         }
-
-        return res;
     }
 }

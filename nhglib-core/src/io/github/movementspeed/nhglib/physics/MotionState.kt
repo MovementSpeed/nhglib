@@ -1,25 +1,19 @@
-package io.github.movementspeed.nhglib.physics;
+package io.github.movementspeed.nhglib.physics
 
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.physics.bullet.linearmath.btMotionState;
+import com.badlogic.gdx.math.Matrix4
+import com.badlogic.gdx.physics.bullet.linearmath.btMotionState
 
 /**
  * Created by Fausto Napoli on 04/05/2017.
  */
-public class MotionState extends btMotionState {
-    public Matrix4 transform;
+class MotionState : btMotionState() {
+    var transform = Matrix4()
 
-    public MotionState() {
-        transform = new Matrix4();
+    override fun getWorldTransform(worldTrans: Matrix4) {
+        worldTrans.set(transform)
     }
 
-    @Override
-    public void getWorldTransform(Matrix4 worldTrans) {
-        worldTrans.set(transform);
-    }
-
-    @Override
-    public void setWorldTransform(Matrix4 worldTrans) {
-        transform.set(worldTrans);
+    override fun setWorldTransform(worldTrans: Matrix4) {
+        transform.set(worldTrans)
     }
 }

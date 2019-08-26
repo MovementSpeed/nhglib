@@ -1,56 +1,45 @@
-package io.github.movementspeed.nhglib.core.ecs.systems.impl;
+package io.github.movementspeed.nhglib.core.ecs.systems.impl
 
-import com.artemis.Aspect;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.physics.bullet.DebugDrawer;
-import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
-import io.github.movementspeed.nhglib.Nhg;
-import io.github.movementspeed.nhglib.core.ecs.systems.base.BaseRenderingSystem;
-import io.github.movementspeed.nhglib.core.ecs.utils.Entities;
+import com.artemis.Aspect
+import com.badlogic.gdx.graphics.Camera
+import com.badlogic.gdx.physics.bullet.DebugDrawer
+import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw
+import io.github.movementspeed.nhglib.Nhg
+import io.github.movementspeed.nhglib.core.ecs.systems.base.BaseRenderingSystem
+import io.github.movementspeed.nhglib.core.ecs.utils.Entities
 
-public class DebugRenderingSystem extends BaseRenderingSystem {
+class DebugRenderingSystem(entities: Entities) : BaseRenderingSystem(Aspect.all(), entities) {
     // Injected references
-    private PhysicsSystem physicsSystem;
-    private DebugDrawer debugDrawer;
+    private val physicsSystem: PhysicsSystem? = null
+    var debugDrawer: DebugDrawer? = null
+        private set
 
-    public DebugRenderingSystem(Entities entities) {
-        super(Aspect.all(), entities);
-    }
+    override fun begin() {
+        super.begin()
 
-    @Override
-    protected void begin() {
-        super.begin();
-
-        if (physicsSystem.isPhysicsInitialized()) {
+        if (physicsSystem!!.isPhysicsInitialized) {
             if (debugDrawer == null) {
-                debugDrawer = new DebugDrawer();
-                debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_MAX_DEBUG_DRAW_MODE);
+                debugDrawer = DebugDrawer()
+                debugDrawer!!.debugMode = btIDebugDraw.DebugDrawModes.DBG_MAX_DEBUG_DRAW_MODE
 
-                physicsSystem.setDebugDrawer(debugDrawer);
+                physicsSystem.setDebugDrawer(debugDrawer)
             }
         }
     }
 
-    @Override
-    protected void process(int entityId) {
-    }
+    override fun process(entityId: Int) {}
 
-    @Override
-    protected void end() {
-        super.end();
+    override fun end() {
+        super.end()
 
-        for (int i = 0; i < cameras.size; i++) {
-            Camera camera = cameras.get(i);
+        for (i in 0 until cameras!!.size) {
+            val camera = cameras!!.get(i)
 
             if (Nhg.debugDrawPhysics && debugDrawer != null) {
-                debugDrawer.begin(camera);
-                physicsSystem.debugDraw();
-                debugDrawer.end();
+                debugDrawer!!.begin(camera)
+                physicsSystem!!.debugDraw()
+                debugDrawer!!.end()
             }
         }
-    }
-
-    public DebugDrawer getDebugDrawer() {
-        return debugDrawer;
     }
 }

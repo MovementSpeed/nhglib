@@ -1,6 +1,6 @@
-package io.github.movementspeed.nhglib.enums;
+package io.github.movementspeed.nhglib.enums
 
-public enum OpenGLVersion {
+enum class OpenGLVersion {
     VERSION_2,
     VERSION_3
 }

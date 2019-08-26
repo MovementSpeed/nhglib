@@ -1,13 +1,13 @@
-package io.github.movementspeed.nhglib.input.controllers;
+package io.github.movementspeed.nhglib.input.controllers
 
 /**
  * Created by Fausto Napoli on 23/01/2017.
  */
-public class ControllerCodes {
-    public static class Xbox360 {
-        public static final int STICK_LEFT_VERTICAL = 0;
-        public static final int STICK_LEFT_HORIZONTAL = 1;
-        public static final int STICK_RIGHT_VERTICAL = 2;
-        public static final int STICK_RIGHT_HORIZONTAL = 3;
+class ControllerCodes {
+    object Xbox360 {
+        const val STICK_LEFT_VERTICAL = 0
+        const val STICK_LEFT_HORIZONTAL = 1
+        const val STICK_RIGHT_VERTICAL = 2
+        const val STICK_RIGHT_HORIZONTAL = 3
     }
 }

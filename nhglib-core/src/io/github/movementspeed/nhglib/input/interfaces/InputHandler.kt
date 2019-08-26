@@ -1,5 +1,5 @@
-package io.github.movementspeed.nhglib.input.interfaces;
+package io.github.movementspeed.nhglib.input.interfaces
 
-public interface InputHandler {
-    void update();
+interface InputHandler {
+    fun update()
 }

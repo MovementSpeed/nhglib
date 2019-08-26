@@ -1,38 +1,31 @@
-package io.github.movementspeed.nhglib.graphics.shaders.attributes;
+package io.github.movementspeed.nhglib.graphics.shaders.attributes
 
-import com.badlogic.gdx.graphics.g3d.Attribute;
-import io.github.movementspeed.nhglib.graphics.shaders.shadows.system.ShadowSystem;
+import com.badlogic.gdx.graphics.g3d.Attribute
+import io.github.movementspeed.nhglib.graphics.shaders.shadows.system.ShadowSystem
 
-public class ShadowSystemAttribute extends Attribute {
-    public final static String Alias = "shadowSystem";
-    public final static long Type = register(Alias);
+class ShadowSystemAttribute(var shadowSystem: ShadowSystem) : Attribute(Type) {
 
-    public ShadowSystem shadowSystem;
-
-    public ShadowSystemAttribute(ShadowSystem shadowSystem) {
-        super(Type);
-        this.shadowSystem = shadowSystem;
+    override fun copy(): Attribute {
+        return ShadowSystemAttribute(shadowSystem)
     }
 
-    @Override
-    public Attribute copy() {
-        return new ShadowSystemAttribute(shadowSystem);
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 991 * result + shadowSystem.hashCode()
+        return result
     }
 
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 991 * result + shadowSystem.hashCode();
-        return result;
-    }
-
-    @Override
-    public int compareTo(Attribute o) {
-        if (type != o.type) return type < o.type ? -1 : 1;
-        ShadowSystemAttribute other = (ShadowSystemAttribute) o;
-        if (other.shadowSystem != shadowSystem)
-            return 1;
+    override fun compareTo(o: Attribute): Int {
+        if (type != o.type) return if (type < o.type) -1 else 1
+        val other = o as ShadowSystemAttribute
+        return if (other.shadowSystem !== shadowSystem)
+            1
         else
-            return -1;
+            -1
+    }
+
+    companion object {
+        val Alias = "shadowSystem"
+        val Type = Attribute.register(Alias)
     }
 }

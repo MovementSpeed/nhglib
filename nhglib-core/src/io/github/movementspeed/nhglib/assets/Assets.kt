@@ -1,192 +1,187 @@
-package io.github.movementspeed.nhglib.assets;
+package io.github.movementspeed.nhglib.assets
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
-import com.badlogic.gdx.assets.AssetDescriptor;
-import com.badlogic.gdx.assets.AssetErrorListener;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.assets.loaders.FileHandleResolver;
-import com.badlogic.gdx.assets.loaders.TextureLoader;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.utils.*;
-import io.github.movementspeed.nhglib.Nhg;
-import io.github.movementspeed.nhglib.assets.loaders.*;
-import io.github.movementspeed.nhglib.core.fsm.base.AssetsStates;
-import io.github.movementspeed.nhglib.core.messaging.Message;
-import io.github.movementspeed.nhglib.files.HDRData;
-import io.github.movementspeed.nhglib.graphics.scenes.Scene;
-import io.github.movementspeed.nhglib.input.handler.InputProxy;
-import io.github.movementspeed.nhglib.interfaces.Updatable;
-import io.github.movementspeed.nhglib.utils.data.Bundle;
-import io.github.movementspeed.nhglib.utils.data.Strings;
-import io.github.movementspeed.nhglib.utils.debug.NhgLogger;
-import io.reactivex.functions.Consumer;
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.ai.fsm.DefaultStateMachine
+import com.badlogic.gdx.assets.AssetDescriptor
+import com.badlogic.gdx.assets.AssetErrorListener
+import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.assets.loaders.FileHandleResolver
+import com.badlogic.gdx.assets.loaders.TextureLoader
+import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g3d.Model
+import com.badlogic.gdx.utils.*
+import io.github.movementspeed.nhglib.Nhg
+import io.github.movementspeed.nhglib.assets.loaders.*
+import io.github.movementspeed.nhglib.core.fsm.base.AssetsStates
+import io.github.movementspeed.nhglib.core.messaging.Message
+import io.github.movementspeed.nhglib.files.HDRData
+import io.github.movementspeed.nhglib.graphics.scenes.Scene
+import io.github.movementspeed.nhglib.input.handler.InputProxy
+import io.github.movementspeed.nhglib.interfaces.Updatable
+import io.github.movementspeed.nhglib.utils.data.Bundle
+import io.github.movementspeed.nhglib.utils.data.Strings
+import io.github.movementspeed.nhglib.utils.debug.NhgLogger
+import io.reactivex.functions.Consumer
 
 /**
  * Created by Fausto Napoli on 19/10/2016.
  */
-public class Assets implements Updatable, AssetErrorListener {
-    public DefaultStateMachine<Assets, AssetsStates> fsm;
-    public AssetManager assetManager;
-    public AssetManager syncAssetManager;
+class Assets : Updatable, AssetErrorListener {
+    var fsm: DefaultStateMachine<Assets, AssetsStates>
+    var assetManager: AssetManager? = null
+    var syncAssetManager: AssetManager? = null
 
-    private Nhg nhg;
+    private var nhg: Nhg? = null
 
-    private Array<Asset> assetQueue;
-    private ArrayMap<String, Asset> assetCache;
-    private ArrayMap<String, AssetManager> customAssetManagers;
+    var assetQueue: Array<Asset>? = null
+        private set
+    private var assetCache: ArrayMap<String, Asset>? = null
+    private var customAssetManagers: ArrayMap<String, AssetManager>? = null
 
-    public void init(Nhg nhg) {
-        this.nhg = nhg;
-        fsm = new DefaultStateMachine<>(this, AssetsStates.IDLE);
+    val cachedAssets: ArrayMap.Values<Asset>
+        get() = assetCache!!.values()
 
-        assetQueue = new Array<>();
-        assetCache = new ArrayMap<>();
-        customAssetManagers = new ArrayMap<>();
+    fun init(nhg: Nhg) {
+        this.nhg = nhg
+        fsm = DefaultStateMachine(this, AssetsStates.IDLE)
 
-        assetManager = new AssetManager();
-        syncAssetManager = new AssetManager();
+        assetQueue = Array<Asset>()
+        assetCache = ArrayMap()
+        customAssetManagers = ArrayMap()
 
-        setDefaultAssetLoaders(assetManager);
-        setDefaultAssetLoaders(syncAssetManager);
+        assetManager = AssetManager()
+        syncAssetManager = AssetManager()
 
-        assetManager.setErrorListener(this);
-        syncAssetManager.setErrorListener(this);
+        setDefaultAssetLoaders(assetManager!!)
+        setDefaultAssetLoaders(syncAssetManager!!)
 
-        Texture.setAssetManager(assetManager);
+        assetManager!!.setErrorListener(this)
+        syncAssetManager!!.setErrorListener(this)
+
+        Texture.setAssetManager(assetManager)
     }
 
     // Updatable
-    @Override
-    public void update() {
-        fsm.update();
+    override fun update() {
+        fsm.update()
     }
 
     // AssetErrorListener
-    @Override
-    public void error(AssetDescriptor asset, Throwable throwable) {
+    override fun error(asset: AssetDescriptor<*>, throwable: Throwable) {
         try {
-            throw throwable;
-        } catch (Throwable throwable1) {
-            throwable1.printStackTrace();
+            throw throwable
+        } catch (throwable1: Throwable) {
+            throwable1.printStackTrace()
         }
+
     }
 
-    public AssetManager addAssetManager(String name, FileHandleResolver fileHandleResolver) {
-        AssetManager assetManager = new AssetManager(fileHandleResolver);
-        setDefaultAssetLoaders(assetManager);
-        customAssetManagers.put(name, assetManager);
-        return assetManager;
+    fun addAssetManager(name: String, fileHandleResolver: FileHandleResolver): AssetManager {
+        val assetManager = AssetManager(fileHandleResolver)
+        setDefaultAssetLoaders(assetManager)
+        customAssetManagers!!.put(name, assetManager)
+        return assetManager
     }
 
-    public void assetLoadingFinished() {
-        nhg.messaging.send(new Message(Strings.Events.assetLoadingFinished));
+    fun assetLoadingFinished() {
+        nhg!!.messaging.send(Message(Strings.Events.assetLoadingFinished))
     }
 
-    public void assetLoaded(Asset asset) {
+    fun assetLoaded(asset: Asset?) {
         if (asset != null) {
-            Bundle bundle = new Bundle();
-            bundle.put(Strings.Defaults.assetKey, asset);
+            val bundle = Bundle()
+            bundle[Strings.Defaults.assetKey] = asset
 
-            nhg.messaging.send(new Message(Strings.Events.assetLoaded, bundle));
+            nhg!!.messaging.send(Message(Strings.Events.assetLoaded, bundle))
         }
     }
 
-    public void assetUnloaded(Asset asset) {
+    fun assetUnloaded(asset: Asset?) {
         if (asset != null) {
-            Bundle bundle = new Bundle();
-            bundle.put(Strings.Defaults.assetKey, asset);
+            val bundle = Bundle()
+            bundle[Strings.Defaults.assetKey] = asset
 
-            nhg.messaging.send(new Message(Strings.Events.assetUnloaded, bundle));
+            nhg!!.messaging.send(Message(Strings.Events.assetUnloaded, bundle))
         }
     }
 
-    public boolean updateAssetManagers() {
-        boolean res = true;
+    fun updateAssetManagers(): Boolean {
+        var res = true
 
-        for (ObjectMap.Entry<String, AssetManager> entry : customAssetManagers) {
+        for (entry in customAssetManagers!!) {
             if (entry.value != null && !entry.value.update()) {
-                res = false;
-                break;
+                res = false
+                break
             }
         }
 
         if (assetManager != null) {
-            res = res && assetManager.update();
+            res = res && assetManager!!.update()
         }
 
-        return res;
+        return res
     }
 
-    public boolean isAssetLoaded(Asset asset) {
-        boolean res = false;
+    fun isAssetLoaded(asset: Asset): Boolean {
+        var res = false
 
-        for (ObjectMap.Entry<String, AssetManager> entry : customAssetManagers) {
+        for (entry in customAssetManagers!!) {
             if (entry.value.isLoaded(asset.source)) {
-                res = true;
-                break;
+                res = true
+                break
             }
         }
 
-        return assetManager.isLoaded(asset.source) || res;
+        return assetManager!!.isLoaded(asset.source) || res
     }
 
-    public AssetManager getAssetManager(String name) {
-        return customAssetManagers.get(name);
+    fun getAssetManager(name: String): AssetManager {
+        return customAssetManagers!!.get(name)
     }
 
-    public Array<Asset> getAssetQueue() {
-        return assetQueue;
-    }
-
-    public <T> T get(String alias) {
-        T t = null;
+    operator fun <T> get(alias: String?): T? {
+        var t: T? = null
 
         if (alias != null) {
-            t = get(assetCache.get(alias));
+            t = get<T>(assetCache!!.get(alias))
         }
 
-        return t;
+        return t
     }
 
-    public <T> T get(Asset asset) {
-        T t = null;
+    operator fun <T> get(asset: Asset?): T? {
+        var t: T? = null
 
         if (asset != null && isAssetLoaded(asset)) {
-            if (assetManager.isLoaded(asset.source)) {
-                t = assetManager.get(asset.source);
+            if (assetManager!!.isLoaded(asset.source)) {
+                t = assetManager!!.get<T>(asset.source)
             }
 
             if (t == null) {
-                for (ObjectMap.Entry<String, AssetManager> entry : customAssetManagers) {
+                for (entry in customAssetManagers!!) {
                     if (entry.value.isLoaded(asset.source)) {
-                        t = entry.value.get(asset.source);
+                        t = entry.value.get<T>(asset.source)
                     }
 
                     if (t != null) {
-                        break;
+                        break
                     }
                 }
             }
         }
 
-        return t;
+        return t
     }
 
-    public Asset getAsset(String alias) {
-        return alias == null ? null : assetCache.get(alias);
+    fun getAsset(alias: String?): Asset? {
+        return if (alias == null) null else assetCache!!.get(alias)
     }
 
-    public Asset createAsset(String alias, String source, Class assetClass) {
-        Asset asset = new Asset(alias, source, assetClass);
-        assetCache.put(alias, asset);
-        return asset;
-    }
-
-    public ArrayMap.Values<Asset> getCachedAssets() {
-        return assetCache.values();
+    fun createAsset(alias: String, source: String, assetClass: Class<*>): Asset {
+        val asset = Asset(alias, source, assetClass)
+        assetCache!!.put(alias, asset)
+        return asset
     }
 
     /**
@@ -195,23 +190,18 @@ public class Assets implements Updatable, AssetErrorListener {
      * @param asset    the asset.
      * @param listener a listener for the asset loading.
      */
-    public void loadAsset(final Asset asset, final AssetListener listener) {
+    fun loadAsset(asset: Asset?, listener: AssetListener?) {
         if (asset != null) {
-            queueAsset(asset);
+            queueAsset(asset)
 
-            nhg.messaging.get(Strings.Events.assetLoaded)
-                    .subscribe(new Consumer<Message>() {
-                        @Override
-                        public void accept(Message message) throws Exception {
-                            Asset loadedAsset = (Asset) message.data.get(Strings.Defaults.assetKey);
+            nhg!!.messaging.get(Strings.Events.assetLoaded)
+                    .subscribe { message ->
+                        val loadedAsset = message.data!![Strings.Defaults.assetKey] as Asset
 
-                            if (loadedAsset.is(asset)) {
-                                if (listener != null) {
-                                    listener.onAssetLoaded(asset);
-                                }
-                            }
+                        if (loadedAsset.`is`(asset)) {
+                            listener?.onAssetLoaded(asset)
                         }
-                    });
+                    }
         }
     }
 
@@ -221,23 +211,18 @@ public class Assets implements Updatable, AssetErrorListener {
      * @param asset    the asset.
      * @param listener a listener for the asset loading.
      */
-    public void loadAsset(String assetManagerName, final Asset asset, final AssetListener listener) {
+    fun loadAsset(assetManagerName: String, asset: Asset?, listener: AssetListener?) {
         if (asset != null) {
-            queueAsset(assetManagerName, asset);
+            queueAsset(assetManagerName, asset)
 
-            nhg.messaging.get(Strings.Events.assetLoaded)
-                    .subscribe(new Consumer<Message>() {
-                        @Override
-                        public void accept(Message message) {
-                            Asset loadedAsset = (Asset) message.data.get(Strings.Defaults.assetKey);
+            nhg!!.messaging.get(Strings.Events.assetLoaded)
+                    .subscribe { message ->
+                        val loadedAsset = message.data!![Strings.Defaults.assetKey] as Asset
 
-                            if (loadedAsset.is(asset)) {
-                                if (listener != null) {
-                                    listener.onAssetLoaded(asset);
-                                }
-                            }
+                        if (loadedAsset.`is`(asset)) {
+                            listener?.onAssetLoaded(asset)
                         }
-                    });
+                    }
         }
     }
 
@@ -246,278 +231,270 @@ public class Assets implements Updatable, AssetErrorListener {
      *
      * @param asset the asset.
      */
-    @SuppressWarnings("unchecked")
-    public void queueAsset(Asset asset) {
+    fun queueAsset(asset: Asset?) {
         if (asset != null) {
-            assetCache.put(asset.alias, asset);
+            assetCache!!.put(asset.alias, asset)
 
-            if (!assetManager.isLoaded(asset.source)) {
-                FileHandle fileHandle = Gdx.files.internal(asset.source);
+            if (!assetManager!!.isLoaded(asset.source)) {
+                val fileHandle = Gdx.files.internal(asset.source)
 
                 if (fileHandle.exists()) {
-                    buildAssetParameters(asset);
+                    buildAssetParameters(asset)
 
                     if (asset.parameters == null) {
-                        assetManager.load(asset.source, asset.assetClass);
+                        assetManager!!.load(asset.source, asset.assetClass)
                     } else {
-                        assetManager.load(asset.source, asset.assetClass, asset.parameters);
+                        assetManager!!.load(asset.source, asset.assetClass, asset.parameters)
                     }
 
-                    assetQueue.add(asset);
+                    assetQueue!!.add(asset)
                 } else {
-                    NhgLogger.log(this, Strings.Messages.cannotQueueAssetFileNotFound, asset.source);
+                    NhgLogger.log(this, Strings.Messages.cannotQueueAssetFileNotFound, asset.source)
                 }
             } else {
-                assetLoaded(asset);
+                assetLoaded(asset)
             }
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public void queueAsset(String assetManagerName, Asset asset) {
+    fun queueAsset(assetManagerName: String?, asset: Asset?) {
         if (asset != null && assetManagerName != null) {
-            AssetManager assetManager = customAssetManagers.get(assetManagerName);
+            val assetManager = customAssetManagers!!.get(assetManagerName)
 
             if (assetManager != null) {
-                assetCache.put(asset.alias, asset);
+                assetCache!!.put(asset.alias, asset)
 
                 if (!assetManager.isLoaded(asset.source)) {
-                    FileHandle fileHandle = assetManager.getFileHandleResolver().resolve(asset.source);
+                    val fileHandle = assetManager.fileHandleResolver.resolve(asset.source)
 
                     if (fileHandle.exists()) {
-                        buildAssetParameters(asset);
+                        buildAssetParameters(asset)
 
                         if (asset.parameters == null) {
-                            assetManager.load(asset.source, asset.assetClass);
+                            assetManager.load(asset.source, asset.assetClass)
                         } else {
-                            assetManager.load(asset.source, asset.assetClass, asset.parameters);
+                            assetManager.load(asset.source, asset.assetClass, asset.parameters)
                         }
 
-                        assetQueue.add(asset);
+                        assetQueue!!.add(asset)
                     } else {
-                        NhgLogger.log(this, Strings.Messages.cannotQueueAssetFileNotFound, asset.source);
+                        NhgLogger.log(this, Strings.Messages.cannotQueueAssetFileNotFound, asset.source)
                     }
                 } else {
-                    assetLoaded(asset);
+                    assetLoaded(asset)
                 }
             }
         }
     }
 
-    public void queueAssets(Array<Asset> assets) {
+    fun queueAssets(assets: Array<Asset>?) {
         if (assets != null) {
-            for (Asset asset : assets) {
-                queueAsset(asset);
+            for (asset in assets) {
+                queueAsset(asset)
             }
         }
     }
 
-    public void queueAssets(String assetManagerName, Array<Asset> assets) {
+    fun queueAssets(assetManagerName: String, assets: Array<Asset>?) {
         if (assets != null) {
-            for (Asset asset : assets) {
-                queueAsset(assetManagerName, asset);
+            for (asset in assets) {
+                queueAsset(assetManagerName, asset)
             }
         }
     }
 
-    public void queueAssetPackage(final AssetPackage assetPackage) {
+    fun queueAssetPackage(assetPackage: AssetPackage?) {
         if (assetPackage != null) {
-            queueAssets(assetPackage.getAssets());
-            nhg.messaging.get(Strings.Events.assetLoaded)
-                    .subscribe(new Consumer<Message>() {
-                        @Override
-                        public void accept(Message message) {
-                            Asset asset = (Asset) message.data.get(Strings.Defaults.assetKey);
-                            if (assetPackage.containsAsset(asset.alias)) {
-                                if (assetPackage.decreaseAndCheckRemaining()) {
-                                    Bundle bundle = new Bundle();
-                                    bundle.put(Strings.Defaults.assetPackageKey, assetPackage);
+            queueAssets(assetPackage.assets)
+            nhg!!.messaging.get(Strings.Events.assetLoaded)
+                    .subscribe { message ->
+                        val asset = message.data!![Strings.Defaults.assetKey] as Asset
+                        if (assetPackage.containsAsset(asset.alias)) {
+                            if (assetPackage.decreaseAndCheckRemaining()) {
+                                val bundle = Bundle()
+                                bundle[Strings.Defaults.assetPackageKey] = assetPackage
 
-                                    nhg.messaging.send(new Message(Strings.Events.assetPackageLoaded, bundle));
-                                }
+                                nhg!!.messaging.send(Message(Strings.Events.assetPackageLoaded, bundle))
                             }
                         }
-                    });
+                    }
         }
     }
 
-    public void queueAssetPackage(String assetManagerName, final AssetPackage assetPackage) {
+    fun queueAssetPackage(assetManagerName: String, assetPackage: AssetPackage?) {
         if (assetPackage != null) {
-            queueAssets(assetManagerName, assetPackage.getAssets());
+            queueAssets(assetManagerName, assetPackage.assets)
 
-            nhg.messaging.get(Strings.Events.assetLoaded)
-                    .subscribe(new Consumer<Message>() {
-                        @Override
-                        public void accept(Message message) {
-                            Asset asset = (Asset) message.data.get(Strings.Defaults.assetKey);
+            nhg!!.messaging.get(Strings.Events.assetLoaded)
+                    .subscribe { message ->
+                        val asset = message.data!![Strings.Defaults.assetKey] as Asset
 
-                            if (assetPackage.containsAsset(asset.alias)) {
-                                if (assetPackage.decreaseAndCheckRemaining()) {
-                                    Bundle bundle = new Bundle();
-                                    bundle.put(Strings.Defaults.assetPackageKey, assetPackage);
+                        if (assetPackage.containsAsset(asset.alias)) {
+                            if (assetPackage.decreaseAndCheckRemaining()) {
+                                val bundle = Bundle()
+                                bundle[Strings.Defaults.assetPackageKey] = assetPackage
 
-                                    nhg.messaging.send(new Message(Strings.Events.assetPackageLoaded, bundle));
-                                }
+                                nhg!!.messaging.send(Message(Strings.Events.assetPackageLoaded, bundle))
                             }
                         }
-                    });
+                    }
         }
     }
 
-    public <T> T loadAssetSync(Asset asset) {
-        T t = null;
+    fun <T> loadAssetSync(asset: Asset?): T? {
+        var t: T? = null
 
         if (asset != null) {
-            assetCache.put(asset.alias, asset);
+            assetCache!!.put(asset.alias, asset)
 
-            if (!syncAssetManager.isLoaded(asset.source)) {
-                FileHandle fileHandle = Gdx.files.internal(asset.source);
+            if (!syncAssetManager!!.isLoaded(asset.source)) {
+                val fileHandle = Gdx.files.internal(asset.source)
 
                 if (fileHandle.exists()) {
                     if (asset.parameters == null) {
-                        syncAssetManager.load(asset.source, asset.assetClass);
+                        syncAssetManager!!.load(asset.source, asset.assetClass)
                     } else {
-                        syncAssetManager.load(asset.source, asset.assetClass, asset.parameters);
+                        syncAssetManager!!.load(asset.source, asset.assetClass, asset.parameters)
                     }
 
-                    syncAssetManager.finishLoading();
-                    t = syncAssetManager.get(asset.source);
+                    syncAssetManager!!.finishLoading()
+                    t = syncAssetManager!!.get<T>(asset.source)
                 } else {
-                    NhgLogger.log(this, Strings.Messages.cannotQueueAssetFileNotFound, asset.source);
+                    NhgLogger.log(this, Strings.Messages.cannotQueueAssetFileNotFound, asset.source)
                 }
             } else {
-                t = syncAssetManager.get(asset.source);
+                t = syncAssetManager!!.get<T>(asset.source)
             }
         }
 
-        return t;
+        return t
     }
 
-    public <T> T loadAssetSync(String assetManagerName, Asset asset) {
-        T t = null;
+    fun <T> loadAssetSync(assetManagerName: String?, asset: Asset?): T? {
+        var t: T? = null
 
         if (asset != null && assetManagerName != null) {
-            AssetManager syncAssetManager = customAssetManagers.get(assetManagerName);
+            val syncAssetManager = customAssetManagers!!.get(assetManagerName)
 
             if (syncAssetManager != null) {
-                assetCache.put(asset.alias, asset);
+                assetCache!!.put(asset.alias, asset)
 
                 if (!syncAssetManager.isLoaded(asset.source)) {
-                    FileHandle fileHandle = syncAssetManager.getFileHandleResolver().resolve(asset.source);
+                    val fileHandle = syncAssetManager.fileHandleResolver.resolve(asset.source)
 
                     if (fileHandle.exists()) {
                         if (asset.parameters == null) {
-                            syncAssetManager.load(asset.source, asset.assetClass);
+                            syncAssetManager.load(asset.source, asset.assetClass)
                         } else {
-                            syncAssetManager.load(asset.source, asset.assetClass, asset.parameters);
+                            syncAssetManager.load(asset.source, asset.assetClass, asset.parameters)
                         }
 
-                        syncAssetManager.finishLoading();
-                        t = syncAssetManager.get(asset.source);
+                        syncAssetManager.finishLoading()
+                        t = syncAssetManager.get<T>(asset.source)
                     } else {
-                        NhgLogger.log(this, Strings.Messages.cannotQueueAssetFileNotFound, asset.source);
+                        NhgLogger.log(this, Strings.Messages.cannotQueueAssetFileNotFound, asset.source)
                     }
                 } else {
-                    t = syncAssetManager.get(asset.source);
+                    t = syncAssetManager.get<T>(asset.source)
                 }
             }
         }
 
-        return t;
+        return t
     }
 
-    public void dequeueAsset(Asset asset) {
+    fun dequeueAsset(asset: Asset?) {
         if (asset != null) {
-            assetQueue.removeValue(asset, true);
+            assetQueue!!.removeValue(asset, true)
         }
     }
 
-    public void unloadAsset(String alias) {
+    fun unloadAsset(alias: String?) {
         if (alias != null && !alias.isEmpty()) {
-            unloadAsset(getAsset(alias));
+            unloadAsset(getAsset(alias))
         }
     }
 
-    public void unloadAsset(Asset asset) {
+    fun unloadAsset(asset: Asset?) {
         if (asset != null) {
-            if (assetManager.isLoaded(asset.source)) {
-                assetManager.unload(asset.source);
-                assetUnloaded(asset);
+            if (assetManager!!.isLoaded(asset.source)) {
+                assetManager!!.unload(asset.source)
+                assetUnloaded(asset)
             }
         }
     }
 
-    public void clearCompleted() {
-        for (int i = 0; i < assetQueue.size; i++) {
-            Asset asset = assetQueue.get(i);
+    fun clearCompleted() {
+        for (i in 0 until assetQueue!!.size) {
+            val asset = assetQueue!![i]
 
-            if (assetManager.isLoaded(asset.source)) {
-                assetQueue.removeValue(asset, true);
+            if (assetManager!!.isLoaded(asset.source)) {
+                assetQueue!!.removeValue(asset, true)
             }
         }
     }
 
-    public void clearQueue() {
-        assetQueue.clear();
+    fun clearQueue() {
+        assetQueue!!.clear()
     }
 
-    public void dispose() {
+    fun dispose() {
         if (assetManager != null) {
-            assetManager.dispose();
-            assetManager = null;
+            assetManager!!.dispose()
+            assetManager = null
         }
 
         if (syncAssetManager != null) {
-            syncAssetManager.dispose();
-            syncAssetManager = null;
+            syncAssetManager!!.dispose()
+            syncAssetManager = null
         }
 
-        for (ObjectMap.Entry<String, AssetManager> entry : customAssetManagers) {
+        for (entry in customAssetManagers!!) {
             if (entry.value != null) {
-                entry.value.dispose();
+                entry.value.dispose()
             }
         }
 
-        customAssetManagers.clear();
+        customAssetManagers!!.clear()
     }
 
-    public boolean assetInQueue(Asset asset) {
-        return asset != null && assetQueue.contains(asset, true);
+    fun assetInQueue(asset: Asset?): Boolean {
+        return asset != null && assetQueue!!.contains(asset, true)
     }
 
-    private void buildAssetParameters(Asset asset) {
+    private fun buildAssetParameters(asset: Asset) {
         if (asset.parametersBundle != null) {
-            if (asset.assetClass == Texture.class) {
-                TextureLoader.TextureParameter textureParameter = new TextureLoader.TextureParameter();
+            if (asset.assetClass == Texture::class.java) {
+                val textureParameter = TextureLoader.TextureParameter()
 
-                textureParameter.genMipMaps = asset.parametersBundle.getBoolean("genMipMaps", false);
-                textureParameter.magFilter = Texture.TextureFilter.Linear;
-                textureParameter.minFilter = Texture.TextureFilter.Linear;
-                textureParameter.wrapU = Texture.TextureWrap.Repeat;
-                textureParameter.wrapV = Texture.TextureWrap.Repeat;
+                textureParameter.genMipMaps = asset.parametersBundle!!.getBoolean("genMipMaps", false)
+                textureParameter.magFilter = Texture.TextureFilter.Linear
+                textureParameter.minFilter = Texture.TextureFilter.Linear
+                textureParameter.wrapU = Texture.TextureWrap.Repeat
+                textureParameter.wrapV = Texture.TextureWrap.Repeat
 
-                asset.parameters = textureParameter;
+                asset.parameters = textureParameter
             }
         }
     }
 
-    private void setDefaultAssetLoaders(AssetManager assetManager) {
-        FileHandleResolver resolver = assetManager.getFileHandleResolver();
+    private fun setDefaultAssetLoaders(assetManager: AssetManager) {
+        val resolver = assetManager.fileHandleResolver
 
-        SceneLoader sceneLoader = new SceneLoader(nhg, resolver);
-        InputLoader inputLoader = new InputLoader(resolver);
-        JsonLoader jsonLoader = new JsonLoader(resolver);
-        HDRLoader hdrLoader = new HDRLoader(resolver);
-        NhgG3dModelLoader nhgG3dModelLoader = new NhgG3dModelLoader(this, new UBJsonReader(), resolver);
+        val sceneLoader = SceneLoader(nhg, resolver)
+        val inputLoader = InputLoader(resolver)
+        val jsonLoader = JsonLoader(resolver)
+        val hdrLoader = HDRLoader(resolver)
+        val nhgG3dModelLoader = NhgG3dModelLoader(this, UBJsonReader(), resolver)
 
-        assetManager.setLoader(Scene.class, sceneLoader);
-        assetManager.setLoader(InputProxy.class, inputLoader);
-        assetManager.setLoader(JsonValue.class, jsonLoader);
-        assetManager.setLoader(HDRData.class, hdrLoader);
-        assetManager.setLoader(Model.class, ".g3db", nhgG3dModelLoader);
+        assetManager.setLoader<Scene, SceneParameter>(Scene::class.java, sceneLoader)
+        assetManager.setLoader<InputProxy, InputProxyParameter>(InputProxy::class.java, inputLoader)
+        assetManager.setLoader<JsonValue, JsonParameter>(JsonValue::class.java, jsonLoader)
+        assetManager.setLoader<HDRData, HDRParams>(HDRData::class.java, hdrLoader)
+        assetManager.setLoader<Model, ModelParameters>(Model::class.java, ".g3db", nhgG3dModelLoader)
     }
 
-    public interface AssetListener {
-        void onAssetLoaded(Asset asset);
+    interface AssetListener {
+        fun onAssetLoaded(asset: Asset?)
     }
 }

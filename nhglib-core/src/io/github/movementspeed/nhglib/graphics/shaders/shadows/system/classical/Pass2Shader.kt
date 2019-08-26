@@ -5,276 +5,241 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ */
 
-package io.github.movementspeed.nhglib.graphics.shaders.shadows.system.classical;
+package io.github.movementspeed.nhglib.graphics.shaders.shadows.system.classical
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.GL30;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.Attributes;
-import com.badlogic.gdx.graphics.g3d.Renderable;
-import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.DepthTestAttribute;
-import com.badlogic.gdx.graphics.g3d.shaders.BaseShader;
-import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import io.github.movementspeed.nhglib.Nhg;
-import io.github.movementspeed.nhglib.enums.LightType;
-import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.graphics.GL30
+import com.badlogic.gdx.graphics.PerspectiveCamera
+import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.graphics.g3d.Attributes
+import com.badlogic.gdx.graphics.g3d.Renderable
+import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute
+import com.badlogic.gdx.graphics.g3d.attributes.DepthTestAttribute
+import com.badlogic.gdx.graphics.g3d.shaders.BaseShader
+import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader
+import com.badlogic.gdx.graphics.glutils.ShaderProgram
+import io.github.movementspeed.nhglib.Nhg
+import io.github.movementspeed.nhglib.enums.LightType
+import io.github.movementspeed.nhglib.enums.OpenGLVersion
+import io.github.movementspeed.nhglib.graphics.lights.NhgLight
 
 /**
  * This shader accumulates shadow with blending
  *
  * @author realitix
  */
-public class Pass2Shader extends DefaultShader {
-    public static class Config extends DefaultShader.Config {
-        public ClassicalShadowSystem shadowSystem;
+class Pass2Shader(renderable: Renderable, config: Config, shaderProgram: ShaderProgram) : DefaultShader(renderable, config, shaderProgram) {
+    protected var blend = BlendingAttribute(GL20.GL_ONE, GL20.GL_ONE)
+    protected var depth = DepthTestAttribute(GL20.GL_LEQUAL)
+    protected var lightType = -1
 
-        public Config(ClassicalShadowSystem shadowSystem) {
-            super();
-            this.shadowSystem = shadowSystem;
+    class Config(var shadowSystem: ClassicalShadowSystem) : DefaultShader.Config()
+
+    class Inputs : DefaultShader.Inputs() {
+        companion object {
+            val shadowMapProjViewTrans = Uniform("u_shadowMapProjViewTrans")
+            val shadowTexture = Uniform("u_shadowTexture")
+            val uvTransform = Uniform("u_uvTransform")
+            val lightColor = Uniform("u_lightColor")
+            val lightDirection = Uniform("u_lightDirection")
+            val lightIntensity = Uniform("u_lightIntensity")
+            val lightPosition = Uniform("u_lightPosition")
+            val lightCutoffAngle = Uniform("u_lightCutoffAngle")
+            val lightExponent = Uniform("u_lightExponent")
         }
     }
 
-    public static class Inputs extends DefaultShader.Inputs {
-        public final static Uniform shadowMapProjViewTrans = new Uniform("u_shadowMapProjViewTrans");
-        public final static Uniform shadowTexture = new Uniform("u_shadowTexture");
-        public final static Uniform uvTransform = new Uniform("u_uvTransform");
-        public final static Uniform lightColor = new Uniform("u_lightColor");
-        public final static Uniform lightDirection = new Uniform("u_lightDirection");
-        public final static Uniform lightIntensity = new Uniform("u_lightIntensity");
-        public final static Uniform lightPosition = new Uniform("u_lightPosition");
-        public final static Uniform lightCutoffAngle = new Uniform("u_lightCutoffAngle");
-        public final static Uniform lightExponent = new Uniform("u_lightExponent");
-    }
-
-    public static class Setters extends DefaultShader.Setters {
-        public final static Setter shadowMapProjViewTrans = new GlobalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, shadowSystem.getCurrentLightProperties().camera.combined);
-            }
-        };
-
-        public final static Setter shadowTexture = new GlobalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                shader.set(inputID, shadowSystem.getTexture(0));
-            }
-        };
-
-        public final static Setter uvTransform = new GlobalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                final TextureRegion tr = shadowSystem.getCurrentLightProperties().region;
-                shader.set(inputID, tr.getU(), tr.getV(), tr.getU2() - tr.getU(), tr.getV2() - tr.getV());
-            }
-        };
-
-        public final static Setter lightColor = new GlobalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                NhgLight l = shadowSystem.getCurrentLight();
-                float intensity = 1;
-
-                switch (l.type) {
-                    case SPOT_LIGHT:
-                    case POINT_LIGHT:
-                        intensity = l.intensity;
-                        break;
-                }
-
-                shader.set(inputID, l.color.r * intensity, l.color.g * intensity, l.color.b * intensity);
-            }
-        };
-
-        public final static Setter lightDirection = new GlobalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                NhgLight l = shadowSystem.getCurrentLight();
-
-                switch (l.type) {
-                    case POINT_LIGHT:
-                        shader.set(inputID, shadowSystem.getCurrentLightProperties().camera.direction);
-                        break;
-
-                    case SPOT_LIGHT:
-                    case DIRECTIONAL_LIGHT:
-                        shader.set(inputID, l.direction);
-                        break;
+    class Setters : DefaultShader.Setters() {
+        companion object {
+            val shadowMapProjViewTrans: Setter = object : BaseShader.GlobalSetter() {
+                override fun set(shader: BaseShader, inputID: Int, renderable: Renderable, combinedAttributes: Attributes) {
+                    shader.set(inputID, shadowSystem?.currentLightProperties?.camera?.combined)
                 }
             }
-        };
 
-        public final static Setter lightIntensity = new GlobalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                NhgLight l = shadowSystem.getCurrentLight();
-                switch (l.type) {
-                    case POINT_LIGHT:
-                    case SPOT_LIGHT:
-                        shader.set(inputID, l.intensity);
-                        break;
+            val shadowTexture: Setter = object : BaseShader.GlobalSetter() {
+                override fun set(shader: BaseShader, inputID: Int, renderable: Renderable, combinedAttributes: Attributes) {
+                    shader.set(inputID, shadowSystem?.getTexture(0))
                 }
             }
-        };
 
-        public final static Setter lightPosition = new GlobalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                NhgLight l = shadowSystem.getCurrentLight();
-                switch (l.type) {
-                    case SPOT_LIGHT:
-                    case POINT_LIGHT:
-                        shader.set(inputID, l.position);
-                        break;
+            val uvTransform: Setter = object : BaseShader.GlobalSetter() {
+                override fun set(shader: BaseShader, inputID: Int, renderable: Renderable, combinedAttributes: Attributes) {
+                    val tr = shadowSystem?.currentLightProperties?.region
+                    tr?.let {
+                        shader.set(inputID, tr.u, tr.v, tr.u2 - tr.u, tr.v2 - tr.v)
+                    }
                 }
             }
-        };
 
-        public final static Setter lightCutoffAngle = new GlobalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                if (!(shadowSystem.getCurrentLight().type == LightType.DIRECTIONAL_LIGHT)) {
-                    shader.set(inputID, ((PerspectiveCamera) shadowSystem.getCurrentLightProperties().camera).fieldOfView);
+            val lightColor: Setter = object : BaseShader.GlobalSetter() {
+                override fun set(shader: BaseShader, inputID: Int, renderable: Renderable, combinedAttributes: Attributes) {
+                    val l = shadowSystem?.currentLight
+                    val intensity = when (l?.type) {
+                        LightType.SPOT_LIGHT, LightType.POINT_LIGHT -> l.intensity
+                        else -> 1f
+                    }
+
+                    l?.let {
+                        shader.set(inputID, l.color.r * intensity, l.color.g * intensity, l.color.b * intensity)
+                    }
                 }
             }
-        };
 
-        public final static Setter lightExponent = new GlobalSetter() {
-            @Override
-            public void set(BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
-                NhgLight l = shadowSystem.getCurrentLight();
-                shader.set(inputID, 5);
+            val lightDirection: Setter = object : BaseShader.GlobalSetter() {
+                override fun set(shader: BaseShader, inputID: Int, renderable: Renderable, combinedAttributes: Attributes) {
+                    val l = shadowSystem?.currentLight
+
+                    when (l?.type) {
+                        LightType.POINT_LIGHT -> shader.set(inputID, shadowSystem?.currentLightProperties?.camera?.direction)
+                        LightType.SPOT_LIGHT, LightType.DIRECTIONAL_LIGHT -> shader.set(inputID, l.direction)
+                    }
+                }
             }
-        };
-    }
 
-    protected static ClassicalShadowSystem shadowSystem;
-    private static String defaultVertexShader = null;
-
-    public static String getDefaultVertexShader() {
-        if (defaultVertexShader == null)
-            defaultVertexShader = Gdx.files.internal("shaders/shadows/classical/pass2.vertex.glsl")
-                    .readString();
-        return defaultVertexShader;
-    }
-
-    private static String defaultFragmentShader = null;
-
-    public static String getDefaultFragmentShader() {
-        if (defaultFragmentShader == null)
-            defaultFragmentShader = Gdx.files.internal("shaders/shadows/classical/pass2.fragment.glsl")
-                    .readString();
-        return defaultFragmentShader;
-    }
-
-    protected BlendingAttribute blend = new BlendingAttribute(GL20.GL_ONE, GL20.GL_ONE);
-    protected DepthTestAttribute depth = new DepthTestAttribute(GL20.GL_LEQUAL);
-    protected int lightType = -1;
-    public static final int LIGHT_SPOT = 0;
-    public static final int LIGHT_DIR = 1;
-
-    public Pass2Shader(final Renderable renderable, final Config config) {
-        this(renderable, config, createPrefix(renderable, config));
-    }
-
-    public Pass2Shader(final Renderable renderable, final Config config, final String prefix) {
-        this(renderable, config, prefix, config.vertexShader != null ? config.vertexShader : getDefaultVertexShader(),
-                config.fragmentShader != null ? config.fragmentShader : getDefaultFragmentShader());
-    }
-
-    public Pass2Shader(final Renderable renderable, final Config config, final String prefix, final String vertexShader,
-                       final String fragmentShader) {
-        this(renderable, config, new ShaderProgram(prefix + vertexShader, prefix + fragmentShader));
-    }
-
-    public Pass2Shader(final Renderable renderable, final Config config, final ShaderProgram shaderProgram) {
-        super(renderable, config, shaderProgram);
-        shadowSystem = config.shadowSystem;
-        register(Inputs.shadowMapProjViewTrans, Setters.shadowMapProjViewTrans);
-        register(Inputs.shadowTexture, Setters.shadowTexture);
-        register(Inputs.uvTransform, Setters.uvTransform);
-        register(Inputs.lightColor, Setters.lightColor);
-        register(Inputs.lightDirection, Setters.lightDirection);
-        register(Inputs.lightPosition, Setters.lightPosition);
-        register(Inputs.lightIntensity, Setters.lightIntensity);
-        register(Inputs.lightCutoffAngle, Setters.lightCutoffAngle);
-        register(Inputs.lightExponent, Setters.lightExponent);
-    }
-
-    public static String createPrefix(final Renderable renderable, final Config config) {
-        String prefix = "";
-
-        if (Gdx.graphics.isGL30Available()) {
-            switch (Nhg.glVersion) {
-                case VERSION_2:
-                    prefix = "#define GLVERSION 2\n";
-                    break;
-
-                case VERSION_3:
-                    prefix = "#version 300 es\n";
-                    prefix += "#define GLVERSION 3\n";
-                    break;
+            val lightIntensity: Setter = object : BaseShader.GlobalSetter() {
+                override fun set(shader: BaseShader, inputID: Int, renderable: Renderable, combinedAttributes: Attributes) {
+                    val l = shadowSystem?.currentLight
+                    when (l?.type) {
+                        LightType.POINT_LIGHT, LightType.SPOT_LIGHT -> shader.set(inputID, l.intensity)
+                    }
+                }
             }
-        } else {
-            prefix = "#define GLVERSION 2\n";
+
+            val lightPosition: Setter = object : BaseShader.GlobalSetter() {
+                override fun set(shader: BaseShader, inputID: Int, renderable: Renderable, combinedAttributes: Attributes) {
+                    val l = shadowSystem?.currentLight
+                    when (l?.type) {
+                        LightType.SPOT_LIGHT, LightType.POINT_LIGHT -> shader.set(inputID, l.position)
+                    }
+                }
+            }
+
+            val lightCutoffAngle: Setter = object : BaseShader.GlobalSetter() {
+                override fun set(shader: BaseShader, inputID: Int, renderable: Renderable, combinedAttributes: Attributes) {
+                    if (shadowSystem?.currentLight?.type != LightType.DIRECTIONAL_LIGHT) {
+                        shader.set(inputID, (shadowSystem?.currentLightProperties?.camera as? PerspectiveCamera)?.fieldOfView ?: 0f)
+                    }
+                }
+            }
+
+            val lightExponent: Setter = object : BaseShader.GlobalSetter() {
+                override fun set(shader: BaseShader, inputID: Int, renderable: Renderable, combinedAttributes: Attributes) {
+                    val l = shadowSystem?.currentLight
+                    shader.set(inputID, 5)
+                }
+            }
         }
+    }
 
-        String renderer = Gdx.gl.glGetString(GL30.GL_RENDERER).toUpperCase();
+    @JvmOverloads
+    constructor(renderable: Renderable, config: Config, prefix: String = createPrefix(renderable, config), vertexShader: String = if (config.vertexShader != null) config.vertexShader else getDefaultVertexShader(),
+                fragmentShader: String = if (config.fragmentShader != null) config.fragmentShader else getDefaultFragmentShader()) : this(renderable, config, ShaderProgram(prefix + vertexShader, prefix + fragmentShader)) {
+    }
 
-        if (renderer.contains("MALI")) {
-            prefix += "#define GPU_MALI\n";
-        } else if (renderer.contains("ADRENO")) {
-            prefix += "#define GPU_ADRENO\n";
-        }
+    init {
+        shadowSystem = config.shadowSystem
+        register(Inputs.shadowMapProjViewTrans, Setters.shadowMapProjViewTrans)
+        register(Inputs.shadowTexture, Setters.shadowTexture)
+        register(Inputs.uvTransform, Setters.uvTransform)
+        register(Inputs.lightColor, Setters.lightColor)
+        register(Inputs.lightDirection, Setters.lightDirection)
+        register(Inputs.lightPosition, Setters.lightPosition)
+        register(Inputs.lightIntensity, Setters.lightIntensity)
+        register(Inputs.lightCutoffAngle, Setters.lightCutoffAngle)
+        register(Inputs.lightExponent, Setters.lightExponent)
+    }
 
-        prefix += DefaultShader.createPrefix(renderable, config);
-        boolean dir = (config.shadowSystem.getCurrentLight().type == LightType.DIRECTIONAL_LIGHT);
-        if (dir)
-            prefix += "#define directionalLight\n";
+    override fun render(renderable: Renderable, combinedAttributes: Attributes) {
+        if (shadowSystem?.isFirstCallPass2 == true)
+            combinedAttributes.remove(BlendingAttribute.Type)
         else
-            prefix += "#define spotLight\n";
+            combinedAttributes.set(blend)
 
-        return prefix;
+        combinedAttributes.set(depth)
+
+        super.render(renderable, combinedAttributes)
     }
 
-    @Override
-    public void render(Renderable renderable, Attributes combinedAttributes) {
-        if (shadowSystem.isFirstCallPass2())
-            combinedAttributes.remove(BlendingAttribute.Type);
-        else
-            combinedAttributes.set(blend);
-
-        combinedAttributes.set(depth);
-
-        super.render(renderable, combinedAttributes);
-    }
-
-    @Override
-    public boolean canRender(Renderable renderable) {
-        boolean ok = super.canRender(renderable);
-        boolean dir = (shadowSystem.getCurrentLight().type == LightType.DIRECTIONAL_LIGHT);
+    override fun canRender(renderable: Renderable): Boolean {
+        var ok = super.canRender(renderable)
+        val dir = shadowSystem?.currentLight?.type == LightType.DIRECTIONAL_LIGHT
 
         if (lightType == -1) {
-            lightType = LIGHT_SPOT;
-            if (dir) lightType = LIGHT_DIR;
+            lightType = LIGHT_SPOT
+            if (dir) lightType = LIGHT_DIR
         }
 
-        if (dir && lightType != LIGHT_DIR) ok = false;
-        if (!dir && lightType != LIGHT_SPOT) ok = false;
-        return ok;
+        if (dir && lightType != LIGHT_DIR) ok = false
+        if (!dir && lightType != LIGHT_SPOT) ok = false
+        return ok
+    }
+
+    companion object {
+        protected var shadowSystem: ClassicalShadowSystem? = null
+        private var defaultVertexShader: String? = null
+
+        fun getDefaultVertexShader(): String {
+            if (defaultVertexShader == null)
+                defaultVertexShader = Gdx.files.internal("shaders/shadows/classical/pass2.vertex.glsl")
+                        .readString()
+            return defaultVertexShader ?: ""
+        }
+
+        private var defaultFragmentShader: String? = null
+
+        fun getDefaultFragmentShader(): String {
+            if (defaultFragmentShader == null)
+                defaultFragmentShader = Gdx.files.internal("shaders/shadows/classical/pass2.fragment.glsl")
+                        .readString()
+            return defaultFragmentShader ?: ""
+        }
+
+        const val LIGHT_SPOT = 0
+        const val LIGHT_DIR = 1
+
+        fun createPrefix(renderable: Renderable, config: Config): String {
+            var prefix = ""
+
+            if (Gdx.graphics.isGL30Available) {
+                when (Nhg.glVersion) {
+                    OpenGLVersion.VERSION_2 -> prefix = "#define GLVERSION 2\n"
+
+                    OpenGLVersion.VERSION_3 -> {
+                        prefix = "#version 300 es\n"
+                        prefix += "#define GLVERSION 3\n"
+                    }
+                }
+            } else {
+                prefix = "#define GLVERSION 2\n"
+            }
+
+            val renderer = Gdx.gl.glGetString(GL30.GL_RENDERER).toUpperCase()
+
+            if (renderer.contains("MALI")) {
+                prefix += "#define GPU_MALI\n"
+            } else if (renderer.contains("ADRENO")) {
+                prefix += "#define GPU_ADRENO\n"
+            }
+
+            prefix += DefaultShader.createPrefix(renderable, config)
+            val dir = config.shadowSystem.currentLight?.type == LightType.DIRECTIONAL_LIGHT
+
+            prefix += if (dir) "#define directionalLight\n"
+            else "#define spotLight\n"
+
+            return prefix
+        }
     }
 
 }

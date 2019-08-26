@@ -1,30 +1,30 @@
-package io.github.movementspeed.nhglib.core.ecs.components.graphics;
+package io.github.movementspeed.nhglib.core.ecs.components.graphics
 
-import com.artemis.Component;
-import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect;
-import io.github.movementspeed.nhglib.assets.Assets;
-import io.github.movementspeed.nhglib.graphics.particles.ParticleEffectProvider;
+import com.artemis.Component
+import com.badlogic.gdx.graphics.g3d.particles.ParticleEffect
+import io.github.movementspeed.nhglib.assets.Assets
+import io.github.movementspeed.nhglib.graphics.particles.ParticleEffectProvider
 
-public class ParticleEffectComponent extends Component {
-    public boolean added;
+class ParticleEffectComponent : Component() {
+    var added: Boolean = false
 
-    public String asset;
-    public State state;
-    public ParticleEffect particleEffect;
+    var asset: String? = null
+    var state: State
+    var particleEffect: ParticleEffect
 
-    public ParticleEffectComponent() {
-        state = State.NOT_INITIALIZED;
+    init {
+        state = State.NOT_INITIALIZED
     }
 
-    public void build(Assets assets, ParticleEffectProvider particleEffectProvider) {
-        ParticleEffect particleEffect = assets.get(asset);
-        particleEffectProvider.addParticleEffect(asset, particleEffect);
+    fun build(assets: Assets, particleEffectProvider: ParticleEffectProvider) {
+        val particleEffect = assets.get<ParticleEffect>(asset)
+        particleEffectProvider.addParticleEffect(asset, particleEffect)
 
-        this.particleEffect = particleEffectProvider.obtainParticleEffect(asset);
-        this.particleEffect.init();
+        this.particleEffect = particleEffectProvider.obtainParticleEffect(asset)
+        this.particleEffect.init()
     }
 
-    public enum State {
+    enum class State {
         NOT_INITIALIZED,
         READY
     }

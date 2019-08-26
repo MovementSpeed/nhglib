@@ -1,20 +1,20 @@
-package io.github.movementspeed.nhglib.core.fsm.interfaces;
+package io.github.movementspeed.nhglib.core.fsm.interfaces
 
 /**
  * Created by Fausto Napoli on 02/11/2016.
  */
-public interface EngineStateListener {
-    void onStart();
+interface EngineStateListener {
+    fun onStart()
 
-    void onInitialized();
+    fun onInitialized()
 
-    void onUpdate(float delta);
+    fun onUpdate(delta: Float)
 
-    void onPause();
+    fun onPause()
 
-    void onClose();
+    fun onClose()
 
-    void onResize(int width, int height);
+    fun onResize(width: Int, height: Int)
 
-    void onDispose();
+    fun onDispose()
 }

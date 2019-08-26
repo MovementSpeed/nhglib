@@ -1,31 +1,22 @@
-package io.github.movementspeed.nhglib.input.enums;
+package io.github.movementspeed.nhglib.input.enums
 
-public enum TouchInputType {
+enum class TouchInputType {
     TAP,
     DRAG,
     PINCH,
     ZOOM;
 
-    public static TouchInputType fromString(String value) {
-        TouchInputType res = TAP;
+    companion object {
+        fun fromString(value: String): TouchInputType {
+            var res = TAP
 
-        switch (value.toLowerCase()) {
-            case "tap":
-                break;
+            when (value.toLowerCase()) {
+                "drag" -> res = DRAG
+                "pinch" -> res = PINCH
+                "zoom" -> res = ZOOM
+            }
 
-            case "drag":
-                res = DRAG;
-                break;
-
-            case "pinch":
-                res = PINCH;
-                break;
-
-            case "zoom":
-                res = ZOOM;
-                break;
+            return res
         }
-
-        return res;
     }
 }

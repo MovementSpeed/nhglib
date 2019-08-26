@@ -1,454 +1,442 @@
-package io.github.movementspeed.nhglib.graphics.lights;
+package io.github.movementspeed.nhglib.graphics.lights
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g3d.Material;
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.graphics.glutils.FrameBufferCubemap;
-import com.badlogic.gdx.graphics.glutils.GLFrameBuffer;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.UBJsonReader;
-import io.github.movementspeed.nhglib.files.HDRData;
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.*
+import com.badlogic.gdx.graphics.g3d.Material
+import com.badlogic.gdx.graphics.g3d.Model
+import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder
+import com.badlogic.gdx.graphics.glutils.FrameBuffer
+import com.badlogic.gdx.graphics.glutils.FrameBufferCubemap
+import com.badlogic.gdx.graphics.glutils.GLFrameBuffer
+import com.badlogic.gdx.graphics.glutils.ShaderProgram
+import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.GdxRuntimeException
+import com.badlogic.gdx.utils.UBJsonReader
+import io.github.movementspeed.nhglib.files.HDRData
 
 /**
  * Created by Fausto Napoli on 17/08/2017.
  */
-public class LightProbe {
-    private float environmentWidth;
-    private float environmentHeight;
+class LightProbe {
+    private var environmentWidth: Float = 0.toFloat()
+    private var environmentHeight: Float = 0.toFloat()
 
-    private float irradianceWidth;
-    private float irradianceHeight;
+    private var irradianceWidth: Float = 0.toFloat()
+    private var irradianceHeight: Float = 0.toFloat()
 
-    private float prefilterWidth;
-    private float prefilterHeight;
+    private var prefilterWidth: Float = 0.toFloat()
+    private var prefilterHeight: Float = 0.toFloat()
 
-    private float brdfWidth;
-    private float brdfHeight;
+    private var brdfWidth: Float = 0.toFloat()
+    private var brdfHeight: Float = 0.toFloat()
 
-    private Cubemap environmentCubemap;
-    private Cubemap irradianceCubemap;
-    private Cubemap prefilteredCubemap;
+    var environment: Cubemap? = null
+        private set
+    var irradiance: Cubemap? = null
+        private set
+    var prefilter: Cubemap? = null
+        private set
 
-    private Texture brdfTexture;
+    var brdf: Texture? = null
+        private set
 
-    private Model quadModel;
-    private Model cubeModel;
+    private var quadModel: Model? = null
+    private var cubeModel: Model? = null
 
-    private Mesh quadMesh;
-    private Mesh cubeMesh;
+    private var quadMesh: Mesh? = null
+    private var cubeMesh: Mesh? = null
 
-    private Array<PerspectiveCamera> perspectiveCameras;
+    private var perspectiveCameras: Array<PerspectiveCamera>? = null
 
-    public LightProbe() {
-        init();
+    init {
+        init()
     }
 
-    public void build(Texture environment,
-                      float environmentWidth, float environmentHeight,
-                      float irradianceWidth, float irradianceHeight,
-                      float prefilterWidth, float prefilterHeight,
-                      float brdfWidth, float brdfHeight) {
-        this.environmentWidth = environmentWidth;
-        this.environmentHeight = environmentHeight;
-        this.irradianceWidth = irradianceWidth;
-        this.irradianceHeight = irradianceHeight;
-        this.prefilterWidth = prefilterWidth;
-        this.prefilterHeight = prefilterHeight;
-        this.brdfWidth = brdfWidth;
-        this.brdfHeight = brdfHeight;
+    fun build(environment: Texture,
+              environmentWidth: Float, environmentHeight: Float,
+              irradianceWidth: Float, irradianceHeight: Float,
+              prefilterWidth: Float, prefilterHeight: Float,
+              brdfWidth: Float, brdfHeight: Float) {
+        this.environmentWidth = environmentWidth
+        this.environmentHeight = environmentHeight
+        this.irradianceWidth = irradianceWidth
+        this.irradianceHeight = irradianceHeight
+        this.prefilterWidth = prefilterWidth
+        this.prefilterHeight = prefilterHeight
+        this.brdfWidth = brdfWidth
+        this.brdfHeight = brdfHeight
 
-        initCameras();
+        initCameras()
 
-        environmentCubemap = renderEnvironmentFromTexture(environment);
-        irradianceCubemap = renderIrradiance(environmentCubemap);
-        prefilteredCubemap = renderPrefilter(environmentCubemap);
-        brdfTexture = renderBRDF();
+        this.environment = renderEnvironmentFromTexture(environment)
+        irradiance = renderIrradiance(this.environment)
+        prefilter = renderPrefilter(this.environment)
+        brdf = renderBRDF()
 
-        cubeModel.dispose();
-        quadModel.dispose();
+        cubeModel!!.dispose()
+        quadModel!!.dispose()
     }
 
-    public void build(HDRData hdrData,
-                      float environmentWidth, float environmentHeight,
-                      float irradianceWidth, float irradianceHeight,
-                      float prefilterWidth, float prefilterHeight,
-                      float brdfWidth, float brdfHeight) {
-        this.environmentWidth = environmentWidth;
-        this.environmentHeight = environmentHeight;
-        this.irradianceWidth = irradianceWidth;
-        this.irradianceHeight = irradianceHeight;
-        this.prefilterWidth = prefilterWidth;
-        this.prefilterHeight = prefilterHeight;
-        this.brdfWidth = brdfWidth;
-        this.brdfHeight = brdfHeight;
+    fun build(hdrData: HDRData?,
+              environmentWidth: Float, environmentHeight: Float,
+              irradianceWidth: Float, irradianceHeight: Float,
+              prefilterWidth: Float, prefilterHeight: Float,
+              brdfWidth: Float, brdfHeight: Float) {
+        this.environmentWidth = environmentWidth
+        this.environmentHeight = environmentHeight
+        this.irradianceWidth = irradianceWidth
+        this.irradianceHeight = irradianceHeight
+        this.prefilterWidth = prefilterWidth
+        this.prefilterHeight = prefilterHeight
+        this.brdfWidth = brdfWidth
+        this.brdfHeight = brdfHeight
 
-        initCameras();
+        initCameras()
 
         if (hdrData != null) {
-            environmentCubemap = renderEnvironmentFromHDRData(hdrData);
+            environment = renderEnvironmentFromHDRData(hdrData)
         } else {
-            environmentCubemap = renderEnvironmentFromScene();
+            environment = renderEnvironmentFromScene()
         }
 
-        irradianceCubemap = renderIrradiance(environmentCubemap);
-        prefilteredCubemap = renderPrefilter(environmentCubemap);
-        brdfTexture = renderBRDF();
+        irradiance = renderIrradiance(environment)
+        prefilter = renderPrefilter(environment)
+        brdf = renderBRDF()
 
-        cubeModel.dispose();
-        quadModel.dispose();
+        cubeModel!!.dispose()
+        quadModel!!.dispose()
     }
 
-    public void build(float environmentWidth, float environmentHeight) {
-        build((HDRData) null, environmentWidth, environmentHeight, 32f, 32f,
-                128f, 128f, environmentWidth, environmentHeight);
+    fun build(environmentWidth: Float, environmentHeight: Float) {
+        build(null as HDRData?, environmentWidth, environmentHeight, 32f, 32f,
+                128f, 128f, environmentWidth, environmentHeight)
     }
 
-    public Cubemap getEnvironment() {
-        return environmentCubemap;
+    private fun init() {
+        createMeshes()
     }
 
-    public Cubemap getIrradiance() {
-        return irradianceCubemap;
+    private fun createMeshes() {
+        val mb = ModelBuilder()
+        cubeModel = mb.createBox(1f, 1f, 1f, Material(),
+                (VertexAttributes.Usage.Position or
+                        VertexAttributes.Usage.Normal or
+                        VertexAttributes.Usage.TextureCoordinates).toLong())
+        cubeMesh = cubeModel!!.meshes.first()
+
+        val modelLoader = G3dModelLoader(UBJsonReader())
+        quadModel = modelLoader.loadModel(Gdx.files.internal("models/quad.g3db"))
+        quadMesh = quadModel!!.meshes.first()
     }
 
-    public Cubemap getPrefilter() {
-        return prefilteredCubemap;
-    }
+    private fun initCameras() {
+        perspectiveCameras = Array()
 
-    public Texture getBrdf() {
-        return brdfTexture;
-    }
-
-    private void init() {
-        createMeshes();
-    }
-
-    private void createMeshes() {
-        ModelBuilder mb = new ModelBuilder();
-        cubeModel = mb.createBox(1, 1, 1, new Material(),
-                VertexAttributes.Usage.Position |
-                        VertexAttributes.Usage.Normal |
-                        VertexAttributes.Usage.TextureCoordinates);
-        cubeMesh = cubeModel.meshes.first();
-
-        G3dModelLoader modelLoader = new G3dModelLoader(new UBJsonReader());
-        quadModel = modelLoader.loadModel(Gdx.files.internal("models/quad.g3db"));
-        quadMesh = quadModel.meshes.first();
-    }
-
-    private void initCameras() {
-        perspectiveCameras = new Array<>();
-
-        for (int i = 0; i < 6; i++) {
-            PerspectiveCamera pc = new PerspectiveCamera(90, environmentWidth, environmentHeight);
-            pc.near = 0.1f;
-            pc.far = 10.0f;
-            perspectiveCameras.add(pc);
+        for (i in 0..5) {
+            val pc = PerspectiveCamera(90f, environmentWidth, environmentHeight)
+            pc.near = 0.1f
+            pc.far = 10.0f
+            perspectiveCameras!!.add(pc)
         }
 
-        PerspectiveCamera pc1 = perspectiveCameras.get(0);
-        pc1.lookAt(1, 0, 0);
-        pc1.rotate(Vector3.X, 180);
-        pc1.update();
+        val pc1 = perspectiveCameras!!.get(0)
+        pc1.lookAt(1f, 0f, 0f)
+        pc1.rotate(Vector3.X, 180f)
+        pc1.update()
 
-        PerspectiveCamera pc2 = perspectiveCameras.get(1);
-        pc2.lookAt(0, 0, -1);
-        pc2.rotate(Vector3.X, 180);
-        pc2.update();
+        val pc2 = perspectiveCameras!!.get(1)
+        pc2.lookAt(0f, 0f, -1f)
+        pc2.rotate(Vector3.X, 180f)
+        pc2.update()
 
-        PerspectiveCamera pc3 = perspectiveCameras.get(2);
-        pc3.lookAt(0, 0, 1);
-        pc3.rotate(Vector3.X, 180);
-        pc3.update();
+        val pc3 = perspectiveCameras!!.get(2)
+        pc3.lookAt(0f, 0f, 1f)
+        pc3.rotate(Vector3.X, 180f)
+        pc3.update()
 
-        PerspectiveCamera pc4 = perspectiveCameras.get(3);
-        pc4.lookAt(0, 1, 0);
-        pc4.rotate(Vector3.Y, 270);
-        pc4.update();
+        val pc4 = perspectiveCameras!!.get(3)
+        pc4.lookAt(0f, 1f, 0f)
+        pc4.rotate(Vector3.Y, 270f)
+        pc4.update()
 
-        PerspectiveCamera pc5 = perspectiveCameras.get(4);
-        pc5.lookAt(0, -1, 0);
-        pc5.rotate(Vector3.Y, 270);
-        pc5.update();
+        val pc5 = perspectiveCameras!!.get(4)
+        pc5.lookAt(0f, -1f, 0f)
+        pc5.rotate(Vector3.Y, 270f)
+        pc5.update()
 
-        PerspectiveCamera pc6 = perspectiveCameras.get(5);
-        pc6.lookAt(-1, 0, 0);
-        pc6.rotate(Vector3.X, 180);
-        pc6.update();
+        val pc6 = perspectiveCameras!!.get(5)
+        pc6.lookAt(-1f, 0f, 0f)
+        pc6.rotate(Vector3.X, 180f)
+        pc6.update()
     }
 
-    private Cubemap renderEnvironmentFromHDRData(HDRData data) {
-        Texture equirectangularTexture;
-        String folder = "shaders/";
+    private fun renderEnvironmentFromHDRData(data: HDRData): Cubemap {
+        val equirectangularTexture: Texture?
+        val folder = "shaders/"
 
-        ShaderProgram equiToCubeShader = new ShaderProgram(
+        val equiToCubeShader = ShaderProgram(
                 Gdx.files.internal(folder + "equi_to_cube_shader.vert"),
-                Gdx.files.internal(folder + "equi_to_cube_shader.frag"));
+                Gdx.files.internal(folder + "equi_to_cube_shader.frag"))
 
-        String shaderLog = equiToCubeShader.getLog();
+        val shaderLog = equiToCubeShader.log
 
-        if (!equiToCubeShader.isCompiled()) {
-            throw new GdxRuntimeException(shaderLog);
+        if (!equiToCubeShader.isCompiled) {
+            throw GdxRuntimeException(shaderLog)
         }
 
-        equirectangularTexture = data.getTexture();
+        equirectangularTexture = data.texture
 
-        GLFrameBuffer.FrameBufferCubemapBuilder builder = new GLFrameBuffer.FrameBufferCubemapBuilder(
-                (int) environmentWidth, (int) environmentHeight);
-        builder.addColorTextureAttachment(GL30.GL_RGB8, GL30.GL_RGB, GL30.GL_UNSIGNED_BYTE);
-        builder.addBasicDepthRenderBuffer();
-        FrameBufferCubemap frameBufferCubemap = builder.build();
+        val builder = GLFrameBuffer.FrameBufferCubemapBuilder(
+                environmentWidth.toInt(), environmentHeight.toInt())
+        builder.addColorTextureAttachment(GL30.GL_RGB8, GL30.GL_RGB, GL30.GL_UNSIGNED_BYTE)
+        builder.addBasicDepthRenderBuffer()
+        val frameBufferCubemap = builder.build()
 
-        equirectangularTexture.bind(0);
-        equiToCubeShader.begin();
-        equiToCubeShader.setUniformMatrix("u_projection", perspectiveCameras.first().projection);
-        equiToCubeShader.setUniformi("u_equirectangularMap", 0);
-        frameBufferCubemap.begin();
-        for (int i = 0; i < 6; i++) {
-            equiToCubeShader.setUniformMatrix("u_view", perspectiveCameras.get(i).view);
-            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-            cubeMesh.render(equiToCubeShader, GL20.GL_TRIANGLES);
-            frameBufferCubemap.nextSide();
+        equirectangularTexture!!.bind(0)
+        equiToCubeShader.begin()
+        equiToCubeShader.setUniformMatrix("u_projection", perspectiveCameras!!.first().projection)
+        equiToCubeShader.setUniformi("u_equirectangularMap", 0)
+        frameBufferCubemap.begin()
+        for (i in 0..5) {
+            equiToCubeShader.setUniformMatrix("u_view", perspectiveCameras!!.get(i).view)
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT or GL20.GL_DEPTH_BUFFER_BIT)
+            cubeMesh!!.render(equiToCubeShader, GL20.GL_TRIANGLES)
+            frameBufferCubemap.nextSide()
         }
-        frameBufferCubemap.end();
-        equiToCubeShader.end();
-        equiToCubeShader.dispose();
+        frameBufferCubemap.end()
+        equiToCubeShader.end()
+        equiToCubeShader.dispose()
 
-        return frameBufferCubemap.getColorBufferTexture();
+        return frameBufferCubemap.colorBufferTexture
     }
 
-    private Cubemap renderEnvironmentFromTexture(Texture equirectangularTexture) {
-        String folder = "shaders/";
+    private fun renderEnvironmentFromTexture(equirectangularTexture: Texture): Cubemap {
+        val folder = "shaders/"
 
-        ShaderProgram equiToCubeShader = new ShaderProgram(
+        val equiToCubeShader = ShaderProgram(
                 Gdx.files.internal(folder + "equi_to_cube_shader.vert"),
-                Gdx.files.internal(folder + "equi_to_cube_shader.frag"));
+                Gdx.files.internal(folder + "equi_to_cube_shader.frag"))
 
-        String shaderLog = equiToCubeShader.getLog();
+        val shaderLog = equiToCubeShader.log
 
-        if (!equiToCubeShader.isCompiled()) {
-            throw new GdxRuntimeException(shaderLog);
+        if (!equiToCubeShader.isCompiled) {
+            throw GdxRuntimeException(shaderLog)
         }
 
-        GLFrameBuffer.FrameBufferCubemapBuilder builder = new GLFrameBuffer.FrameBufferCubemapBuilder(
-                (int) environmentWidth, (int) environmentHeight);
-        builder.addColorTextureAttachment(GL30.GL_RGB8, GL30.GL_RGB, GL30.GL_UNSIGNED_BYTE);
-        builder.addBasicDepthRenderBuffer();
-        FrameBufferCubemap frameBufferCubemap = builder.build();
+        val builder = GLFrameBuffer.FrameBufferCubemapBuilder(
+                environmentWidth.toInt(), environmentHeight.toInt())
+        builder.addColorTextureAttachment(GL30.GL_RGB8, GL30.GL_RGB, GL30.GL_UNSIGNED_BYTE)
+        builder.addBasicDepthRenderBuffer()
+        val frameBufferCubemap = builder.build()
 
-        equirectangularTexture.bind(0);
-        equiToCubeShader.begin();
-        equiToCubeShader.setUniformMatrix("u_projection", perspectiveCameras.first().projection);
-        equiToCubeShader.setUniformi("u_equirectangularMap", 0);
-        frameBufferCubemap.begin();
-        for (int i = 0; i < 6; i++) {
-            equiToCubeShader.setUniformMatrix("u_view", perspectiveCameras.get(i).view);
-            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-            cubeMesh.render(equiToCubeShader, GL20.GL_TRIANGLES);
-            frameBufferCubemap.nextSide();
+        equirectangularTexture.bind(0)
+        equiToCubeShader.begin()
+        equiToCubeShader.setUniformMatrix("u_projection", perspectiveCameras!!.first().projection)
+        equiToCubeShader.setUniformi("u_equirectangularMap", 0)
+        frameBufferCubemap.begin()
+        for (i in 0..5) {
+            equiToCubeShader.setUniformMatrix("u_view", perspectiveCameras!!.get(i).view)
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT or GL20.GL_DEPTH_BUFFER_BIT)
+            cubeMesh!!.render(equiToCubeShader, GL20.GL_TRIANGLES)
+            frameBufferCubemap.nextSide()
         }
-        frameBufferCubemap.end();
-        equiToCubeShader.end();
-        equiToCubeShader.dispose();
+        frameBufferCubemap.end()
+        equiToCubeShader.end()
+        equiToCubeShader.dispose()
 
-        return frameBufferCubemap.getColorBufferTexture();
+        return frameBufferCubemap.colorBufferTexture
     }
 
-    private Cubemap renderEnvironmentFromScene() {
-        return null;
+    private fun renderEnvironmentFromScene(): Cubemap? {
+        return null
     }
 
-    private Cubemap renderIrradiance(Cubemap environmentCubemap) {
-        String folder = "shaders/";
+    private fun renderIrradiance(environmentCubemap: Cubemap?): Cubemap {
+        val folder = "shaders/"
 
-        ShaderProgram irradianceShader = new ShaderProgram(
+        val irradianceShader = ShaderProgram(
                 Gdx.files.internal(folder + "equi_to_cube_shader.vert"),
-                Gdx.files.internal(folder + "irradiance_shader.frag"));
+                Gdx.files.internal(folder + "irradiance_shader.frag"))
 
-        String shaderLog = irradianceShader.getLog();
+        val shaderLog = irradianceShader.log
 
-        if (!irradianceShader.isCompiled()) {
-            throw new GdxRuntimeException(shaderLog);
+        if (!irradianceShader.isCompiled) {
+            throw GdxRuntimeException(shaderLog)
         }
 
-        FrameBufferCubemap frameBufferCubemap;
+        var frameBufferCubemap: FrameBufferCubemap
 
         try {
-            frameBufferCubemap = new FrameBufferCubemap(Pixmap.Format.RGB888,
-                    (int) irradianceWidth, (int) irradianceHeight, true);
-        } catch (IllegalStateException e) {
-            frameBufferCubemap = new FrameBufferCubemap(Pixmap.Format.RGB565,
-                    (int) irradianceWidth, (int) irradianceHeight, true);
+            frameBufferCubemap = FrameBufferCubemap(Pixmap.Format.RGB888,
+                    irradianceWidth.toInt(), irradianceHeight.toInt(), true)
+        } catch (e: IllegalStateException) {
+            frameBufferCubemap = FrameBufferCubemap(Pixmap.Format.RGB565,
+                    irradianceWidth.toInt(), irradianceHeight.toInt(), true)
         }
 
-        environmentCubemap.bind(0);
-        irradianceShader.begin();
-        irradianceShader.setUniformMatrix("u_projection", perspectiveCameras.first().projection);
-        irradianceShader.setUniformi("u_environmentMap", 0);
-        frameBufferCubemap.begin();
-        for (int i = 0; i < 6; i++) {
-            irradianceShader.setUniformMatrix("u_view", perspectiveCameras.get(i).view);
-            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-            cubeMesh.render(irradianceShader, GL20.GL_TRIANGLES);
-            frameBufferCubemap.nextSide();
+        environmentCubemap!!.bind(0)
+        irradianceShader.begin()
+        irradianceShader.setUniformMatrix("u_projection", perspectiveCameras!!.first().projection)
+        irradianceShader.setUniformi("u_environmentMap", 0)
+        frameBufferCubemap.begin()
+        for (i in 0..5) {
+            irradianceShader.setUniformMatrix("u_view", perspectiveCameras!!.get(i).view)
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT or GL20.GL_DEPTH_BUFFER_BIT)
+            cubeMesh!!.render(irradianceShader, GL20.GL_TRIANGLES)
+            frameBufferCubemap.nextSide()
         }
-        frameBufferCubemap.end();
-        irradianceShader.end();
-        irradianceShader.dispose();
+        frameBufferCubemap.end()
+        irradianceShader.end()
+        irradianceShader.dispose()
 
-        return frameBufferCubemap.getColorBufferTexture();
+        return frameBufferCubemap.colorBufferTexture
     }
 
-    private Cubemap renderPrefilter(Cubemap environmentCubemap) {
-        String folder = "shaders/";
+    private fun renderPrefilter(environmentCubemap: Cubemap?): Cubemap {
+        val folder = "shaders/"
 
-        ShaderProgram prefilterShader = new ShaderProgram(
+        val prefilterShader = ShaderProgram(
                 Gdx.files.internal(folder + "equi_to_cube_shader.vert"),
-                Gdx.files.internal(folder + "prefilter_shader.frag"));
+                Gdx.files.internal(folder + "prefilter_shader.frag"))
 
-        String shaderLog = prefilterShader.getLog();
+        val shaderLog = prefilterShader.log
 
-        if (!prefilterShader.isCompiled()) {
-            throw new GdxRuntimeException(shaderLog);
+        if (!prefilterShader.isCompiled) {
+            throw GdxRuntimeException(shaderLog)
         }
 
-        Array<PerspectiveCamera> perspectiveCameras = new Array<>();
+        val perspectiveCameras = Array<PerspectiveCamera>()
 
-        for (int i = 0; i < 6; i++) {
-            PerspectiveCamera pc = new PerspectiveCamera(90, prefilterWidth, prefilterHeight);
-            pc.near = 0.1f;
-            pc.far = 10.0f;
-            perspectiveCameras.add(pc);
+        for (i in 0..5) {
+            val pc = PerspectiveCamera(90f, prefilterWidth, prefilterHeight)
+            pc.near = 0.1f
+            pc.far = 10.0f
+            perspectiveCameras.add(pc)
         }
 
-        PerspectiveCamera pc1 = perspectiveCameras.get(0);
-        pc1.lookAt(0, 0, 1);
-        pc1.rotate(Vector3.Z, 180);
-        pc1.update();
+        val pc1 = perspectiveCameras.get(0)
+        pc1.lookAt(0f, 0f, 1f)
+        pc1.rotate(Vector3.Z, 180f)
+        pc1.update()
 
-        PerspectiveCamera pc2 = perspectiveCameras.get(1);
-        pc2.lookAt(0, 0, -1);
-        pc2.rotate(Vector3.Z, 180);
-        pc2.update();
+        val pc2 = perspectiveCameras.get(1)
+        pc2.lookAt(0f, 0f, -1f)
+        pc2.rotate(Vector3.Z, 180f)
+        pc2.update()
 
         // top
-        PerspectiveCamera pc3 = perspectiveCameras.get(2);
-        pc3.rotate(Vector3.Z, 90);
-        pc3.lookAt(0, 1, 0);
-        pc3.update();
+        val pc3 = perspectiveCameras.get(2)
+        pc3.rotate(Vector3.Z, 90f)
+        pc3.lookAt(0f, 1f, 0f)
+        pc3.update()
 
         // down
-        PerspectiveCamera pc4 = perspectiveCameras.get(3);
-        pc4.rotate(Vector3.Z, 270);
-        pc4.lookAt(0, -1, 0);
-        pc4.update();
+        val pc4 = perspectiveCameras.get(3)
+        pc4.rotate(Vector3.Z, 270f)
+        pc4.lookAt(0f, -1f, 0f)
+        pc4.update()
 
         // forward
-        PerspectiveCamera pc5 = perspectiveCameras.get(4);
-        pc5.lookAt(-1, 0, 0);
-        pc5.rotate(Vector3.X, 180);
-        pc5.update();
+        val pc5 = perspectiveCameras.get(4)
+        pc5.lookAt(-1f, 0f, 0f)
+        pc5.rotate(Vector3.X, 180f)
+        pc5.update()
 
         // back
-        PerspectiveCamera pc6 = perspectiveCameras.get(5);
-        pc6.lookAt(1, 0, 0);
-        pc6.rotate(Vector3.X, 180);
-        pc6.update();
+        val pc6 = perspectiveCameras.get(5)
+        pc6.lookAt(1f, 0f, 0f)
+        pc6.rotate(Vector3.X, 180f)
+        pc6.update()
 
-        FrameBufferCubemap frameBufferCubemap;
+        var frameBufferCubemap: FrameBufferCubemap
 
         try {
-            frameBufferCubemap = new FrameBufferCubemap(Pixmap.Format.RGB888,
-                    (int) prefilterWidth, (int) prefilterHeight, true);
-        } catch (IllegalStateException e) {
-            frameBufferCubemap = new FrameBufferCubemap(Pixmap.Format.RGB565,
-                    (int) prefilterWidth, (int) prefilterHeight, true);
+            frameBufferCubemap = FrameBufferCubemap(Pixmap.Format.RGB888,
+                    prefilterWidth.toInt(), prefilterHeight.toInt(), true)
+        } catch (e: IllegalStateException) {
+            frameBufferCubemap = FrameBufferCubemap(Pixmap.Format.RGB565,
+                    prefilterWidth.toInt(), prefilterHeight.toInt(), true)
         }
 
-        Cubemap cubemap = frameBufferCubemap.getColorBufferTexture();
-        cubemap.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
-        cubemap.setWrap(Texture.TextureWrap.ClampToEdge, Texture.TextureWrap.ClampToEdge);
+        val cubemap = frameBufferCubemap.colorBufferTexture
+        cubemap.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear)
+        cubemap.setWrap(Texture.TextureWrap.ClampToEdge, Texture.TextureWrap.ClampToEdge)
 
-        Gdx.gl.glBindTexture(cubemap.glTarget, cubemap.getTextureObjectHandle());
-        Gdx.gl.glGenerateMipmap(GL20.GL_TEXTURE_CUBE_MAP);
+        Gdx.gl.glBindTexture(cubemap.glTarget, cubemap.textureObjectHandle)
+        Gdx.gl.glGenerateMipmap(GL20.GL_TEXTURE_CUBE_MAP)
 
-        prefilterShader.begin();
-        prefilterShader.setUniformMatrix("u_projection", perspectiveCameras.first().projection);
-        prefilterShader.setUniformi("u_environment", 0);
-        frameBufferCubemap.begin();
-        environmentCubemap.bind(0);
+        prefilterShader.begin()
+        prefilterShader.setUniformMatrix("u_projection", perspectiveCameras.first().projection)
+        prefilterShader.setUniformi("u_environment", 0)
+        frameBufferCubemap.begin()
+        environmentCubemap!!.bind(0)
 
-        int maxMipLevels = 5;
+        val maxMipLevels = 5
 
-        for (int mip = 0; mip < maxMipLevels; mip++) {
+        for (mip in 0 until maxMipLevels) {
             // resize framebuffer according to mip-level size.
-            double ml = Math.pow(0.5, (double) mip);
+            val ml = Math.pow(0.5, mip.toDouble())
 
-            int mipWidth = (int) (prefilterWidth * ml);
-            int mipHeight = (int) (prefilterHeight * ml);
+            val mipWidth = (prefilterWidth * ml).toInt()
+            val mipHeight = (prefilterHeight * ml).toInt()
 
-            Gdx.gl.glBindRenderbuffer(GL20.GL_RENDERBUFFER, frameBufferCubemap.getDepthBufferHandle());
-            Gdx.gl.glRenderbufferStorage(GL20.GL_RENDERBUFFER, GL20.GL_DEPTH_COMPONENT16, mipWidth, mipHeight);
-            Gdx.gl.glViewport(0, 0, mipWidth, mipHeight);
+            Gdx.gl.glBindRenderbuffer(GL20.GL_RENDERBUFFER, frameBufferCubemap.depthBufferHandle)
+            Gdx.gl.glRenderbufferStorage(GL20.GL_RENDERBUFFER, GL20.GL_DEPTH_COMPONENT16, mipWidth, mipHeight)
+            Gdx.gl.glViewport(0, 0, mipWidth, mipHeight)
 
-            float roughness = (float) mip / (float) (maxMipLevels - 1);
-            prefilterShader.setUniformf("u_roughness", roughness);
+            val roughness = mip.toFloat() / (maxMipLevels - 1).toFloat()
+            prefilterShader.setUniformf("u_roughness", roughness)
 
-            for (int i = 0; i < 6; ++i) {
-                prefilterShader.setUniformMatrix("u_view", perspectiveCameras.get(i).view);
+            for (i in 0..5) {
+                prefilterShader.setUniformMatrix("u_view", perspectiveCameras.get(i).view)
 
-                Cubemap.CubemapSide side = Cubemap.CubemapSide.values()[i];
+                val side = Cubemap.CubemapSide.values()[i]
                 Gdx.gl20.glFramebufferTexture2D(GL20.GL_FRAMEBUFFER, GL20.GL_COLOR_ATTACHMENT0, side.glEnum,
-                        cubemap.getTextureObjectHandle(), mip);
+                        cubemap.textureObjectHandle, mip)
 
-                Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-                cubeMesh.render(prefilterShader, GL20.GL_TRIANGLES);
+                Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT or GL20.GL_DEPTH_BUFFER_BIT)
+                cubeMesh!!.render(prefilterShader, GL20.GL_TRIANGLES)
             }
         }
-        frameBufferCubemap.end();
-        prefilterShader.end();
-        prefilterShader.dispose();
+        frameBufferCubemap.end()
+        prefilterShader.end()
+        prefilterShader.dispose()
 
-        return frameBufferCubemap.getColorBufferTexture();
+        return frameBufferCubemap.colorBufferTexture
     }
 
-    private Texture renderBRDF() {
-        String folder = "shaders/";
+    private fun renderBRDF(): Texture {
+        val folder = "shaders/"
 
-        ShaderProgram brdfShader = new ShaderProgram(
+        val brdfShader = ShaderProgram(
                 Gdx.files.internal(folder + "brdf_shader.vert"),
-                Gdx.files.internal(folder + "brdf_shader.frag"));
+                Gdx.files.internal(folder + "brdf_shader.frag"))
 
-        String shaderLog = brdfShader.getLog();
+        val shaderLog = brdfShader.log
 
-        if (!brdfShader.isCompiled()) {
-            throw new GdxRuntimeException(shaderLog);
+        if (!brdfShader.isCompiled) {
+            throw GdxRuntimeException(shaderLog)
         }
 
-        FrameBuffer frameBuffer;
+        var frameBuffer: FrameBuffer
 
         try {
-            frameBuffer = new FrameBuffer(Pixmap.Format.RGB888, (int) brdfWidth, (int) brdfHeight, true);
-        } catch (IllegalStateException e) {
-            frameBuffer = new FrameBuffer(Pixmap.Format.RGB565, (int) brdfWidth, (int) brdfHeight, true);
+            frameBuffer = FrameBuffer(Pixmap.Format.RGB888, brdfWidth.toInt(), brdfHeight.toInt(), true)
+        } catch (e: IllegalStateException) {
+            frameBuffer = FrameBuffer(Pixmap.Format.RGB565, brdfWidth.toInt(), brdfHeight.toInt(), true)
         }
 
-        brdfShader.begin();
-        frameBuffer.begin();
-        Gdx.gl.glViewport(0, 0, (int) brdfWidth, (int) brdfHeight);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-        quadMesh.render(brdfShader, GL20.GL_TRIANGLES);
-        frameBuffer.end();
-        brdfShader.end();
-        brdfShader.dispose();
+        brdfShader.begin()
+        frameBuffer.begin()
+        Gdx.gl.glViewport(0, 0, brdfWidth.toInt(), brdfHeight.toInt())
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT or GL20.GL_DEPTH_BUFFER_BIT)
+        quadMesh!!.render(brdfShader, GL20.GL_TRIANGLES)
+        frameBuffer.end()
+        brdfShader.end()
+        brdfShader.dispose()
 
-        return frameBuffer.getColorBufferTexture();
+        return frameBuffer.colorBufferTexture
     }
 }

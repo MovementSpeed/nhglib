@@ -1,119 +1,115 @@
-package io.github.movementspeed.nhglib.core.fsm.states.engine;
+package io.github.movementspeed.nhglib.core.fsm.states.engine
 
-import com.artemis.BaseSystem;
-import com.artemis.World;
-import com.artemis.WorldConfigurationBuilder;
-import com.badlogic.gdx.ai.fsm.State;
-import com.badlogic.gdx.ai.msg.Telegram;
-import com.badlogic.gdx.utils.Array;
-import io.github.movementspeed.nhglib.core.ecs.systems.impl.*;
-import io.github.movementspeed.nhglib.core.entry.NhgEntry;
-import io.github.movementspeed.nhglib.core.fsm.base.EngineStates;
-import io.github.movementspeed.nhglib.utils.debug.NhgLogger;
+import com.artemis.BaseSystem
+import com.artemis.World
+import com.artemis.WorldConfigurationBuilder
+import com.badlogic.gdx.ai.fsm.State
+import com.badlogic.gdx.ai.msg.Telegram
+import com.badlogic.gdx.utils.Array
+import io.github.movementspeed.nhglib.core.ecs.systems.impl.*
+import io.github.movementspeed.nhglib.core.entry.NhgEntry
+import io.github.movementspeed.nhglib.core.fsm.base.EngineStates
+import io.github.movementspeed.nhglib.utils.debug.NhgLogger
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
  */
-public class EngineStateNotInitialized implements State<NhgEntry> {
-    @Override
-    public void enter(final NhgEntry nhgEntry) {
-        NhgLogger.log(this, "Engine is not initialized.");
+class EngineStateNotInitialized : State<NhgEntry> {
+    override fun enter(nhgEntry: NhgEntry) {
+        NhgLogger.log(this, "Engine is not initialized.")
 
         // Setup the ECS world.
-        WorldConfigurationBuilder configurationBuilder = new WorldConfigurationBuilder();
+        val configurationBuilder = WorldConfigurationBuilder()
 
         // Configure user entity systems
-        Array<BaseSystem> entitySystems = nhgEntry.onConfigureEntitySystems();
+        val entitySystems = nhgEntry.onConfigureEntitySystems()
 
         // Configure the most important systems last, especially RenderingSystem which
         // should be the last because it renders all the changes happened in all other
         // systems.
-        if (!hasSystemClass(InputSystem.class, entitySystems)) {
-            entitySystems.add(new InputSystem(nhgEntry.nhg.assets));
+        if (!hasSystemClass(InputSystem::class.java, entitySystems)) {
+            entitySystems.add(InputSystem(nhgEntry.nhg.assets))
         } else {
-            NhgLogger.log(this, "InputSystem already registered, ignoring registration.");
+            NhgLogger.log(this, "InputSystem already registered, ignoring registration.")
         }
 
-        if (!hasSystemClass(PhysicsSystem.class, entitySystems)) {
-            entitySystems.add(new PhysicsSystem());
+        if (!hasSystemClass(PhysicsSystem::class.java, entitySystems)) {
+            entitySystems.add(PhysicsSystem())
         } else {
-            NhgLogger.log(this, "PhysicsSystem already registered, ignoring registration.");
+            NhgLogger.log(this, "PhysicsSystem already registered, ignoring registration.")
         }
 
-        if (!hasSystemClass(CameraSystem.class, entitySystems)) {
-            entitySystems.add(new CameraSystem());
+        if (!hasSystemClass(CameraSystem::class.java, entitySystems)) {
+            entitySystems.add(CameraSystem())
         } else {
-            NhgLogger.log(this, "CameraSystem already registered, ignoring registration.");
+            NhgLogger.log(this, "CameraSystem already registered, ignoring registration.")
         }
 
-        if (!hasSystemClass(LightingSystem.class, entitySystems)) {
-            entitySystems.add(new LightingSystem());
+        if (!hasSystemClass(LightingSystem::class.java, entitySystems)) {
+            entitySystems.add(LightingSystem())
         } else {
-            NhgLogger.log(this, "LightingSystem already registered, ignoring registration.");
+            NhgLogger.log(this, "LightingSystem already registered, ignoring registration.")
         }
 
-        if (!hasSystemClass(ParticleRenderingSystem.class, entitySystems)) {
-            entitySystems.add(new ParticleRenderingSystem(nhgEntry.nhg.entities));
+        if (!hasSystemClass(ParticleRenderingSystem::class.java, entitySystems)) {
+            entitySystems.add(ParticleRenderingSystem(nhgEntry.nhg.entities))
         } else {
-            NhgLogger.log(this, "ParticleRenderingSystem already registered, ignoring registration.");
+            NhgLogger.log(this, "ParticleRenderingSystem already registered, ignoring registration.")
         }
 
-        if (!hasSystemClass(ModelRenderingSystem.class, entitySystems)) {
-            entitySystems.add(new ModelRenderingSystem(nhgEntry.nhg.entities, nhgEntry.nhg.messaging, nhgEntry.nhg.assets));
+        if (!hasSystemClass(ModelRenderingSystem::class.java, entitySystems)) {
+            entitySystems.add(ModelRenderingSystem(nhgEntry.nhg.entities, nhgEntry.nhg.messaging, nhgEntry.nhg.assets))
         } else {
-            NhgLogger.log(this, "ModelRenderingSystem already registered, ignoring registration.");
+            NhgLogger.log(this, "ModelRenderingSystem already registered, ignoring registration.")
         }
 
-        if (!hasSystemClass(UiSystem.class, entitySystems)) {
-            entitySystems.add(new UiSystem(nhgEntry.nhg.entities));
+        if (!hasSystemClass(UiSystem::class.java, entitySystems)) {
+            entitySystems.add(UiSystem(nhgEntry.nhg.entities))
         } else {
-            NhgLogger.log(this, "ModelRenderingSystem already registered, ignoring registration.");
+            NhgLogger.log(this, "ModelRenderingSystem already registered, ignoring registration.")
         }
 
-        if (!hasSystemClass(RenderingSystem.class, entitySystems)) {
-            entitySystems.add(new RenderingSystem());
+        if (!hasSystemClass(RenderingSystem::class.java, entitySystems)) {
+            entitySystems.add(RenderingSystem())
         } else {
-            NhgLogger.log(this, "RenderingSystem already registered, ignoring registration.");
+            NhgLogger.log(this, "RenderingSystem already registered, ignoring registration.")
         }
 
-        if (!hasSystemClass(DebugRenderingSystem.class, entitySystems)) {
-            entitySystems.add(new DebugRenderingSystem(nhgEntry.nhg.entities));
+        if (!hasSystemClass(DebugRenderingSystem::class.java, entitySystems)) {
+            entitySystems.add(DebugRenderingSystem(nhgEntry.nhg.entities))
         } else {
-            NhgLogger.log(this, "DebugRenderingSystem already registered, ignoring registration.");
+            NhgLogger.log(this, "DebugRenderingSystem already registered, ignoring registration.")
         }
 
-        for (BaseSystem bes : entitySystems) {
-            configurationBuilder.with(bes);
+        for (bes in entitySystems) {
+            configurationBuilder.with(bes)
         }
 
-        nhgEntry.nhg.entities.setEntityWorld(new World(configurationBuilder.build()));
-        nhgEntry.getFsm().changeState(EngineStates.INITIALIZED);
+        nhgEntry.nhg.entities.setEntityWorld(World(configurationBuilder.build()))
+        nhgEntry.fsm!!.changeState(EngineStates.INITIALIZED)
     }
 
-    @Override
-    public void update(NhgEntry entity) {
-
-    }
-
-    @Override
-    public void exit(NhgEntry entity) {
+    override fun update(entity: NhgEntry) {
 
     }
 
-    @Override
-    public boolean onMessage(NhgEntry entity, Telegram telegram) {
-        return false;
+    override fun exit(entity: NhgEntry) {
+
     }
 
-    private boolean hasSystemClass(Class<? extends BaseSystem> systemClass, Array<BaseSystem> entitySystems) {
-        boolean res = false;
+    override fun onMessage(entity: NhgEntry, telegram: Telegram): Boolean {
+        return false
+    }
 
-        for (BaseSystem es : entitySystems) {
+    private fun hasSystemClass(systemClass: Class<out BaseSystem>, entitySystems: Array<BaseSystem>): Boolean {
+        var res = false
+
+        for (es in entitySystems) {
             if (systemClass.isInstance(es)) {
-                res = true;
+                res = true
             }
         }
 
-        return res;
+        return res
     }
 }

@@ -1,4 +1,3 @@
-package io.github.movementspeed.nhglib.graphics.shaders.interfaces;
+package io.github.movementspeed.nhglib.graphics.shaders.interfaces
 
-public interface ShaderParams {
-}
+interface ShaderParams

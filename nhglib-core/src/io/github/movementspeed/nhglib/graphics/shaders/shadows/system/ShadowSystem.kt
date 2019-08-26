@@ -5,28 +5,27 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ */
 
-package io.github.movementspeed.nhglib.graphics.shaders.shadows.system;
+package io.github.movementspeed.nhglib.graphics.shaders.shadows.system
 
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Cubemap.CubemapSide;
-import com.badlogic.gdx.graphics.g3d.RenderableProvider;
-import com.badlogic.gdx.graphics.g3d.utils.ShaderProvider;
-import io.github.movementspeed.nhglib.graphics.lights.NhgLight;
-
-import java.util.Set;
+import com.badlogic.gdx.graphics.Camera
+import com.badlogic.gdx.graphics.Cubemap.CubemapSide
+import com.badlogic.gdx.graphics.g3d.RenderableProvider
+import com.badlogic.gdx.graphics.g3d.utils.ShaderProvider
+import io.github.movementspeed.nhglib.graphics.lights.NhgLight
 
 /** Shadow system provides functionalities to render shadows.
- * <p>
- * Typical use: <br />
+ *
+ *
+ * Typical use: <br></br>
  *
  * <pre>
  * // Init system:
@@ -35,7 +34,7 @@ import java.util.Set;
  * ShadowSystem system = new XXXShadowSystem();
  * system.init();
  * for (int i = 0; i &lt; system.getPassQuantity(); i++) {
- * 	passBatches.add(new ModelBatch(system.getPassShaderProvider(i)));
+ * passBatches.add(new ModelBatch(system.getPassShaderProvider(i)));
  * }
  * mainBatch = new ModelBatch(system.getShaderProvider());
  *
@@ -43,15 +42,15 @@ import java.util.Set;
  * system.begin(camera, instances);
  * system.update();
  * for (int i = 0; i &lt; system.getPassQuantity(); i++) {
- * 	system.begin(i);
- * 	Camera camera;
- * 	while ((camera = system.next()) != null) {
- * 		passBatches.get(i).begin(camera);
- * 		passBatches.get(i).render(instances, environment);
- * 		passBatches.get(i).end();
- * 	}
- * 	camera = null;
- * 	system.end(i);
+ * system.begin(i);
+ * Camera camera;
+ * while ((camera = system.next()) != null) {
+ * passBatches.get(i).begin(camera);
+ * passBatches.get(i).render(instances, environment);
+ * passBatches.get(i).end();
+ * }
+ * camera = null;
+ * system.end(i);
  * }
  * system.end();
  *
@@ -62,63 +61,73 @@ import java.util.Set;
  * mainBatch.begin(cam);
  * mainBatch.render(instances, environment);
  * mainBatch.end();
- * </pre>
+</pre> *
  *
- * </p>
  *
- * <p>
+ *
+ *
+ *
  * Current environnment should be alway be synchonized with shadow system lights. It means that if you add or remove light from
- * environment, you should do it in shadow system too. <br />
+ * environment, you should do it in shadow system too. <br></br>
  * If you have two different environments, when you switch, you should add and remove all lights in shadow system.
- * </p>
- * @author realitix */
-public interface ShadowSystem {
+ *
+ * @author realitix
+ */
+interface ShadowSystem {
 
-	/** Initialize system */
-	void init();
+    /** Return number of pass
+     * @return int
+     */
+    val passQuantity: Int
 
-	/** Return number of pass
-	 * @return int */
-	int getPassQuantity();
+    /** Initialize system  */
+    fun init()
 
-	/** Return shaderProvider of the pass n
-	 * @return ShaderProvider */
-	ShaderProvider getPassShaderProvider(int n);
+    /** Return shaderProvider of the pass n
+     * @return ShaderProvider
+     */
+    fun getPassShaderProvider(n: Int): ShaderProvider
 
-	void addLight(NhgLight light);
+    fun addLight(light: NhgLight)
 
-	/** Add point light in shadow system
-	 * @param point PointLight to add in the ShadowSystem
-	 * @param sides Set of side */
-	void addLight(NhgLight point, Set<CubemapSide> sides);
+    /** Add point light in shadow system
+     * @param point PointLight to add in the ShadowSystem
+     * @param sides Set of side
+     */
+    fun addLight(point: NhgLight, sides: Set<CubemapSide>)
 
-	/** Remove light from the shadowSystem
-	 * @param light Light to remove in the ShadowSystem */
-	void removeLight(NhgLight light);
+    /** Remove light from the shadowSystem
+     * @param light Light to remove in the ShadowSystem
+     */
+    fun removeLight(light: NhgLight)
 
-	/** @param light Light to check
-	 * @return true if light analyzed */
-	boolean hasLight(NhgLight light);
+    /** @param light Light to check
+     * @return true if light analyzed
+     */
+    fun hasLight(light: NhgLight): Boolean
 
-	/** Update shadowSystem */
-	void update();
+    /** Update shadowSystem  */
+    fun update()
 
-	/** Begin shadow system with main camera and renderable providers.
-	 * @param camera
-	 * @param renderableProviders */
-	<T extends RenderableProvider> void begin(Camera camera, Iterable<T> renderableProviders);
+    /** Begin shadow system with main camera and renderable providers.
+     * @param camera
+     * @param renderableProviders
+     */
+    fun <T : RenderableProvider> begin(camera: Camera, renderableProviders: Iterable<T>)
 
-	/** Begin pass n rendering.
-	 * @param n Pass number */
-	void begin(int n);
+    /** Begin pass n rendering.
+     * @param n Pass number
+     */
+    fun begin(n: Int)
 
-	/** Switch light
-	 * @return Current camera */
-	Camera next();
+    /** Switch light
+     * @return Current camera
+     */
+    operator fun next(): Camera?
 
-	/** End shadow system */
-	void end();
+    /** End shadow system  */
+    fun end()
 
-	/** End pass n rendering */
-	void end(int n);
+    /** End pass n rendering  */
+    fun end(n: Int)
 }

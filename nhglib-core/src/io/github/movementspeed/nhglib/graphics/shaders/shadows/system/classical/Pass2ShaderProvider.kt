@@ -5,33 +5,26 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ */
 
-package io.github.movementspeed.nhglib.graphics.shaders.shadows.system.classical;
+package io.github.movementspeed.nhglib.graphics.shaders.shadows.system.classical
 
-import com.badlogic.gdx.graphics.g3d.Renderable;
-import com.badlogic.gdx.graphics.g3d.Shader;
-import com.badlogic.gdx.graphics.g3d.utils.BaseShaderProvider;
-import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.graphics.g3d.Renderable
+import com.badlogic.gdx.graphics.g3d.Shader
+import com.badlogic.gdx.graphics.g3d.utils.BaseShaderProvider
+import com.badlogic.gdx.utils.GdxRuntimeException
 
-/** @author realitix */
-public class Pass2ShaderProvider extends BaseShaderProvider {
-	public final Pass2Shader.Config config;
-
-	public Pass2ShaderProvider (final Pass2Shader.Config config) {
-		if (config == null) throw new GdxRuntimeException("Pass2ShaderProvider needs config");
-		this.config = config;
-	}
-
-	@Override
-	protected Shader createShader (final Renderable renderable) {
-		return new Pass2Shader(renderable, config);
-	}
+/** @author realitix
+ */
+class Pass2ShaderProvider(val config: Pass2Shader.Config) : BaseShaderProvider() {
+    override fun createShader(renderable: Renderable): Shader {
+        return Pass2Shader(renderable, config)
+    }
 }

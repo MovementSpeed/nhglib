@@ -1,67 +1,61 @@
-package io.github.movementspeed.nhglib.assets;
+package io.github.movementspeed.nhglib.assets
 
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Array
 
-public class AssetPackage {
-    public final String alias;
+class AssetPackage(val alias: String) {
 
-    private int remainingAssets;
-    private Array<Asset> assets;
+    private var remainingAssets: Int = 0
+    val assets: Array<Asset>
 
-    public AssetPackage(String alias) {
-        this.alias = alias;
-        remainingAssets = 0;
-        assets = new Array<>();
+    init {
+        remainingAssets = 0
+        assets = Array()
     }
 
-    public void addAsset(Asset asset) {
-        assets.add(asset);
-        remainingAssets++;
+    fun addAsset(asset: Asset) {
+        assets.add(asset)
+        remainingAssets++
     }
 
-    public void addAsset(String alias, String source, Class assetClass) {
-        addAsset(new Asset(alias, source, assetClass));
+    fun addAsset(alias: String, source: String, assetClass: Class<*>) {
+        addAsset(Asset(alias, source, assetClass))
     }
 
-    public void addAssets(Asset ... assets) {
-        for (Asset asset : assets) {
-            addAsset(asset);
+    fun addAssets(vararg assets: Asset) {
+        for (asset in assets) {
+            addAsset(asset)
         }
     }
 
-    public void addAssets(Array<Asset> assets) {
-        for (Asset asset : assets) {
-            addAsset(asset);
+    fun addAssets(assets: Array<Asset>) {
+        for (asset in assets) {
+            addAsset(asset)
         }
     }
 
-    public boolean decreaseAndCheckRemaining() {
-        remainingAssets--;
-        return remainingAssets == 0;
+    fun decreaseAndCheckRemaining(): Boolean {
+        remainingAssets--
+        return remainingAssets == 0
     }
 
-    public boolean containsAsset(String alias) {
-        boolean contained = false;
+    fun containsAsset(alias: String): Boolean {
+        var contained = false
 
-        for (Asset asset : assets) {
-            if (asset.is(alias)) {
-                contained = true;
-                break;
+        for (asset in assets) {
+            if (asset.`is`(alias)) {
+                contained = true
+                break
             }
         }
 
-        return contained;
+        return contained
     }
 
-    public boolean is(String alias) {
-        return alias != null && this.alias.contentEquals(alias);
+    fun `is`(alias: String?): Boolean {
+        return alias != null && this.alias.contentEquals(alias)
     }
 
-    public boolean is(AssetPackage assetPackage) {
-        return assetPackage != null && this.alias.contentEquals(assetPackage.alias);
-    }
-
-    public Array<Asset> getAssets() {
-        return assets;
+    fun `is`(assetPackage: AssetPackage?): Boolean {
+        return assetPackage != null && this.alias.contentEquals(assetPackage.alias)
     }
 }

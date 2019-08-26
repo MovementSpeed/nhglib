@@ -1,72 +1,57 @@
-package io.github.movementspeed.nhglib.core.ecs.systems.base;
+package io.github.movementspeed.nhglib.core.ecs.systems.base
 
-import com.artemis.Aspect;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.g3d.RenderableProvider;
-import com.badlogic.gdx.utils.Array;
-import io.github.movementspeed.nhglib.core.ecs.interfaces.RenderingSystemInterface;
-import io.github.movementspeed.nhglib.core.ecs.systems.impl.CameraSystem;
-import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem;
-import io.github.movementspeed.nhglib.core.ecs.utils.Entities;
+import com.artemis.Aspect
+import com.badlogic.gdx.graphics.Camera
+import com.badlogic.gdx.graphics.g3d.RenderableProvider
+import com.badlogic.gdx.utils.Array
+import io.github.movementspeed.nhglib.core.ecs.interfaces.RenderingSystemInterface
+import io.github.movementspeed.nhglib.core.ecs.systems.impl.CameraSystem
+import io.github.movementspeed.nhglib.core.ecs.systems.impl.RenderingSystem
+import io.github.movementspeed.nhglib.core.ecs.utils.Entities
 
-public abstract class BaseRenderingSystem extends NhgIteratingSystem implements RenderingSystemInterface {
-    private boolean added;
+abstract class BaseRenderingSystem(aspect: Aspect.Builder, private val entities: Entities) : NhgIteratingSystem(aspect), RenderingSystemInterface {
+    private var added: Boolean = false
 
-    private Entities entities;
+    protected var renderingSystem: RenderingSystem? = null
+    protected var cameraSystem: CameraSystem? = null
 
-    protected RenderingSystem renderingSystem;
-    protected CameraSystem cameraSystem;
+    protected var cameras: Array<Camera>? = null
+    override var renderableProviders: Array<RenderableProvider>
+        protected set
 
-    protected Array<Camera> cameras;
-    protected Array<RenderableProvider> renderableProviders;
+    init {
 
-    public BaseRenderingSystem(Aspect.Builder aspect, Entities entities) {
-        super(aspect);
-        this.entities = entities;
-
-        renderableProviders = new Array<>();
+        renderableProviders = Array()
     }
 
-    @Override
-    protected void begin() {
-        super.begin();
+    override fun begin() {
+        super.begin()
 
         if (!added) {
-            added = true;
-            RenderingSystem rs = entities.getEntitySystem(RenderingSystem.class);
+            added = true
+            val rs = entities.getEntitySystem(RenderingSystem::class.java)
 
-            if (rs != null) {
-                rs.addRenderingInterfaces(this);
-            }
+            rs?.addRenderingInterfaces(this)
         }
 
         if (cameras == null) {
-            cameras = cameraSystem.cameras;
+            cameras = cameraSystem!!.cameras
         }
     }
 
-    @Override
-    public void onPreRender() {
+    override fun onPreRender() {
 
     }
 
-    @Override
-    public void onPostRender() {
+    override fun onPostRender() {
 
     }
 
-    @Override
-    public void clearRenderableProviders() {
-        renderableProviders.clear();
+    override fun clearRenderableProviders() {
+        renderableProviders.clear()
     }
 
-    @Override
-    public void onUpdatedRenderer(int renderingWidth, int renderingHeight) {
+    override fun onUpdatedRenderer(renderingWidth: Int, renderingHeight: Int) {
 
-    }
-
-    @Override
-    public Array<RenderableProvider> getRenderableProviders() {
-        return renderableProviders;
     }
 }

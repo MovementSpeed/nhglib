@@ -1,21 +1,21 @@
-package io.github.movementspeed.nhglib.graphics.utils;
+package io.github.movementspeed.nhglib.graphics.utils
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.PerspectiveCamera
 
 /**
  * Created by Fausto Napoli on 26/10/2016.
  */
-public class DefaultPerspectiveCamera extends PerspectiveCamera {
-    public DefaultPerspectiveCamera() {
-        fieldOfView = 67;
+class DefaultPerspectiveCamera : PerspectiveCamera() {
+    init {
+        fieldOfView = 67f
 
-        viewportWidth = Gdx.graphics.getWidth();
-        viewportHeight = Gdx.graphics.getHeight();
+        viewportWidth = Gdx.graphics.width.toFloat()
+        viewportHeight = Gdx.graphics.height.toFloat()
 
-        near = 0.01f;
-        far = 100.0f;
+        near = 0.01f
+        far = 100.0f
 
-        update();
+        update()
     }
 }

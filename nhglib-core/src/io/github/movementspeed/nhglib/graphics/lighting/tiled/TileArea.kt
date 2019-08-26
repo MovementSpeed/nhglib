@@ -1,8 +1,8 @@
-package io.github.movementspeed.nhglib.graphics.lighting.tiled;
+package io.github.movementspeed.nhglib.graphics.lighting.tiled
 
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector2
 
-public class TileArea {
-    public Vector2 x;
-    public Vector2 y;
+class TileArea {
+    var x: Vector2? = null
+    var y: Vector2? = null
 }

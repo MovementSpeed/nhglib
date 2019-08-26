@@ -1,28 +1,22 @@
-package io.github.movementspeed.nhglib.graphics.shaders.attributes;
+package io.github.movementspeed.nhglib.graphics.shaders.attributes
 
-import com.badlogic.gdx.graphics.g3d.Attribute;
+import com.badlogic.gdx.graphics.g3d.Attribute
 
 /**
  * Created by Fausto Napoli on 01/04/2017.
  */
-public class GammaCorrectionAttribute extends Attribute {
-    public final static String Alias = "gammaCorrection";
-    public final static long Type = register(Alias);
+class GammaCorrectionAttribute(var gammaCorrection: Boolean) : Attribute(Type) {
 
-    public boolean gammaCorrection;
-
-    public GammaCorrectionAttribute(boolean gammaCorrection) {
-        super(Type);
-        this.gammaCorrection = gammaCorrection;
+    override fun copy(): Attribute {
+        return GammaCorrectionAttribute(gammaCorrection)
     }
 
-    @Override
-    public Attribute copy() {
-        return new GammaCorrectionAttribute(gammaCorrection);
+    override fun compareTo(o: Attribute): Int {
+        return 0
     }
 
-    @Override
-    public int compareTo(Attribute o) {
-        return 0;
+    companion object {
+        val Alias = "gammaCorrection"
+        val Type = Attribute.register(Alias)
     }
 }

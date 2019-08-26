@@ -1,43 +1,35 @@
-package io.github.movementspeed.nhglib.core.messaging;
+package io.github.movementspeed.nhglib.core.messaging
 
-import io.github.movementspeed.nhglib.utils.data.Bundle;
-import io.github.movementspeed.nhglib.utils.data.StringUtils;
+import io.github.movementspeed.nhglib.utils.data.Bundle
+import io.github.movementspeed.nhglib.utils.data.StringUtils
 
 /**
  * Created by Fausto Napoli on 01/11/2016.
  * Data structure for a message.
  */
-public class Message {
-    public int id;
-    public Bundle data;
+class Message @JvmOverloads constructor(name: String, var data: Bundle? = null) {
+    var id: Int = 0
 
-    public Message(String name) {
-        this(name, null);
+    init {
+        id = StringUtils.idFromString(name)
     }
 
-    public Message(String name, Bundle data) {
-        id = StringUtils.idFromString(name);
-        this.data = data;
+    override fun equals(o: Any?): Boolean {
+        if (this === o) return true
+        if (o == null || javaClass != o.javaClass) return false
+
+        val message = o as Message?
+        return id == message!!.id
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Message message = (Message) o;
-        return id == message.id;
+    override fun hashCode(): Int {
+        var result = id
+        result = 31 * result + if (data != null) data!!.hashCode() else 0
+        return result
     }
 
-    @Override
-    public int hashCode() {
-        int result = id;
-        result = 31 * result + (data != null ? data.hashCode() : 0);
-        return result;
-    }
-
-    public boolean is(String name) {
-        int id = StringUtils.idFromString(name);
-        return this.id == id;
+    fun `is`(name: String): Boolean {
+        val id = StringUtils.idFromString(name)
+        return this.id == id
     }
 }

@@ -1,88 +1,77 @@
-package io.github.movementspeed.nhglib.assets;
+package io.github.movementspeed.nhglib.assets
 
-import com.badlogic.gdx.assets.AssetLoaderParameters;
-import com.badlogic.gdx.utils.GdxRuntimeException;
-import io.github.movementspeed.nhglib.utils.data.Bundle;
-import io.github.movementspeed.nhglib.utils.data.Strings;
+import com.badlogic.gdx.assets.AssetLoaderParameters
+import com.badlogic.gdx.utils.GdxRuntimeException
+import io.github.movementspeed.nhglib.utils.data.Bundle
+import io.github.movementspeed.nhglib.utils.data.Strings
 
 /**
  * Created by Fausto Napoli on 25/10/2016.
  */
-public class Asset {
-    public final String alias;
-    public String source;
-    public String dependenciesPath;
+class Asset(alias: String?, var source: String?, var assetClass: Class<*>) {
+    val alias: String
+    var dependenciesPath: String
+    var parametersBundle: Bundle? = null
+    var parameters: AssetLoaderParameters<*>
 
-    public Class assetClass;
-    public Bundle parametersBundle;
-    public AssetLoaderParameters parameters;
+    constructor(asset: Asset) : this(asset.alias, asset.source, asset.assetClass) {}
 
-    public Asset(Asset asset) {
-        this(asset.alias, asset.source, asset.assetClass);
+    constructor(alias: String, source: String, assetClass: Class<*>, parameters: AssetLoaderParameters<*>) : this(alias, source, assetClass) {
+        this.parameters = parameters
     }
 
-    public Asset(String alias, String source, Class assetClass, AssetLoaderParameters parameters) {
-        this(alias, source, assetClass);
-        this.parameters = parameters;
-    }
-
-    public Asset(String alias, String source, Class assetClass) {
+    init {
         if (alias != null) {
-            this.alias = alias;
+            this.alias = alias
         } else if (source != null) {
-            this.alias = source;
+            this.alias = source
         } else {
-            throw new NullPointerException(Strings.Messages.nullAssetSource);
+            throw NullPointerException(Strings.Messages.nullAssetSource)
         }
 
-        if (source == null || source.isEmpty()) {
-            throw new GdxRuntimeException(Strings.Messages.nullOrEmptyAssetSource);
+        if (source == null || source!!.isEmpty()) {
+            throw GdxRuntimeException(Strings.Messages.nullOrEmptyAssetSource)
         }
 
-        this.source = source;
-        this.assetClass = assetClass;
-
-        if (source.contains("/")) {
-            this.dependenciesPath = source.substring(0, source.lastIndexOf("/") + 1);
+        if (source!!.contains("/")) {
+            this.dependenciesPath = source!!.substring(0, source!!.lastIndexOf("/") + 1)
         }
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) return true;
+    override fun equals(o: Any?): Boolean {
+        if (o === this) return true
 
-        if (!(o instanceof Asset)) {
-            return false;
+        if (o !is Asset) {
+            return false
         }
 
-        Asset asset = (Asset) o;
-        return alias.contentEquals(asset.alias);
+        val asset = o as Asset?
+        return alias.contentEquals(asset!!.alias)
     }
 
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 991 * result + alias.hashCode();
-        result = 991 * result + source.hashCode();
-        result = 991 * result + dependenciesPath.hashCode();
-        return result;
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 991 * result + alias.hashCode()
+        result = 991 * result + source.hashCode()
+        result = 991 * result + dependenciesPath.hashCode()
+        return result
     }
 
-    public void setDependenciesPath(String dependenciesPath) {
+    fun setDependenciesPath(dependenciesPath: String?) {
         if (dependenciesPath != null && !dependenciesPath.isEmpty()) {
-            this.dependenciesPath = dependenciesPath;
+            this.dependenciesPath = dependenciesPath
         }
     }
 
-    public boolean is(String alias) {
-        return alias != null && this.alias.contentEquals(alias);
+    fun `is`(alias: String?): Boolean {
+        return alias != null && this.alias.contentEquals(alias)
     }
 
-    public boolean is(Asset asset) {
-        return asset != null && this.alias.contentEquals(asset.alias);
+    fun `is`(asset: Asset?): Boolean {
+        return asset != null && this.alias.contentEquals(asset.alias)
     }
 
-    public boolean isType(Class assetClass) {
-        return assetClass != null && this.assetClass == assetClass;
+    fun isType(assetClass: Class<*>?): Boolean {
+        return assetClass != null && this.assetClass == assetClass
     }
 }

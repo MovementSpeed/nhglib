@@ -1,16 +1,16 @@
-package io.github.movementspeed.nhglib.core.ecs.interfaces;
+package io.github.movementspeed.nhglib.core.ecs.interfaces
 
-import com.badlogic.gdx.graphics.g3d.RenderableProvider;
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.graphics.g3d.RenderableProvider
+import com.badlogic.gdx.utils.Array
 
-public interface RenderingSystemInterface {
-    void onPreRender();
+interface RenderingSystemInterface {
 
-    void onPostRender();
+    val renderableProviders: Array<RenderableProvider>
+    fun onPreRender()
 
-    void clearRenderableProviders();
+    fun onPostRender()
 
-    void onUpdatedRenderer(int renderingWidth, int renderingHeight);
+    fun clearRenderableProviders()
 
-    Array<RenderableProvider> getRenderableProviders();
+    fun onUpdatedRenderer(renderingWidth: Int, renderingHeight: Int)
 }

@@ -1,49 +1,47 @@
-package io.github.movementspeed.nhglib.core.ecs.components.graphics;
+package io.github.movementspeed.nhglib.core.ecs.components.graphics
 
-import com.artemis.Component;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
-import io.github.movementspeed.nhglib.assets.Asset;
-import io.github.movementspeed.nhglib.core.ecs.utils.UiManager;
-import io.github.movementspeed.nhglib.input.handler.InputProxy;
+import com.artemis.Component
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.utils.Array
+import io.github.movementspeed.nhglib.assets.Asset
+import io.github.movementspeed.nhglib.core.ecs.utils.UiManager
+import io.github.movementspeed.nhglib.input.handler.InputProxy
 
-import java.util.List;
+class UiComponent : Component() {
+    var fileName: String? = null
+    var state: State
+    var type: Type
+    var uiManager: UiManager
 
-public class UiComponent extends Component {
-    public String fileName;
-    public State state;
-    public Type type;
-    public UiManager uiManager;
+    var actorNames: Array<String>
+    var dependencies: Array<Asset>
 
-    public Array<String> actorNames;
-    public Array<Asset> dependencies;
-
-    public UiComponent() {
-        state = State.NOT_INITIALIZED;
-        type = Type.SCREEN;
-        dependencies = new Array<>();
-        actorNames = new Array<>();
+    init {
+        state = State.NOT_INITIALIZED
+        type = Type.SCREEN
+        dependencies = Array()
+        actorNames = Array()
     }
 
-    public void build(InputProxy inputProxy, List<Vector2> supportedRes) {
-        uiManager = new UiManager(fileName, supportedRes);
+    fun build(inputProxy: InputProxy, supportedRes: List<Vector2>) {
+        uiManager = UiManager(fileName, supportedRes)
         uiManager.init(
-                Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),
-                Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),
-                dependencies);
+                Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat(),
+                Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat(),
+                dependencies)
 
-        inputProxy.getVirtualInputHandler().addStage(fileName, uiManager.getStage());
+        inputProxy.virtualInputHandler.addStage(fileName, uiManager.stage)
 
-        state = State.READY;
+        state = State.READY
     }
 
-    public enum State {
+    enum class State {
         NOT_INITIALIZED,
         READY
     }
 
-    public enum Type {
+    enum class Type {
         SCREEN,
         PANEL
     }

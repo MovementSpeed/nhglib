@@ -1,42 +1,36 @@
-package io.github.movementspeed.nhglib.core.fsm.base;
+package io.github.movementspeed.nhglib.core.fsm.base
 
-import com.badlogic.gdx.ai.fsm.State;
-import com.badlogic.gdx.ai.msg.Telegram;
-import io.github.movementspeed.nhglib.assets.Assets;
-import io.github.movementspeed.nhglib.core.fsm.states.assets.AssetStateIdle;
-import io.github.movementspeed.nhglib.core.fsm.states.assets.AssetStateLoading;
+import com.badlogic.gdx.ai.fsm.State
+import com.badlogic.gdx.ai.msg.Telegram
+import io.github.movementspeed.nhglib.assets.Assets
+import io.github.movementspeed.nhglib.core.fsm.states.assets.AssetStateIdle
+import io.github.movementspeed.nhglib.core.fsm.states.assets.AssetStateLoading
 
 /**
  * Created by Fausto Napoli on 19/10/2016.
  */
-public enum AssetsStates implements State<Assets> {
-    IDLE(new AssetStateIdle()),
-    LOADING(new AssetStateLoading());
+enum class AssetsStates private constructor(private val state: State<Assets>) : State<Assets> {
+    IDLE(AssetStateIdle()),
+    LOADING(AssetStateLoading());
 
-    public static final int ASSETS_GC = 0;
-    private State<Assets> state;
-
-    AssetsStates(State<Assets> state) {
-        this.state = state;
+    override fun enter(assets: Assets) {
+        state.enter(assets)
     }
 
-    @Override
-    public void enter(Assets assets) {
-        state.enter(assets);
+    override fun update(assets: Assets) {
+        state.update(assets)
     }
 
-    @Override
-    public void update(Assets assets) {
-        state.update(assets);
+    override fun exit(assets: Assets) {
+        state.exit(assets)
     }
 
-    @Override
-    public void exit(Assets assets) {
-        state.exit(assets);
+    override fun onMessage(assets: Assets, telegram: Telegram): Boolean {
+        return state.onMessage(assets, telegram)
     }
 
-    @Override
-    public boolean onMessage(Assets assets, Telegram telegram) {
-        return state.onMessage(assets, telegram);
+    companion object {
+
+        val ASSETS_GC = 0
     }
 }

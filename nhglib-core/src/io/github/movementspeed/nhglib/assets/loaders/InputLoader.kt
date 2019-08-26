@@ -1,127 +1,120 @@
-package io.github.movementspeed.nhglib.assets.loaders;
+package io.github.movementspeed.nhglib.assets.loaders
 
-import com.badlogic.gdx.assets.AssetDescriptor;
-import com.badlogic.gdx.assets.AssetLoaderParameters;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.assets.loaders.AsynchronousAssetLoader;
-import com.badlogic.gdx.assets.loaders.FileHandleResolver;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
-import io.github.movementspeed.nhglib.input.enums.InputMode;
-import io.github.movementspeed.nhglib.input.enums.InputType;
-import io.github.movementspeed.nhglib.input.enums.TouchInputType;
-import io.github.movementspeed.nhglib.input.handler.InputProxy;
-import io.github.movementspeed.nhglib.input.models.InputContext;
-import io.github.movementspeed.nhglib.input.models.base.NhgInput;
-import io.github.movementspeed.nhglib.input.models.impls.system.NhgKeyboardButtonInput;
-import io.github.movementspeed.nhglib.input.models.impls.system.NhgTouchInput;
-import io.github.movementspeed.nhglib.input.models.impls.virtual.NhgVirtualButtonInput;
-import io.github.movementspeed.nhglib.input.utils.InputUtil;
-import io.github.movementspeed.nhglib.utils.debug.NhgLogger;
+import com.badlogic.gdx.assets.AssetDescriptor
+import com.badlogic.gdx.assets.AssetLoaderParameters
+import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.assets.loaders.AsynchronousAssetLoader
+import com.badlogic.gdx.assets.loaders.FileHandleResolver
+import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.JsonReader
+import com.badlogic.gdx.utils.JsonValue
+import io.github.movementspeed.nhglib.input.enums.InputMode
+import io.github.movementspeed.nhglib.input.enums.InputType
+import io.github.movementspeed.nhglib.input.enums.TouchInputType
+import io.github.movementspeed.nhglib.input.handler.InputProxy
+import io.github.movementspeed.nhglib.input.models.InputContext
+import io.github.movementspeed.nhglib.input.models.base.NhgInput
+import io.github.movementspeed.nhglib.input.models.impls.system.NhgKeyboardButtonInput
+import io.github.movementspeed.nhglib.input.models.impls.system.NhgTouchInput
+import io.github.movementspeed.nhglib.input.models.impls.virtual.NhgVirtualButtonInput
+import io.github.movementspeed.nhglib.input.utils.InputUtil
+import io.github.movementspeed.nhglib.utils.debug.NhgLogger
 
-public class InputLoader extends AsynchronousAssetLoader<InputProxy, InputLoader.InputProxyParameter> {
-    public InputLoader(FileHandleResolver resolver) {
-        super(resolver);
-    }
+class InputLoader(resolver: FileHandleResolver) : AsynchronousAssetLoader<InputProxy, InputLoader.InputProxyParameter>(resolver) {
 
-    @Override
-    public void loadAsync(AssetManager assetManager, String s, FileHandle fileHandle, InputProxyParameter inputProxyParameter) {
+    override fun loadAsync(assetManager: AssetManager, s: String, fileHandle: FileHandle, inputProxyParameter: InputProxyParameter) {
 
     }
 
-    @Override
-    public InputProxy loadSync(AssetManager assetManager, String s, FileHandle fileHandle, InputProxyParameter inputProxyParameter) {
-        InputProxy inputProxy = new InputProxy();
-        JsonValue jsonValue = new JsonReader().parse(fileHandle);
-        JsonValue inputContextsJsonArray = jsonValue.get("inputContexts");
+    override fun loadSync(assetManager: AssetManager, s: String, fileHandle: FileHandle, inputProxyParameter: InputProxyParameter): InputProxy {
+        val inputProxy = InputProxy()
+        val jsonValue = JsonReader().parse(fileHandle)
+        val inputContextsJsonArray = jsonValue.get("inputContexts")
 
-        Array<NhgInput> systemInputs = new Array<>();
-        Array<NhgInput> virtualInputs = new Array<>();
-        Array<InputContext> inputContexts = new Array<>();
+        val systemInputs = Array<NhgInput>()
+        val virtualInputs = Array<NhgInput>()
+        val inputContexts = Array<InputContext>()
 
-        for (JsonValue inputContextJson : inputContextsJsonArray) {
-            String inputContextName = inputContextJson.getString("name");
-            JsonValue inputsJsonArray = inputContextJson.get("inputs");
+        for (inputContextJson in inputContextsJsonArray) {
+            val inputContextName = inputContextJson.getString("name")
+            val inputsJsonArray = inputContextJson.get("inputs")
 
-            InputContext inputContext = new InputContext(inputContextName);
-            inputContexts.add(inputContext);
+            val inputContext = InputContext(inputContextName)
+            inputContexts.add(inputContext)
 
-            for (JsonValue inputJson : inputsJsonArray) {
-                NhgInput nhgInput = null;
+            for (inputJson in inputsJsonArray) {
+                var nhgInput: NhgInput? = null
 
-                String inputName = inputJson.getString("inputName");
-                InputType inputType = InputType.fromString(inputJson.getString("inputType"));
-                InputMode inputMode = InputMode.fromString(inputJson.getString("inputMode"));
+                val inputName = inputJson.getString("inputName")
+                val inputType = InputType.fromString(inputJson.getString("inputType"))
+                val inputMode = InputMode.fromString(inputJson.getString("inputMode"))
 
-                switch (inputType) {
-                    case TOUCH:
-                        int pointerNumber = inputJson.getInt("pointerNumber");
-                        Array<TouchInputType> touchInputTypes = new Array<>();
+                when (inputType) {
+                    InputType.TOUCH -> {
+                        val pointerNumber = inputJson.getInt("pointerNumber")
+                        val touchInputTypes = Array<TouchInputType>()
 
                         if (inputJson.has("touchInputTypes")) {
-                            String inputTypes = inputJson.getString("touchInputTypes");
-                            String[] inputTypesArray = inputTypes.split("\\|");
+                            val inputTypes = inputJson.getString("touchInputTypes")
+                            val inputTypesArray = inputTypes.split("\\|".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
-                            for (String touchInputType : inputTypesArray) {
-                                touchInputTypes.add(TouchInputType.fromString(touchInputType));
+                            for (touchInputType in inputTypesArray) {
+                                touchInputTypes.add(TouchInputType.fromString(touchInputType))
                             }
                         }
 
                         if (touchInputTypes.size == 0) {
-                            TouchInputType touchInputType = TouchInputType.TAP;
-                            touchInputTypes.add(touchInputType);
+                            val touchInputType = TouchInputType.TAP
+                            touchInputTypes.add(touchInputType)
                         }
 
-                        NhgTouchInput touchInput = new NhgTouchInput(inputName);
-                        touchInput.setPointerNumber(pointerNumber);
-                        touchInput.setTouchInputTypes(touchInputTypes);
+                        val touchInput = NhgTouchInput(inputName)
+                        touchInput.pointerNumber = pointerNumber
+                        touchInput.setTouchInputTypes(touchInputTypes)
 
-                        nhgInput = touchInput;
-                        systemInputs.add(nhgInput);
-                        break;
+                        nhgInput = touchInput
+                        systemInputs.add(nhgInput)
+                    }
 
-                    case MOUSE_BUTTON:
-                        break;
+                    InputType.MOUSE_BUTTON -> {
+                    }
 
-                    case KEYBOARD_BUTTON:
-                        String key = inputJson.getString("key").toUpperCase();
+                    InputType.KEYBOARD_BUTTON -> {
+                        val key = inputJson.getString("key").toUpperCase()
 
-                        NhgKeyboardButtonInput keyboardButtonInput = new NhgKeyboardButtonInput(inputName);
-                        keyboardButtonInput.setKeyCode(InputUtil.keyCodeFromName(key));
-                        nhgInput = keyboardButtonInput;
-                        systemInputs.add(nhgInput);
-                        break;
+                        val keyboardButtonInput = NhgKeyboardButtonInput(inputName)
+                        keyboardButtonInput.keyCode = InputUtil.keyCodeFromName(key)
+                        nhgInput = keyboardButtonInput
+                        systemInputs.add(nhgInput)
+                    }
 
-                    case VIRTUAL_BUTTON:
-                        String actorName = inputJson.getString("actorName");
+                    InputType.VIRTUAL_BUTTON -> {
+                        val actorName = inputJson.getString("actorName")
 
-                        NhgVirtualButtonInput virtualButtonInput = new NhgVirtualButtonInput(inputName);
-                        virtualButtonInput.setActorName(actorName);
-                        nhgInput = virtualButtonInput;
-                        virtualInputs.add(nhgInput);
-                        break;
+                        val virtualButtonInput = NhgVirtualButtonInput(inputName)
+                        virtualButtonInput.actorName = actorName
+                        nhgInput = virtualButtonInput
+                        virtualInputs.add(nhgInput)
+                    }
                 }
 
                 if (nhgInput != null) {
-                    nhgInput.setMode(inputMode);
-                    nhgInput.setContext(inputContext);
+                    nhgInput.mode = inputMode
+                    nhgInput.context = inputContext
                 } else {
-                    NhgLogger.log("InputLoader", "ignored input \"%s\"", inputName);
+                    NhgLogger.log("InputLoader", "ignored input \"%s\"", inputName)
                 }
             }
         }
 
-        inputProxy.build(inputContexts, systemInputs, virtualInputs);
-        return inputProxy;
+        inputProxy.build(inputContexts, systemInputs, virtualInputs)
+        return inputProxy
     }
 
-    @Override
-    public Array<AssetDescriptor> getDependencies(String s, FileHandle fileHandle, InputProxyParameter inputProxyParameter) {
-        return null;
+    override fun getDependencies(s: String, fileHandle: FileHandle, inputProxyParameter: InputProxyParameter): Array<AssetDescriptor<*>>? {
+        return null
     }
 
-    public static class InputProxyParameter extends AssetLoaderParameters<InputProxy> {
-    }
+    class InputProxyParameter : AssetLoaderParameters<InputProxy>()
 }

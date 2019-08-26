@@ -1,33 +1,24 @@
-package io.github.movementspeed.nhglib.physics.enums;
+package io.github.movementspeed.nhglib.physics.enums
 
-import com.badlogic.gdx.physics.bullet.collision.Collision;
+import com.badlogic.gdx.physics.bullet.collision.Collision
 
 /**
  * Created by Fausto Napoli on 16/05/2017.
  */
-public enum ActivationState {
+enum class ActivationState(var state: Int) {
     DISABLE_DEACTIVATION(Collision.DISABLE_DEACTIVATION),
     WANTS_DEACTIVATION(Collision.WANTS_DEACTIVATION);
 
-    public int state;
+    companion object {
+        fun fromString(value: String): ActivationState {
+            var state = WANTS_DEACTIVATION
 
-    ActivationState(int state) {
-        this.state = state;
-    }
+            when (value) {
+                "wantsDeactivation" -> state = WANTS_DEACTIVATION
+                "disableDeactivation" -> state = DISABLE_DEACTIVATION
+            }
 
-    public static ActivationState fromString(String value) {
-        ActivationState state = WANTS_DEACTIVATION;
-
-        switch (value) {
-            case "wantsDeactivation":
-                state = WANTS_DEACTIVATION;
-                break;
-
-            case "disableDeactivation":
-                state = DISABLE_DEACTIVATION;
-                break;
+            return state
         }
-
-        return state;
     }
 }

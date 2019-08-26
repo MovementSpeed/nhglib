@@ -1,25 +1,23 @@
-package io.github.movementspeed.nhglib.input.enums;
+package io.github.movementspeed.nhglib.input.enums
 
 /**
  * Created by Fausto Napoli on 01/03/2017.
  */
-public enum PointerSourceType {
+enum class PointerSourceType {
     POINTER_XY,
     POINTER_DELTA_XY;
 
-    public static PointerSourceType fromString(String value) {
-        PointerSourceType res = null;
+    companion object {
 
-        switch (value) {
-            case "pointerXY":
-                res = POINTER_XY;
-                break;
+        fun fromString(value: String): PointerSourceType? {
+            var res: PointerSourceType? = null
 
-            case "pointerDeltaXY":
-                res = POINTER_DELTA_XY;
-                break;
+            when (value) {
+                "pointerXY" -> res = POINTER_XY
+                "pointerDeltaXY" -> res = POINTER_DELTA_XY
+            }
+
+            return res
         }
-
-        return res;
     }
 }

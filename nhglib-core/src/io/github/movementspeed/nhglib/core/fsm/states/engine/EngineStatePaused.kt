@@ -1,31 +1,26 @@
-package io.github.movementspeed.nhglib.core.fsm.states.engine;
+package io.github.movementspeed.nhglib.core.fsm.states.engine
 
-import com.badlogic.gdx.ai.fsm.State;
-import com.badlogic.gdx.ai.msg.Telegram;
-import io.github.movementspeed.nhglib.core.entry.NhgEntry;
-import io.github.movementspeed.nhglib.utils.debug.NhgLogger;
+import com.badlogic.gdx.ai.fsm.State
+import com.badlogic.gdx.ai.msg.Telegram
+import io.github.movementspeed.nhglib.core.entry.NhgEntry
+import io.github.movementspeed.nhglib.utils.debug.NhgLogger
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
  */
-public class EngineStatePaused implements State<NhgEntry> {
-    @Override
-    public void enter(final NhgEntry nhgEntry) {
-        NhgLogger.log(this, "Engine is paused.");
-        nhgEntry.onPause();
+class EngineStatePaused : State<NhgEntry> {
+    override fun enter(nhgEntry: NhgEntry) {
+        NhgLogger.log(this, "Engine is paused.")
+        nhgEntry.onPause()
     }
 
-    @Override
-    public void update(NhgEntry nhgEntry) {
+    override fun update(nhgEntry: NhgEntry) {
 
     }
 
-    @Override
-    public void exit(NhgEntry entity) {
-    }
+    override fun exit(entity: NhgEntry) {}
 
-    @Override
-    public boolean onMessage(NhgEntry entity, Telegram telegram) {
-        return false;
+    override fun onMessage(entity: NhgEntry, telegram: Telegram): Boolean {
+        return false
     }
 }

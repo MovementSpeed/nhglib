@@ -1,40 +1,31 @@
-package io.github.movementspeed.nhglib.input.models.impls.system;
+package io.github.movementspeed.nhglib.input.models.impls.system
 
-import com.badlogic.gdx.utils.Array;
-import io.github.movementspeed.nhglib.input.enums.InputType;
-import io.github.movementspeed.nhglib.input.enums.TouchInputType;
-import io.github.movementspeed.nhglib.input.models.base.NhgInput;
+import com.badlogic.gdx.utils.Array
+import io.github.movementspeed.nhglib.input.enums.InputType
+import io.github.movementspeed.nhglib.input.enums.TouchInputType
+import io.github.movementspeed.nhglib.input.models.base.NhgInput
 
-public class NhgTouchInput extends NhgInput {
-    private int pointerNumber;
-    private Array<TouchInputType> touchInputTypes;
+class NhgTouchInput(name: String) : NhgInput(name) {
+    var pointerNumber: Int = 0
+    private var touchInputTypes: Array<TouchInputType>? = null
 
-    public NhgTouchInput(String name) {
-        super(name);
-        setType(InputType.TOUCH);
+    init {
+        type = InputType.TOUCH
     }
 
-    public boolean hasTouchInputType(TouchInputType touchInputType) {
-        boolean res = false;
+    fun hasTouchInputType(touchInputType: TouchInputType): Boolean {
+        var res = false
 
-        for (TouchInputType type : touchInputTypes) {
+        for (type in touchInputTypes!!) {
             if (type == touchInputType) {
-                res = true;
+                res = true
             }
         }
 
-        return res;
+        return res
     }
 
-    public int getPointerNumber() {
-        return pointerNumber;
-    }
-
-    public void setPointerNumber(int pointerNumber) {
-        this.pointerNumber = pointerNumber;
-    }
-
-    public void setTouchInputTypes(Array<TouchInputType> touchInputTypes) {
-        this.touchInputTypes = touchInputTypes;
+    fun setTouchInputTypes(touchInputTypes: Array<TouchInputType>) {
+        this.touchInputTypes = touchInputTypes
     }
 }

@@ -1,52 +1,35 @@
-package io.github.movementspeed.nhglib.graphics.rendering;
+package io.github.movementspeed.nhglib.graphics.rendering
 
-import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.RenderableProvider;
-import com.badlogic.gdx.graphics.g3d.utils.ShaderProvider;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.utils.Array;
-import io.github.movementspeed.nhglib.utils.data.Bundle;
+import com.badlogic.gdx.graphics.PerspectiveCamera
+import com.badlogic.gdx.graphics.g3d.Environment
+import com.badlogic.gdx.graphics.g3d.ModelBatch
+import com.badlogic.gdx.graphics.g3d.RenderableProvider
+import com.badlogic.gdx.graphics.g3d.utils.ShaderProvider
+import com.badlogic.gdx.graphics.glutils.FrameBuffer
+import com.badlogic.gdx.utils.Array
+import io.github.movementspeed.nhglib.utils.data.Bundle
 
-public abstract class RenderPass {
-    public Bundle bundle;
-    public RenderPass previousRenderPass;
+abstract class RenderPass(outputData: Boolean) {
+    protected var outputData: Bundle? = null
+    protected var previousRenderPass: RenderPass? = null
+    protected var mainFBO: FrameBuffer? = null
+    protected var renderer: ModelBatch? = null
+    protected var environment: Environment? = null
 
-    protected ModelBatch renderer;
-    protected FrameBuffer mainFBO;
-    protected Environment environment;
-    protected ShaderProvider shaderProvider;
+    protected var shaderProvider: ShaderProvider? = null
+        set(value) {
+            field = value
+            this.renderer = ModelBatch(value)
+        }
 
-    public RenderPass(boolean outputData) {
+    init {
         if (outputData) {
-            bundle = new Bundle();
+            this.outputData = Bundle()
         }
     }
 
-    public abstract void created();
-    public abstract void begin(PerspectiveCamera camera);
-    public abstract void render(PerspectiveCamera camera, Array<RenderableProvider> renderableProviders);
-    public abstract void end();
-
-    public void setShaderProvider(ShaderProvider shaderProvider) {
-        this.shaderProvider = shaderProvider;
-        this.renderer = new ModelBatch(shaderProvider);
-    }
-
-    public void setMainFBO(FrameBuffer mainFBO) {
-        this.mainFBO = mainFBO;
-    }
-
-    public void setPreviousRenderPass(RenderPass previousRenderPass) {
-        this.previousRenderPass = previousRenderPass;
-    }
-
-    public void setEnvironment(Environment environment) {
-        this.environment = environment;
-    }
-
-    public Bundle getOutputData() {
-        return bundle;
-    }
+    abstract fun created()
+    abstract fun begin(camera: PerspectiveCamera)
+    abstract fun render(camera: PerspectiveCamera, renderableProviders: Array<RenderableProvider>)
+    abstract fun end()
 }

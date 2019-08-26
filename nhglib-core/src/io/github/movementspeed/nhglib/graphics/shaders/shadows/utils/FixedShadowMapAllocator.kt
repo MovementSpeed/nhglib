@@ -5,111 +5,101 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ */
 
-package io.github.movementspeed.nhglib.graphics.shaders.shadows.utils;
+package io.github.movementspeed.nhglib.graphics.shaders.shadows.utils
 
-import com.badlogic.gdx.graphics.g3d.environment.BaseLight;
-import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.graphics.g3d.environment.BaseLight
+import com.badlogic.gdx.utils.GdxRuntimeException
+import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 /** FixedShadowMapAllocator behavior is naive. It separates the texture in several parts and for each light increments the region.
  * The larger the size, the better the quality or quantity.
- * <p>
- * Examples: <br />
- * If you set size to QUALITY_MAX and mapQuantity to NB_MAP_MIN, each depth map would be 2048*2048 (it's huge!).<br />
+ *
+ *
+ * Examples: <br></br>
+ * If you set size to QUALITY_MAX and mapQuantity to NB_MAP_MIN, each depth map would be 2048*2048 (it's huge!).<br></br>
  * If you set size to QUALITY_MIN and mapQuantity to NB_MAP_MAX, each depth map would be 64*64.
- * </p>
- * @author realitix */
-public class FixedShadowMapAllocator implements ShadowMapAllocator {
-	/** Helpers to choose shadow map quality */
-	public static final int QUALITY_MIN = 1024;
-	public static final int QUALITY_MED = 2048;
-	public static final int QUALITY_MAX = 4096;
+ *
+ * @author realitix
+ */
+class FixedShadowMapAllocator
+/** Create new FixedShadowMapAllocator
+ * @param size Size of shadow map
+ * @param nbMap Quantity of supported regions
+ */
+(
+        /** Shadow map size (Width = Height)  */
+        override val width: Int,
+        /** Quantity of renderable parts  */
+        /** @return Quantity of supported regions.
+         */
+        val mapQuantity: Int) : ShadowMapAllocator {
+    /** Current rendered part  */
+    protected var currentMap: Int = 0
+    /** Result region  */
+    protected var result = ShadowMapAllocator.ShadowMapRegion()
+    /** Is in allocation state  */
+    protected var allocating = false
 
-	/** Helpers to choose number of supported shadows */
-	public static final int QUANTITY_MAP_MIN = 1;
-	public static final int QUANTITY_MAP_LOW = 4;
-	public static final int QUANTITY_MAP_MED = 16;
-	public static final int QUANTITY_MAP_MAX = 32;
+    override val height: Int
+        get() = width
 
-	/** Shadow map size (Width = Height) */
-	protected final int size;
-	/** Quantity of renderable parts */
-	protected final int mapQuantity;
-	/** Current rendered part */
-	protected int currentMap;
-	/** Result region */
-	protected ShadowMapRegion result = new ShadowMapRegion();
-	/** Is in allocation state */
-	protected boolean allocating = false;
+    override fun begin() {
+        if (allocating) {
+            throw GdxRuntimeException("Allocator must end before begin")
+        }
+        allocating = true
+        currentMap = 0
+    }
 
-	/** Create new FixedShadowMapAllocator
-	 * @param size Size of shadow map
-	 * @param nbMap Quantity of supported regions */
-	public FixedShadowMapAllocator (int size, int nbMap) {
-		this.size = size;
-		this.mapQuantity = nbMap;
-	}
+    override fun end() {
+        if (!allocating) {
+            throw GdxRuntimeException("Allocator must begin before end")
+        }
+        allocating = false
+    }
 
-	@Override
-	public int getWidth () {
-		return size;
-	}
+    override fun nextResult(light: BaseLight<*>): ShadowMapAllocator.ShadowMapRegion? {
+        if (!allocating) {
+            throw GdxRuntimeException("Allocator must begin before call")
+        }
 
-	@Override
-	public int getHeight () {
-		return size;
-	}
+        val nbOnLine = sqrt(mapQuantity.toDouble()).roundToInt()
+        val i = currentMap % nbOnLine
+        val j = currentMap / nbOnLine
+        val sizeMap = width / nbOnLine
 
-	/** @return Quantity of supported regions. */
-	public int getMapQuantity () {
-		return mapQuantity;
-	}
+        result.x = i * sizeMap
+        result.y = j * sizeMap
+        result.width = sizeMap
+        result.height = sizeMap
 
-	@Override
-	public void begin () {
-		if (allocating) {
-			throw new GdxRuntimeException("Allocator must end before begin");
-		}
-		allocating = true;
-		currentMap = 0;
-	}
+        if (result.x >= width || result.y >= width) return null
 
-	@Override
-	public void end () {
-		if (!allocating) {
-			throw new GdxRuntimeException("Allocator must begin before end");
-		}
-		allocating = false;
-	}
+        currentMap += 1
 
-	@Override
-	public ShadowMapRegion nextResult (BaseLight light) {
-		if (!allocating) {
-			throw new GdxRuntimeException("Allocator must begin before call");
-		}
+        return result
+    }
 
-		int nbOnLine = (int)Math.round(Math.sqrt(mapQuantity));
-		int i = currentMap % nbOnLine;
-		int j = currentMap / nbOnLine;
-		int sizeMap = size / nbOnLine;
+    companion object {
+        /** Helpers to choose shadow map quality  */
+        val QUALITY_MIN = 1024
+        val QUALITY_MED = 2048
+        val QUALITY_MAX = 4096
 
-		result.x = i * sizeMap;
-		result.y = j * sizeMap;
-		result.width = sizeMap;
-		result.height = sizeMap;
-
-		if (result.x >= size || result.y >= size) return null;
-
-		currentMap += 1;
-
-		return result;
-	}
+        /** Helpers to choose number of supported shadows  */
+        val QUANTITY_MAP_MIN = 1
+        val QUANTITY_MAP_LOW = 4
+        val QUANTITY_MAP_MED = 16
+        val QUANTITY_MAP_MAX = 32
+    }
 }

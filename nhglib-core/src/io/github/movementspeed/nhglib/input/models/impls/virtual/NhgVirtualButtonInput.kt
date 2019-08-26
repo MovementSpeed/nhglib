@@ -1,19 +1,7 @@
-package io.github.movementspeed.nhglib.input.models.impls.virtual;
+package io.github.movementspeed.nhglib.input.models.impls.virtual
 
-import io.github.movementspeed.nhglib.input.models.base.NhgInput;
+import io.github.movementspeed.nhglib.input.models.base.NhgInput
 
-public class NhgVirtualButtonInput extends NhgInput {
-    private String actorName;
-
-    public NhgVirtualButtonInput(String name) {
-        super(name);
-    }
-
-    public String getActorName() {
-        return actorName;
-    }
-
-    public void setActorName(String actorName) {
-        this.actorName = actorName;
-    }
+class NhgVirtualButtonInput(name: String) : NhgInput(name) {
+    var actorName: String? = null
 }

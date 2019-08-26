@@ -1,30 +1,28 @@
-package io.github.movementspeed.nhglib.enums;
+package io.github.movementspeed.nhglib.enums
 
 /**
  * Created by Fausto Napoli on 14/03/2017.
  */
-public enum LightType {
+enum class LightType {
     DIRECTIONAL_LIGHT,
     POINT_LIGHT,
     SPOT_LIGHT;
 
-    public static LightType fromString(String value) {
-        LightType res = null;
 
-        switch (value) {
-            case "directionalLight":
-                res = DIRECTIONAL_LIGHT;
-                break;
+    companion object {
 
-            case "pointLight":
-                res = POINT_LIGHT;
-                break;
+        fun fromString(value: String): LightType? {
+            var res: LightType? = null
 
-            case "spotLight":
-                res = SPOT_LIGHT;
-                break;
+            when (value) {
+                "directionalLight" -> res = DIRECTIONAL_LIGHT
+
+                "pointLight" -> res = POINT_LIGHT
+
+                "spotLight" -> res = SPOT_LIGHT
+            }
+
+            return res
         }
-
-        return res;
     }
 }

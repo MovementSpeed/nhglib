@@ -1,105 +1,86 @@
-package io.github.movementspeed.nhglib.core.entry;
+package io.github.movementspeed.nhglib.core.entry
 
-import com.artemis.BaseSystem;
-import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
-import com.badlogic.gdx.ai.fsm.StateMachine;
-import com.badlogic.gdx.utils.Array;
-import io.github.movementspeed.nhglib.Nhg;
-import io.github.movementspeed.nhglib.core.fsm.base.EngineStates;
-import io.github.movementspeed.nhglib.core.fsm.interfaces.EngineConfigurationListener;
-import io.github.movementspeed.nhglib.core.fsm.interfaces.EngineStateListener;
-import io.github.movementspeed.nhglib.core.messaging.Message;
-import io.github.movementspeed.nhglib.utils.data.Strings;
+import com.artemis.BaseSystem
+import com.badlogic.gdx.ApplicationListener
+import com.badlogic.gdx.ai.fsm.DefaultStateMachine
+import com.badlogic.gdx.ai.fsm.StateMachine
+import com.badlogic.gdx.utils.Array
+import io.github.movementspeed.nhglib.Nhg
+import io.github.movementspeed.nhglib.core.fsm.base.EngineStates
+import io.github.movementspeed.nhglib.core.fsm.interfaces.EngineConfigurationListener
+import io.github.movementspeed.nhglib.core.fsm.interfaces.EngineStateListener
+import io.github.movementspeed.nhglib.core.messaging.Message
+import io.github.movementspeed.nhglib.utils.data.Strings
 
 /**
  * Created by Fausto Napoli on 02/11/2016.
  */
-abstract class BaseGame implements
-        ApplicationListener,
-        EngineStateListener,
-        EngineConfigurationListener {
+internal abstract class BaseGame : ApplicationListener, EngineStateListener, EngineConfigurationListener {
 
-    public Nhg nhg;
+    var nhg: Nhg
 
-    private int width, height;
-    private DefaultStateMachine<NhgEntry, EngineStates> fsm;
+    private var width: Int = 0
+    private var height: Int = 0
+    private var fsm: DefaultStateMachine<NhgEntry, EngineStates>? = null
 
-    @Override
-    public final void create() {
-        nhg = new Nhg();
-        nhg.init();
+    override fun create() {
+        nhg = Nhg()
+        nhg.init()
     }
 
-    @Override
-    public final void resize(int width, int height) {
-        this.width = width;
-        this.height = height;
+    override fun resize(width: Int, height: Int) {
+        this.width = width
+        this.height = height
     }
 
-    @Override
-    public final void render() {
-        fsm.update();
+    override fun render() {
+        fsm!!.update()
     }
 
-    @Override
-    public final void pause() {
-        fsm.changeState(EngineStates.PAUSED);
+    override fun pause() {
+        fsm!!.changeState(EngineStates.PAUSED)
     }
 
-    @Override
-    public final void resume() {
-        fsm.changeState(EngineStates.RUNNING);
+    override fun resume() {
+        fsm!!.changeState(EngineStates.RUNNING)
     }
 
-    @Override
-    public final void dispose() {
-        nhg.messaging.send(new Message(Strings.Events.engineDestroy));
-        onDispose();
+    override fun dispose() {
+        nhg.messaging.send(Message(Strings.Events.engineDestroy))
+        onDispose()
     }
 
-    @Override
-    public void onStart() {
+    override fun onStart() {}
+
+    override fun onInitialized() {
+        onResize(width, height)
     }
 
-    @Override
-    public void onInitialized() {
-        onResize(width, height);
-    }
+    override fun onUpdate(delta: Float) {}
 
-    @Override
-    public void onUpdate(float delta) {
-    }
-
-    @Override
-    public void onPause() {
+    override fun onPause() {
 
     }
 
-    @Override
-    public void onClose() {
-    }
+    override fun onClose() {}
 
-    @Override
-    public void onResize(int width, int height) {
+    override fun onResize(width: Int, height: Int) {
 
     }
 
-    @Override
-    public void onDispose() {
+    override fun onDispose() {
 
     }
 
-    @Override
-    public Array<BaseSystem> onConfigureEntitySystems() {
-        return new Array<>();
+    override fun onConfigureEntitySystems(): Array<BaseSystem> {
+        return Array()
     }
 
-    void init(NhgEntry nhgEntry) {
-        fsm = new DefaultStateMachine<>(nhgEntry, EngineStates.START);
+    fun init(nhgEntry: NhgEntry) {
+        fsm = DefaultStateMachine(nhgEntry, EngineStates.START)
     }
 
-    public final StateMachine<NhgEntry, EngineStates> getFsm() {
-        return fsm;
+    fun getFsm(): StateMachine<NhgEntry, EngineStates>? {
+        return fsm
     }
 }

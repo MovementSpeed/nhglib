@@ -1,77 +1,76 @@
-package io.github.movementspeed.nhglib.data.models.serialization.components;
+package io.github.movementspeed.nhglib.data.models.serialization.components
 
-import com.badlogic.gdx.utils.JsonValue;
-import io.github.movementspeed.nhglib.core.ecs.components.physics.VehicleComponent;
-import io.github.movementspeed.nhglib.data.models.serialization.ComponentJson;
-import io.github.movementspeed.nhglib.data.models.serialization.physics.shapes.ShapeJson;
-import io.github.movementspeed.nhglib.data.models.serialization.physics.vehicles.VehicleTuningJson;
+import com.badlogic.gdx.utils.JsonValue
+import io.github.movementspeed.nhglib.core.ecs.components.physics.VehicleComponent
+import io.github.movementspeed.nhglib.data.models.serialization.ComponentJson
+import io.github.movementspeed.nhglib.data.models.serialization.physics.shapes.ShapeJson
+import io.github.movementspeed.nhglib.data.models.serialization.physics.vehicles.VehicleTuningJson
 
 /**
  * Created by Fausto Napoli on 11/06/2017.
  */
-public class VehicleComponentJson extends ComponentJson {
+class VehicleComponentJson : ComponentJson() {
 
-    @Override
-    public void parse(JsonValue jsonValue) {
-        VehicleComponent vehicleComponent = nhg.entities.createComponent(entity, VehicleComponent.class);
+    override fun parse(jsonValue: JsonValue) {
+        val vehicleComponent = nhg!!.entities.createComponent(entity, VehicleComponent::class.java)
 
         // Shape
-        ShapeJson shapeJson = new ShapeJson();
+        val shapeJson = ShapeJson()
 
         if (jsonValue.has("shape")) {
-            shapeJson.parse(jsonValue.get("shape"));
+            shapeJson.parse(jsonValue.get("shape"))
         }
 
         // Vehicle tuning
-        VehicleTuningJson vehicleTuningJson = new VehicleTuningJson();
+        val vehicleTuningJson = VehicleTuningJson()
 
         if (jsonValue.has("vehicleTuning")) {
-            vehicleTuningJson.parse(jsonValue.get("vehicleTuning"));
+            vehicleTuningJson.parse(jsonValue.get("vehicleTuning"))
         }
 
-        float mass = jsonValue.getFloat("mass", 1f);
-        float friction = jsonValue.getFloat("friction", 5f);
-        float restitution = jsonValue.getFloat("restitution", 0f);
+        val mass = jsonValue.getFloat("mass", 1f)
+        val friction = jsonValue.getFloat("friction", 5f)
+        val restitution = jsonValue.getFloat("restitution", 0f)
 
-        short group = jsonValue.getShort("group", (short) -1);
+        val group = jsonValue.getShort("group", (-1).toShort())
 
-        JsonValue maskList = jsonValue.get("mask");
-        short[] masks;
+        val maskList = jsonValue.get("mask")
+        val masks: ShortArray
 
         if (maskList != null) {
-            masks = maskList.asShortArray();
+            masks = maskList.asShortArray()
         } else {
-            masks = new short[]{};
+            masks = shortArrayOf()
         }
 
-        vehicleComponent.mass = mass;
-        vehicleComponent.friction = friction;
-        vehicleComponent.restitution = restitution;
-        vehicleComponent.collisionFiltering = true;
-        vehicleComponent.rigidBodyShape = shapeJson.get();
+        vehicleComponent.mass = mass
+        vehicleComponent.friction = friction
+        vehicleComponent.restitution = restitution
+        vehicleComponent.collisionFiltering = true
+        vehicleComponent.rigidBodyShape = shapeJson.get()
 
-        if (group != -1) {
-            vehicleComponent.group = (short) (1 << group);
+        if (group.toInt() != -1) {
+            vehicleComponent.group = (1 shl group).toShort()
         } else {
-            vehicleComponent.collisionFiltering = false;
+            vehicleComponent.collisionFiltering = false
         }
 
-        if (masks.length > 0) {
-            if (masks[0] != -1) {
-                vehicleComponent.mask = (short) (1 << masks[0]);
+        if (masks.size > 0) {
+            if (masks[0].toInt() != -1) {
+                vehicleComponent.mask = (1 shl masks[0]).toShort()
             } else {
-                vehicleComponent.mask = 0;
+                vehicleComponent.mask = 0
             }
 
-            for (int i = 1; i < masks.length; i++) {
-                vehicleComponent.mask |= (short) (1 << masks[i]);
+            for (i in 1 until masks.size) {
+                vehicleComponent.mask = vehicleComponent.mask or (1 shl masks[i]).toShort()
             }
         } else {
-            vehicleComponent.collisionFiltering = false;
+            vehicleComponent.collisionFiltering = false
         }
 
-        vehicleComponent.vehicleTuning = vehicleTuningJson.get();
+        vehicleComponent.vehicleTuning = vehicleTuningJson.get()
 
-        output = vehicleComponent;
+        output = vehicleComponent
     }
 }

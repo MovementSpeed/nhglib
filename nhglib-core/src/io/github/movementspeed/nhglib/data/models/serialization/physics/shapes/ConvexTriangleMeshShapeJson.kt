@@ -1,24 +1,22 @@
-package io.github.movementspeed.nhglib.data.models.serialization.physics.shapes;
+package io.github.movementspeed.nhglib.data.models.serialization.physics.shapes
 
-import com.badlogic.gdx.utils.JsonValue;
-import io.github.movementspeed.nhglib.physics.models.ConvexTriangleMeshRigidBodyShape;
+import com.badlogic.gdx.utils.JsonValue
+import io.github.movementspeed.nhglib.physics.models.ConvexTriangleMeshRigidBodyShape
 
 /**
  * Created by Fausto Napoli on 15/06/2017.
  */
-public class ConvexTriangleMeshShapeJson extends ShapeJson {
-    private ConvexTriangleMeshRigidBodyShape shape;
+class ConvexTriangleMeshShapeJson : ShapeJson() {
+    private var shape: ConvexTriangleMeshRigidBodyShape? = null
 
-    @Override
-    public void parse(JsonValue jsonValue) {
-        boolean calcAabb = jsonValue.getBoolean("calcAabb", true);
-        String asset = jsonValue.getString("asset", "");
+    override fun parse(jsonValue: JsonValue) {
+        val calcAabb = jsonValue.getBoolean("calcAabb", true)
+        val asset = jsonValue.getString("asset", "")
 
-        shape = new ConvexTriangleMeshRigidBodyShape(asset, calcAabb);
+        shape = ConvexTriangleMeshRigidBodyShape(asset, calcAabb)
     }
 
-    @Override
-    public ConvexTriangleMeshRigidBodyShape get() {
-        return shape;
+    override fun get(): ConvexTriangleMeshRigidBodyShape? {
+        return shape
     }
 }

@@ -1,97 +1,197 @@
-package io.github.movementspeed.nhglib.graphics.shaders.attributes;
+package io.github.movementspeed.nhglib.graphics.shaders.attributes
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.Attribute;
-import com.badlogic.gdx.graphics.g3d.utils.TextureDescriptor;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.NumberUtils;
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Pixmap
+import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.graphics.g3d.Attribute
+import com.badlogic.gdx.graphics.g3d.utils.TextureDescriptor
+import com.badlogic.gdx.math.MathUtils
+import com.badlogic.gdx.utils.GdxRuntimeException
+import com.badlogic.gdx.utils.NumberUtils
 
 /**
  * Created by Fausto Napoli on 23/03/2017.
  */
-public class PBRTextureAttribute extends Attribute {
-    public final static String AlbedoAlias = "PBRAlbedoTexture";
-    public final static String NormalAlias = "PBRNormalTexture";
-    public final static String RMAAlias = "RMATexture";
-    public final static String EmissiveAlias = "PBREmissiveTexture";
+class PBRTextureAttribute(type: Long) : Attribute(type) {
 
-    public final static long Albedo = register(AlbedoAlias);
-    public final static long Normal = register(NormalAlias);
-    public final static long RMA = register(RMAAlias);
-    public final static long Emissive = register(EmissiveAlias);
-
-    protected static long Mask = Albedo | Normal | RMA | Emissive;
-
-    public final static boolean is(final long mask) {
-        return (mask & Mask) != 0;
+    /*public static PBRTextureAttribute createAmbientOcclusion(final Texture texture) {
+        return new PBRTextureAttribute(AmbientOcclusion, texture);
     }
 
-    public static PBRTextureAttribute createAlbedo(final Color color) {
-        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGB888);
-        pixmap.setColor(color);
-        pixmap.drawPixel(0, 0);
-        Texture texture = new Texture(pixmap);
-        return new PBRTextureAttribute(Albedo, texture);
+    public static PBRTextureAttribute createAmbientOcclusion(final TextureRegion region) {
+        return new PBRTextureAttribute(AmbientOcclusion, region);
     }
 
-    public static PBRTextureAttribute createAlbedo(final Texture texture) {
-        return new PBRTextureAttribute(Albedo, texture);
-    }
-
-    public static PBRTextureAttribute createAlbedo(final TextureRegion region) {
-        return new PBRTextureAttribute(Albedo, region);
-    }
-
-    public static PBRTextureAttribute createAlbedo(final Texture texture, float offsetU, float offsetV, float tilesU, float tilesV) {
+    public static PBRTextureAttribute createAmbientOcclusion(final Texture texture, float offsetU, float offsetV, float tilesU, float tilesV) {
         TextureDescriptor textureDescriptor = new TextureDescriptor();
         textureDescriptor.texture = texture;
 
-        return new PBRTextureAttribute(Albedo, textureDescriptor, offsetU, offsetV, tilesU, tilesV);
+        return new PBRTextureAttribute(AmbientOcclusion, textureDescriptor, offsetU, offsetV, tilesU, tilesV);
+    }*/
+
+    val textureDescription: TextureDescriptor<Texture>
+
+    var offsetU = 0f
+    var offsetV = 0f
+    var tilesU = 1f
+    var tilesV = 1f
+    /**
+     * The index of the texture coordinate vertex attribute to use for this PBRTextureAttribute. Whether this value is used, depends
+     * on the shader and [Attribute.type] value. For basic (model specific) types (e.g. [.Albedo],
+     * etc.), this value is usually ignored and the first texture coordinate vertex attribute is used.
+     */
+    var uvIndex = 0
+
+    init {
+        if (!`is`(type)) throw GdxRuntimeException("Invalid type specified")
+        textureDescription = TextureDescriptor()
     }
 
-    public static PBRTextureAttribute createRMA(final float roughness, final float metalness, final float ambientOcclusion) {
-        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGB888);
-        pixmap.setColor(roughness, metalness, ambientOcclusion, 1.0f);
-        pixmap.drawPixel(0, 0);
-        Texture texture = new Texture(pixmap);
-        return new PBRTextureAttribute(RMA, texture);
+    constructor(type: Long, textureDescription: TextureDescriptor<T>) : this(type) {
+        this.textureDescription.set<T>(textureDescription)
     }
 
-    public static PBRTextureAttribute createRMA(final Texture texture) {
-        return new PBRTextureAttribute(RMA, texture);
+    constructor(type: Long, textureDescription: TextureDescriptor<T>, offsetU: Float,
+                offsetV: Float, tilesU: Float, tilesV: Float, uvIndex: Int) : this<T>(type, textureDescription)
+    {
+        this.offsetU = offsetU
+        this.offsetV = offsetV
+        this.tilesU = tilesU
+        this.tilesV = tilesV
+        this.uvIndex = uvIndex
     }
 
-    public static PBRTextureAttribute createRMA(final TextureRegion region) {
-        return new PBRTextureAttribute(RMA, region);
+    constructor(type: Long, textureDescription: TextureDescriptor<T>, offsetU: Float,
+                offsetV: Float, tilesU: Float, tilesV: Float) : this<T>(type, textureDescription, offsetU, offsetV, tilesU, tilesV, 0)
+    {}
+
+    constructor(type: Long, texture: Texture) : this(type) {
+        textureDescription.texture = texture
     }
 
-    public static PBRTextureAttribute createRMA(final Texture texture, float offsetU, float offsetV, float tilesU, float tilesV) {
-        TextureDescriptor textureDescriptor = new TextureDescriptor();
-        textureDescriptor.texture = texture;
-
-        return new PBRTextureAttribute(RMA, textureDescriptor, offsetU, offsetV, tilesU, tilesV);
+    constructor(type: Long, region: TextureRegion) : this(type) {
+        set(region)
     }
 
-    public static PBRTextureAttribute createEmissive(final Texture texture) {
-        return new PBRTextureAttribute(Emissive, texture);
+    constructor(copyFrom: PBRTextureAttribute) : this<Texture>(copyFrom.type, copyFrom.textureDescription, copyFrom.offsetU, copyFrom.offsetV, copyFrom.tilesU, copyFrom.tilesV,
+    copyFrom.uvIndex)
+    {}
+
+    fun set(region: TextureRegion) {
+        textureDescription.texture = region.texture
+        offsetU = region.u
+        offsetV = region.v
+        tilesU = region.u2 - offsetU
+        tilesV = region.v2 - offsetV
     }
 
-    public static PBRTextureAttribute createEmissive(final TextureRegion region) {
-        return new PBRTextureAttribute(Emissive, region);
+    override fun copy(): Attribute {
+        return PBRTextureAttribute(this)
     }
 
-    public static PBRTextureAttribute createEmissive(final Texture texture, float offsetU, float offsetV, float tilesU, float tilesV) {
-        TextureDescriptor textureDescriptor = new TextureDescriptor();
-        textureDescriptor.texture = texture;
-
-        return new PBRTextureAttribute(Emissive, textureDescriptor, offsetU, offsetV, tilesU, tilesV);
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 991 * result + textureDescription.hashCode()
+        result = 991 * result + NumberUtils.floatToRawIntBits(offsetU)
+        result = 991 * result + NumberUtils.floatToRawIntBits(offsetV)
+        result = 991 * result + NumberUtils.floatToRawIntBits(tilesU)
+        result = 991 * result + NumberUtils.floatToRawIntBits(tilesV)
+        result = 991 * result + uvIndex
+        return result
     }
 
-    /*public static PBRTextureAttribute createMetalness(final float metalness) {
+    override fun compareTo(o: Attribute): Int {
+        if (type != o.type) return if (type < o.type) -1 else 1
+        val other = o as PBRTextureAttribute
+        val c = textureDescription.compareTo(other.textureDescription)
+        if (c != 0) return c
+        if (uvIndex != other.uvIndex) return uvIndex - other.uvIndex
+        if (!MathUtils.isEqual(tilesU, other.tilesU)) return if (tilesU > other.tilesU) 1 else -1
+        if (!MathUtils.isEqual(tilesV, other.tilesV)) return if (tilesV > other.tilesV) 1 else -1
+        if (!MathUtils.isEqual(offsetU, other.offsetU)) return if (offsetU > other.offsetU) 1 else -1
+        return if (!MathUtils.isEqual(offsetV, other.offsetV)) if (offsetV > other.offsetV) 1 else -1 else 0
+    }
+
+    companion object {
+        val AlbedoAlias = "PBRAlbedoTexture"
+        val NormalAlias = "PBRNormalTexture"
+        val RMAAlias = "RMATexture"
+        val EmissiveAlias = "PBREmissiveTexture"
+
+        val Albedo = Attribute.register(AlbedoAlias)
+        val Normal = Attribute.register(NormalAlias)
+        val RMA = Attribute.register(RMAAlias)
+        val Emissive = Attribute.register(EmissiveAlias)
+
+        protected var Mask = Albedo or Normal or RMA or Emissive
+
+        fun `is`(mask: Long): Boolean {
+            return mask and Mask != 0L
+        }
+
+        fun createAlbedo(color: Color): PBRTextureAttribute {
+            val pixmap = Pixmap(1, 1, Pixmap.Format.RGB888)
+            pixmap.setColor(color)
+            pixmap.drawPixel(0, 0)
+            val texture = Texture(pixmap)
+            return PBRTextureAttribute(Albedo, texture)
+        }
+
+        fun createAlbedo(texture: Texture): PBRTextureAttribute {
+            return PBRTextureAttribute(Albedo, texture)
+        }
+
+        fun createAlbedo(region: TextureRegion): PBRTextureAttribute {
+            return PBRTextureAttribute(Albedo, region)
+        }
+
+        fun createAlbedo(texture: Texture, offsetU: Float, offsetV: Float, tilesU: Float, tilesV: Float): PBRTextureAttribute {
+            val textureDescriptor = TextureDescriptor()
+            textureDescriptor.texture = texture
+
+            return PBRTextureAttribute(Albedo, textureDescriptor, offsetU, offsetV, tilesU, tilesV)
+        }
+
+        fun createRMA(roughness: Float, metalness: Float, ambientOcclusion: Float): PBRTextureAttribute {
+            val pixmap = Pixmap(1, 1, Pixmap.Format.RGB888)
+            pixmap.setColor(roughness, metalness, ambientOcclusion, 1.0f)
+            pixmap.drawPixel(0, 0)
+            val texture = Texture(pixmap)
+            return PBRTextureAttribute(RMA, texture)
+        }
+
+        fun createRMA(texture: Texture): PBRTextureAttribute {
+            return PBRTextureAttribute(RMA, texture)
+        }
+
+        fun createRMA(region: TextureRegion): PBRTextureAttribute {
+            return PBRTextureAttribute(RMA, region)
+        }
+
+        fun createRMA(texture: Texture, offsetU: Float, offsetV: Float, tilesU: Float, tilesV: Float): PBRTextureAttribute {
+            val textureDescriptor = TextureDescriptor()
+            textureDescriptor.texture = texture
+
+            return PBRTextureAttribute(RMA, textureDescriptor, offsetU, offsetV, tilesU, tilesV)
+        }
+
+        fun createEmissive(texture: Texture): PBRTextureAttribute {
+            return PBRTextureAttribute(Emissive, texture)
+        }
+
+        fun createEmissive(region: TextureRegion): PBRTextureAttribute {
+            return PBRTextureAttribute(Emissive, region)
+        }
+
+        fun createEmissive(texture: Texture, offsetU: Float, offsetV: Float, tilesU: Float, tilesV: Float): PBRTextureAttribute {
+            val textureDescriptor = TextureDescriptor()
+            textureDescriptor.texture = texture
+
+            return PBRTextureAttribute(Emissive, textureDescriptor, offsetU, offsetV, tilesU, tilesV)
+        }
+
+        /*public static PBRTextureAttribute createMetalness(final float metalness) {
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGB888);
         pixmap.setColor(metalness, metalness, metalness, 1.0f);
         pixmap.drawPixel(0, 0);
@@ -137,126 +237,19 @@ public class PBRTextureAttribute extends Attribute {
         return new PBRTextureAttribute(Roughness, textureDescriptor, offsetU, offsetV, tilesU, tilesV);
     }*/
 
-    public static PBRTextureAttribute createNormal(final Texture texture) {
-        return new PBRTextureAttribute(Normal, texture);
-    }
+        fun createNormal(texture: Texture): PBRTextureAttribute {
+            return PBRTextureAttribute(Normal, texture)
+        }
 
-    public static PBRTextureAttribute createNormal(final TextureRegion region) {
-        return new PBRTextureAttribute(Normal, region);
-    }
+        fun createNormal(region: TextureRegion): PBRTextureAttribute {
+            return PBRTextureAttribute(Normal, region)
+        }
 
-    public static PBRTextureAttribute createNormal(final Texture texture, float offsetU, float offsetV, float tilesU, float tilesV) {
-        TextureDescriptor textureDescriptor = new TextureDescriptor();
-        textureDescriptor.texture = texture;
+        fun createNormal(texture: Texture, offsetU: Float, offsetV: Float, tilesU: Float, tilesV: Float): PBRTextureAttribute {
+            val textureDescriptor = TextureDescriptor()
+            textureDescriptor.texture = texture
 
-        return new PBRTextureAttribute(Normal, textureDescriptor, offsetU, offsetV, tilesU, tilesV);
-    }
-
-    /*public static PBRTextureAttribute createAmbientOcclusion(final Texture texture) {
-        return new PBRTextureAttribute(AmbientOcclusion, texture);
-    }
-
-    public static PBRTextureAttribute createAmbientOcclusion(final TextureRegion region) {
-        return new PBRTextureAttribute(AmbientOcclusion, region);
-    }
-
-    public static PBRTextureAttribute createAmbientOcclusion(final Texture texture, float offsetU, float offsetV, float tilesU, float tilesV) {
-        TextureDescriptor textureDescriptor = new TextureDescriptor();
-        textureDescriptor.texture = texture;
-
-        return new PBRTextureAttribute(AmbientOcclusion, textureDescriptor, offsetU, offsetV, tilesU, tilesV);
-    }*/
-
-    public final TextureDescriptor<Texture> textureDescription;
-
-    public float offsetU = 0;
-    public float offsetV = 0;
-    public float tilesU = 1;
-    public float tilesV = 1;
-    /**
-     * The index of the texture coordinate vertex attribute to use for this PBRTextureAttribute. Whether this value is used, depends
-     * on the shader and {@link Attribute#type} value. For basic (model specific) types (e.g. {@link #Albedo},
-     * etc.), this value is usually ignored and the first texture coordinate vertex attribute is used.
-     */
-    public int uvIndex = 0;
-
-    public PBRTextureAttribute(final long type) {
-        super(type);
-        if (!is(type)) throw new GdxRuntimeException("Invalid type specified");
-        textureDescription = new TextureDescriptor<>();
-    }
-
-    public <T extends Texture> PBRTextureAttribute(final long type, final TextureDescriptor<T> textureDescription) {
-        this(type);
-        this.textureDescription.set(textureDescription);
-    }
-
-    public <T extends Texture> PBRTextureAttribute(final long type, final TextureDescriptor<T> textureDescription, float offsetU,
-                                                   float offsetV, float tilesU, float tilesV, int uvIndex) {
-        this(type, textureDescription);
-        this.offsetU = offsetU;
-        this.offsetV = offsetV;
-        this.tilesU = tilesU;
-        this.tilesV = tilesV;
-        this.uvIndex = uvIndex;
-    }
-
-    public <T extends Texture> PBRTextureAttribute(final long type, final TextureDescriptor<T> textureDescription, float offsetU,
-                                                   float offsetV, float tilesU, float tilesV) {
-        this(type, textureDescription, offsetU, offsetV, tilesU, tilesV, 0);
-    }
-
-    public PBRTextureAttribute(final long type, final Texture texture) {
-        this(type);
-        textureDescription.texture = texture;
-    }
-
-    public PBRTextureAttribute(final long type, final TextureRegion region) {
-        this(type);
-        set(region);
-    }
-
-    public PBRTextureAttribute(final PBRTextureAttribute copyFrom) {
-        this(copyFrom.type, copyFrom.textureDescription, copyFrom.offsetU, copyFrom.offsetV, copyFrom.tilesU, copyFrom.tilesV,
-                copyFrom.uvIndex);
-    }
-
-    public void set(final TextureRegion region) {
-        textureDescription.texture = region.getTexture();
-        offsetU = region.getU();
-        offsetV = region.getV();
-        tilesU = region.getU2() - offsetU;
-        tilesV = region.getV2() - offsetV;
-    }
-
-    @Override
-    public Attribute copy() {
-        return new PBRTextureAttribute(this);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 991 * result + textureDescription.hashCode();
-        result = 991 * result + NumberUtils.floatToRawIntBits(offsetU);
-        result = 991 * result + NumberUtils.floatToRawIntBits(offsetV);
-        result = 991 * result + NumberUtils.floatToRawIntBits(tilesU);
-        result = 991 * result + NumberUtils.floatToRawIntBits(tilesV);
-        result = 991 * result + uvIndex;
-        return result;
-    }
-
-    @Override
-    public int compareTo(Attribute o) {
-        if (type != o.type) return type < o.type ? -1 : 1;
-        PBRTextureAttribute other = (PBRTextureAttribute) o;
-        final int c = textureDescription.compareTo(other.textureDescription);
-        if (c != 0) return c;
-        if (uvIndex != other.uvIndex) return uvIndex - other.uvIndex;
-        if (!MathUtils.isEqual(tilesU, other.tilesU)) return tilesU > other.tilesU ? 1 : -1;
-        if (!MathUtils.isEqual(tilesV, other.tilesV)) return tilesV > other.tilesV ? 1 : -1;
-        if (!MathUtils.isEqual(offsetU, other.offsetU)) return offsetU > other.offsetU ? 1 : -1;
-        if (!MathUtils.isEqual(offsetV, other.offsetV)) return offsetV > other.offsetV ? 1 : -1;
-        return 0;
+            return PBRTextureAttribute(Normal, textureDescriptor, offsetU, offsetV, tilesU, tilesV)
+        }
     }
 }

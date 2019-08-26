@@ -1,30 +1,24 @@
-package io.github.movementspeed.nhglib.input.enums;
+package io.github.movementspeed.nhglib.input.enums
 
 /**
  * Created by Fausto Napoli on 23/01/2017.
  */
-public enum StickType {
+enum class StickType {
     LEFT,
     RIGHT,
     VIRTUAL;
 
-    public static StickType fromString(String value) {
-        StickType res = null;
+    companion object {
+        fun fromString(value: String): StickType? {
+            var res: StickType? = null
 
-        switch (value.toLowerCase()) {
-            case "left":
-                res = LEFT;
-                break;
+            when (value.toLowerCase()) {
+                "left" -> res = LEFT
+                "right" -> res = RIGHT
+                "virtual" -> res = VIRTUAL
+            }
 
-            case "right":
-                res = RIGHT;
-                break;
-
-            case "virtual":
-                res = VIRTUAL;
-                break;
+            return res
         }
-
-        return res;
     }
 }

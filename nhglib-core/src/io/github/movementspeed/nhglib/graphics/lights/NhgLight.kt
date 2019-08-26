@@ -1,102 +1,105 @@
-package io.github.movementspeed.nhglib.graphics.lights;
+package io.github.movementspeed.nhglib.graphics.lights
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g3d.environment.BaseLight;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Vector3;
-import io.github.movementspeed.nhglib.enums.LightType;
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g3d.environment.BaseLight
+import com.badlogic.gdx.math.Matrix4
+import com.badlogic.gdx.math.Vector3
+import io.github.movementspeed.nhglib.enums.LightType
 
 /**
  * Created by Fausto Napoli on 18/03/2017.
  */
-public class NhgLight extends BaseLight<NhgLight> {
-    public final Vector3 position;
-    public final Vector3 direction;
+class NhgLight : BaseLight<NhgLight>() {
+    val position: Vector3
+    val direction: Vector3
 
-    public boolean enabled;
+    var enabled: Boolean = false
 
-    public float radius;
-    public float intensity;
-    public float innerAngle;
-    public float outerAngle;
+    var radius: Float = 0.toFloat()
+    var intensity: Float = 0.toFloat()
+    var innerAngle: Float = 0.toFloat()
+    var outerAngle: Float = 0.toFloat()
 
-    public LightType type;
+    var type: LightType
 
-    private Matrix4 transform;
+    private var transform: Matrix4? = null
 
-    public NhgLight() {
-        intensity = 0;
-        enabled = true;
-        position = new Vector3();
-        direction = new Vector3();
-        transform = new Matrix4();
+    init {
+        intensity = 0f
+        enabled = true
+        position = Vector3()
+        direction = Vector3()
+        transform = Matrix4()
     }
 
-    public static NhgLight directional(float intensity, Color color) {
-        NhgLight light = new NhgLight();
-        light.type = LightType.DIRECTIONAL_LIGHT;
-        light.radius = 1.0f;
-        light.intensity = intensity;
-        light.color.set(color);
-
-        return light;
+    fun set(light: NhgLight) {
+        this.type = light.type
+        this.enabled = light.enabled
+        this.outerAngle = light.outerAngle
+        this.innerAngle = light.innerAngle
+        this.intensity = light.intensity
+        this.radius = light.radius
+        this.position.set(light.position)
+        this.direction.set(light.direction)
+        this.color.set(light.color)
     }
 
-    public static NhgLight point(float intensity, float radius, Color color) {
-        NhgLight light = new NhgLight();
-        light.type = LightType.POINT_LIGHT;
-        light.intensity = intensity;
-        light.color.set(color);
-        light.radius = radius;
-
-        return light;
+    fun setTransform(transform: Matrix4) {
+        this.transform!!.set(transform)
     }
 
-    public static NhgLight spot(float intensity, float radius, float innerAngle, float outerAngle, Color color) {
-        NhgLight light = new NhgLight();
-        light.type = LightType.SPOT_LIGHT;
-        light.intensity = intensity;
-        light.radius = radius;
-        light.color.set(color);
-        light.innerAngle = innerAngle;
-        light.outerAngle = outerAngle;
+    fun copy(): NhgLight {
+        val copy = NhgLight()
 
-        return light;
+        copy.enabled = this.enabled
+        copy.position.set(this.position)
+        copy.direction.set(this.direction)
+        copy.type = this.type
+        copy.radius = this.radius
+        copy.intensity = this.intensity
+        copy.innerAngle = this.innerAngle
+        copy.outerAngle = this.outerAngle
+        copy.transform = this.transform
+
+        return copy
     }
 
-    public void set(NhgLight light) {
-        this.type = light.type;
-        this.enabled = light.enabled;
-        this.outerAngle = light.outerAngle;
-        this.innerAngle = light.innerAngle;
-        this.intensity = light.intensity;
-        this.radius = light.radius;
-        this.position.set(light.position);
-        this.direction.set(light.direction);
-        this.color.set(light.color);
+    fun getTransform(): Matrix4? {
+        return transform
     }
 
-    public void setTransform(Matrix4 transform) {
-        this.transform.set(transform);
-    }
+    companion object {
 
-    public NhgLight copy() {
-        NhgLight copy = new NhgLight();
+        fun directional(intensity: Float, color: Color): NhgLight {
+            val light = NhgLight()
+            light.type = LightType.DIRECTIONAL_LIGHT
+            light.radius = 1.0f
+            light.intensity = intensity
+            light.color.set(color)
 
-        copy.enabled = this.enabled;
-        copy.position.set(this.position);
-        copy.direction.set(this.direction);
-        copy.type = this.type;
-        copy.radius = this.radius;
-        copy.intensity = this.intensity;
-        copy.innerAngle = this.innerAngle;
-        copy.outerAngle = this.outerAngle;
-        copy.transform = this.transform;
+            return light
+        }
 
-        return copy;
-    }
+        fun point(intensity: Float, radius: Float, color: Color): NhgLight {
+            val light = NhgLight()
+            light.type = LightType.POINT_LIGHT
+            light.intensity = intensity
+            light.color.set(color)
+            light.radius = radius
 
-    public Matrix4 getTransform() {
-        return transform;
+            return light
+        }
+
+        fun spot(intensity: Float, radius: Float, innerAngle: Float, outerAngle: Float, color: Color): NhgLight {
+            val light = NhgLight()
+            light.type = LightType.SPOT_LIGHT
+            light.intensity = intensity
+            light.radius = radius
+            light.color.set(color)
+            light.innerAngle = innerAngle
+            light.outerAngle = outerAngle
+
+            return light
+        }
     }
 }

@@ -1,38 +1,36 @@
-package io.github.movementspeed.nhglib.data.models.serialization.components;
+package io.github.movementspeed.nhglib.data.models.serialization.components
 
-import com.badlogic.gdx.utils.JsonValue;
-import io.github.movementspeed.nhglib.core.ecs.components.graphics.ModelComponent;
-import io.github.movementspeed.nhglib.data.models.serialization.ComponentJson;
-import io.github.movementspeed.nhglib.data.models.serialization.PBRMaterialJson;
+import com.badlogic.gdx.utils.JsonValue
+import io.github.movementspeed.nhglib.core.ecs.components.graphics.ModelComponent
+import io.github.movementspeed.nhglib.data.models.serialization.ComponentJson
+import io.github.movementspeed.nhglib.data.models.serialization.PBRMaterialJson
 
 /**
  * Created by Fausto Napoli on 19/12/2016.
  */
-public class ModelComponentJson extends ComponentJson {
-    @Override
-    public void parse(JsonValue jsonValue) {
-        ModelComponent modelComponent =
-                nhg.entities.createComponent(entity, ModelComponent.class);
+class ModelComponentJson : ComponentJson() {
+    override fun parse(jsonValue: JsonValue) {
+        val modelComponent = nhg!!.entities.createComponent(entity, ModelComponent::class.java)
 
-        String type = jsonValue.getString("graphicsType");
-        String asset = jsonValue.getString("asset", "");
+        val type = jsonValue.getString("graphicsType")
+        val asset = jsonValue.getString("asset", "")
 
-        boolean enabled = jsonValue.getBoolean("enabled", true);
+        val enabled = jsonValue.getBoolean("enabled", true)
 
-        JsonValue materialsJson = jsonValue.get("materials");
+        val materialsJson = jsonValue.get("materials")
 
         if (materialsJson != null) {
-            for (JsonValue mat : materialsJson) {
-                PBRMaterialJson pbrMaterialJson = new PBRMaterialJson();
-                pbrMaterialJson.parse(mat);
+            for (mat in materialsJson) {
+                val pbrMaterialJson = PBRMaterialJson()
+                pbrMaterialJson.parse(mat)
 
-                modelComponent.pbrMaterials.add(pbrMaterialJson.get());
+                modelComponent.pbrMaterials.add(pbrMaterialJson.get())
             }
         }
 
-        modelComponent.type = ModelComponent.Type.fromString(type);
-        modelComponent.asset = asset;
-        modelComponent.enabled = enabled;
-        output = modelComponent;
+        modelComponent.type = ModelComponent.Type.fromString(type)
+        modelComponent.asset = asset
+        modelComponent.enabled = enabled
+        output = modelComponent
     }
 }

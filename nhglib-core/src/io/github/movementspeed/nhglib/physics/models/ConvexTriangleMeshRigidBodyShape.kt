@@ -1,11 +1,3 @@
-package io.github.movementspeed.nhglib.physics.models;
+package io.github.movementspeed.nhglib.physics.models
 
-public class ConvexTriangleMeshRigidBodyShape extends RigidBodyShape {
-    public boolean calcAabb;
-    public String asset;
-
-    public ConvexTriangleMeshRigidBodyShape(String asset, boolean calcAabb) {
-        this.asset = asset;
-        this.calcAabb = calcAabb;
-    }
-}
+class ConvexTriangleMeshRigidBodyShape(var asset: String, var calcAabb: Boolean) : RigidBodyShape()

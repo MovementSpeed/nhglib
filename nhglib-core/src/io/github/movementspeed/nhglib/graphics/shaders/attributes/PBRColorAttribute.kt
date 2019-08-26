@@ -1,72 +1,66 @@
-package io.github.movementspeed.nhglib.graphics.shaders.attributes;
+package io.github.movementspeed.nhglib.graphics.shaders.attributes
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g3d.Attribute;
-import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g3d.Attribute
+import com.badlogic.gdx.utils.GdxRuntimeException
 
-public class PBRColorAttribute extends Attribute {
-    public final static String AlbedoColorAlias = "albedoColor";
-    public final static String MetalnessValueAlias = "metalnessValue";
-    public final static String RoughnessValueAlias = "roughnessValue";
+class PBRColorAttribute(type: Long) : Attribute(type) {
 
-    public final static long AlbedoColor = register(AlbedoColorAlias);
-    public final static long MetalnessValue = register(MetalnessValueAlias);
-    public final static long RoughnessValue = register(RoughnessValueAlias);
+    val color = Color()
 
-    protected static long Mask = AlbedoColor | MetalnessValue | RoughnessValue;
-
-    public final static boolean is (final long mask) {
-        return (mask & Mask) != 0;
+    init {
+        if (!`is`(type)) throw GdxRuntimeException("Invalid type specified")
     }
 
-    public final static PBRColorAttribute createAlbedo(final Color color) {
-        return new PBRColorAttribute(AlbedoColor, color);
+    constructor(type: Long, color: Color?) : this(type) {
+        if (color != null) this.color.set(color)
     }
 
-    public final static PBRColorAttribute createMetalness(final float metalness) {
-        return new PBRColorAttribute(MetalnessValue, new Color(metalness, metalness, metalness, 1.0f));
+    constructor(type: Long, r: Float, g: Float, b: Float, a: Float) : this(type) {
+        this.color.set(r, g, b, a)
     }
 
-    public final static PBRColorAttribute createRoughness(final float roughness) {
-        return new PBRColorAttribute(RoughnessValue, new Color(roughness, roughness, roughness, 1.0f));
+    constructor(copyFrom: PBRColorAttribute) : this(copyFrom.type, copyFrom.color) {}
+
+    override fun copy(): Attribute {
+        return PBRColorAttribute(this)
     }
 
-    public final Color color = new Color();
-
-    public PBRColorAttribute(final long type) {
-        super(type);
-        if (!is(type)) throw new GdxRuntimeException("Invalid type specified");
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 953 * result + color.toIntBits()
+        return result
     }
 
-    public PBRColorAttribute(final long type, final Color color) {
-        this(type);
-        if (color != null) this.color.set(color);
+    override fun compareTo(o: Attribute): Int {
+        return if (type != o.type) (type - o.type).toInt() else (o as PBRColorAttribute).color.toIntBits() - color.toIntBits()
     }
 
-    public PBRColorAttribute(final long type, float r, float g, float b, float a) {
-        this(type);
-        this.color.set(r, g, b, a);
-    }
+    companion object {
+        val AlbedoColorAlias = "albedoColor"
+        val MetalnessValueAlias = "metalnessValue"
+        val RoughnessValueAlias = "roughnessValue"
 
-    public PBRColorAttribute(final PBRColorAttribute copyFrom) {
-        this(copyFrom.type, copyFrom.color);
-    }
+        val AlbedoColor = Attribute.register(AlbedoColorAlias)
+        val MetalnessValue = Attribute.register(MetalnessValueAlias)
+        val RoughnessValue = Attribute.register(RoughnessValueAlias)
 
-    @Override
-    public Attribute copy () {
-        return new PBRColorAttribute(this);
-    }
+        protected var Mask = AlbedoColor or MetalnessValue or RoughnessValue
 
-    @Override
-    public int hashCode () {
-        int result = super.hashCode();
-        result = 953 * result + color.toIntBits();
-        return result;
-    }
+        fun `is`(mask: Long): Boolean {
+            return mask and Mask != 0L
+        }
 
-    @Override
-    public int compareTo (Attribute o) {
-        if (type != o.type) return (int)(type - o.type);
-        return ((PBRColorAttribute)o).color.toIntBits() - color.toIntBits();
+        fun createAlbedo(color: Color): PBRColorAttribute {
+            return PBRColorAttribute(AlbedoColor, color)
+        }
+
+        fun createMetalness(metalness: Float): PBRColorAttribute {
+            return PBRColorAttribute(MetalnessValue, Color(metalness, metalness, metalness, 1.0f))
+        }
+
+        fun createRoughness(roughness: Float): PBRColorAttribute {
+            return PBRColorAttribute(RoughnessValue, Color(roughness, roughness, roughness, 1.0f))
+        }
     }
 }

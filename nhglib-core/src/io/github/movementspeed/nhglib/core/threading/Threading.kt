@@ -1,57 +1,60 @@
-package io.github.movementspeed.nhglib.core.threading;
+package io.github.movementspeed.nhglib.core.threading
 
-import com.badlogic.gdx.utils.ArrayMap;
+import com.badlogic.gdx.utils.ArrayMap
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 /**
  * Created by Fausto Napoli on 05/11/2016.
  */
-public class Threading {
-    public final static int cores = Runtime.getRuntime().availableProcessors();
+class Threading {
 
-    private ExecutorService executor;
-    private ArrayMap<Integer, ResettableCountDownLatch> latches;
+    private val executor: ExecutorService
+    private val latches: ArrayMap<Int, ResettableCountDownLatch>
 
-    public Threading() {
-        executor = Executors.newFixedThreadPool(cores);
-        latches = new ArrayMap<>();
+    init {
+        executor = Executors.newFixedThreadPool(cores)
+        latches = ArrayMap()
     }
 
-    public void execute(Work work) {
-        executor.execute(work);
+    fun execute(work: Work) {
+        executor.execute(work)
     }
 
-    public void createLatch(int latchId, int count) {
-        latches.put(latchId, new ResettableCountDownLatch(count));
+    fun createLatch(latchId: Int, count: Int) {
+        latches.put(latchId, ResettableCountDownLatch(count))
     }
 
-    public void awaitLatch(int latchId) {
+    fun awaitLatch(latchId: Int) {
         if (latches.containsKey(latchId)) {
-            ResettableCountDownLatch latch = latches.get(latchId);
+            val latch = latches.get(latchId)
 
             try {
-                latch.await();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                latch.await()
+            } catch (e: InterruptedException) {
+                e.printStackTrace()
             }
 
-            latch.reset();
+            latch.reset()
         }
     }
 
-    public void countDownLatch(int latchId) {
+    fun countDownLatch(latchId: Int) {
         if (latches.containsKey(latchId)) {
-            latches.get(latchId).countDown();
+            latches.get(latchId).countDown()
         }
     }
 
-    public void setLatchCount(int latchId, int count) {
-        createLatch(latchId, count);
+    fun setLatchCount(latchId: Int, count: Int) {
+        createLatch(latchId, count)
     }
 
-    public void terminate() {
-        executor.shutdown();
+    fun terminate() {
+        executor.shutdown()
+    }
+
+    companion object {
+        val cores = Runtime.getRuntime().availableProcessors()
     }
 }

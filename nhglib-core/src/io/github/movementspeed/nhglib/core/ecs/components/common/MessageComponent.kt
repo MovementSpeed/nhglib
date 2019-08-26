@@ -1,28 +1,27 @@
-package io.github.movementspeed.nhglib.core.ecs.components.common;
+package io.github.movementspeed.nhglib.core.ecs.components.common
 
-import com.artemis.PooledComponent;
-import com.badlogic.gdx.utils.Array;
-import io.github.movementspeed.nhglib.core.messaging.Message;
+import com.artemis.PooledComponent
+import com.badlogic.gdx.utils.Array
+import io.github.movementspeed.nhglib.core.messaging.Message
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
  */
-public class MessageComponent extends PooledComponent {
-    private Array<Message> messages;
-    private Array<String> filters;
+class MessageComponent : PooledComponent() {
+    val messages: Array<Message>
+    private val filters: Array<String>
 
-    public MessageComponent() {
-        messages = new Array<>();
-        filters = new Array<>();
+    init {
+        messages = Array()
+        filters = Array()
     }
 
-    @Override
-    protected void reset() {
-        messages.clear();
-        filters.clear();
+    override fun reset() {
+        messages.clear()
+        filters.clear()
     }
 
-    public void subscribe(String... filters) {
+    fun subscribe(vararg filters: String) {
         /*Nhg.messaging.get(filters)
                 .subscribe(new Consumer<Message>() {
                     @Override
@@ -31,15 +30,11 @@ public class MessageComponent extends PooledComponent {
                     }
                 });*/
 
-        this.filters.clear();
-        this.filters.addAll(filters);
+        this.filters.clear()
+        this.filters.addAll(*filters)
     }
 
-    public void consume(Message message) {
-        messages.removeValue(message, false);
-    }
-
-    public Array<Message> getMessages() {
-        return messages;
+    fun consume(message: Message) {
+        messages.removeValue(message, false)
     }
 }

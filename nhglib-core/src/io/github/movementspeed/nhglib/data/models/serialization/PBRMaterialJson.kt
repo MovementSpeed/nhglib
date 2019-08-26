@@ -1,77 +1,75 @@
-package io.github.movementspeed.nhglib.data.models.serialization;
+package io.github.movementspeed.nhglib.data.models.serialization
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.utils.JsonValue;
-import io.github.movementspeed.nhglib.graphics.utils.PBRMaterial;
-import io.github.movementspeed.nhglib.interfaces.JsonParseable;
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.utils.JsonValue
+import io.github.movementspeed.nhglib.graphics.utils.PBRMaterial
+import io.github.movementspeed.nhglib.interfaces.JsonParseable
 
 /**
  * Created by Fausto Napoli on 28/03/2017.
  */
-public class PBRMaterialJson implements JsonParseable<PBRMaterial> {
-    private PBRMaterial pbrMaterial;
+class PBRMaterialJson : JsonParseable<PBRMaterial> {
+    private var pbrMaterial: PBRMaterial? = null
 
-    @Override
-    public void parse(JsonValue jsonValue) {
-        pbrMaterial = new PBRMaterial();
-        pbrMaterial.targetNode = jsonValue.getString("targetNode", "");
+    override fun parse(jsonValue: JsonValue) {
+        pbrMaterial = PBRMaterial()
+        pbrMaterial!!.targetNode = jsonValue.getString("targetNode", "")
 
-        boolean blended = jsonValue.getBoolean("blended", false);
+        val blended = jsonValue.getBoolean("blended", false)
 
-        String albedo = jsonValue.getString("albedo", "");
-        String normal = jsonValue.getString("normal", "");
-        String rma = jsonValue.getString("rma", "");
+        val albedo = jsonValue.getString("albedo", "")
+        val normal = jsonValue.getString("normal", "")
+        val rma = jsonValue.getString("rma", "")
 
-        pbrMaterial.blended = blended;
+        pbrMaterial!!.blended = blended
 
         if (jsonValue.has("metalnessValue")) {
-            pbrMaterial.metalnessValue = jsonValue.getFloat("metalnessValue", 0.01f);
+            pbrMaterial!!.metalnessValue = jsonValue.getFloat("metalnessValue", 0.01f)
         } else {
-            pbrMaterial.metalnessValue = 0.01f;
+            pbrMaterial!!.metalnessValue = 0.01f
         }
 
         if (jsonValue.has("roughnessValue")) {
-            pbrMaterial.roughnessValue = jsonValue.getFloat("roughnessValue", 0.8f);
+            pbrMaterial!!.roughnessValue = jsonValue.getFloat("roughnessValue", 0.8f)
         } else {
-            pbrMaterial.roughnessValue = 0.8f;
+            pbrMaterial!!.roughnessValue = 0.8f
         }
 
         if (jsonValue.has("aoValue")) {
-            pbrMaterial.aoValue = jsonValue.getFloat("aoValue", 1.0f);
+            pbrMaterial!!.aoValue = jsonValue.getFloat("aoValue", 1.0f)
         } else {
-            pbrMaterial.aoValue = 1.0f;
+            pbrMaterial!!.aoValue = 1.0f
         }
 
-        pbrMaterial.offsetU = jsonValue.getFloat("offsetU", 0f);
-        pbrMaterial.offsetV = jsonValue.getFloat("offsetV", 0f);
-        pbrMaterial.tilesU = jsonValue.getFloat("tilesU", 1f);
-        pbrMaterial.tilesV = jsonValue.getFloat("tilesV", 1f);
+        pbrMaterial!!.offsetU = jsonValue.getFloat("offsetU", 0f)
+        pbrMaterial!!.offsetV = jsonValue.getFloat("offsetV", 0f)
+        pbrMaterial!!.tilesU = jsonValue.getFloat("tilesU", 1f)
+        pbrMaterial!!.tilesV = jsonValue.getFloat("tilesV", 1f)
 
-        JsonValue albedoColorJson = jsonValue.get("albedoColor");
+        val albedoColorJson = jsonValue.get("albedoColor")
 
         if (albedoColorJson != null) {
-            pbrMaterial.albedoColor = new Color(
+            pbrMaterial!!.albedoColor = Color(
                     albedoColorJson.getFloat("r", 1.0f),
                     albedoColorJson.getFloat("g", 1.0f),
                     albedoColorJson.getFloat("b", 1.0f),
-                    albedoColorJson.getFloat("a", 1.0f));
+                    albedoColorJson.getFloat("a", 1.0f))
         }
 
         if (albedo != null) {
-            pbrMaterial.albedo = albedo;
+            pbrMaterial!!.albedo = albedo
         }
 
         if (rma != null) {
-            pbrMaterial.rma = rma;
+            pbrMaterial!!.rma = rma
         }
 
         if (normal != null) {
-            pbrMaterial.normal = normal;
+            pbrMaterial!!.normal = normal
         }
     }
 
-    @Override
-    public PBRMaterial get() {
-        return pbrMaterial;
+    override fun get(): PBRMaterial? {
+        return pbrMaterial
     }
 }

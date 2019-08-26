@@ -1,147 +1,119 @@
-package io.github.movementspeed.nhglib.utils.data;
-
-import java.util.HashMap;
+package io.github.movementspeed.nhglib.utils.data
 
 /**
  * Created by Fausto Napoli on 25/10/2016.
  */
-public class Bundle extends HashMap<String, Object> {
-    public boolean getBoolean(String key) {
-        return getBoolean(key, false);
-    }
+class Bundle : HashMap<String, Any>() {
 
-    public boolean getBoolean(String key, boolean defaultValue) {
-        boolean res = defaultValue;
-        Object value = get(key);
+    @JvmOverloads
+    fun getBoolean(key: String, defaultValue: Boolean = false): Boolean {
+        var res = defaultValue
+        val value = get(key)
 
-        if (value instanceof Boolean) {
-            res = (boolean) value;
+        if (value is Boolean) {
+            res = value
         }
 
-        return res;
+        return res
     }
 
-    public byte getByte(String key) {
-        return getByte(key, (byte) -1);
-    }
+    @JvmOverloads
+    fun getByte(key: String, defaultValue: Byte = (-1).toByte()): Byte {
+        var res = defaultValue
+        val value = get(key)
 
-    public byte getByte(String key, byte defaultValue) {
-        byte res = defaultValue;
-        Object value = get(key);
-
-        if (value instanceof Byte) {
-            res = (byte) value;
+        if (value is Byte) {
+            res = value
         }
 
-        return res;
+        return res
     }
 
-    public short getShort(String key) {
-        return getShort(key, (short) -1);
-    }
+    @JvmOverloads
+    fun getShort(key: String, defaultValue: Short = (-1).toShort()): Short {
+        var res = defaultValue
+        val value = get(key)
 
-    public short getShort(String key, short defaultValue) {
-        short res = defaultValue;
-        Object value = get(key);
-
-        if (value instanceof Short) {
-            res = (short) value;
+        if (value is Short) {
+            res = value
         }
 
-        return res;
+        return res
     }
 
-    public int getInteger(String key) {
-        return getInteger(key, -1);
-    }
+    @JvmOverloads
+    fun getInteger(key: String, defaultValue: Int = -1): Int {
+        var res = defaultValue
+        val value = get(key)
 
-    public int getInteger(String key, int defaultValue) {
-        int res = defaultValue;
-        Object value = get(key);
-
-        if (value instanceof Integer) {
-            res = (int) value;
+        if (value is Int) {
+            res = value
         }
 
-        return res;
+        return res
     }
 
-    public long getLong(String key) {
-        return getLong(key, -1L);
-    }
+    @JvmOverloads
+    fun getLong(key: String, defaultValue: Long = -1L): Long {
+        var res = defaultValue
+        val value = get(key)
 
-    public long getLong(String key, long defaultValue) {
-        long res = defaultValue;
-        Object value = get(key);
-
-        if (value instanceof Long) {
-            res = (long) value;
+        if (value is Long) {
+            res = value
         }
 
-        return res;
+        return res
     }
 
-    public float getFloat(String key) {
-        return getFloat(key, -1f);
-    }
+    @JvmOverloads
+    fun getFloat(key: String, defaultValue: Float = -1f): Float {
+        var res = defaultValue
+        val value = get(key)
 
-    public float getFloat(String key, float defaultValue) {
-        float res = defaultValue;
-        Object value = get(key);
-
-        if (value instanceof Float) {
-            res = (float) value;
+        if (value is Float) {
+            res = value
         }
 
-        return res;
+        return res
     }
 
-    public double getDouble(String key) {
-        return getDouble(key, -1D);
-    }
+    @JvmOverloads
+    fun getDouble(key: String, defaultValue: Double = -1.0): Double {
+        var res = defaultValue
+        val value = get(key)
 
-    public double getDouble(String key, double defaultValue) {
-        double res = defaultValue;
-        Object value = get(key);
-
-        if (value instanceof Double) {
-            res = (double) value;
+        if (value is Double) {
+            res = value
         }
 
-        return res;
+        return res
     }
 
-    public char getCharacter(String key) {
-        return getCharacter(key, ' ');
-    }
+    @JvmOverloads
+    fun getCharacter(key: String, defaultValue: Char = ' '): Char {
+        var res = defaultValue
+        val value = get(key)
 
-    public char getCharacter(String key, char defaultValue) {
-        char res = defaultValue;
-        Object value = get(key);
-
-        if (value instanceof Character) {
-            res = (char) value;
+        if (value is Char) {
+            res = value
         }
 
-        return res;
+        return res
     }
 
-    public String getString(String key) {
-        return getString(key, null);
-    }
+    @JvmOverloads
+    fun getString(key: String, defaultValue: String? = null): String? {
+        var res: String? = null
+        val value = get(key)
 
-    public String getString(String key, String defaultValue) {
-        String res = null;
-        Object value = get(key);
-
-        if (value instanceof String) {
-            res = (String) value;
+        if (value is String) {
+            res = value
         }
 
         if (res == null) {
-            res = defaultValue;
+            res = defaultValue
         }
 
-        return res;
+        return res
     }
 }

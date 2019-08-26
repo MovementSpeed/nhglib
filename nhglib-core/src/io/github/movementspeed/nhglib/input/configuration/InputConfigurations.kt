@@ -1,100 +1,92 @@
-package io.github.movementspeed.nhglib.input.configuration;
+package io.github.movementspeed.nhglib.input.configuration
 
-import com.badlogic.gdx.utils.Array;
-import io.github.movementspeed.nhglib.input.configuration.impls.KeyInputConfiguration;
-import io.github.movementspeed.nhglib.input.configuration.impls.MouseInputConfiguration;
-import io.github.movementspeed.nhglib.input.configuration.impls.PointerInputConfiguration;
-import io.github.movementspeed.nhglib.input.configuration.impls.StickInputConfiguration;
-import io.github.movementspeed.nhglib.input.controllers.ControllerConfiguration;
-import io.github.movementspeed.nhglib.input.enums.MouseSourceType;
+import com.badlogic.gdx.utils.Array
+import io.github.movementspeed.nhglib.input.configuration.impls.KeyInputConfiguration
+import io.github.movementspeed.nhglib.input.configuration.impls.MouseInputConfiguration
+import io.github.movementspeed.nhglib.input.configuration.impls.PointerInputConfiguration
+import io.github.movementspeed.nhglib.input.configuration.impls.StickInputConfiguration
+import io.github.movementspeed.nhglib.input.controllers.ControllerConfiguration
+import io.github.movementspeed.nhglib.input.enums.MouseSourceType
 
 /**
  * Created by Fausto Napoli on 25/01/2017.
  */
-public class InputConfigurations {
-    public final Array<KeyInputConfiguration> keyInputConfigurations;
-    public final Array<PointerInputConfiguration> pointerInputConfigurations;
-    public final Array<StickInputConfiguration> stickInputConfigurations;
-    public final Array<ControllerConfiguration> controllerConfigurations;
-    public final Array<MouseInputConfiguration> mouseInputConfigurations;
+class InputConfigurations {
+    val keyInputConfigurations = Array<KeyInputConfiguration>()
+    val pointerInputConfigurations = Array<PointerInputConfiguration>()
+    val stickInputConfigurations = Array<StickInputConfiguration>()
+    val controllerConfigurations = Array<ControllerConfiguration>()
+    val mouseInputConfigurations = Array<MouseInputConfiguration>()
 
-    public InputConfigurations() {
-        keyInputConfigurations = new Array<>();
-        pointerInputConfigurations = new Array<>();
-        stickInputConfigurations = new Array<>();
-        mouseInputConfigurations = new Array<>();
-        controllerConfigurations = new Array<>();
-    }
+    fun getKeyConfiguration(name: String): KeyInputConfiguration? {
+        var res: KeyInputConfiguration? = null
 
-    public KeyInputConfiguration getKeyConfiguration(String name) {
-        KeyInputConfiguration res = null;
-
-        for (KeyInputConfiguration configuration : keyInputConfigurations) {
-            if (configuration.getName().contentEquals(name)) {
-                res = configuration;
+        for (configuration in keyInputConfigurations) {
+            if (configuration.name.contentEquals(name)) {
+                res = configuration
             }
         }
 
-        return res;
+        return res
     }
 
-    public PointerInputConfiguration getPointerConfiguration(String name) {
-        PointerInputConfiguration res = null;
+    fun getPointerConfiguration(name: String): PointerInputConfiguration? {
+        var res: PointerInputConfiguration? = null
 
-        for (PointerInputConfiguration configuration : pointerInputConfigurations) {
-            if (configuration.getName().contentEquals(name)) {
-                res = configuration;
+        for (configuration in pointerInputConfigurations) {
+            if (configuration.name.contentEquals(name)) {
+                res = configuration
             }
         }
 
-        return res;
+        return res
     }
 
-    public StickInputConfiguration getStickConfiguration(String name) {
-        StickInputConfiguration res = null;
+    fun getStickConfiguration(name: String): StickInputConfiguration? {
+        var res: StickInputConfiguration? = null
 
-        for (StickInputConfiguration configuration : stickInputConfigurations) {
-            if (configuration.getName().contentEquals(name)) {
-                res = configuration;
+        for (configuration in stickInputConfigurations) {
+            if (configuration.name.contentEquals(name)) {
+                res = configuration
             }
         }
 
-        return res;
+        return res
     }
 
-    public MouseInputConfiguration getMouseConfiguration(String name) {
-        MouseInputConfiguration res = null;
+    fun getMouseConfiguration(name: String): MouseInputConfiguration? {
+        var res: MouseInputConfiguration? = null
 
-        for (MouseInputConfiguration configuration : mouseInputConfigurations) {
-            if (configuration.getName().contentEquals(name)) {
-                res = configuration;
+        for (configuration in mouseInputConfigurations) {
+            if (configuration.name.contentEquals(name)) {
+                res = configuration
             }
         }
 
-        return res;
+        return res
     }
 
-    public MouseInputConfiguration getMouseConfiguration(MouseSourceType sourceType) {
-        MouseInputConfiguration res = null;
+    fun getMouseConfiguration(sourceType: MouseSourceType): MouseInputConfiguration? {
+        var res: MouseInputConfiguration? = null
 
-        for (MouseInputConfiguration configuration : mouseInputConfigurations) {
-            if (configuration.getMouseSourceType() == sourceType) {
-                res = configuration;
+        for (configuration in mouseInputConfigurations) {
+            if (configuration.mouseSourceType == sourceType) {
+                res = configuration
             }
         }
 
-        return res;
+        return res
     }
 
-    public ControllerConfiguration getControllerConfiguration(int id) {
-        ControllerConfiguration res = null;
+    fun getControllerConfiguration(id: Int): ControllerConfiguration? {
+        var res: ControllerConfiguration? = null
 
-        for (ControllerConfiguration configuration : controllerConfigurations) {
-            if (configuration.getId() == id) {
-                res = configuration;
+        for (configuration in controllerConfigurations) {
+            if (configuration.id == id) {
+                res = configuration
             }
         }
 
-        return res;
+        return res
     }
 }

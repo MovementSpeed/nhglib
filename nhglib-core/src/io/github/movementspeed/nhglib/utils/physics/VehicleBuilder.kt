@@ -1,157 +1,142 @@
-package io.github.movementspeed.nhglib.utils.physics;
+package io.github.movementspeed.nhglib.utils.physics
 
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.BoundingBox;
-import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
-import io.github.movementspeed.nhglib.assets.Asset;
-import io.github.movementspeed.nhglib.assets.Assets;
-import io.github.movementspeed.nhglib.core.ecs.components.graphics.ModelComponent;
-import io.github.movementspeed.nhglib.core.ecs.components.physics.VehicleComponent;
-import io.github.movementspeed.nhglib.core.ecs.components.physics.TyreComponent;
-import io.github.movementspeed.nhglib.core.ecs.systems.impl.PhysicsSystem;
-import io.github.movementspeed.nhglib.core.ecs.utils.Entities;
-import io.github.movementspeed.nhglib.graphics.scenes.Scene;
-import io.github.movementspeed.nhglib.graphics.scenes.SceneGraph;
+import com.badlogic.gdx.graphics.g3d.Model
+import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.math.collision.BoundingBox
+import com.badlogic.gdx.physics.bullet.collision.btBoxShape
+import com.badlogic.gdx.physics.bullet.collision.btCollisionShape
+import io.github.movementspeed.nhglib.assets.Asset
+import io.github.movementspeed.nhglib.assets.Assets
+import io.github.movementspeed.nhglib.core.ecs.components.graphics.ModelComponent
+import io.github.movementspeed.nhglib.core.ecs.components.physics.VehicleComponent
+import io.github.movementspeed.nhglib.core.ecs.components.physics.TyreComponent
+import io.github.movementspeed.nhglib.core.ecs.systems.impl.PhysicsSystem
+import io.github.movementspeed.nhglib.core.ecs.utils.Entities
+import io.github.movementspeed.nhglib.graphics.scenes.Scene
+import io.github.movementspeed.nhglib.graphics.scenes.SceneGraph
 
 /**
  * Created by Fausto Napoli on 11/06/2017.
  */
-public class VehicleBuilder {
-    private int builtWheels;
-    private int vehicleEntity;
+class VehicleBuilder(private val entities: Entities, private val assets: Assets, scene: Scene) {
+    private var builtWheels: Int = 0
+    private var vehicleEntity: Int = 0
 
-    private PhysicsSystem physicsSystem;
-    private SceneGraph sceneGraph;
-    private Entities entities;
-    private Assets assets;
+    private val physicsSystem = entities.getEntitySystem(PhysicsSystem::class.java)
+    private val sceneGraph = scene.sceneGraph
 
-    private Model chassisModel;
-    private Model wheelModel;
+    private var chassisModel: Model? = null
+    private var wheelModel: Model? = null
 
-    private VehicleComponent vehicleComponent;
+    private var vehicleComponent: VehicleComponent? = null
 
-    private int wheelEntities[];
+    private var wheelEntities: IntArray? = null
 
-    public VehicleBuilder(Entities entities, Assets assets, Scene scene) {
-        this.entities = entities;
-        this.assets = assets;
-        this.sceneGraph = scene.sceneGraph;
-        this.physicsSystem = entities.getEntitySystem(PhysicsSystem.class);
-    }
+    fun begin(entity: Int, wheels: Int): VehicleBuilder {
+        wheelEntities = IntArray(wheels)
+        vehicleEntity = entity
 
-    public VehicleBuilder begin(int entity, int wheels) {
-        wheelEntities = new int[wheels];
-        vehicleEntity = entity;
-
-        for (int i = 0; i < wheels; i++) {
-            wheelEntities[i] = sceneGraph.addSceneEntity(entity + "_wheel_" + i);
+        wheelEntities?.apply {
+            for (i in 0 until wheels) {
+                set(i, sceneGraph.addSceneEntity(entity.toString() + "_wheel_" + i))
+            }
         }
 
-        return this;
+        return this
     }
 
-    public VehicleBuilder begin(String name, int wheels) {
-        wheelEntities = new int[wheels];
+    fun begin(name: String, wheels: Int): VehicleBuilder {
+        wheelEntities = IntArray(wheels)
 
         // Create the main vehicle entity
-        vehicleEntity = sceneGraph.addSceneEntity(name + "_chassis");
+        vehicleEntity = sceneGraph.addSceneEntity(name + "_chassis")
 
         // Create wheel entities
-        for (int i = 0; i < wheels; i++) {
-            wheelEntities[i] = sceneGraph.addSceneEntity(name + "_wheel_" + i);
-        }
-
-        return this;
-    }
-
-    public VehicleBuilder setChassisAsset(Asset chassisAsset) {
-        assets.loadAsset(chassisAsset, new Assets.AssetListener() {
-            @Override
-            public void onAssetLoaded(Asset asset) {
-                setChassisModel((Model) assets.get(asset));
+        wheelEntities?.apply {
+            for (i in 0 until wheels) {
+                set(i, sceneGraph.addSceneEntity(name + "_wheel_" + i))
             }
-        });
-
-        return this;
-    }
-
-    public VehicleBuilder setWheelAsset(Asset wheelAsset) {
-        assets.loadAsset(wheelAsset, new Assets.AssetListener() {
-            @Override
-            public void onAssetLoaded(Asset asset) {
-                setWheelModel((Model) assets.get(asset));
-            }
-        });
-
-        return this;
-    }
-
-    public VehicleBuilder setChassisModel(Model model) {
-        this.chassisModel = model;
-
-        ModelComponent modelComponent = entities.createComponent(vehicleEntity, ModelComponent.class);
-        modelComponent.buildWithModel(model);
-
-        return this;
-    }
-
-    public VehicleBuilder setWheelModel(Model model) {
-        this.wheelModel = model;
-
-        for (int i = 0; i < wheelEntities.length; i++) {
-            ModelComponent wheelModel = entities.createComponent(wheelEntities[i], ModelComponent.class);
-            wheelModel.buildWithModel(model);
         }
 
-        return this;
+        return this
     }
 
-    public VehicleBuilder buildChassis(float mass) {
-        Vector3 chassisHalfExtents = chassisModel
-                .calculateBoundingBox(new BoundingBox())
-                .getDimensions(new Vector3())
-                .scl(0.5f);
-
-        btBoxShape boxShape = new btBoxShape(chassisHalfExtents);
-        return buildChassis(boxShape, mass);
+    fun setChassisAsset(chassisAsset: Asset): VehicleBuilder {
+        assets.loadAsset(chassisAsset) { asset -> setChassisModel(assets.get<Any>(asset) as Model) }
+        return this
     }
 
-    public VehicleBuilder buildChassis(btCollisionShape vehicleShape, float mass) {
-        vehicleComponent = entities.createComponent(vehicleEntity, VehicleComponent.class);
-        vehicleComponent.build(physicsSystem.getBulletWorld(), vehicleShape, mass);
-
-        return this;
+    fun setWheelAsset(wheelAsset: Asset): VehicleBuilder {
+        assets.loadAsset(wheelAsset) { asset -> setWheelModel(assets.get<Any>(asset) as Model) }
+        return this
     }
 
-    public VehicleBuilder buildWheel(Vector3 point, Vector3 direction, Vector3 axis, float friction,
-                                     boolean frontWheel) {
-        Vector3 wheelHalfExtents = wheelModel
-                .calculateBoundingBox(new BoundingBox())
-                .getDimensions(new Vector3())
-                .scl(0.5f);
+    fun setChassisModel(model: Model): VehicleBuilder {
+        this.chassisModel = model
 
-        return buildWheel(point, direction, axis, wheelHalfExtents.z, wheelHalfExtents.z * 0.3f,
-                friction, frontWheel);
+        val modelComponent = entities.createComponent(vehicleEntity, ModelComponent::class.java)
+        modelComponent.buildWithModel(model)
+
+        return this
     }
 
-    public VehicleBuilder buildWheel(Vector3 point, Vector3 direction, Vector3 axis, float radius,
-                                     float suspensionRestLength, float friction, boolean frontWheel) {
-        if (builtWheels < wheelEntities.length) {
-            vehicleComponent.addTyre(point, direction, axis, radius, suspensionRestLength, friction, frontWheel);
+    fun setWheelModel(model: Model): VehicleBuilder {
+        this.wheelModel = model
 
-            TyreComponent tyreComponent = entities.createComponent(wheelEntities[builtWheels], TyreComponent.class);
-            tyreComponent.build();
-            tyreComponent.index = builtWheels;
-
-            builtWheels++;
+        wheelEntities?.forEach {
+            val wheelModel = entities.createComponent(it, ModelComponent::class.java)
+            wheelModel.buildWithModel(model)
         }
 
-        return this;
+        return this
     }
 
-    public VehicleComponent end() {
-        return vehicleComponent;
+    fun buildChassis(mass: Float): VehicleBuilder {
+        val chassisHalfExtents = chassisModel!!
+                .calculateBoundingBox(BoundingBox())
+                .getDimensions(Vector3())
+                .scl(0.5f)
+
+        val boxShape = btBoxShape(chassisHalfExtents)
+        return buildChassis(boxShape, mass)
+    }
+
+    fun buildChassis(vehicleShape: btCollisionShape, mass: Float): VehicleBuilder {
+        vehicleComponent = entities.createComponent(vehicleEntity, VehicleComponent::class.java)
+        vehicleComponent?.build(physicsSystem.bulletWorld!!, vehicleShape, mass)
+
+        return this
+    }
+
+    fun buildWheel(point: Vector3, direction: Vector3, axis: Vector3, friction: Float,
+                   frontWheel: Boolean): VehicleBuilder {
+        val wheelHalfExtents = wheelModel
+                ?.calculateBoundingBox(BoundingBox())
+                ?.getDimensions(Vector3())
+                ?.scl(0.5f)
+
+        return buildWheel(point, direction, axis,
+                wheelHalfExtents?.z ?: 0f,
+                wheelHalfExtents?.z ?: 0f * 0.3f,
+                friction, frontWheel)
+    }
+
+    fun buildWheel(point: Vector3, direction: Vector3, axis: Vector3, radius: Float,
+                   suspensionRestLength: Float, friction: Float, frontWheel: Boolean): VehicleBuilder {
+        if (builtWheels < wheelEntities?.size ?: 0) {
+            vehicleComponent?.addTyre(point, direction, axis, radius, suspensionRestLength, friction, frontWheel)
+
+            val tyreComponent = entities.createComponent(wheelEntities!![builtWheels], TyreComponent::class.java)
+            tyreComponent.build()
+            tyreComponent.index = builtWheels
+
+            builtWheels++
+        }
+
+        return this
+    }
+
+    fun end(): VehicleComponent? {
+        return vehicleComponent
     }
 }

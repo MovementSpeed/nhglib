@@ -1,6 +1,6 @@
-package io.github.movementspeed.nhglib.graphics.lighting.tiled;
+package io.github.movementspeed.nhglib.graphics.lighting.tiled
 
-public class MinMax {
-    public float min;
-    public float max;
+class MinMax {
+    var min: Float = 0.toFloat()
+    var max: Float = 0.toFloat()
 }

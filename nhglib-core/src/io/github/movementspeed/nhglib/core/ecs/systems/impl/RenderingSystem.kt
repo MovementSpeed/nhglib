@@ -1,230 +1,229 @@
-package io.github.movementspeed.nhglib.core.ecs.systems.impl;
+package io.github.movementspeed.nhglib.core.ecs.systems.impl
 
-import com.artemis.BaseSystem;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.RenderableProvider;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.BufferUtils;
-import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.ScreenUtils;
-import io.github.movementspeed.nhglib.Nhg;
-import io.github.movementspeed.nhglib.core.ecs.interfaces.RenderingSystemInterface;
-import io.github.movementspeed.nhglib.core.ecs.systems.base.BaseRenderingSystem;
-import io.github.movementspeed.nhglib.graphics.rendering.RenderPass;
-import io.github.movementspeed.nhglib.graphics.shaders.tiled.TiledPBRRenderPass;
-import io.github.movementspeed.nhglib.utils.graphics.GLUtils;
+import com.artemis.BaseSystem
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.*
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g3d.Environment
+import com.badlogic.gdx.graphics.g3d.RenderableProvider
+import com.badlogic.gdx.graphics.glutils.FrameBuffer
+import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.BufferUtils
+import com.badlogic.gdx.utils.Disposable
+import com.badlogic.gdx.utils.ScreenUtils
+import io.github.movementspeed.nhglib.Nhg
+import io.github.movementspeed.nhglib.core.ecs.interfaces.RenderingSystemInterface
+import io.github.movementspeed.nhglib.core.ecs.systems.base.BaseRenderingSystem
+import io.github.movementspeed.nhglib.graphics.rendering.RenderPass
+import io.github.movementspeed.nhglib.graphics.shaders.tiled.TiledPBRRenderPass
+import io.github.movementspeed.nhglib.utils.graphics.GLUtils
 
 /**
  * Created by Fausto Napoli on 08/12/2016.
  */
-public class RenderingSystem extends BaseSystem implements Disposable {
-    public static int renderWidth;
-    public static int renderHeight;
-    public static Texture depthTexture;
+class RenderingSystem : BaseSystem(), Disposable {
 
-    private boolean saveScreenMode;
+    private var saveScreenMode: Boolean = false
 
     // Injected references
-    private CameraSystem cameraSystem;
+    private val cameraSystem: CameraSystem? = null
 
-    private Environment environment;
-    private Color clearColor;
-    private FPSLogger fpsLogger;
-    private FrameBuffer frameBuffer;
-    private SpriteBatch spriteBatch;
+    val environment: Environment
+    private var clearColor: Color? = null
+    private val fpsLogger: FPSLogger
+    private var frameBuffer: FrameBuffer? = null
+    private val spriteBatch: SpriteBatch
 
-    private Pixmap screenPixmap;
+    var screenPixmap: Pixmap? = null
+        private set
 
-    private Array<RenderPass> renderPasses;
-    private Array<RenderableProvider> renderableProviders;
-    private Array<RenderingSystemInterface> renderingInterfaces;
+    private val renderPasses: Array<RenderPass>
+    private val renderableProviders: Array<RenderableProvider>
+    private val renderingInterfaces: Array<RenderingSystemInterface>
 
-    public RenderingSystem() {
-        clearColor = Color.BLACK;
-        fpsLogger = new FPSLogger();
-        environment = new Environment();
+    init {
+        clearColor = Color.BLACK
+        fpsLogger = FPSLogger()
+        environment = Environment()
 
-        renderPasses = new Array<>();
-        renderableProviders = new Array<>();
-        renderingInterfaces = new Array<>();
+        renderPasses = Array()
+        renderableProviders = Array()
+        renderingInterfaces = Array()
 
-        spriteBatch = new SpriteBatch();
-        spriteBatch.enableBlending();
+        spriteBatch = SpriteBatch()
+        spriteBatch.enableBlending()
 
-        setRenderScale(1);
-        setRenderPass(0, new TiledPBRRenderPass());
+        setRenderScale(1f)
+        setRenderPass(0, TiledPBRRenderPass())
     }
 
-    @Override
-    protected void processSystem() {
+    override fun processSystem() {
         if (Nhg.debugLogs && Nhg.debugFpsLogs) {
-            fpsLogger.log();
+            fpsLogger.log()
         }
 
-        if (cameraSystem.cameras.size > 0) {
-            PerspectiveCamera camera = (PerspectiveCamera) cameraSystem.cameras.first();
+        if (cameraSystem!!.cameras.size > 0) {
+            val camera = cameraSystem.cameras.first() as PerspectiveCamera
 
-            for (RenderingSystemInterface rsi : renderingInterfaces) {
-                rsi.onPreRender();
+            for (rsi in renderingInterfaces) {
+                rsi.onPreRender()
             }
 
-            renderableProviders.clear();
+            renderableProviders.clear()
 
-            for (RenderingSystemInterface rsi : renderingInterfaces) {
-                Array<RenderableProvider> providers = rsi.getRenderableProviders();
-                renderableProviders.addAll(providers);
-                rsi.clearRenderableProviders();
+            for (rsi in renderingInterfaces) {
+                val providers = rsi.renderableProviders
+                renderableProviders.addAll(providers)
+                rsi.clearRenderableProviders()
             }
 
             if (renderableProviders.size > 0) {
-                frameBuffer.begin();
-                GLUtils.clearScreen(clearColor);
+                frameBuffer!!.begin()
+                GLUtils.clearScreen(clearColor)
 
-                for (int i = 0; i < renderPasses.size; i++) {
-                    RenderPass renderPass = renderPasses.get(i);
+                for (i in 0 until renderPasses.size) {
+                    val renderPass = renderPasses.get(i)
 
                     if (i > 0) {
-                        renderPass.setPreviousRenderPass(renderPasses.get(i - 1));
+                        renderPass.setPreviousRenderPass(renderPasses.get(i - 1))
                     }
 
-                    renderPass.begin(camera);
-                    renderPass.render(camera, renderableProviders);
-                    renderPass.end();
+                    renderPass.begin(camera)
+                    renderPass.render(camera, renderableProviders)
+                    renderPass.end()
                 }
 
                 if (saveScreenMode) {
-                    screenPixmap = getScreenPixmapInternal(frameBuffer.getWidth(), frameBuffer.getHeight());
-                    saveScreenMode = false;
+                    screenPixmap = getScreenPixmapInternal(frameBuffer!!.width, frameBuffer!!.height)
+                    saveScreenMode = false
                 }
 
-                frameBuffer.end();
+                frameBuffer!!.end()
 
-                spriteBatch.begin();
-                spriteBatch.draw(frameBuffer.getColorBufferTexture(),
-                        0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),
-                        0, 0, 1, 1);
-                spriteBatch.end();
+                spriteBatch.begin()
+                spriteBatch.draw(frameBuffer!!.colorBufferTexture,
+                        0f, 0f, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat(),
+                        0f, 0f, 1f, 1f)
+                spriteBatch.end()
 
-                for (RenderingSystemInterface rsi : renderingInterfaces) {
-                    rsi.onPostRender();
+                for (rsi in renderingInterfaces) {
+                    rsi.onPostRender()
                 }
             }
         }
     }
 
-    @Override
-    public void dispose() {
-        super.dispose();
-        frameBuffer.dispose();
+    override fun dispose() {
+        super.dispose()
+        frameBuffer!!.dispose()
     }
 
-    public void beginScreenPixmap() {
-        saveScreenMode = true;
+    fun beginScreenPixmap() {
+        saveScreenMode = true
     }
 
-    public Pixmap getScreenPixmap() {
-        return screenPixmap;
+    fun endScreenPixmap() {
+        screenPixmap!!.dispose()
+        screenPixmap = null
     }
 
-    public void endScreenPixmap() {
-        screenPixmap.dispose();
-        screenPixmap = null;
-    }
-
-    public void setRenderPass(int index, RenderPass renderPass) {
+    fun setRenderPass(index: Int, renderPass: RenderPass) {
         if (index >= 0) {
             if (index >= renderPasses.size) {
-                renderPasses.setSize(index + 1);
+                renderPasses.setSize(index + 1)
             }
 
-            renderPass.setEnvironment(environment);
-            renderPass.setMainFBO(frameBuffer);
+            renderPass.setEnvironment(environment)
+            renderPass.setMainFBO(frameBuffer)
 
             if (index > 0) {
-                renderPass.setPreviousRenderPass(renderPasses.get(index - 1));
+                renderPass.setPreviousRenderPass(renderPasses.get(index - 1))
             }
 
-            renderPass.created();
-            renderPasses.set(index, renderPass);
+            renderPass.created()
+            renderPasses.set(index, renderPass)
         }
     }
 
-    public void setRenderScale(float renderScale) {
-        if (renderScale < 0f) renderScale = 0f;
-        if (renderScale > 1f) renderScale = 1f;
+    fun setRenderScale(renderScale: Float) {
+        var renderScale = renderScale
+        if (renderScale < 0f) renderScale = 0f
+        if (renderScale > 1f) renderScale = 1f
 
-        renderWidth = Math.round(Gdx.graphics.getWidth() * renderScale);
-        renderHeight = Math.round(Gdx.graphics.getHeight() * renderScale);
+        renderWidth = Math.round(Gdx.graphics.width * renderScale)
+        renderHeight = Math.round(Gdx.graphics.height * renderScale)
 
-        updateFramebuffer(renderWidth, renderHeight);
+        updateFramebuffer(renderWidth, renderHeight)
     }
 
-    public void setRenderResolution(int renderWidth, int renderHeight) {
-        if (renderWidth < 1) renderWidth = 1;
-        if (renderHeight < 1) renderHeight = 1;
+    fun setRenderResolution(renderWidth: Int, renderHeight: Int) {
+        var renderWidth = renderWidth
+        var renderHeight = renderHeight
+        if (renderWidth < 1) renderWidth = 1
+        if (renderHeight < 1) renderHeight = 1
 
-        RenderingSystem.renderWidth = renderWidth;
-        RenderingSystem.renderHeight = renderHeight;
+        RenderingSystem.renderWidth = renderWidth
+        RenderingSystem.renderHeight = renderHeight
 
-        updateFramebuffer(renderWidth, renderHeight);
+        updateFramebuffer(renderWidth, renderHeight)
     }
 
-    public void setClearColor(Color clearColor) {
+    fun setClearColor(clearColor: Color?) {
         if (clearColor != null) {
-            this.clearColor = clearColor;
+            this.clearColor = clearColor
         }
     }
 
-    public void addRenderingInterfaces(BaseRenderingSystem... renderingSystems) {
-        for (BaseRenderingSystem brs : renderingSystems) {
-            renderingInterfaces.add(brs);
+    fun addRenderingInterfaces(vararg renderingSystems: BaseRenderingSystem) {
+        for (brs in renderingSystems) {
+            renderingInterfaces.add(brs)
         }
     }
 
-    public void addRenderingInterfaces(RenderingSystemInterface... renderingSystemInterfaces) {
-        for (RenderingSystemInterface rsi : renderingSystemInterfaces) {
-            renderingInterfaces.add(rsi);
+    fun addRenderingInterfaces(vararg renderingSystemInterfaces: RenderingSystemInterface) {
+        for (rsi in renderingSystemInterfaces) {
+            renderingInterfaces.add(rsi)
         }
     }
 
-    public Environment getEnvironment() {
-        return environment;
+    fun getDepthTexture(): Texture? {
+        return null
     }
 
-    public Texture getDepthTexture() {
-        return null;
-    }
-
-    private void updateFramebuffer(int width, int height) {
+    private fun updateFramebuffer(width: Int, height: Int) {
         if (frameBuffer != null) {
-            frameBuffer.dispose();
+            frameBuffer!!.dispose()
         }
 
         try {
-            frameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, true);
-        } catch (IllegalStateException e) {
-            frameBuffer = new FrameBuffer(Pixmap.Format.RGB565, width, height, true);
+            frameBuffer = FrameBuffer(Pixmap.Format.RGBA8888, width, height, true)
+        } catch (e: IllegalStateException) {
+            frameBuffer = FrameBuffer(Pixmap.Format.RGB565, width, height, true)
         }
 
-        for (RenderingSystemInterface rsi : renderingInterfaces) {
-            rsi.onUpdatedRenderer(width, height);
+        for (rsi in renderingInterfaces) {
+            rsi.onUpdatedRenderer(width, height)
         }
     }
 
-    private Pixmap getScreenPixmapInternal(int width, int height) {
-        byte[] pixels = ScreenUtils.getFrameBufferPixels(0, 0, width, height, true);
+    private fun getScreenPixmapInternal(width: Int, height: Int): Pixmap {
+        val pixels = ScreenUtils.getFrameBufferPixels(0, 0, width, height, true)
 
         // this loop makes sure the whole screenshot is opaque and looks exactly like what the user is seeing
-        for(int i = 4; i < pixels.length; i += 4) {
-            pixels[i - 1] = (byte) 255;
+        var i = 4
+        while (i < pixels.size) {
+            pixels[i - 1] = 255.toByte()
+            i += 4
         }
 
-        Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
-        BufferUtils.copy(pixels, 0, pixmap.getPixels(), pixels.length);
-        return pixmap;
+        val pixmap = Pixmap(width, height, Pixmap.Format.RGBA8888)
+        BufferUtils.copy(pixels, 0, pixmap.pixels, pixels.size)
+        return pixmap
+    }
+
+    companion object {
+        var renderWidth: Int = 0
+        var renderHeight: Int = 0
+        var depthTexture: Texture? = null
     }
 }
