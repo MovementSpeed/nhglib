@@ -21,11 +21,11 @@ allprojects {
     apply plugin: "idea"
 
     ext {
-        gdxVersion = '1.9.8'
+        gdxVersion = '1.9.10'
         roboVMVersion = '2.3.3'
         aiVersion = '1.8.1'
         stageBuilderVersion = 'v3.27.0'
-        artemisVersion = '2.2.0-SNAPSHOT'
+        artemisVersion = '2.3.0'
     }
 
     repositories {

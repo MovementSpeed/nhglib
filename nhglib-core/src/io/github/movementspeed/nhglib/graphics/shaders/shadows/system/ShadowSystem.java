@@ -26,7 +26,7 @@ import java.util.Set;
 
 /** Shadow system provides functionalities to render shadows.
  * <p>
- * Typical use: <br />
+ * Typical use:
  *
  * <pre>
  * // Init system:
@@ -64,11 +64,11 @@ import java.util.Set;
  * mainBatch.end();
  * </pre>
  *
- * </p>
+ *
  *
  * <p>
  * Current environnment should be alway be synchonized with shadow system lights. It means that if you add or remove light from
- * environment, you should do it in shadow system too. <br />
+ * environment, you should do it in shadow system too.
  * If you have two different environments, when you switch, you should add and remove all lights in shadow system.
  * </p>
  * @author realitix */

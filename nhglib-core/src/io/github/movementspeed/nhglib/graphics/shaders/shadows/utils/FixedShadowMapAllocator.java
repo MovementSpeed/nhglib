@@ -22,8 +22,8 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 /** FixedShadowMapAllocator behavior is naive. It separates the texture in several parts and for each light increments the region.
  * The larger the size, the better the quality or quantity.
  * <p>
- * Examples: <br />
- * If you set size to QUALITY_MAX and mapQuantity to NB_MAP_MIN, each depth map would be 2048*2048 (it's huge!).<br />
+ * Examples:
+ * If you set size to QUALITY_MAX and mapQuantity to NB_MAP_MIN, each depth map would be 2048*2048 (it's huge!).
  * If you set size to QUALITY_MIN and mapQuantity to NB_MAP_MAX, each depth map would be 64*64.
  * </p>
  * @author realitix */
